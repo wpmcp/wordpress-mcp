@@ -53,4 +53,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/src/adapter-guard.php';
 wpmcp_prefer_shared_mcp_adapter( __DIR__ . '/vendor' );
 \WPMCP\Freemius\Bootstrap::init();
+// Free installs of this build hear about new versions from GitHub releases;
+// a licensed site is updated by the licensing SDK instead. The wordpress.org
+// builds ship their own loader and no src/Updates (src/Updates/GitHub_Releases.php).
+\WPMCP\Updates\GitHub_Releases::register();
 \WPMCP\Plugin::instance()->boot();

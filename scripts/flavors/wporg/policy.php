@@ -44,6 +44,11 @@ return [
         // dismissible banner on WP MCP's own screens is planned for the first
         // update after approval.
         'src/Admin/Pro_Banner.php',
+        // Update checks against GitHub releases for free installs of the
+        // self-hosted build. A directory plugin is updated by WordPress.org
+        // and nothing else (guideline 8), and the WooCommerce flavor shares
+        // this list, so neither ships it; their loaders never register it.
+        'src/Updates',
         // Paid ability groups, whole. These are the add-on.
         // Note: src/Cloud stays. Cloud_Client and Cloud_Config are a plain
         // HTTP seam and an option store with no paid gating in them, and the
