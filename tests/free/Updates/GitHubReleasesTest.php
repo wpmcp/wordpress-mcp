@@ -36,11 +36,13 @@ class GitHubReleasesTest extends \WP_UnitTestCase
             'cookies'  => [],
         ];
         add_filter('pre_http_request', [ $this, 'fake_http' ], 10, 3);
+        add_action('set_site_transient_' . GitHub_Releases::CACHE_KEY, [ $this, 'record_ttl' ], 10, 2);
     }
 
     protected function tearDown(): void
     {
         remove_filter('pre_http_request', [ $this, 'fake_http' ], 10);
+        remove_action('set_site_transient_' . GitHub_Releases::CACHE_KEY, [ $this, 'record_ttl' ], 10);
         remove_filter('wpmcp_github_updates_enabled', '__return_true');
         remove_filter('wpmcp_github_updates_enabled', '__return_false');
         Gate::set_pro_for_tests(null);
@@ -108,11 +110,22 @@ class GitHubReleasesTest extends \WP_UnitTestCase
         );
     }
 
+    /** @var int|null The expiration of the last cache write. */
+    private ?int $ttl = null;
+
+    public function record_ttl($value, $expiration): void
+    {
+        $this->ttl = (int) $expiration;
+    }
+
+    /**
+     * Seconds the last cache write asked for. Taken from core's
+     * set_site_transient_{name} action, so it holds with or without a
+     * persistent object cache (the full suite runs with one in some legs).
+     */
     private function timeout(): int
     {
-        $key = '_site_transient_timeout_' . GitHub_Releases::CACHE_KEY;
-
-        return (int) (is_multisite() ? get_site_option($key) : get_option($key));
+        return (int) $this->ttl;
     }
 
     public function test_the_filter_is_registered_on_the_update_uri_host(): void
@@ -210,7 +223,7 @@ class GitHubReleasesTest extends \WP_UnitTestCase
         $this->ask('1.0.0');
 
         $this->assertCount(2, $this->requests, 'one release fetch and one readme fetch, then the cache');
-        $this->assertEqualsWithDelta(time() + 12 * HOUR_IN_SECONDS, $this->timeout(), 5);
+        $this->assertSame(12 * HOUR_IN_SECONDS, $this->timeout());
     }
 
     /** @return array<string, array{0: mixed}> */
@@ -244,7 +257,7 @@ class GitHubReleasesTest extends \WP_UnitTestCase
         $this->assertFalse($this->ask('0.1.0'));
 
         $this->assertCount(1, $this->requests, 'the failure is cached, not retried on the next check');
-        $this->assertEqualsWithDelta(time() + HOUR_IN_SECONDS, $this->timeout(), 5);
+        $this->assertSame(HOUR_IN_SECONDS, $this->timeout());
     }
 
     public function test_unreadable_readme_still_offers_the_update_without_requirements(): void
