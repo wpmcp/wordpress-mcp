@@ -4,7 +4,7 @@ Tags: mcp, ai, ai agent, automation, undo
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -146,6 +146,20 @@ OAuth is off by default. Clients configured with an application password (Claude
 Yes. The safety core and the MCP server are free and GPL. Pro adds convenience and depth (Elementor deep editing, builders, cloud sync), not safety. Snapshot retention is not part of that: it is the same flat, filterable number on every install.
 
 == Changelog ==
+
+= 1.2.1 =
+The free plugin from GitHub is now the full plugin: install wpmcp.zip, use everything free, and add a licence later to unlock Pro in the same plugin. Free installs also get updates from Dashboard > Updates.
+
+New:
+* wpmcp.zip on GitHub is the full plugin with the licensing SDK: free until a licence is active, then Pro unlocks in place with nothing else to install. The wordpress.org edition is published as wpmcp-directory-<version>.zip, and every release carries stable download names (wpmcp.zip, safe-mcp-for-woocommerce.zip) so the latest-release links never change (#1154).
+* Free installs from wpmcp.zip get update notices and one-click updates under Dashboard > Updates, from the latest GitHub release. Licensed sites keep updating through the licence. The check is a GET to api.github.com with no site data, cached for 12 hours; add_filter( 'wpmcp_github_updates_enabled', '__return_false' ) turns it off, and it is off in a git checkout. The wordpress.org editions do not contain it (#1166).
+* The plugin header carries Update URI: https://wpmcp-pro.com/, so WordPress never offers a same-named wordpress.org plugin as an update to this one (#1154).
+
+Fixes:
+* The History screen renders once; before, one Restore click sent two requests (#1167).
+* The upgrade banner no longer lists session restore as a Pro feature: rolling back a whole agent session is free (#1167).
+* Database cleanup, unused media and snapshot queries are built entirely inside $wpdb->prepare(); the SQL sent is unchanged (#1147).
+* Safe MCP for WooCommerce no longer ships the site backup restore tool or the SQL importer (restore-site-backup answers not_in_this_build; making and managing backups still works), and no longer calls load_plugin_textdomain() itself, since WordPress.org loads its translations, matching the wordpress.org plugin check (#1147).
 
 = 1.2.0 =
 New integrations, site security tools, and a switch in wp-admin that turns on OAuth sign-in for ChatGPT and the Claude connector. No new top-level tools: everything is an operation on an existing tool, and every write is snapshotted and undoable unless it says otherwise.
@@ -1072,6 +1086,9 @@ Admin and tooling:
 * Freemius licensing shows its stock, default-off opt-in screen on activation rather than deciding consent for you. Sites that ran a pre-release build under anonymous mode see that connect screen once after upgrading; Skip dismisses it and the plugin keeps working unchanged. The WordPress.org build ships no licensing SDK at all.
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+The GitHub wpmcp.zip is now the full plugin and updates itself from GitHub releases. If you installed the 1.2.0 wpmcp.zip from GitHub, upload 1.2.1 once by hand; later updates appear under Dashboard > Updates.
 
 = 1.2.0 =
 New site security tools (hardening, file quarantine, compromise checks, backups outside the web root), an OAuth switch for ChatGPT, and new integrations. Recommended for all sites.
