@@ -24,7 +24,7 @@ Built for site owners, agencies and developers who want an AI agent working on a
 2. In wp-admin, go to **Plugins > Add New > Upload Plugin**, choose the zip, click **Install Now**, then **Activate**.
 3. Open **wpmcp > Connection** and connect Claude, ChatGPT or Cursor.
 
-Requires WordPress 6.9+ and PHP 8.1+.
+Requires WordPress 6.9+ and PHP 8.1+. Free installs update in one click from **Dashboard > Updates**.
 
 <p align="center">
   <img src="assets/readme/undo-demo.gif" width="900" alt="WordPress MCP server demo: an AI agent changes a page heading over MCP, then one click on Restore in the WP MCP History screen puts the original back">
