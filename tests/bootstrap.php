@@ -112,6 +112,9 @@ tests_add_filter( 'muplugins_loaded', function () {
         wpmcp_maybe_require_plugin( 'otter-blocks/otter-blocks.php' );
         wpmcp_maybe_require_plugin( 'stackable-ultimate-gutenberg-blocks/plugin.php' );
         wpmcp_maybe_require_plugin( 'ultimate-blocks/ultimate-blocks.php' );
+        wpmcp_maybe_require_plugin( 'greenshift-animation-and-page-builder-blocks/plugin.php' );
+        wpmcp_maybe_require_plugin( 'essential-blocks/essential-blocks.php' );
+        wpmcp_maybe_require_plugin( 'coblocks/class-coblocks.php' );
     }
 
     // The live BuddyPress job (issue #363, WPMCP_LIVE_BUDDYPRESS=1) runs the

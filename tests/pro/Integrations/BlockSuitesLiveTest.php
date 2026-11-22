@@ -15,7 +15,8 @@ use WPMCP\Safety\Snapshot_Store;
  * It runs only in the local gate's live blocks leg (bin/test-local.sh, or
  * bin/test-local.sh --live-blocks alone), which sets WPMCP_LIVE_BLOCKS=1,
  * installs Kadence Blocks, GenerateBlocks, Spectra, Otter Blocks, Stackable
- * and Ultimate Blocks (issue #649) from wordpress.org on a separate WordPress install and loads them in
+ * and Ultimate Blocks (issue #649), GreenShift, Essential Blocks and CoBlocks
+ * (issue #1009) from wordpress.org on a separate WordPress install and loads them in
  * tests/bootstrap.php. Each test inserts a block through the block-suites
  * tools, renders the post as a front-end request (the wp action, wp_head,
  * the_content and wp_footer, which is where the suites build and print their
@@ -38,7 +39,7 @@ class BlockSuitesLiveTest extends \WP_UnitTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        foreach ([ 'KADENCE_BLOCKS_VERSION', 'GENERATEBLOCKS_VERSION', 'UAGB_VER', 'OTTER_BLOCKS_VERSION', 'STACKABLE_VERSION', 'ULTIMATE_BLOCKS_VERSION' ] as $constant) {
+        foreach ([ 'KADENCE_BLOCKS_VERSION', 'GENERATEBLOCKS_VERSION', 'UAGB_VER', 'OTTER_BLOCKS_VERSION', 'STACKABLE_VERSION', 'ULTIMATE_BLOCKS_VERSION', 'GREENSHIFT_DIR_URL', 'ESSENTIAL_BLOCKS_VERSION', 'COBLOCKS_VERSION' ] as $constant) {
             if (! defined($constant)) {
                 $this->markTestSkipped('Needs the real block suites (bin/test-local.sh --live-blocks, WPMCP_LIVE_BLOCKS=1).');
             }
@@ -488,5 +489,115 @@ class BlockSuitesLiveTest extends \WP_UnitTestCase
         $this->assertTrue($out['result']['file_exists'], (string) wp_json_encode($out['result']));
         $this->assertStringContainsString('#2b3c4d', strtolower($out['result']['css']));
         $this->assertTrue(Rollback_Service::restore_operation($out['operation_id']));
+    }
+
+    /**
+     * Issue #1009: a GreenShift block's CSS renders inline from its
+     * inlineCssStyles and in the head from the _gspb_post_css meta the write
+     * rebuilt; an edit and its rollback each leave only their own color.
+     */
+    public function test_greenshift_element_renders_its_css_inline_and_in_the_head_and_follows_edits(): void
+    {
+        [ $id, $hash ]  = $this->page();
+        [ $unique, $w ] = $this->insert('greenshift', $id, $hash,
+            '<!-- wp:greenshift-blocks/element {"id":"__UNIQUE_ID__","inlineCssStyles":".__UNIQUE_ID__{color:#1a2b3c;}","localId":"__UNIQUE_ID__","textContent":"GS live","tag":"p","type":"text"} -->'
+            . '<p class="__UNIQUE_ID__">GS live</p>'
+            . '<!-- /wp:greenshift-blocks/element -->');
+        $this->assertMatchesRegularExpression('/^gsbp-[0-9a-f]{7}$/', $unique);
+        $this->assertSame('.' . $unique . '{color:#1a2b3c;}', get_post_meta($id, '_gspb_post_css', true));
+        $inserted = $this->content_of($id, $w);
+
+        $html = $this->render($id);
+        $this->assertStringContainsString('GS live', $html);
+        $this->assertStringContainsString('class="' . $unique . '"', $html, 'the markup carries the id');
+        $this->assertMatchesRegularExpression('#<style id=[\'"]greenshift-post-css-inline-css[\'"][^>]*>[^<]*\.' . preg_quote($unique, '#') . '\{color:\#1a2b3c#', $html, 'the head stylesheet carries the block css');
+        $this->assertRule($this->css($html), '.' . $unique, '#1a2b3c', 'the block style renders');
+
+        $out  = $this->update('greenshift', $id, [ 'inlineCssStyles' => '.' . $unique . '{color:#3c4d5e;}' ]);
+        $css  = $this->css($this->render($id));
+        $this->assertRule($css, '.' . $unique, '#3c4d5e', 'greenshift serves the edited style');
+        $this->assertStringNotContainsString('#1a2b3c', $css, 'neither inline nor in the head is the old style left');
+
+        $this->assertTrue(Rollback_Service::restore_operation($out['operation_ids'][0]));
+        clean_post_cache($id);
+        $this->assertSame($inserted, (string) get_post($id)->post_content, 'the rollback restores the exact bytes');
+        $this->assertSame('.' . $unique . '{color:#1a2b3c;}', get_post_meta($id, '_gspb_post_css', true));
+        $css = $this->css($this->render($id));
+        $this->assertRule($css, '.' . $unique, '#1a2b3c', 'greenshift serves the original style after the rollback');
+        $this->assertStringNotContainsString('#3c4d5e', $css);
+    }
+
+    /**
+     * Issue #1009: an Essential Blocks block written with its blockMeta gets
+     * its CSS in the eb-style file Essential Blocks generates on the view;
+     * an edit with new blockMeta and its rollback each regenerate it, and a
+     * block without blockMeta is refused before any write.
+     */
+    public function test_essential_blocks_heading_renders_its_block_meta_css_and_follows_edits(): void
+    {
+        $markup = static fn (string $color, bool $meta = true): string => '<!-- wp:essential-blocks/advanced-heading '
+            . serialize_block_attributes(array_filter([
+                'blockId'    => '__UNIQUE_ID__',
+                'titleText'  => 'EB live',
+                'titleColor' => $color,
+                'blockMeta'  => $meta ? [ 'desktop' => '.__UNIQUE_ID__.eb-advance-heading-wrapper .eb-ah-title{color:' . $color . ';}', 'tab' => '', 'mobile' => '' ] : null,
+            ]))
+            . ' --><div class="wp-block-essential-blocks-advanced-heading"><div class="eb-parent-wrapper eb-parent-__UNIQUE_ID__ "><div class="__UNIQUE_ID__ eb-advance-heading-wrapper" data-id="__UNIQUE_ID__"><h2 class="eb-ah-title"><span class="first-title">EB live</span></h2></div></div></div><!-- /wp:essential-blocks/advanced-heading -->';
+
+        [ $id, $hash ] = $this->page();
+        $refused       = (new Block_Suites_Integration())->handle_write([ 'operation' => 'insert-block', 'args' => [ 'suite' => 'essential-blocks', 'id' => $id, 'expected_hash' => $hash, 'path' => [ 1 ], 'markup' => $markup('#2c3d4e', false) ] ]);
+        $this->assertSame('editor_render_required', $refused['error']['code'] ?? null, (string) wp_json_encode($refused));
+
+        [ $unique, $w ] = $this->insert('essential-blocks', $id, $hash, $markup('#2c3d4e'));
+        $this->assertMatchesRegularExpression('/^eb-advanced-heading-[0-9a-f]{5}$/', $unique);
+        $inserted = $this->content_of($id, $w);
+
+        $html = $this->render($id);
+        $this->assertStringContainsString('EB live', $html);
+        $this->assertStringContainsString('data-id="' . $unique . '"', $html, 'the markup carries the id');
+        $this->assertRule($this->css($html), '.' . $unique, '#2c3d4e', 'the eb-style file carries the block meta css');
+
+        $out = $this->update('essential-blocks', $id, [
+            'titleColor' => '#5e6f70',
+            'blockMeta'  => [ 'desktop' => '.' . $unique . '.eb-advance-heading-wrapper .eb-ah-title{color:#5e6f70;}', 'tab' => '', 'mobile' => '' ],
+        ]);
+        $css = $this->css($this->render($id));
+        $this->assertRule($css, '.' . $unique, '#5e6f70', 'essential blocks serves the edited style');
+        $this->assertStringNotContainsString('#2c3d4e', $css);
+
+        $this->assertTrue(Rollback_Service::restore_operation($out['operation_ids'][0]));
+        clean_post_cache($id);
+        $this->assertSame($inserted, (string) get_post($id)->post_content, 'the rollback restores the exact bytes');
+        $css = $this->css($this->render($id));
+        $this->assertRule($css, '.' . $unique, '#2c3d4e', 'essential blocks serves the original style after the rollback');
+        $this->assertStringNotContainsString('#5e6f70', $css);
+    }
+
+    /**
+     * Issue #1009: CoBlocks markup as its editor saves it, with the coblocks
+     * attribute no block.json declares, is written as given and renders; a
+     * rollback restores the post and its _coblocks_dimensions meta.
+     */
+    public function test_coblocks_alert_renders_as_written_and_rolls_back_with_its_meta(): void
+    {
+        [ $id, $hash ] = $this->page();
+        $dimensions    = '{"coblocks-alert-9f8e7d":{"padding":{"paddingTop":"20px"}}}';
+        update_post_meta($id, '_coblocks_dimensions', $dimensions);
+        $markup = '<!-- wp:coblocks/alert {"coblocks":{"id":"9f8e7d"}} --><div class="wp-block-coblocks-alert coblocks-alert-9f8e7d"><p class="wp-block-coblocks-alert__text">CoBlocks live</p></div><!-- /wp:coblocks/alert -->';
+
+        $out = $this->write('insert-block', [ 'suite' => 'coblocks', 'id' => $id, 'expected_hash' => $hash, 'path' => [ 1 ], 'markup' => $markup ]);
+        $this->assertSame([], $out['result']['unique_ids'], 'CoBlocks blocks get no generated id');
+        clean_post_cache($id);
+        $this->assertStringContainsString($markup, (string) get_post($id)->post_content);
+
+        $html = $this->render($id);
+        $this->assertStringContainsString('CoBlocks live', $html);
+        $this->assertStringContainsString('coblocks-alert-9f8e7d', $html);
+
+        update_post_meta($id, '_coblocks_dimensions', '{}');
+        $this->assertTrue(Rollback_Service::restore_operation($out['operation_ids'][0]));
+        clean_post_cache($id);
+        $this->assertStringNotContainsString('CoBlocks live', (string) get_post($id)->post_content);
+        $this->assertSame([ $dimensions ], get_post_meta($id, '_coblocks_dimensions'), 'the meta comes back with the post');
     }
 }

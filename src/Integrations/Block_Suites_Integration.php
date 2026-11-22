@@ -13,8 +13,9 @@ if (! defined('ABSPATH')) {
  * wpmcp/block-suites-read and wpmcp/block-suites-write, registered only
  * while at least one supported suite is loaded: Kadence Blocks,
  * GenerateBlocks, Spectra, Otter Blocks, the Blocksy companion blocks,
- * Stackable and Ultimate Blocks (see Block_Suite), plus browsing and importing registered
- * block patterns (see Block_Suite_Patterns).
+ * Stackable, Ultimate Blocks, GreenShift, Essential Blocks and CoBlocks (see
+ * Block_Suite), plus browsing and importing registered block patterns (see
+ * Block_Suite_Patterns).
  *
  * Every write goes through the surgical block engine (Block_Tree): the
  * expected_hash freshness proof, the round-trip guard, and one post
@@ -128,7 +129,7 @@ final class Block_Suites_Integration extends Integration_Dispatcher
             'get-block-schemas' => [
                 'mode'         => 'read',
                 'tier'         => 'pro',
-                'description'  => 'The active suite\'s blocks (block.json; Spectra: its attribute defaults, typed from the values; Spectra, Stackable, Ultimate Blocks: unknown attributes allowed). Without name: every block with title, parent/ancestor and attribute names. With name: that block with its full attribute definitions (type, default, enum)',
+                'description'  => 'The active suite\'s blocks (block.json; Spectra: its attribute defaults, typed from the values; Spectra, Stackable, Ultimate Blocks, GreenShift, Essential Blocks, CoBlocks: unknown attributes allowed; CoBlocks: no unique id). Without name: every block with title, parent/ancestor and attribute names. With name: that block with its full attribute definitions (type, default, enum)',
                 'input_schema' => [
                     'type'       => 'object',
                     'properties' => [ 'suite' => $suite_prop, 'name' => [ 'type' => 'string' ] ],
@@ -142,7 +143,7 @@ final class Block_Suites_Integration extends Integration_Dispatcher
                 'objects'           => [ 'id' => 'post' ],
                 'tier'              => 'pro',
                 'self_snapshotting' => true,
-                'description'       => 'Insert one suite block, given as block markup (it may contain inner blocks), AT path in post id; expected_hash is the content_hash from parse-blocks. Attributes are checked against the block schema. A missing, duplicate or foreign unique id is generated the way the suite\'s editor does and replaces the old id or the __UNIQUE_ID__ placeholder in that block\'s markup; GenerateBlocks css is compiled from styles. Snapshotted: rollback-operation restores the post exactly and the suite CSS is rebuilt',
+                'description'       => 'Insert one suite block, given as block markup (it may contain inner blocks), AT path in post id; expected_hash is the content_hash from parse-blocks. Attributes are checked against the block schema. A missing, duplicate or foreign unique id is generated the way the suite\'s editor does and replaces the old id or the __UNIQUE_ID__ placeholder in that block\'s markup; GenerateBlocks css is compiled from styles. An Essential Blocks block must carry the blockMeta its editor generates (else editor_render_required). Snapshotted: rollback-operation restores the post exactly and the suite CSS is rebuilt',
                 'input_schema'      => [
                     'type'       => 'object',
                     'properties' => $edit_props + [ 'markup' => [ 'type' => 'string', 'minLength' => 1 ] ],
@@ -156,7 +157,7 @@ final class Block_Suites_Integration extends Integration_Dispatcher
                 'objects'           => [ 'id' => 'post' ],
                 'tier'              => 'pro',
                 'self_snapshotting' => true,
-                'description'       => 'Update the suite block at path: attrs are MERGED into its attributes (null removes one) and checked against the schema; the unique id cannot change. inner_html replaces a leaf block\'s markup. GenerateBlocks css is recompiled when styles change. Snapshotted like insert-block',
+                'description'       => 'Update the suite block at path: attrs are MERGED into its attributes (null removes one) and checked against the schema; the unique id cannot change. inner_html replaces a leaf block\'s markup. GenerateBlocks css is recompiled when styles change. An Essential Blocks attrs change beyond its text needs blockMeta too. Snapshotted like insert-block',
                 'input_schema'      => [
                     'type'       => 'object',
                     'properties' => $edit_props + [
@@ -246,7 +247,7 @@ final class Block_Suites_Integration extends Integration_Dispatcher
                 'active'              => Block_Suite::is_active($suite),
                 'version'             => Block_Suite::version($suite),
                 'namespace'           => $spec['namespace'],
-                'unique_id_attribute' => $spec['id_attr'],
+                'unique_id_attribute' => '' === $spec['id_attr'] ? null : $spec['id_attr'],
                 'css_model'           => $spec['css_model'],
             ];
         }
@@ -291,7 +292,7 @@ final class Block_Suites_Integration extends Integration_Dispatcher
 
         return [
             'suite'               => $suite,
-            'unique_id_attribute' => $spec['id_attr'],
+            'unique_id_attribute' => '' === $spec['id_attr'] ? null : $spec['id_attr'],
             'unknown_attributes'  => Block_Suite::strict_attributes($suite) ? 'refused' : 'allowed',
             'blocks'              => $blocks,
         ];
@@ -303,6 +304,7 @@ final class Block_Suites_Integration extends Integration_Dispatcher
         $suite = (string) $args['suite'];
         [ $post_id, $blocks ] = self::load($args);
         $node = self::single_block((string) $args['markup']);
+        ( new Block_Suite_Essential_Blocks_Guard(Block_Suite::is_active(Block_Suite::ESSENTIAL)) )->check_blocks([ $node ]);
         if (Block_Suite::suite_of((string) $node['blockName']) !== $suite) {
             throw new Operation_Error('unknown_suite_block', sprintf('The inserted block "%s" is not a %s block.', (string) $node['blockName'], Block_Suite::spec($suite)['label']));
         }
@@ -340,6 +342,7 @@ final class Block_Suites_Integration extends Integration_Dispatcher
         $id_attr = Block_Suite::spec($suite)['id_attr'];
         $current = is_array($node['attrs'] ?? null) ? $node['attrs'] : [];
         $patch   = isset($args['attrs']) ? (array) $args['attrs'] : [];
+        ( new Block_Suite_Essential_Blocks_Guard(Block_Suite::is_active(Block_Suite::ESSENTIAL)) )->check_update($name, $patch);
 
         if (! isset($args['attrs']) && ! isset($args['inner_html'])) {
             throw new Operation_Error('invalid_block_edit', 'At least one of "attrs" or "inner_html" is required.');
@@ -410,6 +413,7 @@ final class Block_Suites_Integration extends Integration_Dispatcher
         $path    = self::path($args);
         $name    = (string) $args['name'];
         $content = Block_Suite_Patterns::content($name);
+        ( new Block_Suite_Essential_Blocks_Guard(Block_Suite::is_active(Block_Suite::ESSENTIAL)) )->check_blocks(array_values(parse_blocks($content)));
 
         $sideload = false !== ($args['sideload_images'] ?? true);
         [ $hosts, $filter ] = Block_Suite_Patterns::image_source($name);
@@ -596,8 +600,13 @@ final class Block_Suites_Integration extends Integration_Dispatcher
         $swap                 = static fn ($fragment) => is_string($fragment) ? str_replace($search, $new, $fragment) : $fragment;
         $node['innerHTML']    = $swap((string) ($node['innerHTML'] ?? ''));
         $node['innerContent'] = array_map($swap, (array) ($node['innerContent'] ?? []));
-        if (isset($node['attrs']['css']) && is_string($node['attrs']['css'])) {
-            $node['attrs']['css'] = str_replace($search, $new, $node['attrs']['css']);
+        $refs  = Block_Suite::spec($suite)['id_refs'] ?? '';
+        $attrs = is_array($node['attrs']) ? $node['attrs'] : [];
+        foreach (array_merge([ 'css' ], explode(',', $refs)) as $ref) {
+            if (isset($attrs[ $ref ]) && (is_string($attrs[ $ref ]) || is_array($attrs[ $ref ]))) {
+                $attrs[ $ref ]         = map_deep($attrs[ $ref ], $swap);
+                $node['attrs'][ $ref ] = $attrs[ $ref ];
+            }
         }
 
         $ids[] = [ 'path' => $path, 'block' => (string) $node['blockName'], 'unique_id' => $new, 'generated' => ! $keep ];

@@ -8,7 +8,8 @@
 # Contact Form 7, Flamingo and the free WPForms, Formidable, Ninja Forms,
 # Fluent Forms, Forminator and SureForms only (bin/test-local.sh --live-forms), or, with
 # WPMCP_LIVE_BLOCKS=1, Kadence Blocks, GenerateBlocks, Spectra, Otter Blocks,
-# Stackable and Ultimate Blocks only (bin/test-local.sh --live-blocks), or, with WPMCP_LIVE_BUDDYPRESS=1,
+# Stackable, Ultimate Blocks, GreenShift, Essential Blocks and CoBlocks only
+# (bin/test-local.sh --live-blocks), or, with WPMCP_LIVE_BUDDYPRESS=1,
 # BuddyPress only (bin/test-local.sh --live-buddypress), or, with
 # WPMCP_LIVE_BBPRESS=1, bbPress only (bin/test-local.sh --live-bbpress), or, with
 # WPMCP_LIVE_TABLEPRESS=1, TablePress only (bin/test-local.sh --live-tablepress), or,
@@ -149,6 +150,9 @@ if [ "${WPMCP_LIVE_BLOCKS:-}" = "1" ]; then
 		"otter-blocks:otter-blocks.php"
 		"stackable-ultimate-gutenberg-blocks:plugin.php"
 		"ultimate-blocks:ultimate-blocks.php"
+		"greenshift-animation-and-page-builder-blocks:plugin.php"
+		"essential-blocks:essential-blocks.php"
+		"coblocks:class-coblocks.php"
 	)
 fi
 
