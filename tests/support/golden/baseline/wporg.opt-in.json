@@ -1,0 +1,346 @@
+{
+  "all_groups": {
+    "wpmcp_woo_op_enabled": {
+      "owner": "src/Tools/WooCommerce/Catalog/Woo_Write.php",
+      "destructive": true
+    },
+    "wpmcp_enable_memberpress_write": {
+      "owner": "src/Integrations/MemberPress_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_forms_write": {
+      "owner": "src/Integrations/Forms_Integration.php",
+      "destructive": false
+    },
+    "wpmcp_enable_ws_form_write": {
+      "owner": "src/Integrations/WS_Form_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_everest_forms_write": {
+      "owner": "src/Integrations/Everest_Forms_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_elementor_pro_write": {
+      "owner": "src/Integrations/Elementor_Pro_Forms_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_theme_write": {
+      "owner": "src/Integrations/Theme_Integration.php",
+      "destructive": true
+    },
+    "wpmcp_enable_seo_redirect_write": {
+      "owner": "src/Integrations/Rank_Math_Redirects_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_acf_write": {
+      "owner": "src/Integrations/ACF_Integration.php",
+      "destructive": false
+    },
+    "wpmcp_enable_metabox_write": {
+      "owner": "src/Integrations/Meta_Box_Integration.php",
+      "destructive": false
+    },
+    "wpmcp_enable_jetengine_write": {
+      "owner": "src/Integrations/JetEngine_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_pods_write": {
+      "owner": "src/Integrations/Pods_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_core_site_write": {
+      "owner": "src/Integrations/Core_Site_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_core_patterns_write": {
+      "owner": "src/Integrations/Core_Patterns_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_core_privacy_write": {
+      "owner": "src/Integrations/Core_Privacy_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_font_library_write": {
+      "owner": "src/Integrations/Core_Fonts_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_cache_settings_write": {
+      "owner": "src/Integrations/Cache_Settings_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_site_gate_write": {
+      "owner": "src/Integrations/Site_Gate_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_consent_write": {
+      "owner": "src/Integrations/Consent_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_action_scheduler_write": {
+      "owner": "src/Integrations/Action_Scheduler_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_crm_send": {
+      "owner": "src/Integrations/CRM_Adapter.php",
+      "destructive": true
+    },
+    "wpmcp_enable_helpdesk_write": {
+      "owner": "src/Integrations/Helpdesk_Adapter.php",
+      "destructive": true
+    },
+    "wpmcp_enable_booking_write": {
+      "owner": "src/Integrations/Booking_Adapter.php",
+      "destructive": true
+    },
+    "wpmcp_enable_learndash_learner_write": {
+      "owner": "src/Integrations/LMS_LearnDash.php",
+      "destructive": false
+    },
+    "wpmcp_enable_smtp_write": {
+      "owner": "src/Integrations/SMTP_Pack_Support.php",
+      "destructive": true
+    },
+    "wpmcp_enable_backup_plugin_run": {
+      "owner": "src/Integrations/UpdraftPlus_Status.php",
+      "destructive": true
+    },
+    "wpmcp_enable_pretty_links_write": {
+      "owner": "src/Integrations/Pretty_Links_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_thirstyaffiliates_write": {
+      "owner": "src/Integrations/Thirsty_Affiliates_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_site_reviews_write": {
+      "owner": "src/Integrations/Site_Reviews_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_publishpress_write": {
+      "owner": "src/Integrations/PublishPress_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_wpforo_write": {
+      "owner": "src/Integrations/WpForo_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_asgaros_write": {
+      "owner": "src/Integrations/Asgaros_Forum_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_block_suite_settings_write": {
+      "owner": "src/Integrations/Block_Suite_Settings.php",
+      "destructive": false
+    },
+    "wpmcp_enable_otter_settings_write": {
+      "owner": "src/Integrations/Block_Suite_Otter.php",
+      "destructive": false
+    },
+    "wpmcp_enable_restrict_content_write": {
+      "owner": "src/Integrations/Restrict_Content_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_ultimate_member_write": {
+      "owner": "src/Integrations/Ultimate_Member_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_edd_write": {
+      "owner": "src/Integrations/EDD_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_translation_settings_write": {
+      "owner": "src/Integrations/Translation_Settings_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_surecart_write": {
+      "owner": "src/Integrations/SureCart_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_string_translation_write": {
+      "owner": "src/Integrations/I18n_Strings.php",
+      "destructive": false
+    },
+    "wpmcp_enable_cartflows_write": {
+      "owner": "src/Integrations/CartFlows_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_advanced_ads_write": {
+      "owner": "src/Integrations/Advanced_Ads_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_listings_write": {
+      "owner": "src/Integrations/Listings_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_jetpack_crm_write": {
+      "owner": "src/Integrations/Jetpack_Crm_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_popup_maker_write": {
+      "owner": "src/Integrations/Popup_Maker_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_optinmonster_write": {
+      "owner": "src/Integrations/OptinMonster_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_events_manager_write": {
+      "owner": "src/Integrations/Events_Manager_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_tec_write": {
+      "owner": "src/Integrations/The_Events_Calendar_Writes.php",
+      "destructive": false
+    },
+    "wpmcp_enable_mec_write": {
+      "owner": "src/Integrations/Modern_Events_Calendar_Writes.php",
+      "destructive": false
+    },
+    "wpmcp_enable_image_optimizer_write": {
+      "owner": "src/Integrations/Image_Optimizer_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_data_tables_write": {
+      "owner": "src/Integrations/Data_Tables_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_foogallery_write": {
+      "owner": "src/Integrations/FooGallery_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_newsletter_write": {
+      "owner": "src/Integrations/Mailing_List_Newsletter.php",
+      "destructive": false
+    },
+    "wpmcp_enable_wpcode_write": {
+      "owner": "src/Integrations/WPCode_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_loco_write": {
+      "owner": "src/Integrations/Loco_Translate_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_give_write": {
+      "owner": "src/Integrations/Give_Integration.php",
+      "destructive": true
+    },
+    "wpmcp_enable_search_write": {
+      "owner": "src/Integrations/Search_Plugin_Support.php",
+      "destructive": false
+    },
+    "wpmcp_enable_hardening_write": {
+      "owner": "src/Integrations/Hardening_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_checkout_field_editor_write": {
+      "owner": "src/Integrations/Checkout_Field_Editor_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_pmpro_write": {
+      "owner": "src/Integrations/Paid_Memberships_Pro_Pack.php",
+      "destructive": true
+    }
+  },
+  "labels": {
+    "wpmcp_woo_op_enabled": "WooCommerce: destructive operations (delete, cancel, refund)",
+    "wpmcp_enable_memberpress_write": "MemberPress: writes",
+    "wpmcp_enable_forms_write": "Form plugins: writes",
+    "wpmcp_enable_ws_form_write": "WS Form: writes",
+    "wpmcp_enable_everest_forms_write": "Everest Forms: writes",
+    "wpmcp_enable_elementor_pro_write": "Elementor Pro forms: writes",
+    "wpmcp_enable_theme_write": "Themes: settings, layouts and child themes",
+    "wpmcp_enable_seo_redirect_write": "Rank Math: redirect writes",
+    "wpmcp_enable_acf_write": "ACF: field and field group writes",
+    "wpmcp_enable_metabox_write": "Meta Box: writes",
+    "wpmcp_enable_jetengine_write": "JetEngine: writes",
+    "wpmcp_enable_pods_write": "Pods: writes",
+    "wpmcp_enable_core_site_write": "Core site settings: writes",
+    "wpmcp_enable_core_patterns_write": "Block patterns: writes",
+    "wpmcp_enable_font_library_write": "Font Library: install and delete fonts",
+    "wpmcp_enable_cache_settings_write": "Cache plugin settings: writes",
+    "wpmcp_enable_site_gate_write": "Maintenance and coming soon mode",
+    "wpmcp_enable_consent_write": "Cookie consent banners: banner text writes and a Complianz scan restart",
+    "wpmcp_enable_action_scheduler_write": "Action Scheduler: run and cancel actions",
+    "wpmcp_enable_crm_send": "CRM: send email",
+    "wpmcp_enable_helpdesk_write": "Helpdesk: ticket writes",
+    "wpmcp_enable_booking_write": "Bookly, Simply Schedule Appointments, BookingPress and LatePoint: cancel bookings",
+    "wpmcp_enable_learndash_learner_write": "LearnDash: learner enrolment and progress",
+    "wpmcp_enable_smtp_write": "SMTP plugins: send a test email",
+    "wpmcp_enable_backup_plugin_run": "Backup plugins (UpdraftPlus, BackWPup): start a backup",
+    "wpmcp_enable_pretty_links_write": "Pretty Links: writes",
+    "wpmcp_enable_thirstyaffiliates_write": "ThirstyAffiliates: writes",
+    "wpmcp_enable_site_reviews_write": "Site Reviews: writes",
+    "wpmcp_enable_publishpress_write": "PublishPress Planner and Future: status changes and scheduled changes",
+    "wpmcp_enable_wpforo_write": "wpForo: close, open and move topics",
+    "wpmcp_enable_asgaros_write": "Asgaros Forum: post, moderate, move and delete",
+    "wpmcp_enable_core_privacy_write": "Privacy requests: export and erase personal data",
+    "wpmcp_enable_block_suite_settings_write": "Kadence Blocks and Spectra: plugin settings writes",
+    "wpmcp_enable_otter_settings_write": "Otter Blocks: settings writes",
+    "wpmcp_enable_restrict_content_write": "Restrict Content: membership level changes",
+    "wpmcp_enable_ultimate_member_write": "Ultimate Member: member role changes",
+    "wpmcp_enable_edd_write": "Easy Digital Downloads: download and discount writes",
+    "wpmcp_enable_translation_settings_write": "GTranslate: language settings writes",
+    "wpmcp_enable_surecart_write": "SureCart: product edits and coupon creates",
+    "wpmcp_enable_string_translation_write": "Polylang: theme and plugin string translations",
+    "wpmcp_enable_cartflows_write": "CartFlows: flow, step and checkout product writes",
+    "wpmcp_enable_advanced_ads_write": "Advanced Ads: writes",
+    "wpmcp_enable_listings_write": "WP Job Manager, GeoDirectory and Directorist: listing writes",
+    "wpmcp_enable_jetpack_crm_write": "Jetpack CRM: contact writes",
+    "wpmcp_enable_popup_maker_write": "Popup Maker: writes",
+    "wpmcp_enable_optinmonster_write": "OptinMonster: switch campaigns on or off",
+    "wpmcp_enable_events_manager_write": "Events Manager: event writes",
+    "wpmcp_enable_tec_write": "The Events Calendar: event, venue and organizer writes",
+    "wpmcp_enable_mec_write": "Modern Events Calendar: event, location and organizer writes",
+    "wpmcp_enable_image_optimizer_write": "Image optimization plugins: optimize an image",
+    "wpmcp_enable_data_tables_write": "wpDataTables and Ninja Tables: cell and row writes",
+    "wpmcp_enable_foogallery_write": "FooGallery: writes",
+    "wpmcp_enable_newsletter_write": "Newsletter: contact writes",
+    "wpmcp_enable_wpcode_write": "WPCode: snippet and global script writes",
+    "wpmcp_enable_loco_write": "Loco Translate: .po string edits and .mo compiles",
+    "wpmcp_enable_give_write": "GiveWP: donation form and donation status writes",
+    "wpmcp_enable_search_write": "Search plugins (Relevanssi, FiboSearch): settings writes",
+    "wpmcp_enable_hardening_write": "Security hardening settings: writes",
+    "wpmcp_enable_checkout_field_editor_write": "Checkout Field Editor: checkout field writes",
+    "wpmcp_enable_pmpro_write": "Paid Memberships Pro: level, member and discount code writes"
+  },
+  "shipped": [
+    "wpmcp_enable_forms_write",
+    "wpmcp_enable_ws_form_write",
+    "wpmcp_enable_everest_forms_write",
+    "wpmcp_enable_theme_write",
+    "wpmcp_enable_seo_redirect_write",
+    "wpmcp_enable_acf_write",
+    "wpmcp_enable_metabox_write",
+    "wpmcp_enable_jetengine_write",
+    "wpmcp_enable_pods_write",
+    "wpmcp_enable_core_site_write",
+    "wpmcp_enable_core_patterns_write",
+    "wpmcp_enable_font_library_write",
+    "wpmcp_enable_site_gate_write",
+    "wpmcp_enable_consent_write",
+    "wpmcp_enable_action_scheduler_write",
+    "wpmcp_enable_smtp_write",
+    "wpmcp_enable_backup_plugin_run",
+    "wpmcp_enable_pretty_links_write",
+    "wpmcp_enable_thirstyaffiliates_write",
+    "wpmcp_enable_site_reviews_write",
+    "wpmcp_enable_publishpress_write",
+    "wpmcp_enable_wpforo_write",
+    "wpmcp_enable_asgaros_write",
+    "wpmcp_enable_restrict_content_write",
+    "wpmcp_enable_ultimate_member_write",
+    "wpmcp_enable_edd_write",
+    "wpmcp_enable_advanced_ads_write",
+    "wpmcp_enable_listings_write",
+    "wpmcp_enable_popup_maker_write",
+    "wpmcp_enable_optinmonster_write",
+    "wpmcp_enable_events_manager_write",
+    "wpmcp_enable_tec_write",
+    "wpmcp_enable_mec_write",
+    "wpmcp_enable_image_optimizer_write",
+    "wpmcp_enable_foogallery_write",
+    "wpmcp_enable_give_write",
+    "wpmcp_enable_search_write",
+    "wpmcp_enable_hardening_write"
+  ]
+}
