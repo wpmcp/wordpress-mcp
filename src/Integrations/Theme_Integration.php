@@ -171,6 +171,7 @@ class Theme_Integration extends Integration_Dispatcher
         'neve',
         'hello-elementor',
         'hestia',
+        'divi',
     ];
 
     /** Bundled core theme slugs, reported as the 'core' framework. */
@@ -530,8 +531,8 @@ class Theme_Integration extends Integration_Dispatcher
     private function detect_framework(): ?string
     {
         $template = get_template();
-        if (in_array($template, self::FRAMEWORKS, true)) {
-            return $template;
+        if (in_array(strtolower($template), self::FRAMEWORKS, true)) {
+            return strtolower($template);
         }
         if (in_array($template, self::CORE_THEMES, true)) {
             return 'core';
