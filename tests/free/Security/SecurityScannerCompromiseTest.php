@@ -32,9 +32,9 @@ class SecurityScannerCompromiseTest extends \WP_UnitTestCase
                 $this->captured = &$captured;
             }
 
-            public function run(int $max_files, int $max_seconds): array
+            public function run(int $max_files, int $max_seconds, ?string $cursor = null): array
             {
-                $this->captured = ['max_files' => $max_files, 'max_seconds' => $max_seconds];
+                $this->captured = ['max_files' => $max_files, 'max_seconds' => $max_seconds, 'cursor' => $cursor];
                 return [
                     'findings' => [Security_Finding::make('compromise_cloaking', 'compromise', 'C', 'critical', [], 'msg', 'rec')],
                     'stats'    => ['files_checked' => 7, 'truncated' => false, 'truncated_reason' => null, 'requests' => 3],
@@ -46,9 +46,14 @@ class SecurityScannerCompromiseTest extends \WP_UnitTestCase
         $report = $scanner->scan(['checks' => ['compromise'], 'max_files' => 999999, 'max_seconds' => 5]);
 
         $this->assertSame(['compromise'], $report['scan_meta']['checks_run']);
-        $this->assertSame(['max_files' => 20000, 'max_seconds' => 5], $captured);
+        $this->assertSame(['max_files' => 20000, 'max_seconds' => 5, 'cursor' => null], $captured);
         $this->assertCount(1, $report['sections']['compromise']);
         $this->assertSame(7, $report['scan_meta']['compromise']['files_checked']);
         $this->assertSame(80, $report['summary']['score']);
+
+        // Issue #1151: the cursor a truncated compromise scan returned is
+        // passed back to the audit.
+        $scanner->scan(['checks' => ['compromise'], 'cursor' => 'abc']);
+        $this->assertSame('abc', $captured['cursor']);
     }
 }
