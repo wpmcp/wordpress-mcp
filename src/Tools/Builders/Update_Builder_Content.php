@@ -1669,6 +1669,10 @@ class Update_Builder_Content
             } catch (\InvalidArgumentException $e) {
                 return new \WP_Error('invalid_visual_composer_request', $e->getMessage());
             }
+            $refusal = Visual_Composer_Content::unfiltered_html_refusal($post_id, $html);
+            if (null !== $refusal) {
+                return $refusal;
+            }
         } else {
             $what = '' === $operation ? 'a whole document' : "the {$operation} operation";
             if (! in_array($operation, ['', 'add', 'remove', 'move', 'restore', 'save_template'], true)) {

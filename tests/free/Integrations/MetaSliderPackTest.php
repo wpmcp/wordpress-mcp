@@ -169,7 +169,9 @@ final class MetaSliderPackTest extends \WP_UnitTestCase
     public function test_the_metaslider_capability_filter_is_honoured(): void
     {
         $slider = $this->slider();
-        add_filter('metaslider_capability', static fn (): string => 'manage_network');
+        // do_not_allow, not a cap such as manage_network: on a network the
+        // test user is a super admin, who holds every other capability.
+        add_filter('metaslider_capability', static fn (): string => 'do_not_allow');
         $this->assertSame('operation_denied', $this->read('metaslider-list-sliders')['error']['code'] ?? null);
         $this->assertSame('operation_denied', $this->write('metaslider-create-slider', [ 'title' => 'x' ])['error']['code'] ?? null);
         $this->assertSame('operation_denied', $this->read('metaslider-get-slider', [ 'id' => $slider ])['error']['code'] ?? null);

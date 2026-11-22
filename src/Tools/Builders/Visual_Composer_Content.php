@@ -80,6 +80,30 @@ final class Visual_Composer_Content
         return admin_url('post.php?vcv-action=frontend&vcv-source-id=' . $post_id);
     }
 
+    /**
+     * The refusal for a page whose new markup kses would rewrite on save: a
+     * user without unfiltered_html (any administrator on a network) has
+     * post_content filtered, which on a Visual Composer page drops scripts
+     * and mangles attributes the editor rendered, leaving the live page out
+     * of step with its document. Null when the markup would be stored as is.
+     */
+    public static function unfiltered_html_refusal(int $post_id, string $html): ?\WP_Error
+    {
+        if (current_user_can('unfiltered_html')) {
+            return null;
+        }
+        $raw = sanitize_post_field('post_content', wp_slash($html), $post_id, 'db');
+        if (is_string($raw) && wp_unslash($raw) === $html) {
+            return null;
+        }
+
+        return new \WP_Error(
+            'unfiltered_html_required',
+            'This Visual Composer page holds markup WordPress saves only for users with the unfiltered_html capability (on a network, super admins), such as scripts or attributes kses removes. Saving it as you would rewrite the live page, so nothing was written. Ask a user with unfiltered_html to make this change.',
+            ['status' => 403]
+        );
+    }
+
     /** The refusal for a change only Visual Composer's browser editor can render. */
     public static function render_required(int $post_id, string $what): \WP_Error
     {

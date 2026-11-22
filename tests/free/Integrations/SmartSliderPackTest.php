@@ -197,13 +197,13 @@ final class SmartSliderPackTest extends \WP_UnitTestCase
         $slider = $this->slider();
         $slide  = $this->slide($slider, 'One', 1);
         $denied = [];
-        $filter = static function (array $caps) use (&$denied): array {
-            foreach ($denied as $cap) {
-                $caps[ $cap ] = false;
-            }
-            return $caps;
+        // map_meta_cap, not user_has_cap: a super admin (the test user on a
+        // network) passes every check before user_has_cap runs, but never
+        // do_not_allow.
+        $filter = static function (array $caps, string $cap) use (&$denied): array {
+            return in_array($cap, $denied, true) || [] !== array_intersect($caps, $denied) ? [ 'do_not_allow' ] : $caps;
         };
-        add_filter('user_has_cap', $filter);
+        add_filter('map_meta_cap', $filter, 10, 2);
         try {
             foreach ([ 'smartslider_edit', 'unfiltered_html' ] as $cap) {
                 $denied = [ $cap ];
@@ -212,7 +212,7 @@ final class SmartSliderPackTest extends \WP_UnitTestCase
             $denied = [ 'smartslider' ];
             $this->assertSame('operation_denied', $this->read('smartslider-list-sliders')['error']['code'] ?? null, 'reads need smartslider');
         } finally {
-            remove_filter('user_has_cap', $filter);
+            remove_filter('map_meta_cap', $filter, 10);
         }
         $this->assertSame('One', $this->row($slide)['title']);
     }
