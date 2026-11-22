@@ -308,26 +308,20 @@ class Snapshot_Store
         if ([] === $ids) {
             return false;
         }
-        $at    = current_time('mysql', true);
-        $in    = self::id_list_sql(count($ids));
-        $claim = "UPDATE %i SET rolled_back_at = %s WHERE id IN ({$in}) AND rolled_back_at IS NULL";
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- wpmcp_snapshots is this plugin's own ledger; $claim is a literal with an id_list_sql() list of %d placeholders, all bound on this line.
-        $claimed = self::claimed($wpdb->query($wpdb->prepare($claim, array_merge([ self::table_name(), $at ], $ids))));
+        $at = current_time('mysql', true);
+        // "%d, %d, ..." for the ids: a literal placeholder list, never data.
+        $in = implode(', ', array_fill(0, count($ids), '%d'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- wpmcp_snapshots is this plugin's own ledger; $in is a list of %d placeholders, all bound on this line.
+        $claimed = self::claimed($wpdb->query($wpdb->prepare("UPDATE %i SET rolled_back_at = %s WHERE id IN ({$in}) AND rolled_back_at IS NULL", array_merge([ self::table_name(), $at ], $ids))));
         if ($claimed === count($ids)) {
             return true;
         }
         if ($claimed > 0) {
-            $release = "UPDATE %i SET rolled_back_at = NULL WHERE id IN ({$in}) AND rolled_back_at = %s";
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- same literal shape as $claim; releases only the rows this call stamped.
-            $wpdb->query($wpdb->prepare($release, array_merge([ self::table_name() ], $ids, [ $at ])));
+            // The same shape as the claim; releases only the rows this call stamped.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- wpmcp_snapshots is this plugin's own ledger; $in is a list of %d placeholders, all bound on this line.
+            $wpdb->query($wpdb->prepare("UPDATE %i SET rolled_back_at = NULL WHERE id IN ({$in}) AND rolled_back_at = %s", array_merge([ self::table_name() ], $ids, [ $at ])));
         }
         return false;
-    }
-
-    /** "%d, %d, ..." for $count ids: a literal placeholder list, never data. */
-    private static function id_list_sql(int $count): string
-    {
-        return implode(', ', array_fill(0, max(1, $count), '%d'));
     }
 
     /**
@@ -346,9 +340,8 @@ class Snapshot_Store
         }
         $ids = array_values(array_unique(array_map('intval', $ids)));
         if ([] !== $ids) {
-            $release = 'UPDATE %i SET rolled_back_at = NULL WHERE id IN (' . self::id_list_sql(count($ids)) . ')';
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- wpmcp_snapshots is this plugin's own ledger; $release is a literal with an id_list_sql() list of %d placeholders, all bound on this line.
-            $wpdb->query($wpdb->prepare($release, array_merge([ self::table_name() ], $ids)));
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- wpmcp_snapshots is this plugin's own ledger; one %d per id, all bound on this line.
+            $wpdb->query($wpdb->prepare('UPDATE %i SET rolled_back_at = NULL WHERE id IN (' . implode(', ', array_fill(0, count($ids), '%d')) . ')', array_merge([ self::table_name() ], $ids)));
         }
     }
 
@@ -423,6 +416,60 @@ class Snapshot_Store
                 : 'Session "%s" was started by another user, so only they or a site administrator can add changes to it. The change was not made: leave session_id out or pass a new one.',
             esc_html($session_id)
         );
+    }
+
+    /**
+     * The args hash of each named operation (issue #1126): rows of one call
+     * share it, so the Audit Log can show the call as one row.
+     *
+     * @param string[] $operation_ids
+     * @return array<string, string> operation_id => args_hash
+     */
+    public static function args_hashes(array $operation_ids): array
+    {
+        global $wpdb;
+        $operation_ids = array_values(array_unique(array_map('strval', $operation_ids)));
+        if ([] === $operation_ids) {
+            return [];
+        }
+        $marks = implode(',', array_fill(0, count($operation_ids), '%s'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- this plugin's own table; $marks is a list of %s placeholders, all bound here.
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT operation_id, args_hash FROM %i WHERE operation_id IN ({$marks})", array_merge([self::table_name()], $operation_ids)), ARRAY_A);
+        $out  = [];
+        foreach ((array) $rows as $row) {
+            $out[ (string) $row['operation_id'] ] = (string) $row['args_hash'];
+        }
+        return $out;
+    }
+
+    /**
+     * Distinct tool names and user ids in the history, for the Audit Log's
+     * filter dropdowns (issue #1126).
+     *
+     * @return array{tools: string[], users: int[]}
+     */
+    public static function filter_values(): array
+    {
+        global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- this plugin's own table.
+        $tools = (array) $wpdb->get_col($wpdb->prepare('SELECT DISTINCT tool_name FROM %i ORDER BY tool_name', self::table_name()));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- this plugin's own table.
+        $users = (array) $wpdb->get_col($wpdb->prepare('SELECT DISTINCT user_id FROM %i ORDER BY user_id', self::table_name()));
+        $tools = array_values(array_unique(array_map(static fn ($t): string => self::short_tool_name((string) $t), $tools)));
+        sort($tools);
+        return [ 'tools' => $tools, 'users' => array_map('intval', $users) ];
+    }
+
+    /**
+     * How many of a session's undo points are not undone yet, without
+     * reading their before-images (the Audit Log's Undo session button,
+     * issue #1150).
+     */
+    public static function live_count_for_session(string $session_id): int
+    {
+        global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- wpmcp_snapshots is this plugin's own table; undo state must never be stale.
+        return (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(DISTINCT operation_id) FROM %i WHERE session_id = %s AND rolled_back_at IS NULL', self::table_name(), $session_id));
     }
 
     public static function list_by_session(string $session_id): array
@@ -1028,19 +1075,20 @@ class Snapshot_Store
         $t     = self::table_name();
         $loose = self::LOOSE_SESSIONS;
 
-        $where  = [];
-        $values = [ $t ];
-        if ([] !== $plan['sessions']) {
-            $where[] = 'session_id IN (' . implode(', ', array_fill(0, count($plan['sessions']), '%s')) . ')';
-            array_push($values, ...$plan['sessions']);
-        }
-        $where[] = '(session_id IN (%s, %s) AND id < %d)';
+        $sessions = $plan['sessions'];
+        $values   = [ $t ];
+        array_push($values, ...$sessions);
         array_push($values, $loose[0], $loose[1], $plan['loose_below']);
         $values[] = self::PRUNE_BATCH_LIMIT;
 
-        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- wpmcp_snapshots is this plugin's own table; the WHERE is built only from literal fragments and placeholders, and every value is bound through the spread.
+        // The planned sessions, when there are any, OR the loose rows below
+        // the oldest kept one: literal fragments and placeholders only, one
+        // %s per session (issue #1147).
+        // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- wpmcp_snapshots is this plugin's own table; every value is bound through the spread.
         $batch = (array) $wpdb->get_results($wpdb->prepare(
-            'SELECT id, operation_id, session_id FROM %i WHERE ' . implode(' OR ', $where) . ' ORDER BY id ASC LIMIT %d',
+            'SELECT id, operation_id, session_id FROM %i WHERE '
+                . ([] !== $sessions ? 'session_id IN (' . implode(', ', array_fill(0, count($sessions), '%s')) . ') OR ' : '')
+                . '(session_id IN (%s, %s) AND id < %d) ORDER BY id ASC LIMIT %d',
             ...$values
         ), ARRAY_A);
         // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber

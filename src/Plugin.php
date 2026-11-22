@@ -81,6 +81,7 @@ use WPMCP\Admin\Snapshot_Retention_Notice;
 use WPMCP\Admin\Backup_Dir_Notice;
 use WPMCP\Admin\New_Tools_Notice;
 use WPMCP\Admin\Pro_Banner;
+use WPMCP\Admin\Star_Prompt;
 use WPMCP\Admin\Ability_Grid_Page;
 use WPMCP\Admin\Memory_Page;
 use WPMCP\Admin\Redirect_Suggestion_Controller;
@@ -145,6 +146,7 @@ use WPMCP\Tools\Redirects\Create_Redirect;
 use WPMCP\Tools\Redirects\Delete_Redirect;
 use WPMCP\Tools\Redirects\Find_Broken_Links;
 use WPMCP\Tools\Redirects\List_Redirects;
+use WPMCP\Tools\Redirects\Redirect_Router;
 use WPMCP\Tools\Redirects\Redirect_Handler;
 use WPMCP\Tools\Redirects\Redirect_Store;
 use WPMCP\Tools\Redirects\Run_Broken_Link_Scan;
@@ -415,6 +417,12 @@ final class Plugin
     public const BRAND = 'wpmcp';
 
     /**
+     * The product name in page titles and H1s (issues #1127, #1128):
+     * "WP MCP: Abilities". The admin menu keeps BRAND.
+     */
+    public const PRODUCT_NAME = 'WP MCP';
+
+    /**
      * "<brand>: <screen>" for a page title or an H1. One translatable
      * pattern owns the separator so a locale can reorder the two parts or
      * use its own punctuation (French " : ", a full-width colon in CJK), and
@@ -426,7 +434,7 @@ final class Plugin
         return sprintf(
             /* translators: 1: product name (not translated), 2: admin screen name */
             __('%1$s: %2$s', 'wpmcp'),
-            self::BRAND,
+            self::PRODUCT_NAME,
             $screen
         );
     }
@@ -520,9 +528,29 @@ final class Plugin
         // An undo that would change a synced pattern other people's posts
         // place is refused for a user who cannot edit those posts (#711).
         [\WPMCP\Integrations\Core_Patterns_Pack::class, 'restore_refusal', 'wpmcp_rollback_post_refusal'],
+        // An undo of a PublishPress Future schedule or cancel puts the post's
+        // meta back; the plugin's scheduled action follows it (issue #709).
+        [\WPMCP\Integrations\PublishPress_Pack::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],
+        // An undo of a GeoDirectory listing write brings the listing's
+        // detail row mirror of its title, status and terms back in step
+        // (issue #707).
+        [\WPMCP\Integrations\Listings_Pack::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],
         // An undo of a cache plugin settings write lets the plugin rebuild
         // what it derives from its settings, as its own save does (#692).
         [\WPMCP\Integrations\Cache_Settings_Pack::class, 'after_options_restored'],
+        // An undo of a Max Mega Menu settings, theme or menu item write
+        // rebuilds its generated CSS, as the write did (issue #908).
+        [\WPMCP\Integrations\Max_Mega_Menu_Pack::class, 'after_options_restored'],
+        [\WPMCP\Integrations\Max_Mega_Menu_Pack::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],
+        // An undo of a Redux panel write runs the panel's compiler hooks for
+        // the restored values, as the write did (#897).
+        [\WPMCP\Integrations\Redux_Pack::class, 'after_options_restored'],
+        // An undo of a Thrive Automator status change resets its scheduled
+        // trigger events, as the forward write did (#830).
+        [\WPMCP\Integrations\Thrive_Automator_Pack::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],
+        // An undo of a consent banner text write lets Complianz and CookieYes
+        // drop the banner caches their own save drops (#686).
+        [\WPMCP\Integrations\Consent_Pack::class, 'after_rows_restored', 'wpmcp_rollback_db_rows_restored'],
         // An undo of a WPCode snippet write never leaves the snippet active
         // and rebuilds WPCode's cache of active snippets; an undo of
         // set-header-footer clears page caches as WPCode's save does (#697).
@@ -532,6 +560,10 @@ final class Plugin
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'restore_translation_group', 'wpmcp_rollback_translation_group'],
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'hold_sync', 'wpmcp_rollback_hold_translation_sync'],
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'release_sync', 'wpmcp_rollback_release_translation_sync'],
+        // Modern Events Calendar reads its calendar from its own mec_events
+        // and mec_dates tables, derived from the event meta; an undo that
+        // restores an event post rebuilds them as the write did (#677).
+        [\WPMCP\Integrations\Modern_Events_Calendar_Writes::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],
     ];
 
     /**
@@ -787,6 +819,8 @@ final class Plugin
             Management_Access::register();
             add_action('admin_menu', [$this, 'register_admin_menu']);
             Management_Access::add_handler('wp_ajax_wpmcp_restore', [new Restore_Controller(), 'handle']);
+            // The Audit Log's Undo session button (issue #1150).
+            Management_Access::add_handler('wp_ajax_' . Restore_Controller::SESSION_ACTION, [new Restore_Controller(), 'handle_session']);
             // Redacted CSV export of the filtered request log (issue #303).
             Management_Access::add_handler('admin_post_' . Audit_Log_Page::EXPORT_ACTION, [new Audit_Log_Page(), 'export_requests']);
             // Integrations that derive state from options rebuild it after a
@@ -805,6 +839,12 @@ final class Plugin
             if (class_exists(\WPMCP\Integrations\TablePress_Pack::class)) {
                 add_filter('map_meta_cap', [\WPMCP\Integrations\TablePress_Pack::class, 'map_post_caps'], 10, 4);
             }
+            // The generic redirect tools route to the active redirect plugin
+            // (issue #930); the providers live with the integrations, which
+            // the WooCommerce build prunes.
+            if (class_exists(\WPMCP\Integrations\Redirect_Providers::class)) {
+                add_filter('wpmcp_redirect_providers', [\WPMCP\Integrations\Redirect_Providers::class, 'register']);
+            }
             // A shipping zone deleted through WooCommerce drops the creation
             // marker a woo-write create gave it, so a zone that later reuses
             // the id is never mistaken for the created one (issue #338).
@@ -819,6 +859,9 @@ final class Plugin
             add_action(Run_Restore_Job::HOOK, [new Run_Restore_Job(), 'handle']);
             // Recurring backups (issue #455): each run queues the job above.
             add_action(Backup_Schedule::HOOK, [Backup_Schedule::class, 'run']);
+            // Static HTML export (issue #854, Pro): trigger-backup
+            // type=static, its WP-Cron executor and its download link.
+            \WPMCP\Tools\Export\Static_Site\Static_Export::register();
             // The WP-Cron executor for dispatch-cli-job's scheduled events
             // (issue #84). It re-runs the FULL wp-cli guard chain before
             // executing anything, so hooking it here does not by itself let
@@ -982,6 +1025,10 @@ final class Plugin
             // installs on the Dashboard, the Plugins list and WP MCP screens
             // (docs/superpowers/specs/2026-11-01-pro-upgrade-banner.md).
             Pro_Banner::register();
+            // GitHub star prompt: once, on the History and Connection screens,
+            // after the 3rd agent write or the first rollback, never beside
+            // the Pro banner and never with a Pro licence.
+            Star_Prompt::register();
             // Compact tool-surface mode (issue #79): in compact mode the
             // adapter's advertised tools/list collapses to the meta-tools
             // plus connection basics. Exposure-only - registration and
@@ -1001,7 +1048,12 @@ final class Plugin
             (new \WPMCP\MCP\Hidden_Tool_Refusal())->register();
             // The page request get-query-monitor-page-profile loads with a
             // one-time token (issue #703); a no-op on every other request.
-            \WPMCP\Integrations\Query_Monitor_Status::register();
+            // src/Integrations is not in the WooCommerce build, so the call
+            // is guarded: an unguarded reference fataled every request on
+            // that build (issue #1142).
+            if (class_exists(\WPMCP\Integrations\Query_Monitor_Status::class)) {
+                \WPMCP\Integrations\Query_Monitor_Status::register();
+            }
             // Mounts /wp-json/mcp/wpmcp-server, the JSON-RPC endpoint the
             // README and get-connection-info have always advertised. Without
             // it wp_register_ability() gives us abilities but no MCP
@@ -1107,13 +1159,17 @@ final class Plugin
         // pending-proposal bubble, and the bubble must appear once. Passing
         // the parent's own slug suppresses the auto-copy (see add_submenu_page)
         // and keeps this entry's label exactly what it has always rendered as.
+        // No callback here: this entry shares the parent's slug, so both
+        // resolve to the toplevel_page_wpmcp hook, and add_menu_page above
+        // already attached History_Page::render to it. A second callback
+        // printed the screen twice, and with it the Restore script, so one
+        // click sent two restore requests.
         add_submenu_page(
             'wpmcp',
             self::BRAND,
             self::BRAND,
             Management_Access::CAPABILITY,
-            'wpmcp',
-            [new History_Page(), 'render']
+            'wpmcp'
         );
 
         // Same management gate as the top-level page and Restore_Controller's
@@ -2827,6 +2883,8 @@ final class Plugin
                     'max_files'       => [ 'type' => 'integer' ],
                     'max_seconds'     => [ 'type' => 'integer' ],
                     'vulnerabilities' => [ 'type' => 'boolean' ],
+                    // Issue #1151: scan_meta.compromise.next_cursor of a truncated compromise scan.
+                    'cursor'          => [ 'type' => 'string' ],
                 ],
             ],
             [$scan_security, 'handle'],
@@ -5401,17 +5459,20 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/trigger-backup',
             'free',
-            'Queue a WP-Cron backup job; returns its job id. type=full: portable site archive (zip: full SQL dump, wp-content, origin manifest) to restore or migrate; database/files/uploads narrow it; content: WXR export. every=daily [HH:MM], weekly [mon-sun] [HH:MM] (site time) or off schedules that type instead; each run prunes its archives past keep (default 7), never manual ones or after a failed run',
+            'Queue a WP-Cron backup job; returns its job id. type=full: portable site archive (zip: full SQL dump, wp-content, origin manifest) to restore or migrate; database/files/uploads narrow it; content: WXR export; static: public pages as plain HTML with assets and relative links, as a zip (opt-in; plan:true lists URLs only; post_types or urls narrow it). every=daily [HH:MM], weekly [mon-sun] [HH:MM] (site time) or off schedules that type instead; each run prunes its archives past keep (default 7), never manual ones or after a failed run',
             [
                 'type'       => 'object',
                 'properties' => [
                     'type'  => [
                         'type' => 'string',
-                        'enum' => ['full', 'database', 'files', 'uploads', 'content'],
+                        'enum' => ['full', 'database', 'files', 'uploads', 'content', 'static'],
                     ],
                     'scope' => [ 'type' => 'string' ],
                     'every' => [ 'type' => 'string' ],
                     'keep'  => [ 'type' => 'integer' ],
+                    'plan'      => [ 'type' => 'boolean' ],
+                    'post_types' => [ 'type' => 'string' ],
+                    'urls'      => [ 'type' => 'array', 'items' => [ 'type' => 'string' ] ],
                 ],
             ],
             [$trigger_backup, 'handle'],
@@ -6206,12 +6267,16 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/get-debug-log',
             'free',
-            'Bounded tail (max 200 lines / 64KB) of the debug log, by default WP_CONTENT_DIR/debug.log or the WP_DEBUG_LOG path. A path argument is confined to WP_CONTENT_DIR',
+            'Bounded tail (max 200 lines / 64KB) of the debug log, by default WP_CONTENT_DIR/debug.log or the WP_DEBUG_LOG path. A path argument is confined to WP_CONTENT_DIR. source:access searches the access log, newest first (opt-in, IPs masked): filter {ip,path,status,method,agent,since,until,around_file,window minutes}, lines max 200, cursor; summary:true: top IPs, paths, wp-content PHP POSTs',
             [
                 'type'       => 'object',
                 'properties' => [
-                    'path'  => [ 'type' => 'string' ],
-                    'lines' => [ 'type' => 'integer' ],
+                    'path'    => [ 'type' => 'string' ],
+                    'lines'   => [ 'type' => 'integer' ],
+                    'source'  => [ 'type' => 'string', 'enum' => [ 'debug', 'access' ] ],
+                    'filter'  => [ 'type' => 'object' ],
+                    'summary' => [ 'type' => 'boolean' ],
+                    'cursor'  => [ 'type' => 'string' ],
                 ],
             ],
             [$get_debug_log, 'handle'],
@@ -9246,14 +9311,15 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/list-redirects',
             'free',
-            'List this site\'s managed redirects (source path, resolved target, status code, enabled, hit count), plus pending suggestions raised when a published post was deleted or moved. Filter by enabled state or a search string. Read-only',
+            'List this site\'s redirects (the active redirect plugin\'s, else WP MCP\'s own: source path, resolved target, status code, enabled, hit count), plus pending suggestions raised when a published post was deleted or moved. Filter by enabled state or a search string. Read-only',
             [
                 'type'       => 'object',
                 'properties' => [
-                    'enabled' => [ 'type' => 'boolean' ],
-                    'search'  => [ 'type' => 'string' ],
-                    'limit'   => [ 'type' => 'integer' ],
-                    'offset'  => [ 'type' => 'integer' ],
+                    'enabled'  => [ 'type' => 'boolean' ],
+                    'search'   => [ 'type' => 'string' ],
+                    'limit'    => [ 'type' => 'integer' ],
+                    'offset'   => [ 'type' => 'integer' ],
+                    'provider' => [ 'type' => 'string', 'description' => Redirect_Router::PROVIDER_HINT ],
                 ],
             ],
             [new List_Redirects(), 'handle'],
@@ -9265,7 +9331,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/create-redirect',
             'free',
-            'Create a managed redirect from a source path to a target URL or target_post_id (which survives slug changes). Chains are flattened to one hop and loops refused; the stored target is reported. Snapshotted; rollback-operation removes it',
+            'Create a redirect (in the active redirect plugin, else WP MCP\'s own table) from a source path to a target URL or target_post_id (which survives slug changes). Chains are flattened to one hop and loops refused; the stored target is reported. Snapshotted; rollback-operation removes it',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -9275,6 +9341,7 @@ final class Plugin
                     'status_code'    => [ 'type' => 'integer', 'enum' => Redirect_Store::ALLOWED_STATUS_CODES ],
                     'enabled'        => [ 'type' => 'boolean' ],
                     'notes'          => [ 'type' => 'string' ],
+                    'provider'       => [ 'type' => 'string', 'description' => Redirect_Router::PROVIDER_HINT ],
                     'session_id'     => [ 'type' => 'string' ],
                 ],
                 'required'   => [ 'source' ],
@@ -9288,7 +9355,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/update-redirect',
             'free',
-            'Change one managed redirect: its source, target/target_post_id, status code, enabled state or notes. Only the fields you pass change. Retargeting re-runs chain flattening and loop detection. Snapshotted and reversible',
+            'Change one redirect: its source, target/target_post_id, status code, enabled state or notes. Only the fields you pass change. Retargeting re-runs chain flattening and loop detection. Snapshotted and reversible',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -9299,6 +9366,7 @@ final class Plugin
                     'status_code'    => [ 'type' => 'integer', 'enum' => Redirect_Store::ALLOWED_STATUS_CODES ],
                     'enabled'        => [ 'type' => 'boolean' ],
                     'notes'          => [ 'type' => 'string' ],
+                    'provider'       => [ 'type' => 'string', 'description' => Redirect_Router::PROVIDER_HINT ],
                     'session_id'     => [ 'type' => 'string' ],
                 ],
                 'required'   => [ 'redirect_id' ],
@@ -9312,11 +9380,13 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/delete-redirect',
             'free',
-            'Delete one managed redirect. The whole row is snapshotted first, so rollback-operation brings the same redirect back; use update-redirect with enabled:false instead to stop it firing while keeping its hit history',
+            'Delete one redirect. The whole row is snapshotted first, so rollback-operation brings the same redirect back; use update-redirect with enabled:false instead to stop it firing while keeping its hit history',
             [
                 'type'       => 'object',
                 'properties' => [
                     'redirect_id' => [ 'type' => 'integer' ],
+                    'provider'    => [ 'type' => 'string', 'description' => Redirect_Router::PROVIDER_HINT ],
+                    'confirm'     => [ 'type' => 'boolean' ],
                     'session_id'  => [ 'type' => 'string' ],
                 ],
                 'required'   => [ 'redirect_id' ],
@@ -9616,7 +9686,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/detect-builder',
             'pro',
-            'Post builder: elementor|bricks|divi|wpbakery|avada|beaver-builder|breakdance|oxygen|oxygen-classic|thrive|cornerstone|gutenberg|classic',
+            'Post builder: elementor|bricks|divi|wpbakery|avada|beaver-builder|breakdance|oxygen|oxygen-classic|thrive|cornerstone|betheme|brizy|siteorigin|kirki|visual-composer|flatsome|gutenberg|classic',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -9635,7 +9705,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/get-builder-content',
             'pro',
-            'Bricks elements; Divi|WPBakery|Avada shortcodes, Thrive HTML, oxygen-classic JSON, Divi 5 blocks, Cornerstone elements (last 6 with paths); Beaver Builder|Breakdance|Oxygen nodes; BeTheme sections by uid. Or scope design_system|templates|catalog (element: its controls) for builder bricks|breakdance|oxygen|divi|wpbakery|avada|thrive|cornerstone|betheme',
+            'Bricks elements by id; Divi|WPBakery|Avada shortcodes, Thrive HTML, oxygen-classic JSON, Divi 5 blocks, Cornerstone elements, SiteOrigin rows (last 7 with paths); Beaver Builder|Breakdance|Oxygen nodes; BeTheme sections by uid; Brizy JSON by _id; Kirki|Visual Composer elements by id; Flatsome shortcodes with paths. Or scope design_system|templates|catalog (element: its controls) for builder bricks|breakdance|oxygen|divi|wpbakery|avada|thrive|cornerstone|betheme|brizy|siteorigin|kirki|beaver-builder|visual-composer (also pages)',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -9656,7 +9726,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/update-builder-content',
             'pro',
-            'Bricks JSON; Divi|WPBakery|Avada shortcodes, Thrive HTML; oxygen-classic|Beaver Builder|Breakdance|Oxygen|Cornerstone JSON tree. All but Bricks|Divi 4: operation update(path,attrs,text), add(to,index,element), remove(path), move(path,to,index); to \'\'=top. WPBakery|Oxygen|Thrive|Cornerstone: also publish, restore(path: revision id). WPBakery|Avada|Oxygen|Thrive|Cornerstone: element {template}; need expected_hash. Avada|Oxygen|Thrive: save_template(path,element {title}). Oxygen: element {component}. BeTheme: JSON sections; path/to are uids, update element {size}, element {template}, publish; needs expected_hash. scope design_system (bricks|breakdance|avada): add/update/remove at classes|variables|palettes|typography|options/<id>[/<color id>]; scope templates (wpbakery): at <id>. expected_hash: read\'s hash (Divi 5, WPBakery, Avada, Oxygen, Thrive, Cornerstone), hashes.<list>. Undo: rollback-operation',
+            'Bricks JSON; Divi|WPBakery|Avada shortcodes, Thrive HTML; oxygen-classic|Beaver Builder|Breakdance|Oxygen|Cornerstone|SiteOrigin JSON tree. All but Divi 4: operation update(path,attrs,text), add(to,index,element), remove(path), move(path,to,index); to \'\'=top. WPBakery|Breakdance|Oxygen|Thrive|Cornerstone|Beaver|Bricks: also publish, restore(path: revision id). WPBakery|Avada|Breakdance|Oxygen|Thrive|Cornerstone|SiteOrigin|Beaver|Bricks: element {template}; need expected_hash. Avada|Breakdance|Oxygen|Thrive|Beaver|Bricks: save_template(path,element {title}). Oxygen: element {component}. BeTheme: JSON sections; path/to are uids, update element {size}, element {template}, publish; needs expected_hash. Brizy: same with _ids, attrs merge into value. SiteOrigin: path r.c.w, publish. Kirki: JSON elements; path/to are ids, update text, element {symbol}, publish; needs expected_hash. visual-composer: update(path id, text|attrs) of rendered content, publish; expected_hash. Flatsome: path ops, element {block: id}, save_template; needs expected_hash. scope design_system (bricks|breakdance|oxygen|avada): add/update/remove at classes|variables|palettes|typography|options/<id>[/<color id>]; scope templates (wpbakery): at <id>. expected_hash: read\'s hash (Divi 5, WPBakery, Avada, Breakdance, Oxygen, Thrive, Cornerstone, SiteOrigin, Beaver, Bricks), hashes.<list>. Undo: rollback-operation',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -9709,13 +9779,14 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/list-tools',
             'free',
-            'List every tool: name, summary, domain, operation, tier. Filters: domain, search (as list-tool-catalog). full:true adds descriptions and MCP annotations; schemas: get-tool-schema. Read-only. Compact mode: finds unlisted tools',
+            'List tools: name, summary, domain, operation, tier. Filters: domain, search. full:true adds descriptions, annotations; include_unavailable:true, what cannot run and why. Schemas: get-tool-schema. Read-only',
             [
                 'type'       => 'object',
                 'properties' => [
                     'domain' => [ 'type' => 'string' ],
                     'full'   => [ 'type' => 'boolean' ],
                     'search' => [ 'type' => 'string' ],
+                    'include_unavailable' => [ 'type' => 'boolean' ],
                 ],
             ],
             [$list_tools, 'handle'],
@@ -9726,7 +9797,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/get-tool-schema',
             'free',
-            'Read one wpmcp tool\'s full contract by name: exact input schema, complete description, MCP annotations and domain/operation/tier. Read-only; list-tools finds names',
+            'One tool\'s contract by name: input schema, description, annotations, domain/operation/tier, availability. Read-only; list-tools finds names',
             [
                 'type'       => 'object',
                 'properties' => [

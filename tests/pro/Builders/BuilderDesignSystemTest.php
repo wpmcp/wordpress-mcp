@@ -352,6 +352,24 @@ namespace WPMCP\Tests\Pro\Builders {
             $this->assertSame('Top bar', $header_tree[0]->data->properties->content->content->text);
         }
 
+        /** @dataProvider engine_builders */
+        public function test_engine_templates_read_settings_stored_double_encoded(string $builder, string $prefix): void
+        {
+            // Breakdance and Oxygen 6 save template settings with
+            // set_meta( $id, '_<prefix>template_settings', json_encode( $settings ) ),
+            // and set_meta JSON-encodes its value again, so the row holds a
+            // JSON string of a JSON object.
+            $settings = ['type' => 'all', 'ruleGroups' => [], 'priority' => 1, 'triggers' => []];
+            $id       = self::factory()->post->create(['post_type' => $prefix . 'header', 'post_title' => 'Header', 'post_status' => 'publish']);
+            add_post_meta($id, '_' . $prefix . 'template_settings', wp_slash((string) wp_json_encode((string) wp_json_encode($settings))));
+
+            $out = $this->read(['builder' => $builder, 'scope' => 'templates']);
+
+            $this->assertIsArray($out, is_wp_error($out) ? $out->get_error_message() : '');
+            $by_id = array_column($out['templates'], null, 'id');
+            $this->assertSame($settings, $by_id[$id]['settings']);
+        }
+
         public function test_breakdance_1x_templates_read_their_unprefixed_rows(): void
         {
             // Breakdance 1.x keeps a template's tree and conditions in
@@ -404,13 +422,16 @@ namespace WPMCP\Tests\Pro\Builders {
         {
             $expected = [
                 'avada'      => 'Install and activate the Avada theme with its Avada Core and Avada Builder plugins, then try again.',
+                'beaver-builder' => 'Install and activate the Beaver Builder plugin, then try again.',
                 'betheme'    => 'Install and activate the BeTheme theme, then try again.',
                 'breakdance' => 'Install and activate the Breakdance plugin, then try again.',
                 'bricks'     => 'Install and activate the Bricks theme, then try again.',
                 'cornerstone' => 'Install and activate Cornerstone (Themeco), or the X or Pro theme that bundles it, then try again.',
                 'divi'       => 'Install and activate the Divi theme (Divi 5), then try again.',
                 'oxygen'     => 'Install and activate the Oxygen 6 plugin, then try again.',
+                'siteorigin' => 'Install and activate the SiteOrigin Page Builder plugin, then try again.',
                 'thrive'     => 'Install and activate the Thrive Architect plugin, then try again.',
+                'visual-composer' => 'Install and activate the Visual Composer Website Builder plugin, then try again.',
                 'wpbakery'   => 'Install and activate the WPBakery Page Builder plugin, then try again.',
             ];
             $this->assertSame(array_keys($expected), array_keys(Builder_Design_Data::HOSTS));

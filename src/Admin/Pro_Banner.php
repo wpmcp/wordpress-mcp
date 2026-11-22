@@ -2,6 +2,7 @@
 
 namespace WPMCP\Admin;
 
+use WPMCP\MCP\Handshake_Instructions;
 use WPMCP\Pro\Gate;
 
 if (! defined('ABSPATH')) {
@@ -24,6 +25,10 @@ if (! defined('ABSPATH')) {
  *  - dismissible without JavaScript through a nonce-protected admin-post
  *    link; a dismissal hides it for SNOOZE_DAYS and the MAX_DISMISSALS-th
  *    dismissal hides it for good, per user.
+ *
+ * The headline names the page builder the site runs (builder()), so an
+ * Elementor or Bricks site reads what Pro adds for that builder. Only the
+ * copy changes; the screens, the coupon and the dismiss rules do not.
  *
  * The off-directory flavors strip this file (scripts/flavors/wporg/policy.php):
  * a build with no paid tier has nothing to link to.
@@ -146,6 +151,59 @@ class Pro_Banner
     }
 
     /**
+     * The site's page builder, as the handshake summary detects it
+     * (Handshake_Instructions::active_builder()). The wpmcp_pro_banner_builder
+     * filter can override it; a value with no headline falls back to
+     * 'gutenberg', the general headline.
+     */
+    public static function builder(): string
+    {
+        $builder = apply_filters('wpmcp_pro_banner_builder', (new Handshake_Instructions())->active_builder());
+        $builder = is_string($builder) ? $builder : '';
+
+        return null !== self::builder_headline($builder) ? $builder : 'gutenberg';
+    }
+
+    /**
+     * What Pro adds for a detected builder, in one line, or null for a site
+     * with no builder WP MCP Pro edits beyond the free tier (Gutenberg). Each
+     * line claims only what docs/reference/page-builders.md lists for Pro.
+     */
+    private static function builder_headline(string $builder): ?string
+    {
+        switch ($builder) {
+            case 'elementor':
+                return __('Elementor detected: WP MCP Pro adds deep Elementor editing, building sections and templates, and unlimited undo history.', 'wpmcp');
+            case 'bricks':
+                return __('Bricks detected: WP MCP Pro reads and edits Bricks pages and their design system, with unlimited undo history.', 'wpmcp');
+            case 'divi':
+                return __('Divi detected: WP MCP Pro edits Divi pages, element by element on Divi 5, plus Divi Library and Theme Builder layouts, with unlimited undo history.', 'wpmcp');
+            case 'wpbakery':
+                return __('WPBakery detected: WP MCP Pro edits WPBakery pages and saved templates, with unlimited undo history.', 'wpmcp');
+            case 'beaver-builder':
+                return __('Beaver Builder detected: WP MCP Pro reads and edits Beaver Builder pages, with unlimited undo history.', 'wpmcp');
+            case 'breakdance':
+                return __('Breakdance detected: WP MCP Pro reads and edits Breakdance pages and their design system, with unlimited undo history.', 'wpmcp');
+            case 'oxygen':
+                return __('Oxygen detected: WP MCP Pro edits Oxygen 6 pages, templates and Components, with unlimited undo history.', 'wpmcp');
+            case 'oxygen-classic':
+                return __('Oxygen detected: WP MCP Pro reads and edits Oxygen Classic pages, with unlimited undo history.', 'wpmcp');
+            case 'avada':
+                return __('Avada detected: WP MCP Pro edits Avada pages, its library, global colors and typography, with unlimited undo history.', 'wpmcp');
+            case 'thrive':
+                return __('Thrive Architect detected: WP MCP Pro edits Thrive Architect pages, templates and global styles, with unlimited undo history.', 'wpmcp');
+            case 'betheme':
+                return __('BeTheme detected: WP MCP Pro edits BeBuilder sections and items and adds from BeBuilder templates, with unlimited undo history.', 'wpmcp');
+            case 'flatsome':
+                return __('Flatsome detected: WP MCP Pro edits UX Builder pages, UX Blocks and theme options, with unlimited undo history.', 'wpmcp');
+            case 'gutenberg':
+                return '';
+            default:
+                return null;
+        }
+    }
+
+    /**
      * Whether the banner belongs on a screen. Exact ids come from the
      * filterable list; every WP MCP submenu screen matches by prefix.
      *
@@ -232,6 +290,8 @@ class Pro_Banner
         }
 
         $offer       = self::offer();
+        $builder     = self::builder();
+        $headline    = (string) self::builder_headline($builder);
         $dismiss_url = wp_nonce_url(
             add_query_arg(
                 [
@@ -255,10 +315,14 @@ class Pro_Banner
                 .wpmcp-pro-banner__actions code { padding: 2px 6px; }
             </style>
             <p class="wpmcp-pro-banner__eyebrow"><?php esc_html_e('WP MCP Pro', 'wpmcp'); ?></p>
-            <h2><?php esc_html_e('Pro keeps every snapshot, and builds Elementor pages too.', 'wpmcp'); ?></h2>
+            <h2><?php echo '' !== $headline ? esc_html($headline) : esc_html__('Pro keeps every snapshot, and builds Elementor pages too.', 'wpmcp'); ?></h2>
             <ul>
-                <li><?php esc_html_e('Unlimited snapshot history and session restore', 'wpmcp'); ?></li>
-                <li><?php esc_html_e('Deep Elementor editing and page building', 'wpmcp'); ?></li>
+                <li><?php esc_html_e('Unlimited snapshot history while your licence is active', 'wpmcp'); ?></li>
+                <?php if ('gutenberg' === $builder || 'elementor' === $builder) : ?>
+                    <li><?php esc_html_e('Deep Elementor editing and page building', 'wpmcp'); ?></li>
+                <?php else : ?>
+                    <li><?php esc_html_e('Editing for Elementor, Bricks, Divi and other page builders', 'wpmcp'); ?></li>
+                <?php endif; ?>
                 <li><?php esc_html_e('Custom widget and block builders, forms adapter pack', 'wpmcp'); ?></li>
                 <li><?php esc_html_e('WP MCP Cloud sync and priority support', 'wpmcp'); ?></li>
             </ul>

@@ -1,0 +1,162 @@
+[
+  {
+    "name": "wpmcp/block-suites-read",
+    "tier": "pro",
+    "plugin": "Kadence Blocks, GenerateBlocks, Spectra, Otter Blocks, Blocksy Companion, Stackable, Ultimate Blocks",
+    "several": true,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/block-suites-write",
+    "tier": "pro",
+    "plugin": "Kadence Blocks, GenerateBlocks, Spectra, Otter Blocks, Blocksy Companion, Stackable, Ultimate Blocks",
+    "several": true,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/contactform7-read",
+    "tier": "free",
+    "plugin": "Contact Form 7",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/contactform7-write",
+    "tier": "free",
+    "plugin": "Contact Form 7",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/fluentforms-read",
+    "tier": "pro",
+    "plugin": "Fluent Forms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/fluentforms-write",
+    "tier": "pro",
+    "plugin": "Fluent Forms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/formidable-read",
+    "tier": "pro",
+    "plugin": "Formidable Forms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/formidable-write",
+    "tier": "pro",
+    "plugin": "Formidable Forms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/forminator-read",
+    "tier": "free",
+    "plugin": "Forminator",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/forminator-write",
+    "tier": "free",
+    "plugin": "Forminator",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/gravityforms-read",
+    "tier": "pro",
+    "plugin": "Gravity Forms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/gravityforms-write",
+    "tier": "pro",
+    "plugin": "Gravity Forms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/metform-read",
+    "tier": "free",
+    "plugin": "MetForm",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/metform-write",
+    "tier": "free",
+    "plugin": "MetForm",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/ninjaforms-read",
+    "tier": "pro",
+    "plugin": "Ninja Forms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/ninjaforms-write",
+    "tier": "pro",
+    "plugin": "Ninja Forms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/sureforms-read",
+    "tier": "free",
+    "plugin": "SureForms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/sureforms-write",
+    "tier": "free",
+    "plugin": "SureForms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/wpforms-read",
+    "tier": "pro",
+    "plugin": "WPForms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  },
+  {
+    "name": "wpmcp/wpforms-write",
+    "tier": "pro",
+    "plugin": "WPForms",
+    "several": false,
+    "operations": [],
+    "unknown_operation": true
+  }
+]

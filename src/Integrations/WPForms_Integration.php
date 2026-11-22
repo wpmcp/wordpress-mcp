@@ -25,9 +25,15 @@ if (! defined('ABSPATH')) {
  * update-entry-status moves an entry between active, spam and trash through
  * the handler's own update(). Entries live in WPForms' wpforms_entries table,
  * so the write is snapshotted as a db_rows before-image of exactly that row
- * and restorable with rollback-operation. Entry deletion is deliberately not
- * offered (entries are a Pro table and no licensed copy was available to
- * verify a delete against).
+ * and restorable with rollback-operation.
+ *
+ * delete-entry (issue #1031) removes the entry's rows of wpforms_entry_fields,
+ * wpforms_entry_meta and wpforms_entries directly (WPForms_Entry_Tables),
+ * each table under its own db_rows before-image in one session, so
+ * rollback-session puts the whole entry back at its original id. It does
+ * not go through the entry handler's delete(), which also removes uploaded
+ * files no snapshot can restore, so WPForms' own delete hooks do not fire.
+ * An entry with a wpforms_payments row is refused with entry_has_payments.
  *
  * Issue #674: notifications and confirmations are editable (opt-in, one
  * snapshot of the form post per write, see config_operations()).
@@ -132,6 +138,7 @@ class WPForms_Integration extends Forms_Integration
     protected function operations(): array
     {
         $ops = $this->read_and_entry_operations();
+        $ops['delete-entry'] = self::delete_entry_operation();
 
         return $ops + self::config_operations();
     }
@@ -321,6 +328,55 @@ class WPForms_Integration extends Forms_Integration
                 'snapshot'     => static fn (array $args): ?array => self::row_snapshot('wpforms_entries', 'entry_id', (int) $args['entry_id'], [ 'status' => self::STATUSES[ (string) $args['status'] ] ?? '' ]),
             ],
         ];
+    }
+
+    /**
+     * The delete-entry operation (issue #1031), behind the forms opt-in.
+     *
+     * @return array<string, mixed>
+     */
+    private static function delete_entry_operation(): array
+    {
+        return [
+            'mode'              => 'destructive',
+            'self_snapshotting' => true,
+            'objects'           => [ 'entry_id' => 'entry' ],
+            'capability'        => self::ENTRY_CAPABILITY,
+            'requires'          => static fn () => self::requires_entries(),
+            'description'       => 'Permanently delete one WPForms entry with its field values and meta (the rows of wpforms_entries, wpforms_entry_fields and wpforms_entry_meta, removed directly: WPForms\' own delete hooks do not run and uploaded files stay on disk). Refused with entry_has_payments when the entry has a payment. Needs WPForms entry storage. Off by default (opt in with wpmcp_enable_forms_write); needs confirm:true and manage_options. Reversible: every row is snapshotted first and rollback-session puts them back. ' . self::NOT_ERASURE,
+            'input_schema'      => [
+                'type'       => 'object',
+                'properties' => [ 'entry_id' => [ 'type' => 'integer', 'minimum' => 1 ] ],
+                'required'   => [ 'entry_id' ],
+            ],
+            'validate'          => static function (array $args): ?array {
+                $entry_id = (int) $args['entry_id'];
+                if (! is_object(self::entries()->get($entry_id, [ 'cap' => false ]))) {
+                    return [ 'code' => 'entry_not_found', 'message' => 'WPForms has no entry with that id.', 'data' => [ 'entry_id' => $entry_id ] ];
+                }
+                return self::payment_refusal($entry_id, WPForms_Entry_Tables::payment_tables());
+            },
+            'confirm_preview'   => static function (array $args): array {
+                $entry_id = (int) $args['entry_id'];
+                $entry    = self::entries()->get($entry_id, [ 'cap' => false ]);
+                $form_id  = is_object($entry) ? (int) ($entry->form_id ?? 0) : 0;
+                return self::delete_entry_preview(
+                    sprintf('WPForms entry %d of form %d', $entry_id, $form_id),
+                    $entry_id,
+                    self::count_rows(WPForms_Entry_Tables::FIELDS, 'entry_id', $entry_id),
+                    'rollback-session',
+                    [ 'form_id' => $form_id, 'date' => is_object($entry) ? (string) ($entry->date ?? '') : '' ]
+                );
+            },
+            'handler'           => static function (array $args, array $context): array {
+                $entry_id = (int) $args['entry_id'];
+                $done     = self::delete_rows_in_session(WPForms_Entry_Tables::delete_steps($entry_id), $args, $context);
+                return [
+                    'result'        => [ 'entry_id' => $entry_id, 'deleted' => ($done['result'][ WPForms_Entry_Tables::ENTRIES ] ?? 0) > 0, 'rows' => $done['result'] ],
+                    'operation_ids' => $done['operation_ids'],
+                ];
+            },
+        ] + self::write_flags();
     }
 
     // ------------------------------------------------------------------

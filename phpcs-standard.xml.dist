@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<ruleset name="wpmcp-standard">
+    <description>The phpcs half of `composer standard` (docs/CODING-STANDARD.md): PSR-12 with the house exclusions of phpcs.xml.dist, plus slevomat sniffs for strict types, final classes, no public mutable properties, no unused uses, native type hints and early exits. bin/standard.sh passes the files: every v2 root in a full run, the changed files (filtered to changed lines) with --diff.</description>
+
+    <exclude-pattern>*/tools/standard/vendor/*</exclude-pattern>
+    <arg name="extensions" value="php"/>
+    <arg value="np"/>
+
+    <rule ref="PSR12">
+        <!-- WordPress convention: Snake_Case class names (e.g. Snapshot_Store). -->
+        <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
+        <!-- WordPress convention: snake_case method names (e.g. table_name()). -->
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
+        <!-- Plugin files carry the ABSPATH guard next to their declarations. -->
+        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
+    </rule>
+
+    <!-- Rule 2: `<?php`, one blank line, `declare(strict_types=1);`, one blank line. -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+        <properties>
+            <property name="declareOnFirstLine" value="false"/>
+            <property name="linesCountBeforeDeclare" value="1"/>
+            <property name="linesCountAfterDeclare" value="1"/>
+            <property name="spacesCountAroundEqualsSign" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- Rule 3: every concrete class is final (or abstract). -->
+    <rule ref="SlevomatCodingStandard.Classes.RequireAbstractOrFinal"/>
+
+    <!-- Rule 4: no public mutable properties; promoted ones are checked too,
+         public readonly ones (value objects, attributes) are allowed. -->
+    <rule ref="SlevomatCodingStandard.Classes.ForbiddenPublicProperty">
+        <properties>
+            <property name="checkPromoted" value="true"/>
+            <property name="allowReadonly" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- Rule 9: native parameter, return and property types. -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint"/>
+
+    <!-- Rule 10: early returns instead of else after a terminating branch. -->
+    <rule ref="SlevomatCodingStandard.ControlStructures.EarlyExit">
+        <properties>
+            <!-- A lone `if` as the whole body of a loop or function is fine. -->
+            <property name="ignoreStandaloneIfInScope" value="true"/>
+            <property name="ignoreOneLineTrailingIf" value="true"/>
+            <property name="ignoreTrailingIfWithOneInstruction" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- No dead imports. -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+        <properties>
+            <property name="searchAnnotations" value="true"/>
+        </properties>
+    </rule>
+</ruleset>

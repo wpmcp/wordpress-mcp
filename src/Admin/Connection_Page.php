@@ -48,6 +48,9 @@ class Connection_Page
     public const NONCE_ACTION = 'wpmcp_connection';
     public const OPTION       = 'wpmcp_connection_passwords';
 
+    /** The last self-test result shown on the status card (issue #1127): { ok, message, at }. */
+    public const SELF_TEST_OPTION = 'wpmcp_connection_last_self_test';
+
     /**
      * Dispatch a posted screen action. Returns null when no action was
      * posted, otherwise a result array for render(); failures come back as
@@ -79,7 +82,13 @@ class Connection_Page
                 Exposure::set_enabled('1' === self::str($post['enabled'] ?? ''));
                 return ['action' => 'toggle', 'enabled' => Exposure::is_enabled()];
             case 'self_test':
-                return ['action' => 'self_test', 'self_test' => (new Connection_Tester())->test()];
+                $self_test = (new Connection_Tester())->test();
+                update_option(self::SELF_TEST_OPTION, [
+                    'ok'      => ! empty($self_test['ok']),
+                    'message' => (string) ($self_test['message'] ?? ''),
+                    'at'      => time(),
+                ], false);
+                return ['action' => 'self_test', 'self_test' => $self_test];
             case 'oauth_enabled':
                 return $this->set_oauth_enabled($post);
             case 'oauth_client_approval':
@@ -358,36 +367,7 @@ class Connection_Page
                 <div class="notice notice-warning"><p><strong><?php echo esc_html__('Application Passwords are unavailable.', 'wpmcp'); ?></strong> <?php echo esc_html($passwords['message'] ?? ''); ?></p></div>
             <?php endif; ?>
 
-            <h2><?php echo esc_html__('1. MCP surface', 'wpmcp'); ?></h2>
-            <p>
-                <?php echo esc_html__('Endpoint:', 'wpmcp'); ?>
-                <code><?php echo esc_html($endpoint); ?></code>
-                <?php if ($exposed) : ?>
-                    is <strong><?php echo esc_html__('exposed', 'wpmcp'); ?></strong>
-                <?php else : ?>
-                    is <strong><?php echo esc_html__('disabled by the master switch', 'wpmcp'); ?></strong>
-                <?php endif; ?>
-            </p>
-            <form method="post">
-                <input type="hidden" name="wpmcp_connection_action" value="toggle">
-                <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
-                <input type="hidden" name="enabled" value="<?php echo $exposed ? '0' : '1'; ?>">
-                <?php submit_button(
-                    $exposed ? __('Turn MCP off', 'wpmcp') : __('Turn MCP on', 'wpmcp'),
-                    $exposed ? 'secondary' : 'primary',
-                    'submit',
-                    false
-                ); ?>
-                <span class="description">
-                    <?php echo esc_html__('The master switch narrows through governance: off means every ability denies instantly, for every client and credential. Its state is shown in the admin bar.', 'wpmcp'); ?>
-                </span>
-            </form>
-
-            <form method="post" style="margin-top: 1em;">
-                <input type="hidden" name="wpmcp_connection_action" value="self_test">
-                <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
-                <?php submit_button(__('Run connection self-test', 'wpmcp'), 'secondary', 'submit', false); ?>
-            </form>
+            <?php $this->render_status_card($nonce, $endpoint, $exposed); ?>
             <?php if (isset($result['self_test'])) : ?>
                 <div class="notice notice-<?php echo $result['self_test']['ok'] ? 'success' : 'error'; ?>">
                     <p><?php echo esc_html($result['self_test']['message']); ?></p>
@@ -396,7 +376,7 @@ class Connection_Page
                             <?php foreach ($result['self_test']['checks'] as $check) : ?>
                                 <li>
                                     <strong><?php echo esc_html(($check['ok'] ? "\u{2713} " : "\u{2717} ") . $check['label']); ?></strong>
-                                    <br><span class="description"><?php echo esc_html($check['detail']); ?></span>
+                                    <p class="description"><?php echo esc_html($check['detail']); ?></p>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -404,9 +384,17 @@ class Connection_Page
                 </div>
             <?php endif; ?>
 
+
+            <h2 class="nav-tab-wrapper wpmcp-connection-tabs">
+                <?php foreach ([ 'connect' => __('Connect', 'wpmcp'), 'clients' => __('Clients and access', 'wpmcp'), 'settings' => __('Settings', 'wpmcp'), 'advanced' => __('Advanced', 'wpmcp') ] as $tab => $label) : ?>
+                    <a href="#wpmcp-tab-<?php echo esc_attr($tab); ?>" class="nav-tab<?php echo 'connect' === $tab ? ' nav-tab-active' : ''; ?>" data-tab="<?php echo esc_attr($tab); ?>"><?php echo esc_html($label); ?></a>
+                <?php endforeach; ?>
+            </h2>
+
+            <div class="wpmcp-connection-panel" id="wpmcp-tab-connect" data-tab="connect">
             <?php $this->render_custom_connector($nonce); ?>
 
-            <h2><?php echo esc_html__('2. Create a connection', 'wpmcp'); ?></h2>
+            <h2><?php echo esc_html__('Create an application password', 'wpmcp'); ?></h2>
             <p>
                 <?php echo esc_html__('This creates a standard WordPress Application Password for the chosen user. Least privilege: prefer a dedicated user with only the role the agent needs, the agent can never do more than that user can, and wpmcp governance and tool capability gates narrow further from there. You can revoke the password below at any time.', 'wpmcp'); ?>
             </p>
@@ -446,7 +434,7 @@ class Connection_Page
                     </p>
                 </div>
 
-                <h2><?php echo esc_html__('3. Paste into your client', 'wpmcp'); ?></h2>
+                <h2><?php echo esc_html__('Paste into your client', 'wpmcp'); ?></h2>
                 <?php foreach ($result['configs'] as $client) : ?>
                     <h3><?php echo esc_html($client['label']); ?> <code><?php echo esc_html($client['config_file']); ?></code></h3>
                     <p class="description"><?php echo esc_html($client['note']); ?></p>
@@ -461,12 +449,12 @@ class Connection_Page
                     <a class="button" href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=wpmcp_download_bundle'), self::NONCE_ACTION)); ?>">
                         <?php echo esc_html__('Download wpmcp.mcpb', 'wpmcp'); ?>
                     </a>
-                    <span class="description">
+                    <p class="description">
                         <?php echo esc_html__('Double-click to install in Claude Desktop, then enter the username and password above when prompted. The bundle contains no credentials, only this site\'s endpoint and a self-contained proxy.', 'wpmcp'); ?>
-                    </span>
+                    </p>
                 </p>
 
-                <h2><?php echo esc_html__('4. Next steps', 'wpmcp'); ?></h2>
+                <h2><?php echo esc_html__('Next steps', 'wpmcp'); ?></h2>
                 <ol>
                     <li><?php echo esc_html__('Ask your client to list tools, you should see the wpmcp toolset.', 'wpmcp'); ?></li>
                     <li><?php echo esc_html__('Every write is snapshotted first; review and roll back anything from the wpmcp History screen.', 'wpmcp'); ?></li>
@@ -474,6 +462,9 @@ class Connection_Page
                 </ol>
             <?php endif; ?>
 
+            </div><!-- /wpmcp-tab-connect -->
+
+            <div class="wpmcp-connection-panel" id="wpmcp-tab-clients" data-tab="clients">
             <?php $this->render_oauth_clients($nonce); ?>
 
             <?php $this->render_identities(); ?>
@@ -503,7 +494,7 @@ class Connection_Page
                                     <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
                                     <input type="hidden" name="user_id" value="<?php echo (int) $record['user_id']; ?>">
                                     <input type="hidden" name="uuid" value="<?php echo esc_attr($record['uuid']); ?>">
-                                    <?php submit_button(__('Revoke', 'wpmcp'), 'delete small', 'submit', false); ?>
+                                    <?php submit_button(__('Revoke', 'wpmcp'), 'delete', 'submit', false); ?>
                                 </form>
                             </td>
                         </tr>
@@ -512,9 +503,133 @@ class Connection_Page
                 </table>
             <?php endif; ?>
 
-            <?php $this->render_uninstall_data($nonce); ?>
+            </div><!-- /wpmcp-tab-clients -->
+
+            <div class="wpmcp-connection-panel" id="wpmcp-tab-settings" data-tab="settings">
             <?php $this->render_management_access($nonce); ?>
+            <?php $this->render_uninstall_data($nonce); ?>
+            </div><!-- /wpmcp-tab-settings -->
+
+            <div class="wpmcp-connection-panel" id="wpmcp-tab-advanced" data-tab="advanced">
+            <?php $this->render_advanced(); ?>
+            </div><!-- /wpmcp-tab-advanced -->
         </div>
+        <?php $this->render_layout_script(); ?>
+        <?php
+    }
+
+    /**
+     * The status card (issue #1127): MCP on or off with its switch, the
+     * endpoint with a copy button, the last self-test result and the
+     * button that runs it.
+     */
+    private function render_status_card(string $nonce, string $endpoint, bool $exposed): void
+    {
+        $last = get_option(self::SELF_TEST_OPTION);
+        ?>
+        <div class="card wpmcp-status-card" style="max-width: none; margin-top: 1em;">
+            <h2 class="title"><?php echo $exposed ? esc_html__('MCP is on', 'wpmcp') : esc_html__('MCP is off', 'wpmcp'); ?></h2>
+            <p>
+                <?php echo esc_html__('Endpoint:', 'wpmcp'); ?>
+                <code id="wpmcp-endpoint"><?php echo esc_html($endpoint); ?></code>
+                <button type="button" class="button wpmcp-copy" data-copy-target="wpmcp-endpoint"><?php echo esc_html__('Copy', 'wpmcp'); ?></button>
+            </p>
+            <form method="post">
+                <input type="hidden" name="wpmcp_connection_action" value="toggle">
+                <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
+                <input type="hidden" name="enabled" value="<?php echo $exposed ? '0' : '1'; ?>">
+                <?php submit_button(
+                    $exposed ? __('Turn MCP off', 'wpmcp') : __('Turn MCP on', 'wpmcp'),
+                    $exposed ? 'secondary' : 'primary',
+                    'submit',
+                    false
+                ); ?>
+                <p class="description">
+                    <?php echo esc_html__('Off means every tool refuses at once, for every client and credential. Its state is shown in the admin bar.', 'wpmcp'); ?>
+                </p>
+            </form>
+            <p>
+                <strong><?php echo esc_html__('Last self-test:', 'wpmcp'); ?></strong>
+                <?php if (is_array($last)) : ?>
+                    <?php echo esc_html(($last['ok'] ? "\u{2713} " : "\u{2717} ") . (string) $last['message']); ?>
+                    <?php
+                    /* translators: %s: date and time in the site timezone. */
+                    echo esc_html(sprintf(__('(%s)', 'wpmcp'), wp_date(get_option('date_format') . ' ' . get_option('time_format'), (int) $last['at'])));
+                    ?>
+                <?php else : ?>
+                    <?php echo esc_html__('Not run yet.', 'wpmcp'); ?>
+                <?php endif; ?>
+            </p>
+            <form method="post">
+                <input type="hidden" name="wpmcp_connection_action" value="self_test">
+                <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
+                <?php submit_button(__('Run self-test', 'wpmcp'), 'secondary', 'submit', false); ?>
+            </form>
+        </div><!-- /wpmcp-status-card -->
+        <?php
+    }
+
+    /**
+     * Advanced (issue #1127), collapsed by default: OAuth discovery URLs
+     * and the proxy notes, which only matter when debugging a connection.
+     */
+    private function render_advanced(): void
+    {
+        ?>
+        <details class="wpmcp-advanced">
+            <summary style="cursor: pointer; padding: 0.5em 0;"><strong><?php echo esc_html__('OAuth discovery and proxy settings', 'wpmcp'); ?></strong></summary>
+            <?php if (OAuth_Config::is_enabled()) : ?>
+                <?php $this->render_oauth_discovery(); ?>
+            <?php else : ?>
+                <h2><?php echo esc_html__('OAuth discovery', 'wpmcp'); ?></h2>
+                <p><?php echo esc_html__('OAuth is off, so this site publishes no OAuth discovery documents.', 'wpmcp'); ?></p>
+            <?php endif; ?>
+            <h2><?php echo esc_html__('Behind a proxy or CDN', 'wpmcp'); ?></h2>
+            <p><?php echo esc_html__('Allowed addresses on scoped identities are checked against REMOTE_ADDR. Behind a reverse proxy, list the proxy with the wpmcp_trusted_proxies filter so the X-Forwarded-For address is used instead.', 'wpmcp'); ?></p>
+        </details>
+        <?php
+    }
+
+    /** Tabs that show one panel at a time, and the copy button (issue #1127). Without JavaScript every panel shows. */
+    private function render_layout_script(): void
+    {
+        ?>
+        <style>
+            .wpmcp-connection-panel .button.delete { color: #b32d2e; border-color: #b32d2e; }
+            .wpmcp-connection-panel .button.delete:hover { background: #b32d2e; color: #fff; }
+        </style>
+        <script>
+        (function () {
+            var tabs = Array.prototype.slice.call(document.querySelectorAll('.wpmcp-connection-tabs .nav-tab'));
+            var panels = Array.prototype.slice.call(document.querySelectorAll('.wpmcp-connection-panel'));
+            function show(name) {
+                if (! panels.some(function (p) { return p.dataset.tab === name; })) {
+                    name = 'connect';
+                }
+                panels.forEach(function (p) { p.hidden = p.dataset.tab !== name; });
+                tabs.forEach(function (t) { t.classList.toggle('nav-tab-active', t.dataset.tab === name); });
+                document.querySelectorAll('.wpmcp-connection-panel form').forEach(function (f) {
+                    f.setAttribute('action', '#wpmcp-tab-' + name);
+                });
+            }
+            tabs.forEach(function (t) {
+                t.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    history.replaceState(null, '', '#wpmcp-tab-' + t.dataset.tab);
+                    show(t.dataset.tab);
+                });
+            });
+            show((window.location.hash || '').replace('#wpmcp-tab-', ''));
+            document.querySelectorAll('.wpmcp-copy').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    var el = document.getElementById(b.dataset.copyTarget);
+                    if (el && navigator.clipboard) {
+                        navigator.clipboard.writeText(el.textContent).then(function () { b.textContent = <?php echo wp_json_encode(__('Copied', 'wpmcp')); ?>; });
+                    }
+                });
+            });
+        }());
+        </script>
         <?php
     }
 
@@ -652,7 +767,7 @@ class Connection_Page
         }
         ?>
         <h2><?php echo esc_html__('Scoped identities', 'wpmcp'); ?></h2>
-        <p><?php echo esc_html__('An identity with allowed addresses refuses MCP requests from anywhere else. The client address is REMOTE_ADDR; behind a reverse proxy, list the proxy with the wpmcp_trusted_proxies filter so X-Forwarded-For is used. The admin screens are never restricted.', 'wpmcp'); ?></p>
+        <p><?php echo esc_html__('An identity with allowed addresses refuses MCP requests from anywhere else. The admin screens are never restricted. Sites behind a proxy or CDN: see Advanced.', 'wpmcp'); ?></p>
         <table class="widefat striped">
             <thead><tr>
                 <th><?php echo esc_html__('Identity', 'wpmcp'); ?></th>
@@ -711,13 +826,13 @@ class Connection_Page
                     'submit',
                     false
                 ); ?>
-                <span class="description">
+                <p class="description">
                     <?php echo esc_html(sprintf(
                         /* translators: %s: the switch label, Allow OAuth sign-in */
                         __('%s lets clients that sign in with OAuth connect, after a user approves them in the browser. Turning it off stops new sign-ins and refuses OAuth connections made earlier on their next request.', 'wpmcp'),
                         Client_Config_Generator::OAUTH_SWITCH_LABEL
                     )); ?>
-                </span>
+                </p>
             </form>
             <?php if (! $enabled) : ?>
                 <p><?php echo esc_html__('Other ways, for site developers:', 'wpmcp'); ?></p>
@@ -737,6 +852,7 @@ class Connection_Page
         <?php endif; ?>
 
         <h3><?php echo esc_html__('Custom connector (Claude Desktop and claude.ai)', 'wpmcp'); ?></h3>
+        <?php $this->render_public_address_warning($connector['public_address_warning']); ?>
         <p><?php echo esc_html__('To add the connector:', 'wpmcp'); ?></p>
         <ol>
             <?php foreach ($connector['steps'] as $step) : ?>
@@ -745,6 +861,7 @@ class Connection_Page
         </ol>
 
         <h3><?php echo esc_html__('ChatGPT', 'wpmcp'); ?></h3>
+        <?php $this->render_public_address_warning($chatgpt['public_address_warning']); ?>
         <p><?php echo esc_html__('Server URL to paste:', 'wpmcp'); ?> <code><?php echo esc_html($chatgpt['url']); ?></code></p>
         <p><?php echo esc_html__('Custom MCP connectors need ChatGPT\'s Developer mode, on the plans that offer it; in a workspace, an admin may have to allow it. ChatGPT\'s menu names change from time to time: if a step does not match, look for Developer mode under Settings.', 'wpmcp'); ?></p>
         <p><?php echo esc_html__('To add WP MCP to ChatGPT:', 'wpmcp'); ?></p>
@@ -754,6 +871,15 @@ class Connection_Page
             <?php endforeach; ?>
         </ol>
         <?php
+    }
+
+    /** Issue #1149: the card's warning that its URL is not a public HTTPS address. */
+    private function render_public_address_warning(?string $warning): void
+    {
+        if (null === $warning) {
+            return;
+        }
+        printf('<div class="notice notice-warning inline wpmcp-public-address-warning"><p>%s</p></div>', esc_html($warning));
     }
 
     /**
@@ -816,21 +942,24 @@ class Connection_Page
     private function render_oauth_clients(string $nonce): void
     {
         if (! OAuth_Config::is_enabled()) {
+            ?>
+            <h2><?php echo esc_html__('OAuth clients', 'wpmcp'); ?></h2>
+            <p><?php echo esc_html__('OAuth is off, so no client signs in with OAuth. Turn it on under Connect.', 'wpmcp'); ?></p>
+            <?php
             return;
         }
 
         $required = Client_Metadata_Document::requires_approval();
-        $clients  = Client_Metadata_Document::clients();
         $labels   = [
             'approved' => __('Approved', 'wpmcp'),
             'denied'   => __('Blocked', 'wpmcp'),
             'pending'  => __('Waiting for approval', 'wpmcp'),
             'seen'     => __('Allowed (approval off)', 'wpmcp'),
         ];
-        $this->render_oauth_discovery();
+        $rows = $this->oauth_client_rows();
         ?>
         <h2><?php echo esc_html__('OAuth clients', 'wpmcp'); ?></h2>
-        <p><?php echo esc_html__('MCP clients that sign in through OAuth with a client metadata document (an https URL as their client ID) are listed here. This site fetches that document to learn the client\'s name and where it may redirect.', 'wpmcp'); ?></p>
+        <p><?php echo esc_html__('Each application that signs in through OAuth, once: who approved it, what it may do and its status. Read only refuses anything that would change the site; a scoped identity limits it exactly as that identity is limited. Access changes apply on its next request.', 'wpmcp'); ?></p>
         <form method="post">
             <input type="hidden" name="wpmcp_connection_action" value="oauth_client_approval">
             <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
@@ -841,55 +970,71 @@ class Connection_Page
                 'submit',
                 false
             ); ?>
-            <span class="description">
+            <p class="description">
                 <?php echo $required
                     ? esc_html__('New clients wait here until you approve them.', 'wpmcp')
                     : esc_html__('New clients can connect as soon as a signed-in user authorizes them. Turning approval on keeps the clients already listed.', 'wpmcp'); ?>
-            </span>
+            </p>
         </form>
-        <?php $this->render_oauth_connections($nonce); ?>
-        <?php if (! $clients) : ?>
-            <p><?php echo esc_html__('No OAuth client has used a client metadata document yet.', 'wpmcp'); ?></p>
+        <?php if (! $rows) : ?>
+            <p><?php echo esc_html__('No application has signed in through OAuth yet.', 'wpmcp'); ?></p>
             <?php return; ?>
         <?php endif; ?>
         <table class="widefat striped" style="margin-top: 1em;">
             <thead><tr>
                 <th><?php echo esc_html__('Client', 'wpmcp'); ?></th>
-                <th><?php echo esc_html__('Redirects to', 'wpmcp'); ?></th>
                 <th><?php echo esc_html__('Status', 'wpmcp'); ?></th>
-                <th></th>
+                <th><?php echo esc_html__('Access', 'wpmcp'); ?></th>
+                <th><?php echo esc_html__('Actions', 'wpmcp'); ?></th>
             </tr></thead>
             <tbody>
-            <?php foreach ($clients as $client) : ?>
+            <?php foreach ($rows as $client_id => $row) : ?>
                 <?php
-                $hosts    = array_map('strval', (array) ($client['redirect_hosts'] ?? []));
+                $hosts    = $row['redirect_hosts'];
                 $loopback = $hosts && ! array_diff($hosts, ['127.0.0.1', '::1', 'localhost']);
-                $status   = (string) ($client['status'] ?? '');
+                $status   = $row['status'];
                 ?>
-                <tr>
+                <tr class="wpmcp-oauth-client">
                     <td>
-                        <strong><?php echo esc_html((string) ($client['client_name'] ?? '')); ?></strong><br>
-                        <code><?php echo esc_html((string) $client['client_id']); ?></code>
-                    </td>
-                    <td>
-                        <?php echo esc_html(implode(', ', $hosts)); ?>
+                        <strong><?php echo esc_html('' !== $row['name'] ? $row['name'] : __('Unnamed application', 'wpmcp')); ?></strong><br>
+                        <code><?php echo esc_html($client_id); ?></code>
+                        <?php if ($hosts) : ?>
+                            <p class="description">
+                                <?php
+                                /* translators: %s: comma-separated host names. */
+                                echo esc_html(sprintf(__('Redirects to %s', 'wpmcp'), implode(', ', $hosts)));
+                                ?>
+                            </p>
+                        <?php endif; ?>
                         <?php if ($loopback) : ?>
-                            <br><span class="description"><?php echo esc_html__('Loopback only: any program on the user\'s computer could present this client ID. Approve it only if you expect this client.', 'wpmcp'); ?></span>
+                            <p class="description"><?php echo esc_html__('Loopback only: any program on the user\'s computer could present this client ID. Approve it only if you expect this client.', 'wpmcp'); ?></p>
                         <?php endif; ?>
                     </td>
-                    <td><?php echo esc_html($labels[ $status ] ?? $status); ?></td>
+                    <td><?php echo esc_html('' === $status ? __('Registered', 'wpmcp') : ($labels[ $status ] ?? $status)); ?></td>
                     <td>
-                        <?php foreach (['oauth_client_approve' => __('Approve', 'wpmcp'), 'oauth_client_deny' => __('Block', 'wpmcp'), 'oauth_client_forget' => __('Forget', 'wpmcp')] as $action => $label) : ?>
-                            <?php if (('oauth_client_approve' === $action && 'approved' === $status) || ('oauth_client_deny' === $action && 'denied' === $status)) {
-                                continue;
-                            } ?>
-                            <form method="post" style="display: inline;">
-                                <input type="hidden" name="wpmcp_connection_action" value="<?php echo esc_attr($action); ?>">
-                                <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
-                                <input type="hidden" name="client_id" value="<?php echo esc_attr((string) $client['client_id']); ?>">
-                                <?php submit_button($label, 'oauth_client_deny' === $action ? 'delete small' : 'small', 'submit', false); ?>
-                            </form>
+                        <?php if (! $row['connections']) : ?>
+                            <?php echo esc_html__('Not connected', 'wpmcp'); ?>
+                        <?php endif; ?>
+                        <?php foreach ($row['connections'] as $connection) : ?>
+                            <?php $this->render_access_form($nonce, $connection); ?>
                         <?php endforeach; ?>
+                    </td>
+                    <td>
+                        <?php if ($row['cimd']) : ?>
+                            <?php foreach (['oauth_client_approve' => __('Approve', 'wpmcp'), 'oauth_client_deny' => __('Block', 'wpmcp'), 'oauth_client_forget' => __('Forget', 'wpmcp')] as $action => $label) : ?>
+                                <?php if (('oauth_client_approve' === $action && 'approved' === $status) || ('oauth_client_deny' === $action && 'denied' === $status)) {
+                                    continue;
+                                } ?>
+                                <form method="post" style="display: inline;">
+                                    <input type="hidden" name="wpmcp_connection_action" value="<?php echo esc_attr($action); ?>">
+                                    <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
+                                    <input type="hidden" name="client_id" value="<?php echo esc_attr($client_id); ?>">
+                                    <?php submit_button($label, 'oauth_client_approve' === $action ? 'secondary' : 'delete', 'submit', false); ?>
+                                </form>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            -
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -897,75 +1042,80 @@ class Connection_Page
         </table>
         <?php
     }
+
     /**
-     * Every live OAuth connection with its access level (issue #454), and
-     * a control to change it. Lowering applies on the connection's next
-     * request, without the client reconnecting. Connections made before
-     * access levels existed show as full access.
+     * One row per OAuth client (issue #1127): the clients known by a client
+     * metadata document and those with a live connection (issue #454),
+     * merged by client_id, each with its connections.
+     *
+     * @return array<string, array{name: string, redirect_hosts: string[], status: string, cimd: bool, connections: array<int, array>}>
      */
-    private function render_oauth_connections(string $nonce): void
+    private function oauth_client_rows(): array
     {
-        $connections = Client_Access::connections();
-        $identities  = array_values(array_filter(array_map(static fn (array $i): string => (string) ($i['name'] ?? ''), Identity_Store::list()), 'strlen'));
-        $cimd        = Client_Metadata_Document::clients();
-        ?>
-        <h3><?php echo esc_html__('Connected applications', 'wpmcp'); ?></h3>
-        <p><?php echo esc_html__('Each application a user approved through OAuth, and what it may do. Read only refuses anything that would change the site. A scoped identity limits it exactly as that identity is limited. Changes apply on its next request.', 'wpmcp'); ?></p>
-        <?php if (! $connections) : ?>
-            <p><?php echo esc_html__('No application is connected through OAuth.', 'wpmcp'); ?></p>
-            <?php return; ?>
-        <?php endif; ?>
-        <table class="widefat striped" style="margin-bottom: 1em;">
-            <thead><tr>
-                <th><?php echo esc_html__('Application', 'wpmcp'); ?></th>
-                <th><?php echo esc_html__('Approved by', 'wpmcp'); ?></th>
-                <th><?php echo esc_html__('Access', 'wpmcp'); ?></th>
-            </tr></thead>
-            <tbody>
-            <?php foreach ($connections as $connection) : ?>
-                <?php
-                $client_id = $connection['client_id'];
-                $client    = Client_Store::get($client_id);
-                $name      = (string) ($client['client_name'] ?? ($cimd[ $client_id ]['client_name'] ?? ''));
-                $user      = get_userdata($connection['user_id']);
-                $current   = Client_Access::IDENTITY === $connection['level'] ? 'identity:' . $connection['identity'] : $connection['level'];
-                $capped    = Client_Access::SCOPE_READ === $connection['scope'];
-                $choices   = [
-                    Client_Access::FULL => $capped ? __('Full access (granted read only)', 'wpmcp') : __('Full access', 'wpmcp'),
-                    Client_Access::READ => __('Read only', 'wpmcp'),
+        $rows = [];
+        foreach (Client_Metadata_Document::clients() as $client_id => $client) {
+            $rows[ (string) $client_id ] = [
+                'name'           => (string) ($client['client_name'] ?? ''),
+                'redirect_hosts' => array_map('strval', (array) ($client['redirect_hosts'] ?? [])),
+                'status'         => (string) ($client['status'] ?? ''),
+                'cimd'           => true,
+                'connections'    => [],
+            ];
+        }
+        foreach (Client_Access::connections() as $connection) {
+            $client_id = (string) $connection['client_id'];
+            if (! isset($rows[ $client_id ])) {
+                $client             = Client_Store::get($client_id);
+                $rows[ $client_id ] = [
+                    'name'           => (string) ($client['client_name'] ?? ''),
+                    'redirect_hosts' => [],
+                    'status'         => '',
+                    'cimd'           => false,
+                    'connections'    => [],
                 ];
-                foreach ($identities as $identity) {
-                    /* translators: %s: scoped identity name. */
-                    $choices[ 'identity:' . $identity ] = sprintf(__('As the "%s" identity', 'wpmcp'), $identity);
-                }
+            }
+            $rows[ $client_id ]['connections'][] = $connection;
+        }
+        return $rows;
+    }
+
+    /** The access level control of one OAuth connection (issue #454). */
+    private function render_access_form(string $nonce, array $connection): void
+    {
+        $identities = array_values(array_filter(array_map(static fn (array $i): string => (string) ($i['name'] ?? ''), Identity_Store::list()), 'strlen'));
+        $user       = get_userdata($connection['user_id']);
+        $current    = Client_Access::IDENTITY === $connection['level'] ? 'identity:' . $connection['identity'] : $connection['level'];
+        $capped     = Client_Access::SCOPE_READ === $connection['scope'];
+        $choices    = [
+            Client_Access::FULL => $capped ? __('Full access (granted read only)', 'wpmcp') : __('Full access', 'wpmcp'),
+            Client_Access::READ => __('Read only', 'wpmcp'),
+        ];
+        foreach ($identities as $identity) {
+            /* translators: %s: scoped identity name. */
+            $choices[ 'identity:' . $identity ] = sprintf(__('As the "%s" identity', 'wpmcp'), $identity);
+        }
+        ?>
+        <form method="post" style="margin-bottom: 0.5em;">
+            <input type="hidden" name="wpmcp_connection_action" value="oauth_access">
+            <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
+            <input type="hidden" name="client_id" value="<?php echo esc_attr($connection['client_id']); ?>">
+            <input type="hidden" name="user_id" value="<?php echo esc_attr((string) $connection['user_id']); ?>">
+            <label>
+                <?php
+                /* translators: %s: login of the user who approved the client. */
+                echo esc_html(sprintf(__('Approved by %s:', 'wpmcp'), $user ? $user->user_login : __('Deleted user', 'wpmcp')));
                 ?>
-                <tr>
-                    <td>
-                        <strong><?php echo esc_html('' !== $name ? $name : __('Unnamed application', 'wpmcp')); ?></strong><br>
-                        <code><?php echo esc_html($client_id); ?></code>
-                    </td>
-                    <td><?php echo esc_html($user ? $user->user_login : __('Deleted user', 'wpmcp')); ?></td>
-                    <td>
-                        <form method="post">
-                            <input type="hidden" name="wpmcp_connection_action" value="oauth_access">
-                            <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
-                            <input type="hidden" name="client_id" value="<?php echo esc_attr($client_id); ?>">
-                            <input type="hidden" name="user_id" value="<?php echo esc_attr((string) $connection['user_id']); ?>">
-                            <select name="access">
-                                <?php foreach ($choices as $value => $label) : ?>
-                                    <option value="<?php echo esc_attr($value); ?>" <?php selected($current, $value); ?>><?php echo esc_html($label); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <?php submit_button(__('Save', 'wpmcp'), 'small', 'submit', false); ?>
-                            <?php if (! $connection['stored']) : ?>
-                                <br><span class="description"><?php echo esc_html__('Connected before access levels existed, so it has full access.', 'wpmcp'); ?></span>
-                            <?php endif; ?>
-                        </form>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+                <select name="access">
+                    <?php foreach ($choices as $value => $label) : ?>
+                        <option value="<?php echo esc_attr($value); ?>" <?php selected($current, $value); ?>><?php echo esc_html($label); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <?php submit_button(__('Save', 'wpmcp'), 'secondary', 'submit', false); ?>
+            <?php if (! $connection['stored']) : ?>
+                <p class="description"><?php echo esc_html__('Connected before access levels existed, so it has full access.', 'wpmcp'); ?></p>
+            <?php endif; ?>
+        </form>
         <?php
     }
 }

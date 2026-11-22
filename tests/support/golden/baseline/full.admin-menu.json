@@ -1,0 +1,100 @@
+{
+  "menu": [
+    {
+      "position": "80.5",
+      "title": "wpmcp",
+      "capability": "wpmcp_manage",
+      "slug": "wpmcp",
+      "page_title": "wpmcp",
+      "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjQ4IDQ0IDE2MCAxNjAiPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNMTU1LjMgNjAuM0E3MyA3MyAwIDEgMSAxMDAuNyA2MC4zTDEwOC45IDgwLjdBNTEgNTEgMCAxIDAgMTQ3LjEgODAuN0ExMSAxMSAwIDAgMSAxNTUuMyA2MC4zWiIvPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNNzQgNzAuNUwxMTIgNDdWOTRaIi8+PC9zdmc+"
+    }
+  ],
+  "submenu": {
+    "wpmcp": [
+      {
+        "title": "wpmcp",
+        "capability": "wpmcp_manage",
+        "slug": "wpmcp",
+        "page_title": "wpmcp"
+      },
+      {
+        "title": "Audit Log",
+        "capability": "wpmcp_manage",
+        "slug": "wpmcp-audit-log",
+        "page_title": "WP MCP: Audit Log"
+      },
+      {
+        "title": "Handshake",
+        "capability": "wpmcp_manage",
+        "slug": "wpmcp-handshake",
+        "page_title": "WP MCP: Handshake Instructions"
+      },
+      {
+        "title": "Connection",
+        "capability": "wpmcp_manage",
+        "slug": "wpmcp-connection",
+        "page_title": "WP MCP: Connection"
+      },
+      {
+        "title": "Abilities",
+        "capability": "wpmcp_manage",
+        "slug": "wpmcp-abilities",
+        "page_title": "WP MCP: Abilities"
+      },
+      {
+        "title": "Redirects",
+        "capability": "wpmcp_manage",
+        "slug": "wpmcp-redirects",
+        "page_title": "WP MCP: Redirects"
+      },
+      {
+        "title": "Skills",
+        "capability": "wpmcp_manage",
+        "slug": "wpmcp-skills",
+        "page_title": "WP MCP: Agent Skills"
+      },
+      {
+        "title": "Opt-in operations",
+        "capability": "wpmcp_manage",
+        "slug": "wpmcp-opt-in",
+        "page_title": "WP MCP: Opt-in operations"
+      },
+      {
+        "title": "Chat",
+        "capability": "wpmcp_manage",
+        "slug": "wpmcp-chat",
+        "page_title": "WP MCP: Chat"
+      },
+      {
+        "title": "Memory",
+        "capability": "wpmcp_manage",
+        "slug": "edit.php?post_type=wpmcp_memory",
+        "page_title": "WP MCP: Agent Memory"
+      }
+    ]
+  },
+  "registered_pages": [
+    "toplevel_page_wpmcp",
+    "wpmcp_page_edit?post_type=wpmcp_memory",
+    "wpmcp_page_wpmcp-abilities",
+    "wpmcp_page_wpmcp-audit-log",
+    "wpmcp_page_wpmcp-chat",
+    "wpmcp_page_wpmcp-connection",
+    "wpmcp_page_wpmcp-handshake",
+    "wpmcp_page_wpmcp-opt-in",
+    "wpmcp_page_wpmcp-redirects",
+    "wpmcp_page_wpmcp-skills"
+  ],
+  "parent_pages": {
+    "edit.php?post_type=wpmcp_memory": "wpmcp",
+    "wpmcp": "wpmcp",
+    "wpmcp-abilities": "wpmcp",
+    "wpmcp-audit-log": "wpmcp",
+    "wpmcp-chat": "wpmcp",
+    "wpmcp-connection": "wpmcp",
+    "wpmcp-handshake": "wpmcp",
+    "wpmcp-opt-in": "wpmcp",
+    "wpmcp-redirects": "wpmcp",
+    "wpmcp-skills": "wpmcp"
+  }
+}

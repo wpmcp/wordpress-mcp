@@ -11,23 +11,31 @@ if (! defined('ABSPATH')) {
 /**
  * LMS course structure and enrollments (issue #394) on the plugin-data pair,
  * paid-tier, so they add no top-level tools: for Tutor LMS (LMS_Tutor),
- * LifterLMS (LMS_LifterLMS) and LearnDash (LMS_LearnDash, which also adds
- * learner enrollment and progress ops), each op prefixed with the plugin
+ * LifterLMS (LMS_LifterLMS), LearnDash (LMS_LearnDash, which also adds
+ * learner enrollment and progress ops), LearnPress (LMS_LearnPress, issue
+ * #672, whose sections are rows of its own table) and Sensei LMS
+ * (LMS_Sensei, issue #673, whose modules are terms and so are read but not
+ * written) and MasterStudy LMS (LMS_MasterStudy, issue #1033, whose sections
+ * are rows of its own table), each op prefixed with the plugin
  * (tutor-get-course, lifterlms-add-lesson, learndash-enroll-user, ...). What
  * every LMS shares, the op catalog, the checks and the snapshot discipline,
- * is LMS_Adapter.
+ * is LMS_Adapter. Thrive Apprentice (LMS_Thrive_Apprentice, issue #826)
+ * keeps its courses as terms, so it brings its own catalog
+ * (thrive-apprentice-get-course, ...) with the same slug, label, active()
+ * and operations() surface.
  *
  * Presence is filterable per plugin (wpmcp_tutor_active,
- * wpmcp_lifterlms_active, wpmcp_learndash_active); an op whose plugin is not
+ * wpmcp_lifterlms_active, wpmcp_learndash_active, wpmcp_learnpress_active,
+ * wpmcp_sensei_active, wpmcp_thrive_apprentice_active, wpmcp_masterstudy_active); an op whose plugin is not
  * loaded stays documented in list-operations (dependency_met:false) and
  * answers <plugin>_inactive.
  */
 final class LMS_Pack
 {
-    /** @return LMS_Adapter[] */
+    /** @return array<int, LMS_Adapter|LMS_Thrive_Apprentice> */
     public static function adapters(): array
     {
-        return [ new LMS_Tutor(), new LMS_LifterLMS(), new LMS_LearnDash() ];
+        return [ new LMS_Tutor(), new LMS_LifterLMS(), new LMS_LearnDash(), new LMS_LearnPress(), new LMS_Sensei(), new LMS_Thrive_Apprentice(), new LMS_MasterStudy() ];
     }
 
     /** Whether a supported LMS is loaded and this install may run the paid tier. */

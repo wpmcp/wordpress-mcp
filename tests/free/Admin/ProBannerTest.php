@@ -5,6 +5,7 @@ namespace WPMCP\Tests\Free\Admin;
 use WPMCP\Admin\Audit_Log_Page;
 use WPMCP\Admin\Guarded_Handler;
 use WPMCP\Admin\Pro_Banner;
+use WPMCP\MCP\Handshake_Instructions;
 use WPMCP\Memory\Memory_Store;
 use WPMCP\Plugin;
 use WPMCP\Pro\Gate;
@@ -39,6 +40,7 @@ class ProBannerTest extends \WP_UnitTestCase
         unset($_GET['_wpnonce'], $_GET['redirect_to']);
         remove_all_filters('wpmcp_pro_banner_offer');
         remove_all_filters('wpmcp_pro_banner_screens');
+        remove_all_filters('wpmcp_pro_banner_builder');
         parent::tearDown();
     }
 
@@ -79,6 +81,18 @@ class ProBannerTest extends \WP_UnitTestCase
         $this->assertStringContainsString('action=' . Pro_Banner::DISMISS_ACTION, $html);
         $this->assertStringContainsString('_wpnonce=', $html);
         $this->assertStringContainsString('class="notice', $html, 'it is a standard WordPress admin notice');
+    }
+
+    /**
+     * rollback-session is a free tool, so the banner must not sell session
+     * restore as a Pro feature. What Pro adds is history depth.
+     */
+    public function test_claims_only_what_pro_adds(): void
+    {
+        $html = $this->rendered();
+
+        $this->assertStringContainsString('Unlimited snapshot history while your licence is active', $html);
+        $this->assertStringNotContainsString('session restore', $html);
     }
 
     public function test_renders_nothing_with_an_active_pro_licence(): void
@@ -221,6 +235,101 @@ class ProBannerTest extends \WP_UnitTestCase
         $this->assertStringNotContainsString('<b>', $html);
         $this->assertStringNotContainsString('javascript:', $html);
         $this->assertStringContainsString('https://wpmcp-pro.com/pricing.html', $html, 'an unusable URL falls back to the pricing page');
+    }
+
+    private function with_builder(string $builder): string
+    {
+        add_filter('wpmcp_pro_banner_builder', static fn (): string => $builder);
+        $html = $this->rendered();
+        remove_all_filters('wpmcp_pro_banner_builder');
+
+        return $html;
+    }
+
+    public function test_names_elementor_when_elementor_is_detected(): void
+    {
+        $html = $this->with_builder('elementor');
+
+        $this->assertStringContainsString('Elementor detected: WP MCP Pro adds deep Elementor editing, building sections and templates, and unlimited undo history.', $html);
+    }
+
+    public function test_names_bricks_and_drops_the_elementor_pitch_on_a_bricks_site(): void
+    {
+        $html = $this->with_builder('bricks');
+
+        $this->assertStringContainsString('Bricks detected:', $html);
+        $this->assertStringNotContainsString('builds Elementor pages too', $html);
+        $this->assertStringNotContainsString('Deep Elementor editing', $html);
+    }
+
+    public function test_a_gutenberg_site_keeps_the_general_headline(): void
+    {
+        $html = $this->with_builder('gutenberg');
+
+        $this->assertStringContainsString('Pro keeps every snapshot, and builds Elementor pages too.', $html);
+        $this->assertStringNotContainsString('detected', $html);
+    }
+
+    public function test_an_unknown_builder_falls_back_to_the_general_headline(): void
+    {
+        $html = $this->with_builder('<script>nope</script>');
+
+        $this->assertStringContainsString('Pro keeps every snapshot, and builds Elementor pages too.', $html);
+        $this->assertStringNotContainsString('<script>nope', $html);
+    }
+
+    public function test_without_the_filter_it_uses_the_site_builder_detection(): void
+    {
+        $detected = (new Handshake_Instructions())->active_builder();
+
+        $this->assertSame($detected, Pro_Banner::builder());
+        if ('elementor' === $detected) {
+            $this->assertStringContainsString('Elementor detected:', $this->rendered());
+        }
+    }
+
+    public function test_every_builder_headline_is_named_and_clean(): void
+    {
+        $names = [
+            'elementor'      => 'Elementor',
+            'bricks'         => 'Bricks',
+            'divi'           => 'Divi',
+            'wpbakery'       => 'WPBakery',
+            'beaver-builder' => 'Beaver Builder',
+            'breakdance'     => 'Breakdance',
+            'oxygen'         => 'Oxygen',
+            'oxygen-classic' => 'Oxygen',
+            'avada'          => 'Avada',
+            'thrive'         => 'Thrive Architect',
+            'betheme'        => 'BeTheme',
+            'flatsome'       => 'Flatsome',
+        ];
+
+        foreach ($names as $builder => $name) {
+            $html = $this->with_builder($builder);
+            $this->assertStringContainsString($name . ' detected: WP MCP Pro', $html, $builder);
+            $this->assertStringContainsString('unlimited undo history', $html, $builder);
+            $lower = strtolower($html);
+            foreach (['upgrade to unlock', 'unlock this feature', 'pro feature', 'available in pro', 'only in pro', 'upgrade now', 'the only', 'every write'] as $phrase) {
+                $this->assertStringNotContainsString($phrase, $lower, "{$builder}: {$phrase}");
+            }
+            $this->assertStringNotContainsString("\u{2014}", $html, "{$builder}: em dash"); // dash-guard-ignore: the test looks for the character
+            $this->assertStringNotContainsString("\u{2013}", $html, "{$builder}: en dash"); // dash-guard-ignore: the test looks for the character
+        }
+    }
+
+    public function test_a_named_builder_keeps_the_offer_and_dismiss_rules(): void
+    {
+        add_filter('wpmcp_pro_banner_builder', static fn (): string => 'divi');
+        $now = 1_800_000_000;
+        Pro_Banner::set_now_for_tests($now);
+
+        $html = $this->rendered();
+        $this->assertStringContainsString('coupon=WPMCP20', $html);
+        $this->assertStringContainsString('Hide for 30 days', $html);
+
+        $this->dismiss_with_nonce();
+        $this->assertSame('', $this->rendered(), 'a dismissal still hides it');
     }
 
     public function test_copy_avoids_pay_to_unlock_phrases_and_dashes(): void

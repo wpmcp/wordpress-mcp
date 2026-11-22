@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-# Build the WordPress.org directory zip: dist/wpmcp-<version>.zip
+# Build the WordPress.org directory zip: dist/wpmcp-directory-<version>.zip
+#
+# The zip file is named wpmcp-directory-* so it can never be mistaken for the
+# headline GitHub download (dist/wpmcp-<version>.zip from build-release.sh,
+# the build with the upgrade banner). The folder inside is still wpmcp/, the
+# directory slug.
 #
 # This is not the full plugin with a flag flipped. Guideline 5 forbids
 # shipping functionality "restricted or locked, only to be made available by
@@ -315,6 +320,10 @@ foreach ($it as $f) {
     if ($f->getExtension() !== "php") { continue; }
     preg_match_all("/new\\s+Ability\\(\\s*\\n\\s*[\\x27\"]([^\\x27\"]+)[\\x27\"]/", file_get_contents($f->getPathname()), $m);
     foreach ($m[1] as $name) { $registered[$name] = true; }
+    // A dispatcher pair is registered by Integration_Dispatcher::abilities()
+    // as wpmcp/<integration()>-read and -write, not as a literal (#850).
+    preg_match_all("/function\\s+integration\\(\\)\\s*:\\s*string\\s*\\{\\s*return\\s+[\\x27\"]([a-z0-9-]+)[\\x27\"];/", file_get_contents($f->getPathname()), $m);
+    foreach ($m[1] as $slug) { $registered["wpmcp/" . $slug . "-read"] = true; $registered["wpmcp/" . $slug . "-write"] = true; }
 }
 $docs = array_merge(
     (array) glob($stage . "/src/Skills/library/*/SKILL.md"),
@@ -405,6 +414,12 @@ grep -q "flavor-guard.php" "$STAGE/$SLUG.php" || fail "$SLUG.php does not load t
 [ -f "$STAGE/src/adapter-guard.php" ] || fail "src/adapter-guard.php missing from the $SLUG build"
 grep -q "wpmcp_prefer_shared_mcp_adapter" "$STAGE/$SLUG.php" || fail "$SLUG.php does not apply the MCP adapter guard"
 grep -q "^ \* WPMCP Flavor: wporg$" "$STAGE/$SLUG.php" || fail "$SLUG.php does not declare the wporg flavor header"
+# The full build's Update URI header (scripts/build-release.sh) must never reach
+# the directory cut: wp.org rejects a non-wordpress.org Update URI. Gate 7's
+# compliance run reports it too; this names the cause directly.
+# shellcheck source=scripts/lib/release-flavors.sh
+. "$ROOT/scripts/lib/release-flavors.sh"
+assert_no_update_uri "$STAGE/$SLUG.php" || fail "$SLUG.php carries an Update URI header"
 
 # 6. Packaging hygiene: no dotfiles, no development directories, no build
 
@@ -421,7 +436,7 @@ bash "$ROOT/scripts/lib/updater-gate.sh" "$STAGE" \
   || fail "an updater surface survived into the $SLUG build"
 
 mkdir -p "$ROOT/dist"
-ZIP="$ROOT/dist/$SLUG-$VERSION.zip"
+ZIP="$ROOT/dist/$SLUG-directory-$VERSION.zip"
 rm -f "$ZIP"
 (cd "$STAGE_PARENT" && zip -rq "$ZIP" "$SLUG" -x "*.DS_Store")
 

@@ -31,7 +31,7 @@ class AuditLogDomainColumnTest extends \WP_UnitTestCase
         $prop->setValue(Plugin::instance(), new Registrar());
 
         $snapshot = [ 'object_type' => 'post', 'object_id' => 16, 'data' => [ 'post' => null, 'meta' => [] ] ];
-        Snapshot_Store::save('op-590-a', 'sess-590', $snapshot, 'set-post-terms', str_repeat('a', 64));
+        Snapshot_Store::save('op-590-a', 'sess-590', $snapshot, 'set-post-terms', hash('sha256', (string) 'op-590-a'));
         Snapshot_Store::save('op-590-b', 'sess-590', [ 'object_type' => 'option', 'object_id' => 'blogname', 'data' => [ 'name' => 'blogname', 'exists' => true, 'value' => 'x' ] ], 'update-settings', str_repeat('b', 64));
     }
 
@@ -48,8 +48,9 @@ class AuditLogDomainColumnTest extends \WP_UnitTestCase
         (new Audit_Log_Page())->render();
         $html = (string) ob_get_clean();
 
-        $this->assertMatchesRegularExpression('#set-post-terms \(\#16\)</td>\s*<td>content</td>#', $html);
-        $this->assertMatchesRegularExpression('#update-settings \(blogname\)</td>\s*<td>settings</td>#', $html);
+        // Issue #1126: the domain reads as a plain name.
+        $this->assertMatchesRegularExpression('#set-post-terms[^<]*\(\#16\)</td>\s*<td class="column-domain">Content</td>#', $html);
+        $this->assertMatchesRegularExpression('#update-settings \(blogname\)</td>\s*<td class="column-domain">Settings</td>#', $html);
     }
 
     public function test_get_operations_reports_the_domain_and_filters_by_it(): void
