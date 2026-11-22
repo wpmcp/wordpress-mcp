@@ -30,9 +30,9 @@ if (! defined('ABSPATH')) {
  *
  * Both writes are snapshotted on the plugin's option, so rollback-operation
  * puts it back exactly, and are off until the site opts in through
- * wpmcp_enable_tracking_write. PixelYourSite and Meta Pixel are read here
- * only: PixelYourSite keeps its settings in its own table and the Meta
- * plugin's pixel comes from Meta's own connection flow.
+ * wpmcp_enable_tracking_write. PixelYourSite IDs and events are written by
+ * pixelyoursite-set-settings (PixelYourSite_Operations, #1094); the Meta
+ * plugin's pixel is read only, since it comes from Meta's own connection flow.
  *
  * Every op runs at manage_options, the capability each plugin's settings
  * screen needs. Presence is filterable per plugin (wpmcp_gtm4wp_active,
@@ -163,7 +163,10 @@ final class Tracking_Pack
     /** @return array<string, array<string, mixed>> */
     public static function operations(): array
     {
-        return self::shared_operations() + self::gtm4wp_operations() + self::clarity_operations();
+        $db  = $GLOBALS['wpdb'] ?? null;
+        $pys = $db instanceof \wpdb ? ( new PixelYourSite_Operations(new PixelYourSite_Store($db), static fn () => self::pixelyoursite_active() ? true : self::refusal('PixelYourSite')) )->definitions() : [];
+
+        return self::shared_operations() + self::gtm4wp_operations() + self::clarity_operations() + $pys;
     }
 
     /** @return array<string, array<string, mixed>> the reads every plugin answers. */
@@ -463,7 +466,7 @@ final class Tracking_Pack
         return [
             'networks'       => $networks,
             'excluded_roles' => self::roles_list($core['do_not_track_user_roles'] ?? []),
-            'writable'       => false,
+            'writable'       => true,
         ];
     }
 
