@@ -52,6 +52,38 @@ class WporgStripTest extends \WP_UnitTestCase
         $this->assertDirectoryExists(self::stripped_stage() . '/src');
     }
 
+    /**
+     * Gate 3f of scripts/build-wporg-release.sh: no PHP file the cut ships
+     * carries pay-to-unlock prose. The phrases are read from the build script
+     * so the two cannot drift. A shared Safety file written for a paid
+     * integration (FunnelKit's offer lists, #1021) once failed only the
+     * release build.
+     */
+    public function test_no_shipped_php_carries_pay_to_unlock_prose(): void
+    {
+        $script = (string) file_get_contents(self::repo_root() . '/scripts/build-wporg-release.sh');
+        $this->assertSame(1, preg_match('/^for phrase in (.+) ; do$/m', $script, $line), 'gate 3f phrase list not found in build-wporg-release.sh');
+        preg_match_all("/'([^']+)'/", $line[1], $phrases);
+        $this->assertNotEmpty($phrases[1]);
+
+        $stage = self::stripped_stage();
+        $found = [];
+        foreach (array_merge(self::staged_files($stage . '/src'), [$stage . '/wpmcp.php']) as $path) {
+            if (! str_ends_with($path, '.php')) {
+                continue;
+            }
+            foreach (file($path) as $number => $text) {
+                foreach ($phrases[1] as $phrase) {
+                    if (preg_match('/' . $phrase . '/', $text)) {
+                        $found[] = substr($path, strlen($stage) + 1) . ':' . ($number + 1) . ' "' . $phrase . '"';
+                    }
+                }
+            }
+        }
+
+        $this->assertSame([], $found, "Pay-to-unlock prose in files the wp.org cut ships (gate 3f):\n" . implode("\n", $found));
+    }
+
     public function test_no_pro_tier_ability_is_registered_in_the_cut(): void
     {
         $survivors = array_values(array_intersect(self::registered_in_cut(), self::pro_ability_names()));
