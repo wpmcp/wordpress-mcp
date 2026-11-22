@@ -81,6 +81,10 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Breakdance Global Block or Oxygen Component from a page node (issues #634, #635); every field is new.',
         ],
+        'Tools/Builders/Oxygen6_Store.php'            => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Oxygen 6 page, template, header, footer or Component for create_page, save_template and import (issue #805); every field is new.',
+        ],
         'Tools/SiteEditor/Site_Templates_Write.php'   => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates the first customization of a template; every field is new.',

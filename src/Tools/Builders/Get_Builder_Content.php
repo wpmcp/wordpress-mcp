@@ -42,8 +42,12 @@ if (! defined('ABSPATH')) {
  */
 class Get_Builder_Content
 {
+    /** @param array<string,mixed> $args */
     public function handle(array $args)
     {
+        if (Oxygen6_Reads::handles($args)) {
+            return Oxygen6_Reads::standard()->read($args); // Issue #805, see Oxygen6_Reads.
+        }
         if (isset($args['scope']) && '' !== $args['scope']) {
             return Builder_Design::read($args);
         }
