@@ -219,4 +219,23 @@ class CodeSnippetsLiveTest extends \WP_UnitTestCase
         $this->assertSame('opt_in_required', $out['error']['code'] ?? null);
         $this->assertFalse((bool) $this->snippet($id)->active);
     }
+
+    /** Issue #1129: trash-snippet through Code Snippets' own trash_snippet(), and its undo. */
+    public function test_trash_through_code_snippets_and_its_rollback_brings_the_snippet_back_exactly(): void
+    {
+        $id     = (int) $this->create('wpmcp live trash')['result']['snippet']['id'];
+        $before = Code_Snippet_Snapshot::row($id);
+        $out    = $this->call('write', 'code-snippets-trash-snippet', [ 'id' => $id ]);
+
+        $this->assertTrue((bool) $this->snippet($id)->trashed);
+        $listed = $this->call('read', 'code-snippets-list-snippets', [ 'status' => 'trashed', 'tag' => 'wpmcp-live' ])['result']['snippets'];
+        $this->assertSame([ $id ], array_column($listed, 'id'));
+
+        $this->assertTrue(Rollback_Service::restore_operation((string) $out['operation_id']));
+        $this->assertSame($before, Code_Snippet_Snapshot::row($id));
+        $this->assertFalse((bool) $this->snippet($id)->trashed);
+        $this->assertSame('wpmcp live trash', $this->snippet($id)->name);
+        $this->assertSame(0, $GLOBALS['wpmcp_cs_live_runs']);
+        \Code_Snippets\delete_snippet($id, false);
+    }
 }
