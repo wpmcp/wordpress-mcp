@@ -404,13 +404,16 @@ namespace WPMCP\Tests\Pro\Builders {
         {
             $expected = [
                 'avada'      => 'Install and activate the Avada theme with its Avada Core and Avada Builder plugins, then try again.',
+                'beaver-builder' => 'Install and activate the Beaver Builder plugin, then try again.',
                 'betheme'    => 'Install and activate the BeTheme theme, then try again.',
                 'breakdance' => 'Install and activate the Breakdance plugin, then try again.',
                 'bricks'     => 'Install and activate the Bricks theme, then try again.',
                 'cornerstone' => 'Install and activate Cornerstone (Themeco), or the X or Pro theme that bundles it, then try again.',
                 'divi'       => 'Install and activate the Divi theme (Divi 5), then try again.',
                 'oxygen'     => 'Install and activate the Oxygen 6 plugin, then try again.',
+                'siteorigin' => 'Install and activate the SiteOrigin Page Builder plugin, then try again.',
                 'thrive'     => 'Install and activate the Thrive Architect plugin, then try again.',
+                'visual-composer' => 'Install and activate the Visual Composer Website Builder plugin, then try again.',
                 'wpbakery'   => 'Install and activate the WPBakery Page Builder plugin, then try again.',
             ];
             $this->assertSame(array_keys($expected), array_keys(Builder_Design_Data::HOSTS));

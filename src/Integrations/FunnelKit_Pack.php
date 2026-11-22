@@ -102,7 +102,7 @@ final class FunnelKit_Pack
     {
         $requires = static fn () => Ops_Status_Packs::presence(self::is_active(), 'funnelkit_inactive', 'FunnelKit');
 
-        return FunnelKit_Writes::operations($requires) + FunnelKit_Bumps::operations($requires) + [
+        return FunnelKit_Writes::operations($requires) + FunnelKit_Bumps::operations($requires) + FunnelKit_Upsell_Operations::operations($requires) + [
             'list-funnelkit-funnels' => [
                 'mode'         => 'read',
                 'tier'         => 'pro',

@@ -84,6 +84,12 @@ final class Theme_Framework_Pack
         if ('blocksy' === $framework) {
             return Theme_Pack_Blocksy::spec();
         }
+        if ('divi' === $framework) {
+            return Theme_Pack_Divi::spec();
+        }
+        if ('flatsome' === $framework) {
+            return Theme_Pack_Flatsome::spec();
+        }
         return self::free_spec($framework);
     }
 
@@ -118,7 +124,7 @@ final class Theme_Framework_Pack
      */
     public static function refresh_after_restore(array $names): void
     {
-        $family = (string) get_template();
+        $family = strtolower((string) get_template());
         if ('blocksy' === $family && in_array(Theme_Blocksy_Extensions::OPTION, $names, true)) {
             Theme_Blocksy_Extensions::refresh();
         }

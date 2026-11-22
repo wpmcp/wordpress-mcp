@@ -28,8 +28,8 @@ drift	drift	static	-	-	-	-	-
 phpunit-default	phpunit	suite	default	floor	-	-	-
 phpunit-floor	phpunit	suite	floor	none	-	-	-
 multisite	multisite	suite	default	none	-	-	-
-live-forms	live-forms	free	default	-	forms-live	-	tests/free/Integrations/ContactForm7LiveTest.php,tests/free/Integrations/EverestFormsLiveTest.php,tests/free/Integrations/FluentFormsLiveTest.php,tests/free/Integrations/FormidableLiveTest.php,tests/free/Integrations/ForminatorLiveTest.php,tests/free/Integrations/NinjaFormsLiveTest.php,tests/free/Integrations/SureFormsLiveTest.php,tests/free/Integrations/WPFormsLiveTest.php
-live-blocks	live-blocks	free	default	-	blocks-live	-	tests/pro/Integrations/BlockSuitesLiveTest.php
+live-forms	live-forms	free	default	-	forms-live	-	tests/free/Integrations/ContactForm7LiveTest.php,tests/free/Integrations/EverestFormsLiveTest.php,tests/free/Integrations/FluentFormsLiveTest.php,tests/free/Integrations/FormidableLiveTest.php,tests/free/Integrations/ForminatorLiveTest.php,tests/free/Integrations/JetFormBuilderLiveTest.php,tests/free/Integrations/NinjaFormsLiveTest.php,tests/free/Integrations/SureFormsLiveTest.php,tests/free/Integrations/WPFormsLiveTest.php
+live-blocks	live-blocks	free	default	-	blocks-live	-	tests/free/Integrations/KadenceFormsLiveTest.php,tests/pro/Integrations/BlockSuitesLiveTest.php
 live-buddypress	live-buddypress	free	default	-	buddypress-live	-	tests/free/Integrations/BuddyPressLiveTest.php,tests/free/Integrations/BuddyPressPrivateGroupLiveTest.php
 live-bbpress	live-bbpress	free	default	-	bbpress-live	-	tests/free/Integrations/BbPressLiveTest.php
 live-lms	live-lms	free	default	-	tutor-live,lifterlms-live	-	tests/pro/Integrations/TutorLmsLiveTest.php,tests/pro/Integrations/LifterLmsLiveTest.php
@@ -56,7 +56,7 @@ live-wpbakery	live-wpbakery	licensed	default	-	wpbakery-live	WPMCP_WPBAKERY_SRC	
 live-thrive	live-thrive	licensed	default	-	thrive-live	WPMCP_THRIVE_ARCHITECT_SRC	tests/pro/Builders/ThriveLiveTest.php
 live-cornerstone	live-cornerstone	licensed	default	-	cornerstone-live	WPMCP_CORNERSTONE_SRC	tests/pro/Builders/CornerstoneLiveTest.php
 live-oxygen	live-oxygen	licensed	default	-	oxygen-live	WPMCP_OXYGEN_SRC	tests/pro/Builders/OxygenLiveTest.php
-live-divi	live-divi	licensed	default	-	divi-live	WPMCP_DIVI_SRC	tests/pro/Builders/Divi5LiveTest.php
+live-divi	live-divi	licensed	default	-	divi-live	WPMCP_DIVI_SRC	tests/pro/Builders/Divi5LiveTest.php,tests/pro/Integrations/ThemeDiviSettingsLiveTest.php
 live-betheme	live-betheme	licensed	default	-	betheme-live	WPMCP_BETHEME_SRC	tests/pro/Builders/BeThemeLiveTest.php
 live-bricks	live-bricks	licensed	default	-	bricks-live	WPMCP_BRICKS_SRC	tests/pro/Builders/BricksLiveTest.php
 live-memberpress	live-memberpress	licensed	default	-	memberpress-live	WPMCP_MEMBERPRESS_SRC	tests/pro/Integrations/MemberPressLiveTest.php

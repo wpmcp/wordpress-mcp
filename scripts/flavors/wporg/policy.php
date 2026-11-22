@@ -103,6 +103,9 @@ return [
         'src/Tools/Performance/Curl_Dns_Pin.php',
         // Paid ability whose handler lives inside an otherwise free directory.
         'src/Tools/Media/Stock/Insert_Stock_Image.php',
+        // Static HTML export (issue #854): a paid module reached only
+        // through trigger-backup's wpmcp_trigger_backup_kind filter.
+        'src/Tools/Export/Static_Site',
         // Same shape: image compression and WebP/AVIF copies (issue #380).
         'src/Tools/Media/Optimize_Media.php',
         // Its background runs, tool-upload optimization and front-end
@@ -150,6 +153,17 @@ return [
         // ship as a free skill instructing an agent to call tools that do not
         // exist. A skill the reader cannot follow is worse than no skill.
         'src/Skills/library/wpmcp-elementor-editing',
+        // The paid-tier integration playbooks (issue #850). Each describes
+        // operations this build does not register, so they leave whole like
+        // the Elementor one; the router's lines naming them go in strip.php.
+        'src/Skills/library/integrations/page-builders',
+        'src/Skills/library/integrations/lms',
+        'src/Skills/library/integrations/crm',
+        'src/Skills/library/integrations/page-translation',
+        'src/Skills/library/integrations/tablepress',
+        'src/Skills/library/integrations/bookings',
+        'src/Skills/library/integrations/memberpress',
+        'src/Skills/library/integrations/funnels',
         // Brand kits (issue #75). Every class under here is reachable only
         // from register_brand_kit_abilities, which this build deletes, and the
         // kit library itself is data rather than a free feature, so the
@@ -184,6 +198,10 @@ return [
         // build them; the Kadence pack and the shared builder stay.
         'src/Integrations/Theme_Pack_GeneratePress.php',
         'src/Integrations/Theme_Pack_Blocksy.php',
+        // The Divi theme options pack (issue #1011), paid-tier, stripped the same way.
+        'src/Integrations/Theme_Pack_Divi.php',
+        // The Flatsome theme options pack (issue #849), paid-tier, stripped the same way.
+        'src/Integrations/Theme_Pack_Flatsome.php',
         // The premium theme add-on layout ops (issue #656), paid-tier.
         // strip.php takes out the merge in Theme_Framework_Pack and the
         // docblock lines that name them.
@@ -194,6 +212,7 @@ return [
         'src/Integrations/Theme_Layouts_GeneratePress.php',
         'src/Integrations/Theme_Layouts_Hfe.php',
         'src/Integrations/Theme_Layouts_Target_Rules.php',
+        'src/Integrations/Theme_Layouts_Blocksy.php',
         // The Blocksy Companion extension ops (issue #650), paid-tier.
         // strip.php takes out the merge and the rollback refresh in
         // Theme_Framework_Pack.
@@ -203,12 +222,27 @@ return [
         // takes out the line in Theme_Integration that merges them and the
         // rollback hook in Plugin that refreshes one suite's cache.
         'src/Integrations/Elementor_Addon_Packs.php',
+        // The ElementsKit pack (issue #1012), paid-tier, standalone. strip.php
+        // takes out its one merge line in Theme_Integration.
+        'src/Integrations/ElementsKit_Catalog.php',
+        'src/Integrations/ElementsKit_Element_Sync.php',
+        'src/Integrations/ElementsKit_Lists.php',
+        'src/Integrations/ElementsKit_Operations.php',
+        'src/Integrations/ElementsKit_Pack.php',
+        'src/Integrations/ElementsKit_Plan.php',
+        'src/Integrations/ElementsKit_Planner.php',
+        'src/Integrations/ElementsKit_Snapshot.php',
+        'src/Integrations/ElementsKit_Store.php',
         // FunnelKit funnel and step reads (issue #356), paid-tier. strip.php
         // takes out the line in Theme_Integration that merges them.
         'src/Integrations/FunnelKit_Pack.php',
         // And its funnel, step and checkout product writes (issue #500),
         // merged only by FunnelKit_Pack.
         'src/Integrations/FunnelKit_Writes.php',
+        // Thrive Theme Builder templates, sections and theme settings (issue
+        // #824), paid-tier. strip.php takes out the line in Theme_Integration
+        // that merges them.
+        'src/Integrations/Thrive_Theme_Pack.php',
         // CartFlows flows, steps and checkout products (issue #662),
         // paid-tier. strip.php takes out the line in Theme_Integration that
         // merges them.
@@ -216,8 +250,16 @@ return [
         // WordPress core personal data request ops (issue #714), paid-tier.
         // strip.php takes out the line in Theme_Integration that merges them.
         'src/Integrations/Core_Privacy_Pack.php',
+        // WPFunnels funnels, steps and checkout products (issue #834),
+        // paid-tier. strip.php takes out the line in Theme_Integration that
+        // merges them.
+        'src/Integrations/WPFunnels_Pack.php',
         // And its order bump ops (issue #663), merged only by FunnelKit_Pack.
         'src/Integrations/FunnelKit_Bumps.php',
+        // And its upsell offer writes (issue #1021), merged only by FunnelKit_Pack.
+        'src/Integrations/FunnelKit_Upsell_Operations.php',
+        'src/Integrations/FunnelKit_Upsell_Store.php',
+        'src/Integrations/FunnelKit_Offer_Line.php',
         // LMS course structure and enrollments (issue #394), paid-tier.
         // strip.php takes out the lines in Plugin_Data_Integration that merge
         // the ops, count the pack towards availability and name it in the
@@ -227,8 +269,13 @@ return [
         'src/Integrations/LMS_Tutor.php',
         'src/Integrations/LMS_LifterLMS.php',
         'src/Integrations/LMS_LearnDash.php',
+        'src/Integrations/LMS_Thrive_Apprentice.php',
         'src/Integrations/LMS_LearnPress.php',
         'src/Integrations/LMS_Sensei.php',
+        'src/Integrations/LMS_MasterStudy.php',
+        'src/Integrations/MasterStudy_Curriculum_Store.php',
+        'src/Integrations/MasterStudy_Section.php',
+        'src/Integrations/MasterStudy_Material.php',
         // TablePress tables (issue #481), paid-tier. strip.php takes out the
         // lines in Plugin_Data_Integration that merge the ops, count the pack
         // towards availability and name it, and its hooks in Plugin.
@@ -241,6 +288,9 @@ return [
         'src/Integrations/CRM_Adapter.php',
         'src/Integrations/CRM_FluentCRM.php',
         'src/Integrations/CRM_MailPoet.php',
+        // FunnelKit Automations contacts, lists, tags and automations
+        // (issue #831), merged only by CRM_Pack.
+        'src/Integrations/CRM_FunnelKit.php',
         // Amelia bookings (issue #499), paid-tier. strip.php takes out the
         // lines in Plugin_Data_Integration that merge the ops and count the
         // pack towards availability. Its snapshot type and the Amelia
@@ -256,12 +306,30 @@ return [
         'src/Integrations/I18n_Page_Text.php',
         // Theme and plugin string translation (issue #689), merged by I18n_Pack.
         'src/Integrations/I18n_Strings.php',
+        // Its WPML String Translation half (issue #1053).
+        'src/Integrations/WPML_String_Translation.php',
+        'src/Integrations/WPML_String_Store.php',
+        // Yoast SEO Premium redirects and the schema template reads (issue #681).
+        'src/Integrations/Seo_Extras_Pack.php',
+        'src/Integrations/Yoast_Premium_Redirect_Ops.php',
+        'src/Integrations/Yoast_Redirect_Store.php',
+        'src/Integrations/Seo_Schema_Template_Ops.php',
         // MemberPress (issue #668), paid-tier. strip.php takes out the lines
         // in Plugin_Data_Integration that merge the ops and count the pack
         // towards availability. The plugin_table_rows kind for its rule
         // access rows stays: it acts on MemberPress's own table and needs
         // no MemberPress class.
         'src/Integrations/MemberPress_Pack.php',
+        // GamiPress (issue #833), paid-tier. strip.php takes out the lines in
+        // Plugin_Data_Integration that merge the ops and count the pack
+        // towards availability. The gamipress_user snapshot type stays: it
+        // needs no GamiPress class, so an undo recorded before a downgrade
+        // still restores.
+        'src/Integrations/Gamipress_Pack.php',
+        // Thrive Optimize A/B tests (issue #827), paid-tier. strip.php takes
+        // out the lines in Plugin_Data_Integration that merge the ops, count
+        // the pack towards availability and name it in the summary.
+        'src/Integrations/Thrive_Optimize_Pack.php',
         // Paid Memberships Pro members, orders, discount codes and writes
         // (issue #667), paid-tier. strip.php takes out the line in
         // Paid_Memberships_Pro_Integration that merges them; the free level
@@ -283,11 +351,24 @@ return [
         'src/Integrations/Helpdesk_Adapter.php',
         'src/Integrations/Helpdesk_Fluent_Support.php',
         'src/Integrations/Helpdesk_Awesome_Support.php',
+        // Thrive Automator automations (issue #830), paid-tier. strip.php
+        // takes out its lines in Plugin_Data_Integration and its rollback
+        // refresher in Plugin.
+        'src/Integrations/Thrive_Automator_Pack.php',
         // Weglot and GTranslate language settings (issue #690), paid-tier.
         // strip.php takes out the lines in Plugin_Data_Integration that merge
         // the ops and count the pack towards availability. The option
         // snapshot it writes is generic and needs no plugin class.
         'src/Integrations/Translation_Settings_Pack.php',
+        // Easy Table of Contents settings and per-post flags (issue #904),
+        // paid-tier. strip.php takes out its lines in Plugin_Data_Integration;
+        // its option and post snapshots are generic.
+        'src/Integrations/Easy_TOC_Pack.php',
+        // Email marketing connectors (issue #900), paid-tier. strip.php takes
+        // out the lines in Plugin_Data_Integration that merge the ops and
+        // count the pack towards availability. The option snapshots it
+        // writes are generic and need no plugin class.
+        'src/Integrations/Email_Marketing_Pack.php',
         // Loco Translate .po files (issue #691), paid-tier, carried onto the
         // pair by Translation_Settings_Pack; strip.php takes out the line in
         // Plugin_Data_Integration that names its ops' plugin. The file_write
@@ -315,6 +396,22 @@ return [
         // only. strip.php takes out the lines in Plugin_Data_Integration that
         // merge the ops and count the pack towards availability.
         'src/Integrations/Offload_Media_Pack.php',
+        // Thrive Ultimatum countdown campaigns (issue #828), paid-tier.
+        // strip.php takes out the lines in Plugin_Data_Integration that merge
+        // the ops, count the pack towards availability and name it. The
+        // tve_ult plugin_table_rows kinds stay: they act on the plugin's own
+        // tables and need no Thrive class.
+        'src/Integrations/Thrive_Ultimatum_Pack.php',
+        // Thrive Ovation testimonials (issue #829), paid-tier. strip.php takes
+        // out the lines in Plugin_Data_Integration that merge the ops and
+        // count the pack towards availability. Its writes are post snapshots,
+        // which need no Ovation class.
+        'src/Integrations/Thrive_Ovation_Pack.php',
+        // Thrive Leads (issue #825), paid-tier. strip.php takes out the lines
+        // in Plugin_Data_Integration that merge the ops and count the pack
+        // towards availability. Its two plugin_table_rows kinds stay: they act
+        // on Thrive Leads' own tables and need no Thrive Leads class.
+        'src/Integrations/Thrive_Leads_Pack.php',
         // wpDataTables and Ninja Tables tables (issue #706), paid-tier.
         // strip.php takes out the lines in Plugin_Data_Integration that merge
         // the ops, name their plugins and count the pack towards availability.

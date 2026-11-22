@@ -122,6 +122,9 @@ return [
         'src/Cloud',
         'src/Admin/Announcements.php',
         'src/Skills/library/wpmcp-safe-database-work',
+        // The security incident skill walks through salt rotation and core
+        // file repair, which this build strips (#850 met #1147).
+        'src/Skills/library/wpmcp-security-incident',
     ],
 
     'methods' => [

@@ -132,6 +132,7 @@ if [ "${WPMCP_LIVE_FORMS:-}" = "1" ]; then
 		"sureforms:sureforms.php"
 		# Issue #676: the Everest Forms ops on the plugin-data pair.
 		"everest-forms:everest-forms.php"
+		"jetformbuilder:jet-form-builder.php"
 	)
 fi
 
