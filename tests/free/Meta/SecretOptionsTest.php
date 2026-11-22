@@ -233,7 +233,7 @@ class SecretOptionsTest extends \WP_UnitTestCase
         return [
             'FluentSMTP connection'  => [ 'fluentmail-settings', [ 'connections' => [ 'abc' => [ 'provider_settings' => [ 'provider' => 'sendgrid', 'api_key' => 'SG.real', 'password' => 'pw', 'key_store' => 'db' ] ] ] ], [ 'connections.abc.provider_settings.api_key', 'connections.abc.provider_settings.password' ], [ 'connections.abc.provider_settings.provider' => 'sendgrid', 'connections.abc.provider_settings.key_store' => 'db' ] ],
             'Post SMTP options'      => [ 'postman_options', [ 'transport_type' => 'smtp', 'basic_auth_password' => 'pw', 'sendgrid_api_key' => 'SG.real', 'fallback_smtp_password' => 'fb' ], [ 'basic_auth_password', 'sendgrid_api_key', 'fallback_smtp_password' ], [ 'transport_type' => 'smtp' ] ],
-            'BackWPup jobs'          => [ 'backwpup_jobs', [ 1 => [ 'name' => 'Nightly', 'dbpassword' => 'dbpw', 'ftppass' => 'ftpw', 's3secretkey' => 's3real', 'dropboxtoken' => 'dbx' ] ], [ '1.dbpassword', '1.ftppass', '1.s3secretkey', '1.dropboxtoken' ], [ '1.name' => 'Nightly' ] ],
+            'BackWPup jobs'          => [ 'backwpup_jobs', [ 1 => [ 'name' => 'Nightly', 'dbpassword' => 'dbpw', 'ftppass' => 'ftpw', 's3secretkey' => 's3real', 'dropboxtoken' => 'dbx', 'emailpass' => 'smtp-fixture' ] ], [ '1.dbpassword', '1.ftppass', '1.s3secretkey', '1.dropboxtoken', '1.emailpass' ], [ '1.name' => 'Nightly' ] ],
             'Imagify settings'       => [ 'imagify_settings', [ 'api_key' => 'imagify-real', 'optimization_level' => 2 ], [ 'api_key' ], [ 'optimization_level' => 2 ] ],
             'Mailchimp for WP'       => [ 'mc4wp', [ 'api_key' => 'mc-real-us1', 'allow_usage_tracking' => 0 ], [ 'api_key' ], [ 'allow_usage_tracking' => 0 ] ],
             'Brevo main option'      => [ 'sib_main_option', [ 'access_key' => 'xkeysib-real', 'ma_key' => 'ma-real', 'sib_use_apiv2' => 1 ], [ 'access_key', 'ma_key' ], [ 'sib_use_apiv2' => 1 ] ],
@@ -509,6 +509,25 @@ class SecretOptionsTest extends \WP_UnitTestCase
 
         $this->expectException(\RuntimeException::class);
         (new Query())->handle([ 'sql' => "SELECT REVERSE(option_value) FROM {$wpdb->options} WHERE option_name = 'wpmcp_test_unregistered'" ]);
+    }
+
+    public function test_backwpup_smtp_password_is_masked_in_get_option_and_query(): void
+    {
+        global $wpdb;
+        // Issue #1162: BackWPup 5 saves the email destination's SMTP password as "emailpass".
+        update_option('backwpup_jobs', [ 2 => [ 'name' => 'Files & Database', 'emailhost' => 'smtp.example.com', 'emailpass' => 'SMTPFIXTURE' ] ]);
+
+        $value = (new Get_Option())->handle([ 'name' => 'backwpup_jobs' ])['value'];
+        $this->assertSame(self::MASK, $value[2]['emailpass']);
+        $this->assertSame('smtp.example.com', $value[2]['emailhost']);
+
+        // query refuses a registered credential option outright, so the password never leaves through it.
+        try {
+            $out = (new Query())->handle([ 'sql' => "SELECT option_value FROM {$wpdb->options} WHERE option_name = 'backwpup_jobs'" ]);
+            $this->assertStringNotContainsString('SMTPFIXTURE', wp_json_encode($out));
+        } catch (\RuntimeException $e) {
+            $this->assertStringNotContainsString('SMTPFIXTURE', $e->getMessage());
+        }
     }
 
     public function test_the_query_tool_cannot_read_a_registered_site_option_from_sitemeta(): void
