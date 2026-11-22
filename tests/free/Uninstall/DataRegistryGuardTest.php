@@ -12,6 +12,7 @@ use WPMCP\Tools\Export\Export_Dir;
 use WPMCP\Tools\Filesystem\Filesystem_Guard;
 use WPMCP\Tools\Redirects\Redirect_Store;
 use WPMCP\Tools\Search\Search_Index_Store;
+use WPMCP\Tools\Security\File_Quarantine;
 use WPMCP\Tools\WidgetBuilder\Compiler\Compiled_Widget_Manifest;
 
 /**
@@ -81,6 +82,10 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             // FunnelKit Cart's settings, written by cart.update-settings on
             // the woo-write pair (issue #832).
             'fkcart_settings',
+            // Otter Blocks' feature switches and disabled blocks, set by
+            // update-otter-settings on the block-suites pair (issue #647).
+            'themeisle_blocks_settings_*',
+            'themeisle_disabled_blocks',
             // Avada's global options, written by the Avada design_system
             // scope on the builder pair (issue #637).
             'fusion_options',
@@ -99,15 +104,39 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             // GTranslate's settings, whose language lists the
             // gtranslate-set-languages op changes (issue #690).
             'GTranslate',
+            // Custom Post Type UI's post types and taxonomies, written by
+            // the cpt-create and cpt-update ops (issue #710).
+            'cptui_post_types',
+            'cptui_taxonomies',
+            // Cookie Notice's settings, whose banner texts the
+            // update-consent-banner-texts op changes (issue #686).
+            'cookie_notice_options',
+            // WPCode's global header, body and footer scripts, replaced by
+            // the wpcode-set-header-footer op (issue #697).
+            'ihaf_insert_header',
+            'ihaf_insert_body',
+            'ihaf_insert_footer',
             // FiboSearch's settings, changed by update-fibosearch-settings
             // on the theme pair (issue #700).
             'dgwt_wcas_settings',
             // Relevanssi's own settings, one option per name, changed by
             // update-relevanssi-settings on the theme pair (issue #700).
             'relevanssi_*',
+            // Thrive Theme Builder's logo link, favicon and default featured
+            // image, changed by update-thrive-theme-settings (issue #824).
+            'thrive-theme-logo-url',
+            'thrive-theme-favicon',
+            'thrive-theme-default-featured-image',
+            // Checkout Field Editor's checkout sections, whose fields the
+            // update-checkout-fields op changes (issue #660).
+            'wc_fields_*',
         ],
         'transient'      => [
             'scrape_key_*',
+            // Custom Post Type UI's own flush-on-next-admin-load flag, set
+            // after a cpt-create or cpt-update op the way its save sets it
+            // (issue #710).
+            'cptui_flush_rewrite_rules',
         ],
         'site_transient' => [],
         'site_option'    => [
@@ -270,7 +299,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             array_map(static fn ($t) => $wpdb->prefix . $t, Data_Registry::TABLES)
         );
         $this->assertSame(
-            [ File_Backup::BACKUP_DIR, Site_Backup_Dir::DIR_NAME, Export_Dir::DIR_NAME, Content_Mirror::DIR_NAME, Filesystem_Guard::BACKUP_DIR ],
+            [ File_Backup::BACKUP_DIR, Site_Backup_Dir::DIR_NAME, Export_Dir::DIR_NAME, Content_Mirror::DIR_NAME, Filesystem_Guard::BACKUP_DIR, File_Quarantine::DIR ],
             Data_Registry::UPLOADS_DIRS
         );
         $this->assertSame(
