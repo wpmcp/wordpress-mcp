@@ -163,10 +163,31 @@ final class Tracking_Pack
     /** @return array<string, array<string, mixed>> */
     public static function operations(): array
     {
-        $db  = $GLOBALS['wpdb'] ?? null;
-        $pys = $db instanceof \wpdb ? ( new PixelYourSite_Operations(new PixelYourSite_Store($db), static fn () => self::pixelyoursite_active() ? true : self::refusal('PixelYourSite')) )->definitions() : [];
+        return self::shared_operations() + self::gtm4wp_operations() + self::clarity_operations() + self::pixelyoursite_operations();
+    }
 
-        return self::shared_operations() + self::gtm4wp_operations() + self::clarity_operations() + $pys;
+    /** @return array<string, array<string, mixed>> the PixelYourSite writes (issue #1094), none without a wpdb. */
+    public static function pixelyoursite_operations(): array
+    {
+        $db = $GLOBALS['wpdb'] ?? null;
+
+        return $db instanceof \wpdb ? ( new PixelYourSite_Operations(new PixelYourSite_Store($db), static fn () => self::pixelyoursite_active() ? true : self::refusal('PixelYourSite')) )->definitions() : [];
+    }
+
+    /**
+     * operation_hosts() groups: plugin name, served by several plugins, ops.
+     * Mirrors operations(), so every op it merges has its host.
+     *
+     * @return list<array{0: string, 1: bool, 2: array<string, array<string, mixed>>}>
+     */
+    public static function host_groups(): array
+    {
+        return [
+            [ 'GTM4WP, PixelYourSite, Meta Pixel for WordPress, Microsoft Clarity', true, self::shared_operations() ],
+            [ 'GTM4WP', false, self::gtm4wp_operations() ],
+            [ 'Microsoft Clarity', false, self::clarity_operations() ],
+            [ 'PixelYourSite', false, self::pixelyoursite_operations() ],
+        ];
     }
 
     /** @return array<string, array<string, mixed>> the reads every plugin answers. */

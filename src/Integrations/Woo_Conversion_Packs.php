@@ -17,6 +17,9 @@ if (! defined('ABSPATH')) {
  */
 final class Woo_Conversion_Packs
 {
+    /** The packs' fragment of the plugin-data pair's summary, naming every host host_groups() lists. */
+    public const SUMMARY = 'Variation Swatches for WooCommerce swatches, Product Feed Pro for WooCommerce feeds and Cart Abandonment Recovery for WooCommerce carts';
+
     public static function active(): bool
     {
         return Variation_Swatches_Pack::active() || Product_Feed_Pack::active() || Cart_Abandonment_Pack::active();

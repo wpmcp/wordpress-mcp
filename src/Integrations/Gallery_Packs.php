@@ -17,6 +17,9 @@ if (! defined('ABSPATH')) {
  */
 final class Gallery_Packs
 {
+    /** The packs' fragment of the plugin-data pair's summary, naming every host host_groups() lists. */
+    public const SUMMARY = 'MetaSlider, Modula, Envira Gallery, Smart Slider 3 and NextGEN Gallery galleries and sliders';
+
     public static function active(): bool
     {
         return MetaSlider_Pack::active() || Modula_Pack::active() || Envira_Pack::active() || SmartSlider_Pack::active() || NextGen_Pack::active();
