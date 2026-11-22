@@ -24,7 +24,7 @@ final class Page_Composers
 
     public static function from_hooks(): self
     {
-        $value = apply_filters(self::FILTER, []);
+        $value = apply_filters('wpmcp_page_composers', []);
         $composers = [];
         if (is_array($value)) {
             foreach ($value as $dialect => $composer) {

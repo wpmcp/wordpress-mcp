@@ -387,7 +387,7 @@ final class Plugin
             $registrar,
             fn (string $group): bool => $this->group_enabled($group),
             function (Registrar $registrar, array $integrations): void {
-                $this->register_integrations($registrar, $integrations);
+                $this->register_integrations($registrar, array_values(array_filter($integrations, static fn (object $i): bool => $i instanceof \WPMCP\Integrations\Integration_Dispatcher)));
             }
         );
     }

@@ -670,7 +670,7 @@ function extract_plugin_slots(string $src): ?array
         '            $registrar,',
         '            fn (string $group): bool => $this->group_enabled($group),',
         '            function (Registrar $registrar, array $integrations): void {',
-        '                $this->register_integrations($registrar, $integrations);',
+        '                $this->register_integrations($registrar, array_values(array_filter($integrations, static fn (object $i): bool => $i instanceof \\WPMCP\\Integrations\\Integration_Dispatcher)));',
         '            }',
         '        );',
         '    }',
@@ -1415,9 +1415,10 @@ function prune_flavor_lists(string $root, array $before, string $plugin_after, a
                             $residual = [];
                             foreach (explode("\n", (string) $old) as $old_line) {
                                 $trimmed = trim($old_line);
-                                if ('' === $trimmed || str_starts_with($trimmed, '//') || str_starts_with($trimmed, '*') || in_array($trimmed, ['}', '{', ');', '));', '];', ']', ')', '),', '],', '});', 'return;', 'break;', 'continue;', '} else {'], true) || in_array($trimmed, $kept, true)
-                                    // The strip drops imports that point at nothing it ships.
-                                    || str_starts_with($trimmed, 'use ')) {
+                                $generic = in_array($trimmed, ['}', '{', ');', '));', '];', ']', ')', '),', '],', '});', 'return;', 'break;', 'continue;', '} else {'], true);
+                                // The strip drops imports that point at nothing it ships.
+                                $import = str_starts_with($trimmed, 'use ');
+                                if ('' === $trimmed || str_starts_with($trimmed, '//') || str_starts_with($trimmed, '*') || $generic || $import || in_array($trimmed, $kept, true)) {
                                     continue;
                                 }
                                 // Still there as often as before the split: the

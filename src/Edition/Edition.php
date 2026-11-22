@@ -32,7 +32,7 @@ final class Edition
 
     public static function from_hooks(): self
     {
-        $slots = apply_filters(self::SLOTS_FILTER, []);
+        $slots = apply_filters('wpmcp_edition_slots', []);
 
         return new self(self::only_slots($slots));
     }
@@ -59,7 +59,7 @@ final class Edition
      */
     public static function registry_roots(): array
     {
-        return self::existing_dirs(apply_filters(self::REGISTRY_ROOTS_FILTER, []));
+        return self::existing_dirs(apply_filters('wpmcp_registry_roots', []));
     }
 
     /** @return list<Edition_Slot> */
