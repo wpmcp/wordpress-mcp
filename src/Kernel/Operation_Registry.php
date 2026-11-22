@@ -148,11 +148,38 @@ final class Operation_Registry
 
     /**
      * The full operation definitions (closures included), from every
-     * permitted and available contributor, memoized for the request.
+     * permitted and available contributor, memoized for the request. An op
+     * with an opt_in_filter is off until that filter opens it, and its
+     * enabled_by_default is read from the filter on every call, so a switch
+     * turned on after the first read is not hidden by the memo.
      *
      * @return array<string, array<string, mixed>>
      */
     public function operations(string $dispatcher): array
+    {
+        return array_map(self::with_live_opt_in(...), $this->definitions($dispatcher));
+    }
+
+    /**
+     * @param array<string, mixed> $def
+     * @return array<string, mixed>
+     */
+    private static function with_live_opt_in(array $def): array
+    {
+        $filter = $def['opt_in_filter'] ?? null;
+        if (! is_string($filter) || '' === $filter) {
+            return $def;
+        }
+        $def['enabled_by_default'] = (bool) apply_filters($filter, false);
+        return $def;
+    }
+
+    /**
+     * The memoized definitions behind operations().
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function definitions(string $dispatcher): array
     {
         if (isset($this->memo[ $dispatcher ])) {
             return $this->memo[ $dispatcher ];
