@@ -170,6 +170,7 @@ final class Operation_Registry
         if (! is_string($filter) || '' === $filter) {
             return $def;
         }
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- the op's own declared wpmcp_* opt-in filter, as in MCP\Availability.
         $def['enabled_by_default'] = (bool) apply_filters($filter, false);
         return $def;
     }
