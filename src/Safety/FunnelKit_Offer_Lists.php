@@ -12,9 +12,9 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * The upsell offers of a FunnelKit funnel, for its snapshots (issue #1021).
+ * The post-purchase offers of a FunnelKit funnel, for its snapshots (issue #1021).
  *
- * Funnel Builder Pro keeps an upsell step's offers outside the funnel's
+ * Funnel Builder Pro keeps a post-purchase offer step's offers outside the funnel's
  * steps JSON: each offer is a wfocu_offer post (linked back to its step by
  * _funnel_id) and the step lists them, in order, in its _funnel_steps post
  * meta, one entry per offer with its id, type, name and state. So that a
@@ -26,14 +26,14 @@ if (! defined('ABSPATH')) {
  */
 final class FunnelKit_Offer_Lists
 {
-    /** The post type of an upsell step. */
+    /** The post type of a post-purchase offer step. */
     public const UPSELL_POST_TYPE = 'wfocu_funnel';
 
-    /** The meta key an upsell step lists its offers in. */
+    /** The meta key a post-purchase offer step lists its offers in. */
     public const LIST_KEY = '_funnel_steps';
 
     /**
-     * The offer post ids the upsell steps of a funnel row list, in order.
+     * The offer post ids the post-purchase offer steps of a funnel row list, in order.
      *
      * @param array<string,mixed> $row
      * @return int[]
@@ -50,7 +50,7 @@ final class FunnelKit_Offer_Lists
     }
 
     /**
-     * Each upsell step of a funnel row with its stored offer list.
+     * Each post-purchase offer step of a funnel row with its stored offer list.
      *
      * @param array<string,mixed> $row
      * @return array<int,array<int|string,mixed>>
@@ -117,7 +117,7 @@ final class FunnelKit_Offer_Lists
     }
 
     /**
-     * Drop the offer list the upsell module keeps for the rest of the
+     * Drop the offer list the post-purchase offer module keeps for the rest of the
      * request (WFOCU_Funnels::get_funnel_steps() caches it per step), so its
      * next write starts from the restored list.
      */
