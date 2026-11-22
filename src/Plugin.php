@@ -1106,19 +1106,20 @@ final class Plugin
     }
 
     /**
-     * The sidebar icon for the top-level menu (issue #879): the brand mark's
-     * circular undo arrow, drawn as one-colour filled shapes. WordPress's
-     * svg-painter recolours only base64 SVG data URIs (it rewrites fill
-     * attributes, not strokes), so the URI is base64. It is a precomputed
-     * literal of this exact SVG (AdminMenuIconTest decodes and checks it):
+     * The sidebar icon for the top-level menu (issue #879): the WPMCP
+     * logomark (undo arrow around "wp_") in one fill colour, since WordPress's
+     * svg-painter recolours only fill attributes of base64 SVG data URIs, so
+     * the kit's stroked arc is a filled half annulus, thick enough for 20x20.
+     * Precomputed literal (AdminMenuIconTest decodes and checks it) of:
      *
-     * <svg xmlns="http://www.w3.org/2000/svg" viewBox="48 44 160 160">
-     * <path fill="black" d="M155.3 60.3A73 73 0 1 1 100.7 60.3L108.9 80.7
-     * A51 51 0 1 0 147.1 80.7A11 11 0 0 1 155.3 60.3Z"/>
-     * <path fill="black" d="M74 70.5L112 47V94Z"/></svg>
+     * <svg xmlns="http://www.w3.org/2000/svg" viewBox="233 231 542 542">
+     * <path fill="black" d="M512.9 757.7A246 246 0 0 1 487.1 266.3L489 302.3
+     * A210 210 0 0 0 511 721.7Z"/><path fill="black" d="M480 246L570 298
+     * L480 350Z"/><path fill="black" d="M401.5 588H436.5 ... (wp glyph)"/>
+     * <path fill="black" d="M678 602H752V636H678Z"/></svg>
      */
     private const MENU_ICON = 'data:image/svg+xml;base64,'
-        . 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjQ4IDQ0IDE2MCAxNjAiPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNMTU1LjMgNjAuM0E3MyA3MyAwIDEgMSAxMDAuNyA2MC4zTDEwOC45IDgwLjdBNTEgNTEgMCAxIDAgMTQ3LjEgODAuN0ExMSAxMSAwIDAgMSAxNTUuMyA2MC4zWiIvPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNNzQgNzAuNUwxMTIgNDdWOTRaIi8+PC9zdmc+';
+        . 'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjIzMyAyMzEgNTQyIDU0MiI+PHBhdGggZmlsbD0iYmxhY2siIGQ9Ik01MTIuOSA3NTcuN0EyNDYgMjQ2IDAgMCAxIDQ4Ny4xIDI2Ni4zTDQ4OSAzMDIuM0EyMTAgMjEwIDAgMCAwIDUxMSA3MjEuN1oiLz48cGF0aCBmaWxsPSJibGFjayIgZD0iTTQ4MCAyNDZMNTcwIDI5OEw0ODAgMzUwWiIvPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNNDAxLjUgNTg4SDQzNi41TDQ1MC43IDUyOS4xQzQ1My44IDUxNi4yIDQ1Ni44IDQ5OC43IDQ1OS44IDQ4Mi42QzQ2Mi44IDQ5OC42IDQ2NS44IDUxNi4xIDQ2OSA1MjkuMUw0ODMuMiA1ODhINTE4LjNMNTU2LjQgNDM1LjFINTE5LjdMNTA4LjYgNDkxLjZDNTA1LjMgNTA5IDUwMS43IDUyOC4zIDQ5OC40IDU1MC44QzQ5NC43IDUyOC4xIDQ5MC42IDUwOC44IDQ4Ny40IDQ5MS42TDQ3NS45IDQzNS4xSDQ0NC4yTDQzMi41IDQ5MS42QzQyOSA1MDkgNDI0LjkgNTI4LjQgNDIxLjMgNTUwLjdDNDE3LjkgNTI4IDQxNCA1MDguNyA0MTAuOSA0OTEuNkwzOTkuNyA0MzUuMUgzNjMuNlpNNTcwLjYgNjQ1LjFINjA1LjFWNTYzLjVINjA2LjFDNjExIDU3NS44IDYyMS41IDU5MC42IDY0Mi41IDU5MC42QzY3Mi4yIDU5MC42IDY5NC44IDU2Mi43IDY5NC44IDUxMS44QzY5NC44IDQ1OS42IDY3MS4yIDQzMy4yIDY0Mi44IDQzMy4yQzYyMC45IDQzMy4yIDYxMC44IDQ0OC43IDYwNi4xIDQ2MC45SDYwNC41VjQzNS4xSDU3MC42Wk02MzIgNTU3LjZDNjE0LjQgNTU3LjYgNjA0LjMgNTM5LjMgNjA0LjMgNTExLjdDNjA0LjMgNDg0IDYxNC4zIDQ2NiA2MzIgNDY2QzY1MCA0NjYgNjU5LjUgNDg0LjkgNjU5LjUgNTExLjdDNjU5LjUgNTM4LjYgNjQ5LjkgNTU3LjYgNjMyIDU1Ny42WiIvPjxwYXRoIGZpbGw9ImJsYWNrIiBkPSJNNjc4IDYwMkg3NTJWNjM2SDY3OFoiLz48L3N2Zz4=';
 
     /**
      * Top-level menu slot (issue #1026). Without one, WordPress appends the

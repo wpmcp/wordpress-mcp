@@ -1,6 +1,9 @@
 <div align="center">
 
-<img src="assets/wpmcp-icon.svg" width="112" alt="WP MCP, the WordPress MCP server plugin, logo">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/readme/wpmcp-logo-horizontal-dark-bg.svg">
+  <img src="assets/readme/wpmcp-logo-horizontal-light-bg.svg" width="420" alt="WPMCP, the WordPress MCP server plugin, logo">
+</picture>
 
 # WordPress MCP Server Plugin (WP MCP)
 
