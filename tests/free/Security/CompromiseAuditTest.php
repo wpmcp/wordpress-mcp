@@ -221,6 +221,100 @@ class CompromiseAuditTest extends \WP_UnitTestCase
         $this->assertCount(1, $locations);
     }
 
+    /** A Compromise_Audit that sees one planted file in $dir as back-dated (issue #1151). */
+    private function backdate_audit(string $planted, string $marker): Compromise_Audit
+    {
+        return new class ($planted, $marker) extends Compromise_Audit {
+            private string $planted;
+            private string $marker;
+
+            public function __construct(string $planted, string $marker)
+            {
+                $this->planted = $planted;
+                $this->marker  = $marker;
+            }
+
+            protected function file_times(string $path): array
+            {
+                $old = 1600000000;
+                if (realpath($path) === realpath($this->planted)) {
+                    return [$old, time()];
+                }
+                if (false !== strpos($path, $this->marker)) {
+                    return [$old, $old + 86400];
+                }
+                return parent::file_times($path);
+            }
+        };
+    }
+
+    public function test_truncated_walk_never_reports_backdated_or_dump_checks_as_pass(): void
+    {
+        $uploads = (string) wp_upload_dir(null, false)['basedir'];
+        $this->put($uploads . '/wpmcp-1151/one.txt', 'x');
+        $this->put($uploads . '/wpmcp-1151/two.txt', 'x');
+        $this->dirs[] = $uploads . '/wpmcp-1151';
+
+        $report = (new Compromise_Audit())->run(1, 60);
+
+        $this->assertTrue($report['stats']['truncated']);
+        $this->assertSame('max_files', $report['stats']['truncated_reason']);
+        $this->assertNotEmpty($report['stats']['next_cursor']);
+        foreach (['compromise_backdated_files', 'compromise_public_dump'] as $id) {
+            $found = $this->with_id($report['findings'], $id);
+            $this->assertCount(1, $found, $id);
+            $this->assertNotSame('pass', $found[0]['status'], $id);
+            // info when nothing was found in the part walked; a back-dated
+            // file it did reach stays a warning, still marked incomplete.
+            $this->assertContains($found[0]['status'], ['info', 'warning'], $id);
+            $this->assertTrue($found[0]['value']['incomplete'], $id);
+            $this->assertSame('max_files', $found[0]['value']['truncated_reason'], $id);
+            $this->assertSame($report['stats']['files_checked'], $found[0]['value']['files_checked'], $id);
+            $this->assertSame($report['stats']['next_cursor'], $found[0]['value']['next_cursor'], $id);
+        }
+    }
+
+    public function test_backdated_file_past_the_limit_is_reported_after_continuing_with_the_cursor(): void
+    {
+        $marker = 'wpmcp-test-backdate-1151';
+        $dir    = WP_PLUGIN_DIR . '/' . $marker;
+        foreach (['a.php', 'b.php', 'c.php'] as $name) {
+            $this->put($dir . '/' . $name, "<?php\n// plugin file\n");
+        }
+        $planted      = $this->put($dir . '/class-cache.php', "<?php\n// planted\n");
+        $this->dirs[] = $dir;
+
+        $first = $this->backdate_audit($planted, $marker)->run(1, 60);
+        $this->assertTrue($first['stats']['truncated']);
+        $this->assertTrue($this->with_id($first['findings'], 'compromise_backdated_files')[0]['value']['incomplete']);
+
+        $cursor  = $first['stats']['next_cursor'];
+        $flagged = [];
+        $calls   = 0;
+        do {
+            $report = $this->backdate_audit($planted, $marker)->run(5000, 60, $cursor);
+            foreach ($this->with_id($report['findings'], 'compromise_backdated_files') as $finding) {
+                if ('warning' === $finding['status']) {
+                    $flagged = array_merge($flagged, array_column($finding['value']['files'], 'location'));
+                }
+            }
+            $cursor = $report['stats']['next_cursor'];
+            $calls++;
+        } while (null !== $cursor && $calls < 50);
+
+        $this->assertNull($cursor, 'the scan finishes');
+        $ours = array_values(array_filter($flagged, static fn ($l) => false !== strpos($l, $marker)));
+        $this->assertSame(['class-cache.php'], array_map('basename', $ours), 'reported once, siblings read even across a cut');
+    }
+
+    public function test_a_bad_cursor_starts_from_the_beginning(): void
+    {
+        $report = (new Compromise_Audit())->run(20000, 60, 'not-a-cursor');
+
+        $this->assertArrayHasKey('next_cursor', $report['stats']);
+        $this->assertSame('pass', $this->with_id($report['findings'], 'compromise_backdated_files')[0]['status']);
+    }
+
     public function test_planted_mu_plugin_without_header_is_reported_with_its_hash(): void
     {
         $file = $this->put(WPMU_PLUGIN_DIR . '/0-wp-cache-loader.php', "<?php\n// no header\n");
