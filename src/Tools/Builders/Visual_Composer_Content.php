@@ -87,7 +87,7 @@ final class Visual_Composer_Content
 
         return new \WP_Error(
             'editor_render_required',
-            "Visual Composer renders a page's markup and CSS in its browser editor, so {$what} cannot be written from here without leaving the live page out of step with the editor. Nothing was written. Make this change in Visual Composer ({$url}); text content and layer names can be edited here.",
+            "Visual Composer renders a page's markup and CSS in its browser editor, so {$what} cannot be written from here without leaving the live page out of step with the editor. Nothing was written. Make this change in Visual Composer ({$url}); text content, layer names, moves and removals can be made here.",
             ['status' => 422, 'editor_url' => $url]
         );
     }
@@ -223,7 +223,7 @@ final class Visual_Composer_Content
             'hash'           => self::hash($post_id),
             'tree'           => self::outline($elements),
             'elements'       => $elements,
-            'writable'       => 'text content (an attribute that is the whole inner HTML of the element, such as a Text Block output) and customHeaderTitle; publish. Other changes need Visual Composer\'s editor.',
+            'writable'       => 'text content (an attribute that is the whole inner HTML of the element, such as a Text Block output) and customHeaderTitle; remove and move of elements other than columns; a blank page filled from a template; publish. Other changes need Visual Composer\'s editor.',
         ];
         if (is_string($raw) && '' !== $raw && null === $doc) {
             $out['tree_error'] = 'The stored Visual Composer document could not be decoded.';

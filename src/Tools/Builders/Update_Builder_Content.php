@@ -126,8 +126,10 @@ if (! defined('ABSPATH')) {
  * in step in both the editor's document and the saved markup is written:
  * update (path: an element id) of an attribute that is the element's whole
  * rendered content (text sets the Text Block output) or of the layer name,
- * and publish. Anything else is refused with editor_render_required (see
- * Visual_Composer_Content).
+ * and publish; remove, move and a blank page filled from a template splice
+ * markup the editor already rendered (issue #1112, see
+ * Visual_Composer_Structure_Write). Anything else is refused with
+ * editor_render_required (see Visual_Composer_Content).
  *
  * Flatsome pages and UX Blocks: the same two forms over UX Builder
  * shortcodes, add with element {block: id} and save_template (see
@@ -1615,10 +1617,15 @@ class Update_Builder_Content
      * Composer, while the plugin is loaded and the page still has the hash
      * the caller read. Every other change is refused before anything is
      * written (see Visual_Composer_Content).
+     *
+     * @param array<string,mixed> $args
      */
     private function update_visual_composer(int $post_id, array $args)
     {
         $operation = (string) ($args['operation'] ?? '');
+        if (in_array($operation, Visual_Composer_Structure_Write::OPERATIONS, true)) {
+            return Visual_Composer_Structure_Write::create()->handle($post_id, $args);
+        }
         $detected  = Builder_Detector::detect($post_id);
         if ('visual-composer' !== $detected) {
             return new \WP_Error('unsupported_builder', "This post was detected as '{$detected}', not a Visual Composer page.");
