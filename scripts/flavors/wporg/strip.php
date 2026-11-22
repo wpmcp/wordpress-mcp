@@ -870,7 +870,7 @@ $edits['src/Skills/library/wpmcp-governance/SKILL.md'] = [
 $edits['src/Skills/library/integrations/SKILL.md'] = [
     ["  - wpmcp/get-builder-content\n", '', 1],
     [
-        "- Pages built with Elementor: `wpmcp-elementor-editing`.\n"
+        "- Pages built with Elementor: `integrations/page-builders`.\n"
             . "- Pages built with Bricks, Breakdance, Divi, Oxygen, WPBakery, Avada, Beaver Builder: `integrations/page-builders`.\n"
             . "- Courses in Tutor LMS, LifterLMS or LearnDash: `integrations/lms`.\n"
             . "- Contacts, lists and campaigns in FluentCRM or MailPoet: `integrations/crm`.\n"

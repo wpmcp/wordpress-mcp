@@ -41,7 +41,11 @@ const SLOTS_CLASS = 'Plugin_Slots';
 const SLOT_MARKER = '$this->edition()->run(';
 
 /**
- * Plugin.php pieces that move into the Pro slot class.
+ * Plugin.php pieces that move into the Pro slot class. What displays content a
+ * Pro tool created (the custom widget and block runtime, stored custom CSS,
+ * dynamic templates, the chat conversation cleanup) stays public, so a site
+ * that drops back to the free build keeps rendering it; only creating and
+ * editing are Pro.
  *
  *  - method: a whole private or public method, moved by name.
  *  - ability: one `$registrar->register(new Ability('<name>', ...));`
@@ -73,8 +77,6 @@ const PLUGIN_SLOTS = [
     ['kind' => 'method', 'name' => 'register_forms_pack_abilities'],
     ['kind' => 'method', 'name' => 'register_block_suite_abilities'],
     ['kind' => 'method', 'name' => 'register_image_optimization_runtime_hooks'],
-    ['kind' => 'method', 'name' => 'register_dynamic_template_runtime_hooks'],
-    ['kind' => 'method', 'name' => 'register_custom_code_runtime_hooks'],
     ['kind' => 'ability', 'name' => 'wpmcp/optimize-media', 'slot' => 'abilities.media.optimize'],
     ['kind' => 'ability', 'name' => 'wpmcp/insert-stock-image', 'slot' => 'abilities.media.stock'],
     ['kind' => 'ability', 'name' => 'wpmcp/install-package-from-zip', 'slot' => 'abilities.packages.zip_install'],
@@ -90,25 +92,16 @@ const PLUGIN_SLOTS = [
     [
         'kind' => 'span',
         'name' => 'boot_chat',
-        'start' => '            // In-admin AI chat (issue #73, PRO).',
+        // Only the routes: the conversation type and the purge that removes
+        // conversations with their owner stay public, so a site that drops
+        // back to the free build keeps cleaning up after the chat.
+        'start' => '            // The route hook resolves the tier inside the callback and',
         'end' => '            });',
     ],
     [
         'kind' => 'span',
         'name' => 'admin_menu_chat',
         'start' => '        // In-admin AI chat (issue #73): the chat drives the same governed',
-        'end' => '        }',
-    ],
-    [
-        'kind' => 'span',
-        'name' => 'builder_runtime_widget_builder',
-        'start' => '        // Data-driven custom widget builder: register the wpmcp_widget CPT',
-        'end' => '        }',
-    ],
-    [
-        'kind' => 'span',
-        'name' => 'builder_runtime_block_builder',
-        'start' => '        // Data-driven custom Gutenberg block builder: register the wpmcp_block',
         'end' => '        }',
     ],
 ];
@@ -1322,6 +1315,34 @@ function list_elements(string $code): ?array
 }
 
 /**
+ * $old with every span slot the split cut out of Plugin.php replaced the way
+ * the split replaced it in Plugin.php (by its slot call line), so an edit
+ * that removed a block holding a span still finds that block.
+ */
+function transform_by_spans(string $old): string
+{
+    $lines = explode("\n", $old);
+    foreach (PLUGIN_SLOTS as $slot) {
+        if ('span' !== $slot['kind']) {
+            continue;
+        }
+        foreach ($lines as $k => $line) {
+            if (! str_starts_with($line, (string) $slot['start'])) {
+                continue;
+            }
+            for ($e = $k + 1, $c = count($lines); $e < $c; $e++) {
+                if ($lines[ $e ] === $slot['end']) {
+                    $indent = (string) preg_replace('/\S.*$/', '', $line);
+                    array_splice($lines, $k, $e - $k + 1, [$indent . SLOT_MARKER . var_export($slot['name'], true) . ', $this->edition_context(null));']);
+                    break 2;
+                }
+            }
+        }
+    }
+    return implode("\n", $lines);
+}
+
+/**
  * Prune the flavor lists after the move.
  *
  * @param array<string, string> $before repo path => contents before the split (Plugin.php)
@@ -1343,6 +1364,7 @@ function prune_flavor_lists(string $root, array $before, string $plugin_after, a
         $src = (string) file_get_contents($path);
         $lines = explode("\n", $src);
         $remove = [];
+        $insert = [];
 
         if (str_ends_with($file, 'strip.php')) {
             foreach (edit_statements($src) as [$a, $b, $var]) {
@@ -1409,10 +1431,24 @@ function prune_flavor_lists(string $root, array $before, string $plugin_after, a
                                 $obsolete++;
                                 continue;
                             }
+                            // The edit removes a block the split shortened: the
+                            // same edit, on the shortened block.
+                            $narrowed = transform_by_spans((string) $old);
+                            if ($narrowed !== $old && substr_count($plugin_after, $narrowed) === (int) $expected && 1 === count((array) $list)) {
+                                $code_out = '$' . ltrim($var, '$') . ('$plugin_edits' === $var ? '[] = ' : "['src/Plugin.php'][] = ") . '[' . var_export($narrowed, true) . ', ' . var_export((string) $edit[1], true) . ', ' . (int) $expected . '];';
+                                $remove += array_fill_keys(range($a, $b), true);
+                                $insert[ $a ] = $code_out;
+                                $dropped[] = "{$file}:" . ($a + 1) . ' Plugin.php edit narrowed to the code that stays public';
+                                $obsolete = -1;
+                                break;
+                            }
                             $problems[] = "{$file}:" . ($a + 1) . ': a Plugin.php edit targets code that moved, but these lines it removes stay public: ' . implode(' | ', array_slice($residual, 0, 4));
                             continue;
                         }
                         $problems[] = "{$file}:" . ($a + 1) . ": a Plugin.php edit matched {$pre} time(s) before the split and {$post} after; fix it by hand";
+                    }
+                    if (-1 === $obsolete) {
+                        continue;
                     }
                     if ($obsolete === count((array) $list)) {
                         $remove += array_fill_keys(range($a, $b), true);
@@ -1458,11 +1494,14 @@ function prune_flavor_lists(string $root, array $before, string $plugin_after, a
             }
         }
 
-        if ([] === $remove) {
+        if ([] === $remove && [] === $insert) {
             continue;
         }
         $kept = [];
         foreach ($lines as $k => $line) {
+            if (isset($insert[ $k ])) {
+                $kept[] = $insert[ $k ];
+            }
             if (! isset($remove[ $k ])) {
                 $kept[] = $line;
             }
@@ -1684,6 +1723,12 @@ function suggest(string $root, string $seeds_file): string
             foreach (array_keys($virtual) as $path) {
                 if (isset($pro[ $path ]) || 'wpmcp.php' === $path || ! str_starts_with($path, 'src/')) {
                     continue;
+                }
+                // A seed exclusion (`!path`) is public by decision.
+                foreach ($manifest['exclude'] as $pattern) {
+                    if (path_matches($path, $pattern)) {
+                        continue 2;
+                    }
                 }
                 $in = array_keys($inbound[ $path ] ?? []);
                 if ([] === $in || [] !== array_filter($in, static fn (string $f): bool => ! isset($pro[ $f ]))) {

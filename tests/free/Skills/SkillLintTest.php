@@ -26,9 +26,9 @@ class SkillLintTest extends \WP_UnitTestCase
     private const MAX_SKILL_BYTES = 12288;
 
     /**
-     * Bundled skills whose files are Pro (they ship only with the Pro code)
-     * that public skills still point at by slug, such as the integrations
-     * router. The Pro half checks that these are exactly the Pro skills.
+     * Bundled skills whose files are Pro (they ship only with the Pro code).
+     * No public skill may route to them; the Pro half checks that these are
+     * exactly the Pro skills.
      */
     public const PRO_OWNED_SKILLS = [
         'wpmcp-elementor-editing',
@@ -174,7 +174,8 @@ class SkillLintTest extends \WP_UnitTestCase
 
     public function test_every_operation_a_bundled_skill_names_exists(): void
     {
-        $slugs = array_fill_keys(array_merge(array_keys(self::bundled()), self::PRO_OWNED_SKILLS), true);
+        // A public skill routes only to public skills: the free build ships no other.
+        $slugs = array_fill_keys(array_keys(self::bundled()), true);
         $bad   = self::operation_problems($this, self::bundled(), self::operations(true), $slugs);
         $this->assertSame([], array_values(array_intersect(self::PRO_OWNED_SKILLS, array_keys(self::bundled()))), 'PRO_OWNED_SKILLS lists a public skill; drop it from the list.');
 

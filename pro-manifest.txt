@@ -23,7 +23,6 @@ src/Pro/Chat/Chat_Identity.php
 src/Pro/Chat/Chat_Page.php
 src/Pro/Chat/Chat_Provider.php
 src/Pro/Chat/Chat_Rest_Controller.php
-src/Pro/Chat/Conversation_Store.php
 src/Pro/Chat/Key_Vault.php
 src/Pro/Chat/Key_Vault_Corrupted_Exception.php
 src/Pro/Chat/System_Prompt.php
@@ -55,10 +54,6 @@ src/Tools/Analysis/SeoData/Seo_Data_Rate_Limited.php
 src/Tools/Analysis/SeoData/Set_Seo_Data_Key.php
 src/Tools/Analysis/Seo_Analyzer.php
 src/Tools/BlockBuilder/Block_Bundle_Kind.php
-src/Tools/BlockBuilder/Block_Registry.php
-src/Tools/BlockBuilder/Block_Renderer.php
-src/Tools/BlockBuilder/Block_Spec.php
-src/Tools/BlockBuilder/Block_Spec_Store.php
 src/Tools/BlockBuilder/Create_Custom_Block.php
 src/Tools/BlockBuilder/Delete_Custom_Block.php
 src/Tools/BlockBuilder/Get_Custom_Block.php
@@ -169,9 +164,6 @@ src/Tools/Compose/Elementor_Composer.php
 src/Tools/Compose/Elementor_Page_Composer.php
 src/Tools/CustomCode/Add_Custom_Js.php
 src/Tools/CustomCode/Add_Scoped_Css.php
-src/Tools/CustomCode/Css_Sanitizer.php
-src/Tools/CustomCode/Custom_Code_Renderer.php
-src/Tools/CustomCode/Custom_Code_Store.php
 src/Tools/Elementor/Add_Atomic_Widget.php
 src/Tools/Elementor/Add_Container.php
 src/Tools/Elementor/Add_Custom_Css.php
@@ -259,16 +251,8 @@ src/Tools/SEO/Set_Social_Image.php
 src/Tools/SEO/Social_Meta.php
 src/Tools/SEO/Term_SEO.php
 src/Tools/SEO/Update_Term_SEO_Meta.php
-src/Tools/ThemeBuilder/Dynamic/Dynamic_Templates.php
-src/Tools/WidgetBuilder/Compiler/Compile_Custom_Widget.php
-src/Tools/WidgetBuilder/Compiler/Compiled_Widget_Manifest.php
-src/Tools/WidgetBuilder/Compiler/Generated_Code_Lint.php
-src/Tools/WidgetBuilder/Compiler/Widget_Compiler.php
 src/Tools/WidgetBuilder/Create_Custom_Widget.php
-src/Tools/WidgetBuilder/Data/Remote_Json.php
-src/Tools/WidgetBuilder/Data/Widget_Data.php
 src/Tools/WidgetBuilder/Delete_Custom_Widget.php
-src/Tools/WidgetBuilder/Dynamic_Widget.php
 src/Tools/WidgetBuilder/Get_Custom_Widget.php
 src/Tools/WidgetBuilder/List_Control_Types.php
 src/Tools/WidgetBuilder/List_Custom_Widgets.php
@@ -276,10 +260,6 @@ src/Tools/WidgetBuilder/Set_Widget_Status.php
 src/Tools/WidgetBuilder/Update_Custom_Widget.php
 src/Tools/WidgetBuilder/Validate_Widget_Spec.php
 src/Tools/WidgetBuilder/Widget_Bundle_Kind.php
-src/Tools/WidgetBuilder/Widget_Registry.php
-src/Tools/WidgetBuilder/Widget_Renderer.php
-src/Tools/WidgetBuilder/Widget_Spec.php
-src/Tools/WidgetBuilder/Widget_Spec_Store.php
 src/Tools/WooCommerce/Catalog/Booking_Ops.php
 src/Tools/WooCommerce/Catalog/Brand_Ops.php
 src/Tools/WooCommerce/Catalog/Cart_Ops.php
@@ -400,10 +380,22 @@ src/Tools/WooCommerce/Catalog/Woo_Write.php
 #   src/Integrations/WPML_String_Translation.php  <- src/Integrations/I18n_Strings.php
 #   src/Integrations/WP_Mail_SMTP_Status.php  <- src/Integrations/Ops_Status_Packs.php
 #   src/Integrations/Yoast_Premium_Redirect_Ops.php  <- src/Integrations/Seo_Extras_Pack.php
+#   src/Tools/BlockBuilder/Block_Renderer.php  <- src/Tools/BlockBuilder/Block_Registry.php
+#   src/Tools/BlockBuilder/Block_Spec.php  <- src/Tools/BlockBuilder/Block_Registry.php
+#   src/Tools/CustomCode/Css_Sanitizer.php  <- src/Tools/CustomCode/Custom_Code_Renderer.php
+#   src/Tools/CustomCode/Custom_Code_Store.php  <- src/Tools/CustomCode/Custom_Code_Renderer.php
 #   src/Tools/Elementor/Atomic_Props.php  <- src/Tools/Elementor/Global_Class_Schema.php
 #   src/Tools/Elementor/Global_Class_Schema.php  <- src/Tools/Elementor/Global_Classes_Store.php
 #   src/Tools/SEO/Aioseo_Store.php  <- src/Tools/SEO/SEO_Adapter.php
 #   src/Tools/SEO/SEO_Adapter.php  <- src/Plugin.php
-#   src/Tools/ThemeBuilder/Dynamic/Binding_Resolver.php  <- src/Tools/ThemeBuilder/Dynamic/Dynamic_Template_Ops.php
-#   src/Tools/ThemeBuilder/Dynamic/Dynamic_Sources.php  <- src/Tools/ThemeBuilder/Dynamic/Dynamic_Template_Ops.php
+#   src/Tools/ThemeBuilder/Dynamic/Dynamic_Sources.php  <- src/Tools/ThemeBuilder/Dynamic/Binding_Resolver.php
 #   src/Tools/ThemeBuilder/Dynamic/Dynamic_Template_Ops.php  <- src/Integrations/Theme_Integration.php
+#   src/Tools/WidgetBuilder/Compiler/Compile_Custom_Widget.php  <- src/Tools/WidgetBuilder/Compiler/Compiled_Widget_Manifest.php
+#   src/Tools/WidgetBuilder/Compiler/Compiled_Widget_Manifest.php  <- src/Tools/WidgetBuilder/Widget_Registry.php
+#   src/Tools/WidgetBuilder/Compiler/Generated_Code_Lint.php  <- src/Tools/WidgetBuilder/Compiler/Compiled_Widget_Manifest.php
+#   src/Tools/WidgetBuilder/Compiler/Widget_Compiler.php  <- src/Tools/WidgetBuilder/Compiler/Compiled_Widget_Manifest.php
+#   src/Tools/WidgetBuilder/Data/Remote_Json.php  <- src/Tools/WidgetBuilder/Data/Widget_Data.php
+#   src/Tools/WidgetBuilder/Data/Widget_Data.php  <- src/Tools/WidgetBuilder/Widget_Spec.php
+#   src/Tools/WidgetBuilder/Dynamic_Widget.php  <- src/Tools/WidgetBuilder/Widget_Registry.php
+#   src/Tools/WidgetBuilder/Widget_Renderer.php  <- src/Tools/WidgetBuilder/Dynamic_Widget.php
+#   src/Tools/WidgetBuilder/Widget_Spec.php  <- src/Tools/WidgetBuilder/Widget_Registry.php

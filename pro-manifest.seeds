@@ -232,3 +232,12 @@ src/Tools/WooCommerce/Catalog/
 src/Tools/WooCommerce/Catalog/Woo_Ops.php
 src/Tools/WooCommerce/Catalog/Woo_Read.php
 src/Tools/WooCommerce/Catalog/Woo_Write.php
+# Display and cleanup stay public (owner decision, downgrade keeps rendering):
+!src/Tools/WidgetBuilder/Widget_Spec_Store.php
+!src/Tools/WidgetBuilder/Widget_Registry.php
+!src/Tools/BlockBuilder/Block_Spec_Store.php
+!src/Tools/BlockBuilder/Block_Registry.php
+!src/Tools/CustomCode/Custom_Code_Renderer.php
+!src/Tools/ThemeBuilder/Dynamic/Dynamic_Templates.php
+!src/Tools/ThemeBuilder/Dynamic/Binding_Resolver.php
+!src/Pro/Chat/Conversation_Store.php
