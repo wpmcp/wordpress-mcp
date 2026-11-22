@@ -68,6 +68,23 @@ if (! defined('ABSPATH')) {
  * membership restore PMPro's cached levels of each captured user are
  * dropped, so its next read sees the restored rows.
  *
+ * wpDataTables simple tables (issue #706) keep their cells as one JSON row
+ * per table row in `wpdatatables_rows` and their size in the table's own
+ * row in `wpdatatables`. Kind wpdatatables_rows (the one suffix "rows") is
+ * keyed by `table_id`, so one snapshot covers every row of a table, rows a
+ * write adds included; kind wpdatatables (the table name split as "wpdata"
+ * and the one suffix "tables") is the table's own row, keyed by id.
+ * Ninja Tables rows (kind ninja_table, the one suffix "items") are keyed by
+ * their own id; an insert names the ids it made once it has them. After a
+ * Ninja Tables restore its render cache of the tables involved is cleared
+ * through its own function, as its own row edits do.
+ *
+ * Booking plugin rows (issue #679) are one booking each: Bookly's
+ * `bookly_customer_appointments`, Simply Schedule Appointments'
+ * `ssa_appointments`, BookingPress's `bookingpress_appointment_bookings`
+ * (keyed by bookingpress_appointment_booking_id) and LatePoint's
+ * `latepoint_bookings`, each kind allowing only that one suffix.
+ *
  * Forum rows (issue #671) come from two forum plugins' own tables. wpForo
  * keeps its main board in {prefix}wpforo_forums, _topics, _posts and
  * _postmeta, keyed by forumid and topicid (posts and postmeta captured by
@@ -84,6 +101,24 @@ if (! defined('ABSPATH')) {
  * copies of the rows are dropped (its BerlinDB cache group
  * rcp-membership_levels), as its own query does after a write.
  *
+ * Jetpack CRM contacts (issue #684, the `zbs_contacts` table, the one
+ * suffix "contacts") are keyed by their `ID` column. An update's image is
+ * put back as it was. A create's image holds no row: its undo removes the
+ * contact through Jetpack CRM's own deleteContact(), which also drops the
+ * tags, aliases, meta and logs the plugin added with it, and is refused,
+ * leaving the contact in place, once quotes, invoices, transactions or tasks
+ * have been linked to it since or while the plugin is not loaded.
+ *
+ * LearnPress (issue #672) keeps a course's curriculum in two tables of its
+ * own: `learnpress_sections` (kind learnpress_sections, the one suffix
+ * "sections"), keyed by the course (`section_course_id`), and
+ * `learnpress_section_items` (kind learnpress_section_items, the one suffix
+ * "section_items"), keyed by the section (`section_id`). A snapshot taken
+ * before a write therefore covers the rows the write inserts, the way the
+ * MemberPress kind does. After a restore, LearnPress's cached copy of each
+ * course it touched is rebuilt through LearnPress's own course model, as its
+ * curriculum editor does after a change.
+ *
  * Easy Digital Downloads discounts (issue #664, the `edd_adjustments` table,
  * the one suffix "adjustments") are keyed by their own id; a create
  * reserves its id the same way. EDD reads the table through BerlinDB, which
@@ -92,9 +127,12 @@ if (! defined('ABSPATH')) {
  * BerlinDB's own writes do.
  *
  * Restoring takes the capability the write itself needs: edit_post on each
- * captured post for a Pods row or a MemberPress rule's rows, manage_options
- * for a dictionary row, a Pretty Links link, a Restrict Content level, an EDD discount or a forum row, and Wordfence's own admin capability (manage_options,
- * manage_network on a multisite network) for a Wordfence row.
+ * captured post for a Pods row, a MemberPress rule's rows or a LearnPress
+ * course's sections, edit_post on the course a LearnPress section belongs to
+ * for that section's items, manage_options
+ * for a dictionary row, a Pretty Links link, a Restrict Content level, an EDD discount, a forum row, a booking or a wpDataTables or Ninja Tables row, and Wordfence's own admin capability (manage_options,
+ * manage_network on a multisite network) for a Wordfence row, and Jetpack
+ * CRM's admin_zerobs_customers (or manage_options) for a contact.
  */
 final class Plugin_Table_Rows_Snapshot
 {
@@ -107,6 +145,10 @@ final class Plugin_Table_Rows_Snapshot
         'mepr_rule_access' => 'mepr_rule_access_',
         'rank_math'        => 'rank_math_',
         'prli'             => 'prli_',
+        'bookly'           => 'bookly_',
+        'ssa'              => 'ssa_',
+        'bookingpress'     => 'bookingpress_',
+        'latepoint'        => 'latepoint_',
         'wpforo_forum'          => 'wpforo_',
         'wpforo_topic'          => 'wpforo_',
         'wpforo_topic_posts'    => 'wpforo_',
@@ -117,7 +159,13 @@ final class Plugin_Table_Rows_Snapshot
         'pmpro_levels'     => 'pmpro_',
         'pmpro_members'    => 'pmpro_',
         'pmpro_codes'      => 'pmpro_',
+        'wpdatatables'      => 'wpdata',
+        'wpdatatables_rows' => 'wpdatatables_',
+        'ninja_table'       => 'ninja_table_',
         'rcp_levels'       => 'restrict_content_',
+        'jpcrm'            => 'zbs_',
+        'learnpress_sections'      => 'learnpress_',
+        'learnpress_section_items' => 'learnpress_',
         'edd'              => 'edd_',
     ];
 
@@ -134,7 +182,12 @@ final class Plugin_Table_Rows_Snapshot
     private const KEY_COLUMNS = [
         'mepr_rule_access' => 'rule_id',
         'wordfence_blocks' => 'IP',
+        'bookingpress'     => 'bookingpress_appointment_booking_id',
         'pmpro_members'    => 'user_id',
+        'wpdatatables_rows' => 'table_id',
+        'jpcrm'            => 'ID',
+        'learnpress_sections'      => 'section_course_id',
+        'learnpress_section_items' => 'section_id',
         'wpforo_forum'          => 'forumid',
         'wpforo_topic'          => 'topicid',
         'wpforo_topic_posts'    => 'topicid',
@@ -144,6 +197,9 @@ final class Plugin_Table_Rows_Snapshot
 
     /** kind => the column its rows are read in order of, for a table with no `id` column. */
     private const ORDER_COLUMNS = [
+        'bookingpress'             => 'bookingpress_appointment_booking_id',
+        'learnpress_sections'      => 'section_id',
+        'learnpress_section_items' => 'section_item_id',
         'wpforo_forum'          => 'forumid',
         'wpforo_topic'          => 'topicid',
         'wpforo_topic_posts'    => 'postid',
@@ -155,6 +211,10 @@ final class Plugin_Table_Rows_Snapshot
         'mepr_rule_access' => [ 'conditions' ],
         'rank_math'        => [ 'redirections' ],
         'prli'             => [ 'links' ],
+        'bookly'           => [ 'customer_appointments' ],
+        'ssa'              => [ 'appointments' ],
+        'bookingpress'     => [ 'appointment_bookings' ],
+        'latepoint'        => [ 'bookings' ],
         'wpforo_forum'          => [ 'forums' ],
         'wpforo_topic'          => [ 'topics' ],
         'wpforo_topic_posts'    => [ 'posts' ],
@@ -165,7 +225,13 @@ final class Plugin_Table_Rows_Snapshot
         'pmpro_levels'     => [ 'membership_levels' ],
         'pmpro_members'    => [ 'memberships_users' ],
         'pmpro_codes'      => [ 'discount_codes' ],
+        'wpdatatables'      => [ 'tables' ],
+        'wpdatatables_rows' => [ 'rows' ],
+        'ninja_table'       => [ 'items' ],
         'rcp_levels'       => [ 'pro' ],
+        'jpcrm'            => [ 'contacts' ],
+        'learnpress_sections'      => [ 'sections' ],
+        'learnpress_section_items' => [ 'section_items' ],
         'edd'              => [ 'adjustments' ],
     ];
 
@@ -178,6 +244,9 @@ final class Plugin_Table_Rows_Snapshot
         'pmpro_levels' => [ 'membership_levels_groups' => 'level' ],
         'pmpro_codes'  => [ 'discount_codes_levels' => 'code_id' ],
     ];
+
+    /** Booking plugin kinds (issue #679), restored under manage_options. */
+    private const BOOKING_KINDS = [ 'bookly', 'ssa', 'bookingpress', 'latepoint' ];
 
     /** kind => its binary columns, carried as lowercase hex in the snapshot and in the key. */
     private const BINARY_COLUMNS = [
@@ -463,6 +532,13 @@ final class Plugin_Table_Rows_Snapshot
             return;
         }
 
+        if ('jpcrm' === $kind && [] === (array) ($data['rows'] ?? [])) {
+            foreach ($ids as $id) {
+                self::remove_jpcrm_contact((int) $id);
+            }
+            return;
+        }
+
         global $wpdb;
         $in = implode(',', array_fill(0, count($ids), '%d'));
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- third-party table with no WP API; $in holds only %d placeholders.
@@ -493,16 +569,41 @@ final class Plugin_Table_Rows_Snapshot
         if ('pmpro_members' === $kind) {
             self::clear_pmpro_user_cache($ids);
         }
+        if ('ninja_table' === $kind) {
+            self::clear_ninja_tables_cache(array_merge(array_column((array) ($data['rows'] ?? []), 'table_id'), (array) ($data['table_ids'] ?? [])));
+        }
         if (str_starts_with($kind, 'wpforo_') && function_exists('wpforo_clean_cache')) {
             wpforo_clean_cache();
         }
         if ('rcp_levels' === $kind) {
             self::flush_rcp_level_cache($ids);
         }
+        if ('learnpress_sections' === $kind) {
+            self::refresh_learnpress_courses($ids);
+        }
+        if ('learnpress_section_items' === $kind) {
+            self::refresh_learnpress_courses(self::learnpress_courses_of($ids));
+        }
         if ('edd' === $kind) {
             self::purge_edd_cache((string) $data['suffix'], $ids);
         }
         self::after_wordfence_restore($kind);
+    }
+
+    /**
+     * Drop Ninja Tables' cached rows and HTML of the given tables through
+     * its own function. A no-op while Ninja Tables is not loaded.
+     *
+     * @param array<int, int|string> $table_ids
+     */
+    public static function clear_ninja_tables_cache(array $table_ids): void
+    {
+        if (! function_exists('ninjaTablesClearTableDataCache')) {
+            return;
+        }
+        foreach (array_unique(array_filter(array_map('intval', $table_ids))) as $table_id) {
+            \ninjaTablesClearTableDataCache($table_id);
+        }
     }
 
     /**
@@ -518,6 +619,39 @@ final class Plugin_Table_Rows_Snapshot
             wp_cache_delete((int) $id, 'rcp-membership_levels');
         }
         wp_cache_set('last_changed', microtime(), 'rcp-membership_levels');
+    }
+
+    /**
+     * Undo a Jetpack CRM contact create: remove the contact through the
+     * plugin's own deleteContact(), so the tags, aliases, meta and logs it
+     * added go with it. Refused (Mutation_Failed, the contact left in place)
+     * once quotes, invoices, transactions or tasks are linked to it, or
+     * while the plugin's API is not loaded. A contact already gone is fine.
+     */
+    private static function remove_jpcrm_contact(int $id): void
+    {
+        global $wpdb;
+
+        $contacts = (string) self::table('jpcrm', 'contacts');
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table, read live.
+        if (0 === (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE ID = %d', $contacts, $id))) {
+            return;
+        }
+        $links = $wpdb->prefix . 'zbs_object_links';
+        if (self::table_exists($links)) {
+            // Quote 3, invoice 4, transaction 5 and task 6, linked to contact (type 1).
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table, read live.
+            $linked = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE zbsol_objtype_to = 1 AND zbsol_objid_to = %d AND zbsol_objtype_from IN (3, 4, 5, 6)', $links, $id));
+            if ($linked > 0) {
+                throw new Mutation_Failed(sprintf('Rollback refused: Jetpack CRM contact %d has %d quote(s), invoice(s), transaction(s) or task(s) linked since it was created, so it was left in place.', (int) $id, (int) $linked));
+            }
+        }
+        $zbs = $GLOBALS['zbs'] ?? null;
+        $api = is_object($zbs) && isset($zbs->DAL) && is_object($zbs->DAL) && isset($zbs->DAL->contacts) ? $zbs->DAL->contacts : null;
+        if (! is_object($api) || ! method_exists($api, 'deleteContact')) {
+            throw new Mutation_Failed(sprintf('Rollback refused: Jetpack CRM is not active, so contact %d was left in place. Activate it and undo again.', (int) $id));
+        }
+        $api->deleteContact([ 'id' => $id, 'saveOrphans' => false ]);
     }
 
     /**
@@ -557,6 +691,68 @@ final class Plugin_Table_Rows_Snapshot
         $class = '\\RankMath\\Redirections\\Cache';
         if (class_exists($class) && method_exists($class, 'purge')) {
             $class::purge(array_map('intval', $ids));
+        }
+    }
+
+    /**
+     * The courses LearnPress sections belong to (0 for a section that is
+     * gone), section id => course id.
+     *
+     * @param array<int, int|string> $sections
+     * @return array<int, int>
+     */
+    public static function learnpress_courses_of(array $sections): array
+    {
+        global $wpdb;
+
+        $sections = array_values(array_filter(array_map('intval', $sections), static fn (int $id): bool => $id > 0));
+        $table    = (string) self::table('learnpress_sections', 'sections');
+        if ([] === $sections || ! self::table_exists($table)) {
+            return array_fill_keys($sections, 0);
+        }
+        $in = implode(',', array_fill(0, count($sections), '%d'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- LearnPress's own table; $in holds only %d placeholders.
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT section_id, section_course_id FROM %i WHERE section_id IN ($in)", $table, ...$sections), ARRAY_A);
+
+        $out = array_fill_keys($sections, 0);
+        foreach ((array) $rows as $row) {
+            $out[ (int) $row['section_id'] ] = (int) $row['section_course_id'];
+        }
+        return $out;
+    }
+
+    /**
+     * Rebuild LearnPress's cached copy of each course (its learnpress_courses
+     * row and object cache) after its curriculum rows changed, the way
+     * LearnPress's own section models do after a save. A no-op while
+     * LearnPress is not loaded.
+     *
+     * @param array<int, int|string> $courses
+     */
+    public static function refresh_learnpress_courses(array $courses): void
+    {
+        $model = '\\LearnPress\\Models\\CourseModel';
+        $cache = '\\LP_Cache';
+        foreach (array_unique(array_filter(array_map('intval', $courses))) as $course) {
+            if (class_exists($model) && method_exists($model, 'find')) {
+                try {
+                    $found = $model::find($course, true);
+                    if (is_object($found) && method_exists($found, 'save')) {
+                        $found->sections_items = null;
+                        $found->total_items    = null;
+                        $found->save();
+                    }
+                } catch (\Throwable $e) {
+                    // A cache rebuild that fails leaves LearnPress to rebuild it on its next save.
+                    unset($e);
+                }
+            }
+            if (class_exists($cache)) {
+                $lp_cache = new $cache();
+                if (method_exists($lp_cache, 'clear')) {
+                    $lp_cache->clear("courseSection/find/course/{$course}");
+                }
+            }
         }
     }
 
@@ -697,9 +893,27 @@ final class Plugin_Table_Rows_Snapshot
             }
             return;
         }
+        if ('jpcrm' === $kind) {
+            if (! current_user_can('admin_zerobs_customers') && ! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring a Jetpack CRM contact requires the admin_zerobs_customers capability.');
+            }
+            return;
+        }
+        if (in_array($kind, self::BOOKING_KINDS, true)) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring a booking requires the manage_options capability.');
+            }
+            return;
+        }
         if ('prli' === $kind) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring Pretty Links links requires the manage_options capability.');
+            }
+            return;
+        }
+        if (in_array($kind, [ 'wpdatatables', 'wpdatatables_rows', 'ninja_table' ], true)) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring ' . ('ninja_table' === $kind ? 'Ninja Tables' : 'wpDataTables') . ' rows requires the manage_options capability.');
             }
             return;
         }
@@ -715,6 +929,15 @@ final class Plugin_Table_Rows_Snapshot
             }
             return;
         }
+        if ('learnpress_section_items' === $kind) {
+            // A section is a row, not a post: its items take edit_post on its
+            // course, and a section that is gone takes manage_options.
+            $ids = array_values(self::learnpress_courses_of($ids));
+            if (in_array(0, $ids, true) && ! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring the items of a LearnPress section that is gone requires the manage_options capability.');
+            }
+            $ids = array_values(array_filter($ids));
+        }
         if ('edd' === $kind) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring Easy Digital Downloads discounts requires the manage_options capability.');
@@ -727,6 +950,9 @@ final class Plugin_Table_Rows_Snapshot
             }
             if ('mepr_rule_access' === $kind) {
                 throw new Mutation_Failed('Rollback refused: restoring the MemberPress access conditions of rule ' . (int) $id . ' requires permission to edit it.');
+            }
+            if (str_starts_with($kind, 'learnpress_')) {
+                throw new Mutation_Failed('Rollback refused: restoring the curriculum of LearnPress course ' . (int) $id . ' requires permission to edit it.');
             }
             throw new Mutation_Failed('Rollback refused: restoring the Pods fields of post ' . (int) $id . ' requires permission to edit it.');
         }

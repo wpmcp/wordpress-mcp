@@ -486,7 +486,6 @@ class ChunkedBackupTest extends \WP_UnitTestCase
     {
         global $wpdb;
         $lock = (new \ReflectionMethod(Restore_Site_Backup::class, 'lock_name'));
-        $lock->setAccessible(true);
         $name  = (string) $lock->invoke(null);
         $state = Site_Backup_Dir::path() . '/restore-in-progress.json';
         file_put_contents($state, (string) wp_json_encode(['started_at' => gmdate('c'), 'statement' => 5, 'table' => $wpdb->options]));

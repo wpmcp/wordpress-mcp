@@ -17,7 +17,7 @@
 # (bin/test-local.sh --live-site-reviews), or,
 # with WPMCP_LIVE_CODE_SNIPPETS=1, Code Snippets only (bin/test-local.sh
 # --live-code-snippets), or,
-# with WPMCP_LIVE_CRM=1, FluentCRM and MailPoet only (bin/test-local.sh
+# with WPMCP_LIVE_CRM=1, FluentCRM, MailPoet and Newsletter only (bin/test-local.sh
 # --live-crm), or, with WPMCP_LIVE_HELPDESK=1, BetterDocs, Fluent Support
 # and Awesome Support only (bin/test-local.sh --live-helpdesk), or, with
 # WPMCP_LIVE_ACTIVITY_LOG=1, WP Activity Log and Simple History only
@@ -130,6 +130,8 @@ if [ "${WPMCP_LIVE_FORMS:-}" = "1" ]; then
 		"fluentform:fluentform.php"
 		"forminator:forminator.php"
 		"sureforms:sureforms.php"
+		# Issue #676: the Everest Forms ops on the plugin-data pair.
+		"everest-forms:everest-forms.php"
 	)
 fi
 
@@ -263,6 +265,7 @@ if [ "${WPMCP_LIVE_CRM:-}" = "1" ]; then
 	PLUGINS=(
 		"fluent-crm:fluent-crm.php"
 		"mailpoet:mailpoet.php"
+		"newsletter:plugin.php"
 	)
 fi
 
