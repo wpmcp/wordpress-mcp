@@ -105,11 +105,9 @@ class Breakdance_Design
         $types  = array_map(static fn ($kind) => $prefix . $kind, $kinds);
 
         $templates = [];
+        $decoder   = new Engine_Template_Settings();
         foreach (Builder_Design_Data::posts($types) as $post) {
-            $settings = get_post_meta($post->ID, Breakdance_Cache::prefix($builder, (int) $post->ID) . 'template_settings', true);
-            if (is_string($settings)) {
-                $settings = json_decode($settings, true);
-            }
+            $settings = $decoder->decode(get_post_meta($post->ID, Breakdance_Cache::prefix($builder, (int) $post->ID) . 'template_settings', true));
             $doc = Breakdance_Content::get_document($post->ID, $builder);
 
             $item = [
@@ -117,7 +115,7 @@ class Breakdance_Design
                 'title'    => $post->post_title,
                 'status'   => $post->post_status,
                 'type'     => substr($post->post_type, strlen($prefix)),
-                'settings' => is_array($settings) ? $settings : [],
+                'settings' => $settings,
                 'tree'     => null === $doc ? [] : Breakdance_Tree::nodes($doc),
             ];
             // Each is edited by id like a page, against this hash (issues #634, #635).
