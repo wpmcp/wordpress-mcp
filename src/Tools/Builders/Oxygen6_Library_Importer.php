@@ -156,7 +156,7 @@ final class Oxygen6_Library_Importer
             Oxygen6_Request_Error::raise('Importing into post_id needs a blank post (no layout, no content); leave post_id out to import as a new post.');
         }
         if ($post->post_type !== $package->post_type()) {
-            Oxygen6_Request_Error::raise("Post {$post_id} is a {$post->post_type}; this export holds a {$package->post_type()}.");
+            Oxygen6_Request_Error::raise("Post {$post_id} has type \"{$post->post_type}\"; this export holds type \"{$package->post_type()}\".");
         }
         if ([] !== $create) {
             Oxygen6_Request_Error::raise('This export places Components this site does not have; leave post_id out to import it as a new post, which creates them too.');

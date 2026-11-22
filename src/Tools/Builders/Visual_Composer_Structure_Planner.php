@@ -91,16 +91,16 @@ final class Visual_Composer_Structure_Planner
                 throw new \InvalidArgumentException(esc_html("'{$id}' cannot move into itself or one of its own elements."));
             }
             $target = $this->rule_of($target_element);
-            $label  = "a {$target->tag}";
+            $label  = "the \"{$target->tag}\" element";
             if ([] === $target->container_for) {
-                throw new \InvalidArgumentException(esc_html("'{$to}' is a {$target->tag}, which holds no elements."));
+                throw new \InvalidArgumentException(esc_html("'{$to}' is the element \"{$target->tag}\", which holds no elements."));
             }
         }
         if (! $target->holds($rule)) {
             if (in_array('General', $rule->related_to, true)) {
-                throw new \DomainException(esc_html("moving a {$rule->tag} into {$label} (the editor wraps it in a row and column there)"));
+                throw new \DomainException(esc_html("moving the element \"{$rule->tag}\" into {$label} (the editor wraps it in a row and column there)"));
             }
-            throw new \InvalidArgumentException(esc_html("Visual Composer does not put a {$rule->tag} into {$label}."));
+            throw new \InvalidArgumentException(esc_html("Visual Composer does not put the element \"{$rule->tag}\" into {$label}."));
         }
 
         $siblings = array_values(array_diff($this->children($doc, $to), [$id]));
@@ -236,7 +236,7 @@ final class Visual_Composer_Structure_Planner
     {
         $rule = $this->rule_of($element);
         if ('' !== $rule->parent_wrapper) {
-            throw new \DomainException(esc_html("{$doing} a {$rule->tag} (its {$rule->parent_wrapper} lays it out)"));
+            throw new \DomainException(esc_html("{$doing} the element \"{$rule->tag}\" (its {$rule->parent_wrapper} lays it out)"));
         }
 
         return $rule;
