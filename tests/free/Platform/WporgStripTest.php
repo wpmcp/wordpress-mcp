@@ -112,6 +112,20 @@ class WporgStripTest extends TestCase
         $this->assertStringNotContainsString('Pro_Banner', $plugin, 'the stripped Plugin.php still names the Pro banner');
     }
 
+    /**
+     * The GitHub star prompt is promotional and names Pro_Banner and the Pro
+     * gate, so it leaves with the banner: the file through the policy, its
+     * import and registration through strip.php's Plugin.php edits.
+     */
+    public function test_the_star_prompt_leaves_with_the_pro_banner(): void
+    {
+        $this->assertContains('src/Admin/Star_Prompt.php', self::$policy['removed_paths'], 'the policy stopped removing the star prompt');
+        $this->assertFileDoesNotExist(self::$stage . '/src/Admin/Star_Prompt.php', 'the star prompt is still in the directory cut');
+
+        $plugin = (string) file_get_contents(self::$stage . '/src/Plugin.php');
+        $this->assertStringNotContainsString('Star_Prompt', $plugin, 'the stripped Plugin.php still names the star prompt');
+    }
+
     public function test_pro_gate_and_licensing_bootstrap_are_absent(): void
     {
         $this->assertContains('src/Pro', self::$policy['removed_paths'], 'the policy stopped removing src/Pro');

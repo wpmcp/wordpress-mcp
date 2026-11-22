@@ -1255,6 +1255,19 @@ $plugin_edits[] = [
     1,
 ];
 $plugin_edits[] = [
+    "use WPMCP\\Admin\\Star_Prompt;\n",
+    '',
+    1,
+];
+$plugin_edits[] = [
+    "            // GitHub star prompt: once, on the History and Connection screens,\n"
+        . "            // after the 3rd agent write or the first rollback, never beside\n"
+        . "            // the Pro banner and never with a Pro licence.\n"
+        . "            Star_Prompt::register();\n",
+    '',
+    1,
+];
+$plugin_edits[] = [
     "            // In-admin Pro banner: a dismissible pricing-page link for free\n"
         . "            // installs on the Dashboard, the Plugins list and WP MCP screens\n"
         . "            // (docs/superpowers/specs/2026-11-01-pro-upgrade-banner.md).\n"
