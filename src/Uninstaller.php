@@ -59,12 +59,15 @@ class Uninstaller
 
         self::revoke_application_passwords();
 
-        foreach (Data_Registry::TABLES as $table) {
+        foreach (Data_Registry::tables() as $table) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Uninstall with "delete all data" on: drops WP MCP's own tables, named in Data_Registry and bound with %i.
             $wpdb->query($wpdb->prepare('DROP TABLE IF EXISTS %i', $wpdb->prefix . $table));
         }
 
         foreach (self::matching($wpdb->options, 'option_name', Data_Registry::OPTION_PREFIXES) as $option) {
+            delete_option($option);
+        }
+        foreach (Data_Registry::module_options() as $option) {
             delete_option($option);
         }
 
@@ -93,6 +96,9 @@ class Uninstaller
         global $wpdb;
 
         foreach (self::matching($wpdb->usermeta, 'meta_key', Data_Registry::USER_META_PREFIXES) as $key) {
+            delete_metadata('user', 0, $key, '', true);
+        }
+        foreach (Data_Registry::module_user_meta() as $key) {
             delete_metadata('user', 0, $key, '', true);
         }
 

@@ -336,6 +336,10 @@ class UninstallDataTest extends \WP_UnitTestCase
                     continue;
                 }
                 $class = substr((string) strrchr('\\' . ltrim($t[1], '\\'), '\\'), 1);
+                // PHP's own classes (LogicException) need no autoloader.
+                if (class_exists($class, false) && ( new \ReflectionClass($class) )->isInternal()) {
+                    continue;
+                }
                 $this->assertContains($class, [ 'self', 'static', 'Cron_Registry', 'Data_Registry', 'Uninstaller', 'WP_Application_Passwords', 'WP_Filesystem_Direct' ], "$relative uses {$t[1]}");
             }
         }

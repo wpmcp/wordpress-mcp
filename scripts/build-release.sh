@@ -27,6 +27,12 @@ mkdir -p "$STAGE"
 
 cp "$ROOT/wpmcp.php" "$ROOT/readme.txt" "$ROOT/LICENSE" "$ROOT/composer.json" "$ROOT/composer.lock" "$STAGE/"
 cp -R "$ROOT/src" "$STAGE/src"
+
+# The compiled module registry for this flavor, shipped as build/registry
+# (D11); modules the flavor does not ship leave with their own folder.
+# shellcheck source=scripts/lib/stage-registry.sh
+. "$ROOT/scripts/lib/stage-registry.sh"
+stage_registry "$STAGE" full || { echo "ERROR: the full module registry did not build" >&2; exit 1; }
 # No uninstall file here (issue #468): WordPress would run it instead of the
 # licensing SDK's uninstall hook. This build clears its cron events through
 # that SDK's after_uninstall action (src/Freemius/Bootstrap.php) instead.

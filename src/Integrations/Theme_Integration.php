@@ -267,7 +267,10 @@ class Theme_Integration extends Integration_Dispatcher
 
     protected function operations(): array
     {
-        return array_merge($this->core_operations(), $this->extension_operations());
+        // The pair's own operations, then those modules contribute with #[Operations(dispatcher: 'theme')].
+        $own = array_merge($this->core_operations(), $this->extension_operations());
+        $declared = \WPMCP\Plugin::instance()->kernel()->module_operations('theme', $this->detect_framework());
+        return \WPMCP\Kernel\Registry_Rows::merge($own, $declared, 'Theme operation');
     }
 
     /**
