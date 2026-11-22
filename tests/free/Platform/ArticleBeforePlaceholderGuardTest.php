@@ -55,6 +55,8 @@ class ArticleBeforePlaceholderGuardTest extends \WP_UnitTestCase
         'src/Integrations/CRM_Adapter.php'                      => ['a {$label}', 'Not a %s', 'already has a %s'],
         // label() is LearnDash, LifterLMS or Tutor LMS; section is lesson, section or topic.
         'src/Integrations/LMS_Adapter.php'                      => ["'a ' . \$section", 'a {$label}', 'A {$label}', 'a {$section}', 'a %s', 'A %s'],
+        // label() is Bookly, BookingPress, LatePoint or Simply Schedule Appointments.
+        'src/Integrations/Booking_Adapter.php'                  => ['a {$label}'],
     ];
 
     public function test_no_message_puts_a_fixed_article_before_a_runtime_value(): void
