@@ -5,8 +5,10 @@ namespace WPMCP\Tests\Pro\Integrations;
 use WPMCP\Integrations\WPForms_Integration;
 use WPMCP\Safety\Snapshot_Store;
 use WPMCP\Tools\Rollback_Operation;
+use WPMCP\Tools\Rollback_Session;
 
 require_once __DIR__ . '/../../support/forms-stubs.php';
+require_once __DIR__ . '/../../support/forms-delete-preview.php';
 
 /**
  * The WPForms dispatcher (forms adapter pack, pro tier), exercised against
@@ -16,6 +18,8 @@ require_once __DIR__ . '/../../support/forms-stubs.php';
  */
 class WPFormsIntegrationTest extends \WP_UnitTestCase
 {
+    use \WPMCP\Tests\Support\Forms_Delete_Preview_Assertions;
+
     private WPForms_Integration $integration;
     private int $entry;
 
@@ -141,5 +145,74 @@ class WPFormsIntegrationTest extends \WP_UnitTestCase
         $this->assertFalse($catalog['list-entries']['dependency_met']);
         $this->assertTrue($catalog['list-forms']['dependency_met']);
         $this->assertArrayNotHasKey('error', $this->integration->handle_read([ 'operation' => 'list-forms' ]));
+    }
+
+    // ---- #1031: delete-entry (WPForms Pro entry storage, doubles only) ----
+
+    private function rows(string $table, int $entry): int
+    {
+        global $wpdb;
+        return (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE entry_id = %d', $wpdb->prefix . $table, $entry));
+    }
+
+    private function seed_children(int $entry): void
+    {
+        \WPMCP_WPForms_Entry_Stub::seed_child('wpforms_entry_fields', [ 'entry_id' => $entry, 'form_id' => 3, 'field_id' => 0, 'value' => 'ada@example.test' ]);
+        \WPMCP_WPForms_Entry_Stub::seed_child('wpforms_entry_fields', [ 'entry_id' => $entry, 'form_id' => 3, 'field_id' => 1, 'value' => 'Free' ]);
+        \WPMCP_WPForms_Entry_Stub::seed_child('wpforms_entry_meta', [ 'entry_id' => $entry, 'form_id' => 3, 'type' => 'note', 'data' => 'Called back' ]);
+    }
+
+    public function test_delete_entry_is_off_until_opted_in_then_needs_confirm_and_previews_without_values(): void
+    {
+        $this->seed_children($this->entry);
+        $this->assertSame('opt_in_required', $this->integration->handle_write([ 'operation' => 'delete-entry', 'args' => [ 'entry_id' => $this->entry ], 'confirm' => true ])['error']['code']);
+
+        add_filter('wpmcp_enable_forms_write', '__return_true');
+        $preview = $this->integration->handle_write([ 'operation' => 'delete-entry', 'args' => [ 'entry_id' => $this->entry ] ]);
+        $this->assertSame('confirmation_required', $preview['error']['code']);
+        $this->assertStringNotContainsString('ada@example.test', (string) wp_json_encode($preview));
+        $this->assert_delete_entry_preview($preview, sprintf('WPForms entry %d of form 3', $this->entry), $this->entry, 2);
+        $this->assertSame(1, $this->rows('wpforms_entries', $this->entry));
+        remove_all_filters('wpmcp_enable_forms_write');
+    }
+
+    public function test_delete_entry_removes_the_entry_its_fields_and_meta_and_one_session_restores_them(): void
+    {
+        add_filter('wpmcp_enable_forms_write', '__return_true');
+        $this->seed_children($this->entry);
+        $other = \WPMCP_WPForms_Entry_Stub::seed([ 'form_id' => 3 ]);
+        \WPMCP_WPForms_Entry_Stub::seed_child('wpforms_entry_fields', [ 'entry_id' => $other, 'form_id' => 3, 'value' => 'keep' ]);
+
+        $out = $this->integration->handle_write([ 'operation' => 'delete-entry', 'args' => [ 'entry_id' => $this->entry ], 'confirm' => true ]);
+        $this->assertArrayNotHasKey('error', $out, (string) wp_json_encode($out));
+        $this->assertTrue($out['result']['deleted']);
+        $this->assertTrue($out['recoverable']);
+        $this->assertSame(0, $this->rows('wpforms_entries', $this->entry));
+        $this->assertSame(0, $this->rows('wpforms_entry_fields', $this->entry));
+        $this->assertSame(0, $this->rows('wpforms_entry_meta', $this->entry));
+        $this->assertSame(1, $this->rows('wpforms_entry_fields', $other), 'Another entry\'s fields stay');
+
+        ( new Rollback_Session() )->handle([ 'session_id' => $out['session_id'] ]);
+        $this->assertSame(1, $this->rows('wpforms_entries', $this->entry));
+        $this->assertSame(2, $this->rows('wpforms_entry_fields', $this->entry));
+        $this->assertSame(1, $this->rows('wpforms_entry_meta', $this->entry));
+        $this->assertSame('ada@example.test', wpforms()->obj('entry')->get($this->entry)->fields ? json_decode((string) wpforms()->obj('entry')->get($this->entry)->fields, true)[0]['value'] : null);
+        remove_all_filters('wpmcp_enable_forms_write');
+    }
+
+    public function test_delete_entry_refuses_an_unknown_entry_one_with_payments_and_lite(): void
+    {
+        add_filter('wpmcp_enable_forms_write', '__return_true');
+        $this->assertSame('entry_not_found', $this->integration->handle_write([ 'operation' => 'delete-entry', 'args' => [ 'entry_id' => 99999 ], 'confirm' => true ])['error']['code']);
+
+        \WPMCP_WPForms_Entry_Stub::seed_child('wpforms_payments', [ 'entry_id' => $this->entry, 'form_id' => 3, 'status' => 'completed' ]);
+        $out = $this->integration->handle_write([ 'operation' => 'delete-entry', 'args' => [ 'entry_id' => $this->entry ], 'confirm' => true ]);
+        $this->assertSame('entry_has_payments', $out['error']['code'] ?? null, (string) wp_json_encode($out));
+        $this->assertSame(1, $this->rows('wpforms_entries', $this->entry));
+
+        \WPMCP_WPForms_Stub::$lite = true;
+        $out = $this->integration->handle_write([ 'operation' => 'delete-entry', 'args' => [ 'entry_id' => $this->entry ], 'confirm' => true ]);
+        $this->assertSame('wpforms_entries_unavailable', $out['error']['code'] ?? null);
+        remove_all_filters('wpmcp_enable_forms_write');
     }
 }

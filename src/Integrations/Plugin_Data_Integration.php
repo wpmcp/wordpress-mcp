@@ -55,17 +55,62 @@ if (! defined('ABSPATH')) {
  *    placements listed and read, ads created as drafts, changed, enabled
  *    and disabled, and placements pointed at an ad or group (off until
  *    wpmcp_enable_advanced_ads_write), each write under a post snapshot.
+ *  - Issue #908 adds the Max Mega Menu ops (Max_Mega_Menu_Pack): global
+ *    and per-location settings, themes and per-item settings read and
+ *    changed (off until wpmcp_enable_megamenu_write), each write
+ *    snapshotted and followed by a CSS rebuild, plus a CSS cache clear.
+ *  - Issue #906 adds the FileBird media folder ops (FileBird_Pack): the
+ *    folder tree with counts, one folder's attachments, an attachment's
+ *    folder, and folders created, renamed, moved, deleted (attachments
+ *    become Uncategorized, never deleted) and attachments assigned (off
+ *    until wpmcp_enable_filebird_write), each write a 'plugin_table_rows'
+ *    row image.
+ *  - Issue #901 adds the Discount Rules for WooCommerce ops
+ *    (Discount_Rules_Pack): pricing rules listed and read, created staged
+ *    disabled, changed (a live rule only with confirm_live), enabled and
+ *    disabled, over 100 percent off refused (off until
+ *    wpmcp_enable_discount_rules_write), each write a wdr_rules row image.
+ *  - Issue #898 adds the popup ops: Popup Builder popups listed and read
+ *    with their display rules, triggers and views, and changed (title,
+ *    content, display rules) and switched on or off (off until
+ *    wpmcp_enable_popup_builder_write), each write under a post snapshot
+ *    (Popup_Builder_Pack); Hustle modules and Depicter documents listed and
+ *    read with their schedule, display conditions and counts (Hustle_Pack,
+ *    Depicter_Pack, read-only).
  *  - Issue #687 adds the Site Reviews ops (Site_Reviews_Pack): reviews
  *    listed (reviewer emails and IPs masked), read one at a time and
  *    summarised, and approved, unapproved, trashed or replied to (off until
  *    wpmcp_enable_site_reviews_write), each write under a post snapshot.
+ *  - Issue #902 adds the Smash Balloon Instagram Feed ops
+ *    (Instagram_Feed_Pack): feeds, their placements and cache age, and
+ *    connected accounts with their connection state (tokens never
+ *    returned), read; display settings changed and a feed's cache cleared
+ *    (off until wpmcp_enable_instagram_feed_write), each write undoable.
  *  - Issue #394 adds the paid-tier LMS ops (LMS_Pack): Tutor LMS,
  *    LifterLMS, LearnDash and LearnPress course, section, lesson and quiz trees with
  *    snapshotted writes, and read-only enrollments (LearnDash also enrolls,
  *    unenrolls and resets progress, each snapshotted).
+ *  - Issue #833 adds the paid-tier GamiPress ops (Gamipress_Pack): point,
+ *    achievement and rank types, achievements, ranks and a user's points,
+ *    earnings and rank, with points, achievement and rank writes through
+ *    GamiPress (off until wpmcp_enable_gamipress_write), each under a
+ *    'gamipress_user' snapshot of the user.
+ *  - Issue #827 adds the paid-tier Thrive Optimize ops
+ *    (Thrive_Optimize_Pack): A/B tests read with their variations' results,
+ *    and traffic split changes and stopping a test (undoable) or picking a
+ *    winner (not undoable, confirm:true), off until
+ *    wpmcp_enable_thrive_optimize_write.
+ *  - Issue #825 adds the paid-tier Thrive Leads ops (Thrive_Leads_Pack):
+ *    lead groups, opt-in forms, shortcodes and conversion counts read, and
+ *    form triggers and display, form switches and group display rules
+ *    written (off until wpmcp_enable_thrive_leads_write), each undoable.
  *  - Issue #701 adds the paid-tier WP Offload Media ops
  *    (Offload_Media_Pack): offload status, bucket and counts, and per
  *    attachment whether it is in the bucket and the URL the site serves.
+ *  - Issue #829 adds the paid-tier Thrive Ovation ops (Thrive_Ovation_Pack):
+ *    testimonials listed with author names and emails masked, read one at a
+ *    time, tags listed, and testimonials created, edited, set to a status and
+ *    tagged (off until wpmcp_enable_thrive_ovation_write), each undoable.
  *  - Issue #684 adds the paid-tier Jetpack CRM and HubSpot ops
  *    (Jetpack_Crm_Pack, HubSpot_Pack): Jetpack CRM contacts (masked in
  *    lists) and forms, contacts created and changed through its own API
@@ -119,11 +164,21 @@ if (! defined('ABSPATH')) {
  *    masked in lists, replied to, noted and set to a status, each ticket
  *    write off until wpmcp_enable_helpdesk_write and snapshotted as a
  *    'helpdesk_ticket' image (Helpdesk_Pack).
+ *  - Issue #830 adds the paid-tier Thrive Automator ops
+ *    (Thrive_Automator_Pack): automations listed and read with credentials
+ *    redacted, the trigger and action catalog, and automations turned on
+ *    (confirm:true) or off (off until wpmcp_enable_thrive_automator_write),
+ *    each under a post snapshot.
  *  - Issue #690 adds the paid-tier translation settings ops
  *    (Translation_Settings_Pack): Weglot languages and exclusions read, and
  *    GTranslate languages read and set (off until
  *    wpmcp_enable_translation_settings_write), the write snapshotted on the
  *    GTranslate option.
+ *  - Issue #900 adds the paid-tier email marketing ops
+ *    (Email_Marketing_Pack): MailerLite, Klaviyo, Kit, Omnisend and
+ *    ActiveCampaign connection, forms and list mapping read with keys never
+ *    returned, and Klaviyo checkout signup and Kit default forms set (off
+ *    until wpmcp_enable_email_marketing_write), snapshotted on each option.
  *  - Issue #660 adds the paid-tier Checkout Field Editor for WooCommerce
  *    ops (Checkout_Field_Editor_Pack): billing, shipping and additional
  *    checkout fields listed, and existing fields changed (off until
@@ -154,10 +209,36 @@ if (! defined('ABSPATH')) {
  *    status, test or live mode, display type, prices) and Paid Member
  *    Subscriptions plans and members (Paid_Member_Subscriptions_Pack,
  *    member names and emails masked).
+ *  - Issue #907 adds the maps and store locator ops (Maps_Pack): WP Go
+ *    Maps maps and markers, WP Store Locator stores (phone, fax and email
+ *    masked in lists) and settings without keys, and WP Maps maps and
+ *    locations read, with batch marker and store saves (geocoded with the
+ *    site's own configuration) and deletes, off until
+ *    wpmcp_enable_maps_write, each row its own undo point.
+ *  - Issue #899 adds the tracking ops (Tracking_Pack): GTM4WP,
+ *    PixelYourSite, Meta Pixel and Microsoft Clarity IDs, events, data
+ *    layer settings and excluded roles read with tokens masked, IDs loaded
+ *    twice (theme snippets included) reported, and GTM4WP settings and the
+ *    Clarity project changed (off until wpmcp_enable_tracking_write), each
+ *    write snapshotted on the plugin's option.
  *  - Issue #704 adds the read-only WPGraphQL ops (WPGraphQL_Pack): a
  *    GraphQL query run as the current user with mutations and
  *    subscriptions refused and personal values masked, and a schema
  *    summary without the mutation root.
+ *  - Issue #909 adds the read-only WP All Import and WP All Export ops
+ *    (WP_All_Import_Pack): saved imports and exports listed and read with
+ *    FTP and URL credentials and custom export code left out, and import
+ *    runs with the warnings and errors of their log, masked.
+ *  - Issue #895 adds database search and replace for sites running Better
+ *    Search Replace or Search Regex (Search_Replace_Pack): tables and saved
+ *    presets listed, a mandatory dry run whose token the run needs, and a
+ *    serialization-safe run (off until wpmcp_enable_search_replace_write,
+ *    confirm:true) that snapshots every changed row as a db_rows image, so
+ *    rollback-session undoes it.
+ *  - Issue #828 adds the paid-tier Thrive Ultimatum ops
+ *    (Thrive_Ultimatum_Pack): countdown campaigns read, and created, given a
+ *    schedule and display rules, paused and resumed (off until
+ *    wpmcp_enable_thrive_ultimatum_write), each write undoable.
  *  - Issue #705 adds the FooGallery ops (FooGallery_Pack): galleries listed
  *    and read with their images, created, and images added, removed and
  *    reordered (off until wpmcp_enable_foogallery_write), each write
@@ -170,6 +251,10 @@ if (! defined('ABSPATH')) {
  *    (Ultimate_Member_Pack: roles, members masked, forms and member
  *    directories, and a member's UM role set behind confirm:true, off until
  *    wpmcp_enable_ultimate_member_write, snapshotted as a 'user' snapshot).
+ *  - Issue #710 adds the custom post type builder ops (Cpt_Builder_Pack):
+ *    post types and taxonomies listed with the plugin that owns each, read,
+ *    created and changed in Custom Post Type UI or MB Custom Post Types
+ *    (off until wpmcp_enable_cpt_builder_write), each write undoable.
  *  - Issue #709 adds the PublishPress editorial workflow ops
  *    (PublishPress_Pack): the Planner content calendar read and editorial
  *    status changes, Checklists requirements read, and PublishPress Future
@@ -209,9 +294,14 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
 
     public function is_available(): bool
     {
-        return Events_Manager_Pack::active() || BbPress_Pack::active() || JetEngine_Pack::active() || Pods_Pack::active() || TranslatePress_Pack::active() || Code_Snippets_Pack::active() || WS_Form_Pack::active() || Everest_Forms_Pack::active() || Activity_Log_Pack::active() || Action_Scheduler_Pack::active() || Email_Log_Pack::active() || Pretty_Links_Pack::active() || Thirsty_Affiliates_Pack::active() || Advanced_Ads_Pack::active() || Popup_Maker_Pack::active() || OptinMonster_Pack::active() || Site_Reviews_Pack::active() || WPGraphQL_Pack::active() || Simple_Pay_Pack::active() || Paid_Member_Subscriptions_Pack::active() || FooGallery_Pack::active() || WpForo_Pack::active() || Asgaros_Forum_Pack::active() || Restrict_Content_Pack::active() || Ultimate_Member_Pack::active() || PublishPress_Pack::active() || Listings_Pack::active() || EDD_Pack::active() || BuddyPress_Pack::active()
+        return Events_Manager_Pack::active() || BbPress_Pack::active() || JetEngine_Pack::active() || Pods_Pack::active() || TranslatePress_Pack::active() || Code_Snippets_Pack::active() || WS_Form_Pack::active() || Everest_Forms_Pack::active() || Activity_Log_Pack::active() || Action_Scheduler_Pack::active() || Email_Log_Pack::active() || Pretty_Links_Pack::active() || Thirsty_Affiliates_Pack::active() || Advanced_Ads_Pack::active() || Popup_Maker_Pack::active() || OptinMonster_Pack::active() || Site_Reviews_Pack::active() || WPGraphQL_Pack::active() || Simple_Pay_Pack::active() || Paid_Member_Subscriptions_Pack::active() || FooGallery_Pack::active() || JetFormBuilder_Pack::active() || Kadence_Forms_Pack::active() || Jetpack_Forms_Pack::active() || WpForo_Pack::active() || Asgaros_Forum_Pack::active() || Restrict_Content_Pack::active() || Ultimate_Member_Pack::active() || Cpt_Builder_Pack::active() || PublishPress_Pack::active() || Listings_Pack::active() || EDD_Pack::active() || Search_Replace_Pack::active() || Popup_Builder_Pack::active() || Hustle_Pack::active() || Depicter_Pack::active() || Tracking_Pack::active() || Discount_Rules_Pack::active() || Instagram_Feed_Pack::active() || WP_All_Import_Pack::active() || FileBird_Pack::active() || Max_Mega_Menu_Pack::active() || Maps_Pack::active() || BuddyPress_Pack::active()
+            || Gamipress_Pack::active()
             || LMS_Pack::active()
+            || Thrive_Ultimatum_Pack::active()
+            || Thrive_Optimize_Pack::active()
             || Offload_Media_Pack::active()
+            || Thrive_Ovation_Pack::active()
+            || Thrive_Leads_Pack::active()
             || Jetpack_Crm_Pack::active()
             || HubSpot_Pack::active()
             || Booking_Pack::active()
@@ -226,7 +316,10 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             || Elementor_Pro_Forms_Pack::active()
             || BetterDocs_Pack::active()
             || Helpdesk_Pack::active()
+            || Thrive_Automator_Pack::active()
             || Translation_Settings_Pack::active()
+            || Easy_TOC_Pack::active()
+            || Email_Marketing_Pack::active()
             || Checkout_Field_Editor_Pack::active()
             || SureCart_Pack::active();
     }
@@ -238,18 +331,29 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
 
     protected function summary(): string
     {
-        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future'
+        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, Custom Post Type UI and MB Custom Post Types post types, Better Search Replace and Search Regex search and replace, Popup Builder, Hustle and Depicter popups, GTM4WP, PixelYourSite, Meta Pixel for WordPress and Microsoft Clarity tracking IDs, Discount Rules for WooCommerce pricing rules, Smash Balloon Instagram Feed feeds, WP All Import and WP All Export jobs, FileBird media folders, Max Mega Menu settings and themes, WP Go Maps, WP Maps and WP Store Locator locations'
             . ', FooGallery galleries'
-            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS courses, TablePress tables'
+            . ', JetFormBuilder forms'
+            . ', Kadence Blocks forms'
+            . ', Jetpack Forms responses'
+            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS and Thrive Apprentice courses, TablePress tables'
+            . ', GamiPress points, achievements and ranks'
             . ', wpDataTables and Ninja Tables tables'
             . ', WP Offload Media status'
+            . ', Thrive Ultimatum campaigns'
+            . ', Thrive Optimize A/B tests'
+            . ', Thrive Ovation testimonials'
+            . ', Thrive Leads forms'
             . ', Jetpack CRM contacts and forms, HubSpot forms'
             . ', Bookly, Simply Schedule Appointments, BookingPress and LatePoint bookings'
             . ', WPCode snippets'
-            . ', FluentCRM and MailPoet'
+            . ', FluentCRM and MailPoet, FunnelKit Automations'
             . ', Newsletter, Groundhogg, MC4WP and Brevo lists'
             . ', Amelia bookings, Polylang and WPML translations, MemberPress memberships, Elementor Pro forms'
             . ', BetterDocs docs, Fluent Support and Awesome Support tickets'
+            . ', Easy Table of Contents settings'
+            . ', MailerLite, Klaviyo, Kit, Omnisend and ActiveCampaign settings'
+            . ', Thrive Automator automations'
             . ', Weglot and GTranslate language settings, Loco Translate .po strings'
             . ', Checkout Field Editor fields'
             . ', SureCart store data';
@@ -280,23 +384,45 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             [ 'Pretty Links', false, Pretty_Links_Pack::operations() ],
             [ 'ThirstyAffiliates', false, Thirsty_Affiliates_Pack::operations() ],
             [ 'Advanced Ads', false, Advanced_Ads_Pack::operations() ],
+            [ 'Max Mega Menu', false, Max_Mega_Menu_Pack::operations() ],
+            [ 'FileBird', false, FileBird_Pack::operations() ],
+            [ 'Discount Rules for WooCommerce', false, Discount_Rules_Pack::operations() ],
+            [ 'Popup Builder', false, Popup_Builder_Pack::operations() ],
+            [ 'Hustle', false, Hustle_Pack::operations() ],
+            [ 'Depicter', false, Depicter_Pack::operations() ],
             [ 'Popup Maker', false, Popup_Maker_Pack::operations() ],
             [ 'OptinMonster', false, OptinMonster_Pack::operations() ],
             [ 'Site Reviews', false, Site_Reviews_Pack::operations() ],
             [ 'WP Simple Pay', false, Simple_Pay_Pack::operations() ],
             [ 'Paid Member Subscriptions', false, Paid_Member_Subscriptions_Pack::operations() ],
             [ 'WPGraphQL', false, WPGraphQL_Pack::operations() ],
+            [ 'WP Go Maps', false, Maps_Pack::go_maps_operations() ],
+            [ 'WP Store Locator', false, Maps_Pack::store_locator_operations() ],
+            [ 'WP Maps', false, Maps_Pack::wp_maps_operations() ],
+            [ 'WP All Import', false, WP_All_Import_Pack::import_operations() ],
+            [ 'WP All Export', false, WP_All_Import_Pack::export_operations() ],
+            [ Instagram_Feed_Pack::PLUGIN, false, Instagram_Feed_Pack::operations() ],
+            [ 'GTM4WP, PixelYourSite, Meta Pixel for WordPress, Microsoft Clarity', true, Tracking_Pack::shared_operations() ],
+            [ 'GTM4WP', false, Tracking_Pack::gtm4wp_operations() ],
+            [ 'Microsoft Clarity', false, Tracking_Pack::clarity_operations() ],
+            [ 'Better Search Replace, Search Regex', true, Search_Replace_Pack::operations() ],
             [ 'FooGallery', false, FooGallery_Pack::operations() ],
+            [ 'JetFormBuilder', false, JetFormBuilder_Pack::operations() ],
+            [ 'Kadence Blocks forms', false, Kadence_Forms_Pack::operations() ],
+            [ 'Jetpack Forms', false, Jetpack_Forms_Pack::operations() ],
             [ 'wpForo', false, WpForo_Pack::operations() ],
             [ 'Asgaros Forum', false, Asgaros_Forum_Pack::operations() ],
             [ 'Restrict Content', false, Restrict_Content_Pack::operations() ],
             [ 'Ultimate Member', false, Ultimate_Member_Pack::operations() ],
+            [ 'Custom Post Type UI, MB Custom Post Types', true, Cpt_Builder_Pack::operations() ],
             [ 'PublishPress Planner', false, PublishPress_Pack::planner_operations() ],
             [ 'PublishPress Checklists', false, PublishPress_Pack::checklists_operations() ],
             [ 'PublishPress Future', false, PublishPress_Pack::future_operations() ],
             [ 'Events Manager', false, Events_Manager_Pack::operations() ],
             [ 'Easy Digital Downloads', false, EDD_Pack::operations() ],
         ];
+        $groups[] = [ 'GamiPress', false, Gamipress_Pack::operations() ];
+        $groups[] = [ 'Thrive Optimize', false, Thrive_Optimize_Pack::operations() ];
         foreach (Listings_Pack::prefixes() as $prefix) {
             $groups[] = [ Listings_Pack::label($prefix), false, Listings_Pack::operations_for($prefix) ];
         }
@@ -304,6 +430,9 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             $groups[] = [ $adapter->label(), false, $adapter->operations() ];
         }
         $groups[] = [ 'WP Offload Media', false, Offload_Media_Pack::operations() ];
+        $groups[] = [ 'Thrive Ultimatum', false, Thrive_Ultimatum_Pack::operations() ];
+        $groups[] = [ 'Thrive Ovation', false, Thrive_Ovation_Pack::operations() ];
+        $groups[] = [ 'Thrive Leads', false, Thrive_Leads_Pack::operations() ];
         $groups[] = [ 'Jetpack CRM', false, Jetpack_Crm_Pack::operations() ];
         $groups[] = [ 'HubSpot', false, HubSpot_Pack::operations() ];
         array_push($groups, ...Booking_Pack::host_groups());
@@ -325,8 +454,13 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
         foreach (Helpdesk_Pack::adapters() as $adapter) {
             $groups[] = [ $adapter->label(), false, $adapter->operations() ];
         }
+        $groups[] = [ 'Thrive Automator', false, Thrive_Automator_Pack::operations() ];
         $groups[] = [ 'Weglot', false, Translation_Settings_Pack::weglot_operations() ];
         $groups[] = [ 'GTranslate', false, Translation_Settings_Pack::gtranslate_operations() ];
+        $groups[] = [ 'Easy Table of Contents', false, Easy_TOC_Pack::operations() ];
+        foreach (Email_Marketing_Pack::groups() as [ $label, $ops ]) {
+            $groups[] = [ $label, false, $ops ];
+        }
         $groups[] = [ 'Loco Translate', false, Loco_Translate_Pack::operations() ];
         $groups[] = [ 'Checkout Field Editor', false, Checkout_Field_Editor_Pack::operations() ];
         $groups[] = [ 'SureCart', false, SureCart_Pack::operations() ];
@@ -358,24 +492,44 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             Pretty_Links_Pack::operations(),
             Thirsty_Affiliates_Pack::operations(),
             Advanced_Ads_Pack::operations(),
+            Max_Mega_Menu_Pack::operations(),
+            FileBird_Pack::operations(),
+            Discount_Rules_Pack::operations(),
+            Popup_Builder_Pack::operations(),
+            Hustle_Pack::operations(),
+            Depicter_Pack::operations(),
             Popup_Maker_Pack::operations(),
             OptinMonster_Pack::operations(),
             Site_Reviews_Pack::operations(),
+            Instagram_Feed_Pack::operations(),
             Simple_Pay_Pack::operations(),
             Paid_Member_Subscriptions_Pack::operations(),
             WPGraphQL_Pack::operations(),
+            Maps_Pack::operations(),
+            WP_All_Import_Pack::operations(),
+            Tracking_Pack::operations(),
+            Search_Replace_Pack::operations(),
             FooGallery_Pack::operations(),
+            JetFormBuilder_Pack::operations(),
+            Kadence_Forms_Pack::operations(),
+            Jetpack_Forms_Pack::operations(),
             WpForo_Pack::operations(),
             Asgaros_Forum_Pack::operations(),
             Restrict_Content_Pack::operations(),
             Ultimate_Member_Pack::operations(),
+            Cpt_Builder_Pack::operations(),
             PublishPress_Pack::operations(),
             Listings_Pack::operations(),
             Events_Manager_Pack::operations(),
             EDD_Pack::operations(),
             BuddyPress_Pack::operations(),
+            Gamipress_Pack::operations(),
             LMS_Pack::operations(),
+            Thrive_Optimize_Pack::operations(),
             Offload_Media_Pack::operations(),
+            Thrive_Ultimatum_Pack::operations(),
+            Thrive_Ovation_Pack::operations(),
+            Thrive_Leads_Pack::operations(),
             Jetpack_Crm_Pack::operations(),
             HubSpot_Pack::operations(),
             Booking_Pack::operations(),
@@ -390,7 +544,10 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             Elementor_Pro_Forms_Pack::operations(),
             BetterDocs_Pack::operations(),
             Helpdesk_Pack::operations(),
+            Thrive_Automator_Pack::operations(),
             Translation_Settings_Pack::operations(),
+            Easy_TOC_Pack::operations(),
+            Email_Marketing_Pack::operations(),
             Checkout_Field_Editor_Pack::operations(),
             SureCart_Pack::operations()
         );

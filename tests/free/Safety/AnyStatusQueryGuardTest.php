@@ -32,6 +32,10 @@ class AnyStatusQueryGuardTest extends \WP_UnitTestCase
             'count'  => 1,
             'reason' => 'The helper itself: it defaults post_status to any and adds the read filter.',
         ],
+        'Integrations/Login_Url_Pack.php::login_slug_refusal'              => [
+            'count'  => 1,
+            'reason' => 'Collision check in set-login-url, which runs at manage_options: a draft or private post slug would still be hidden by the login screen; only the colliding post id leaves.',
+        ],
         'Integrations/Core_Fonts_Pack.php::faces'                          => [
             'count'  => 1,
             'reason' => 'Font faces of one family (issue #712): every op that lists them takes edit_theme_options, which core\'s wp_font_face type maps every read capability to, and the delete must back up every face.',

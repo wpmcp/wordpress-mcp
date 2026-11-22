@@ -171,6 +171,8 @@ class Theme_Integration extends Integration_Dispatcher
         'neve',
         'hello-elementor',
         'hestia',
+        'divi',
+        'flatsome',
     ];
 
     /** Bundled core theme slugs, reported as the 'core' framework. */
@@ -260,7 +262,7 @@ class Theme_Integration extends Integration_Dispatcher
 
     protected function summary(): string
     {
-        return 'the active theme (context, mods), site identity, permalinks, Redirection, Rank Math redirects and 404 log, backup, security, analytics, cache, mail status, site gates, fonts';
+        return 'the active theme (context, mods), site identity, permalinks, Redirection, Rank Math redirects and 404 log, backup, security, analytics, cache, mail status, site gates, Redux options panels, fonts';
     }
 
     protected function operations(): array
@@ -281,12 +283,17 @@ class Theme_Integration extends Integration_Dispatcher
      * single, archive and search templates on the site parts store.
      * Issue #356 adds the paid-tier FunnelKit funnel reads (FunnelKit_Pack),
      * which answer funnelkit_inactive while FunnelKit is not loaded.
+     * Issue #824 adds the paid-tier Thrive Theme Builder template, section
+     * and theme settings ops (Thrive_Theme_Pack).
      * Issue #662 adds the paid-tier CartFlows flow, step and checkout
      * product ops (CartFlows_Pack), which answer cartflows_inactive while
      * CartFlows is not loaded.
      * Issue #714 adds the paid-tier WordPress core personal data request
      * ops (Core_Privacy_Pack): requests listed and read, export and erasure
      * requests filed and marked complete, every write undoable.
+     * Issue #834 adds the paid-tier WPFunnels funnel, step and checkout
+     * product ops (WPFunnels_Pack), which answer plugin_missing or
+     * plugin_inactive while WPFunnels is not loaded.
      *
      * Issue #300 adds the Redirection plugin adapter (Redirection_Pack):
      * free redirect and group reads plus snapshotted redirect writes that
@@ -297,6 +304,11 @@ class Theme_Integration extends Integration_Dispatcher
      * its plugin is not loaded.
      * Issue #903 adds the site gate status read and the SeedProd and Under
      * Construction toggles (Site_Gate_Pack).
+     * Issue #897 adds the Redux Framework options panels (Redux_Pack): panels
+     * and fields read, and one field written through Redux's own save,
+     * snapshotted and off until the site opts in.
+     * Issue #896 adds the WPS Hide Login login URL read and the guarded,
+     * snapshotted login and redirect slug write (Login_Url_Pack).
      * Issues #713 and #717 add WordPress core's own site identity, homepage
      * and permalink settings (Core_Site_Pack): logo, icon, front page and
      * posts page, the permalink structure with its bases, a URL resolver
@@ -329,14 +341,19 @@ class Theme_Integration extends Integration_Dispatcher
             Core_Fonts_Pack::operations(),
             Ops_Status_Packs::operations(),
             Site_Gate_Pack::operations(),
+            Redux_Pack::operations(),
+            Login_Url_Pack::operations(),
             Consent_Pack::operations(),
             Cache_Settings_Pack::operations(),
+            ElementsKit_Pack::operations(),
             Redirection_Pack::operations(),
             Rank_Math_Redirects_Pack::operations(),
             Elementor_Addon_Packs::operations(),
             FunnelKit_Pack::operations(),
+            Thrive_Theme_Pack::operations(),
             CartFlows_Pack::operations(),
             Core_Privacy_Pack::operations(),
+            WPFunnels_Pack::operations(),
             \WPMCP\Tools\ThemeBuilder\Dynamic\Dynamic_Template_Ops::operations()
         );
     }
@@ -516,8 +533,8 @@ class Theme_Integration extends Integration_Dispatcher
     private function detect_framework(): ?string
     {
         $template = get_template();
-        if (in_array($template, self::FRAMEWORKS, true)) {
-            return $template;
+        if (in_array(strtolower($template), self::FRAMEWORKS, true)) {
+            return strtolower($template);
         }
         if (in_array($template, self::CORE_THEMES, true)) {
             return 'core';

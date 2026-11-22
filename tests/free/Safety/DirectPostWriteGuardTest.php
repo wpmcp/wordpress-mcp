@@ -37,25 +37,49 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Avada library post from a page element (issue #637); every field is new.',
         ],
+        'Tools/Builders/Beaver_Builder_Page.php'      => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Beaver Builder saved template from a page node (issue #638); every field is new.',
+        ],
+        'Integrations/Thrive_Ultimatum_Pack.php'      => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Thrive Ultimatum campaign post (issue #828); every field is new. Its other writes are metas and the plugin\'s own tables.',
+        ],
+        'Tools/Builders/Flatsome_Blocks.php'          => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new UX Block (blocks post) from a page element or page (issue #849); every field is new.',
+        ],
         'Integrations/Core_Fonts_Pack.php'            => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new font family or font face post (issue #712), as core\'s font endpoints do; every field is new.',
+        ],
+        'Integrations/Maps_Pack.php'                  => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new WP Store Locator store post (issue #907); every field is new. Updates and trashing go through Save_Filters.',
         ],
         'Integrations/CartFlows_Pack.php'             => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new CartFlows flow or step post (issue #662); every field is new. Changes to existing flows and steps are meta writes.',
         ],
+        'Integrations/Cpt_Builder_Pack.php'           => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new MB Custom Post Types definition post (issue #710); every field is new. Updates go through Save_Filters.',
+        ],
         'Integrations/Theme_Layouts_Pack.php'         => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new theme add-on layout post (issue #656); every field is new. Updates go through Save_Filters.',
+        ],
+        'Tools/Builders/Bricks_Page.php'              => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Bricks section template from a page element (issue #633); every field is new.',
         ],
         'Integrations/Event_Calendar_Writes.php'      => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new event, venue or organizer post for The Events Calendar or Modern Events Calendar (issue #677); every field is new. Updates go through Save_Filters.',
         ],
-        'Tools/Builders/Oxygen_Page.php'              => [
+        'Tools/Builders/Breakdance_Page.php'          => [
             'calls'  => ['wp_insert_post' => 1],
-            'reason' => 'Creates a new Oxygen Component from a page node (issue #635); every field is new.',
+            'reason' => 'Creates a new Breakdance Global Block or Oxygen Component from a page node (issues #634, #635); every field is new.',
         ],
         'Tools/SiteEditor/Site_Templates_Write.php'   => [
             'calls'  => ['wp_insert_post' => 1],
@@ -117,6 +141,10 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new course, section or lesson post.',
         ],
+        'Integrations/LMS_Thrive_Apprentice.php'      => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Thrive Apprentice lesson post.',
+        ],
         'Integrations/LMS_LearnPress.php'             => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new LearnPress lesson or quiz post before placing it in a section row.',
@@ -129,6 +157,10 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new BetterDocs doc post.',
         ],
+        'Integrations/Thrive_Ovation_Pack.php'        => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Thrive Ovation testimonial post (issue #829); every field is new. Updates go through Save_Filters.',
+        ],
         'Integrations/Listings_Pack.php'              => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new WP Job Manager, GeoDirectory or Directorist listing post (issue #707).',
@@ -140,6 +172,14 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
         'Integrations/Advanced_Ads_Pack.php'          => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Advanced Ads ad post.',
+        ],
+        'Integrations/Gamipress_Pack.php'             => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new GamiPress achievement post.',
+        ],
+        'Integrations/WPFunnels_Pack.php'             => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new, empty WPFunnels funnel post.',
         ],
         'Integrations/FooGallery_Pack.php'            => [
             'calls'  => ['wp_insert_post' => 1],
