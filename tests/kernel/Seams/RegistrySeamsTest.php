@@ -81,6 +81,30 @@ final class RegistrySeamsTest extends TestCase
         Opt_In_Settings::all_groups();
     }
 
+    public function test_rollback_hooks_attach_only_the_rollback_rows_of_modules_that_can_run(): void
+    {
+        $row = ['class' => 'WPMCP\\Modules\\Acme\\Hooks\\Acme_Hooks', 'method' => 'after_restore', 'static' => false, 'priority' => 10, 'args' => 2, 'filter' => false, 'contexts' => []];
+        Plugin::instance()->kernel()->use_registry_for_tests(Registry::from_arrays([
+            'modules' => [
+                'acme' => self::MODULE + ['tier' => 'free', 'requires' => null],
+                'absent' => ['id' => 'absent', 'namespace' => 'WPMCP\\Modules\\Absent\\', 'tier' => 'free', 'requires' => ['function' => 'wpmcp_no_such_function']] + self::MODULE,
+            ],
+            'hooks' => [
+                ['module' => 'acme', 'kind' => 'rollback', 'hook' => 'wpmcp_rollback_options_restored'] + $row,
+                ['module' => 'acme', 'kind' => 'hook', 'hook' => 'init'] + $row,
+                ['module' => 'absent', 'kind' => 'rollback', 'hook' => 'wpmcp_rollback_post_restored'] + $row,
+            ],
+        ]));
+        $added = [];
+        $adder = static function (string $hook, array|\Closure $callback, int $priority, int $args, bool $filter) use (&$added): bool {
+            $added[] = [$hook, $callback instanceof \Closure, $priority, $args, $filter];
+            return true;
+        };
+
+        $this->assertSame(1, Plugin::instance()->kernel()->attach_rollback_hooks($adder));
+        $this->assertSame([['wpmcp_rollback_options_restored', true, 10, 2, false]], $added, 'only the rollback row of the module whose Requires are met, as an instance trampoline');
+    }
+
     public function test_data_registry_takes_in_module_tables_and_stores(): void
     {
         Data_Registry::set_module_data_for_tests([

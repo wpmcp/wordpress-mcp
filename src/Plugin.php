@@ -590,6 +590,11 @@ final class Plugin
                 add_action($refresher[2] ?? 'wpmcp_rollback_options_restored', [$class, $method], 10, 2);
             }
         }
+        // Then the refreshers modules declare with #[On_Rollback]; a test
+        // that passes its own list gets exactly that list.
+        if (null === $refreshers) {
+            self::instance()->kernel()->attach_rollback_hooks(); // central-list-ok: D11 seam, the compiled #[On_Rollback] rows
+        }
     }
 
     public static function set_flavor_for_tests(?string $flavor): void

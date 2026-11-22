@@ -40,6 +40,9 @@ class SiteGateLiveTest extends \WP_UnitTestCase
         update_option('active_plugins', [ Site_Gate::PLUGINS[ $this->slug ] ]);
         add_filter('pre_http_request', static fn () => [ 'headers' => [], 'body' => '', 'response' => [ 'code' => 200, 'message' => '' ], 'cookies' => [], 'filename' => null ], 1);
         add_filter(Site_Gate_Pack::ENABLE_FILTER, '__return_true');
+        // The kernel keeps a module's operation definitions for the request
+        // (one PHP process here), opt-in state included: read them again.
+        \WPMCP\Plugin::instance()->kernel()->use_registry_for_tests(null);
         wp_set_current_user(self::factory()->user->create([ 'role' => 'administrator' ]));
     }
 
@@ -47,6 +50,7 @@ class SiteGateLiveTest extends \WP_UnitTestCase
     {
         remove_all_filters('pre_http_request');
         remove_all_filters(Site_Gate_Pack::ENABLE_FILTER);
+        \WPMCP\Plugin::instance()->kernel()->use_registry_for_tests(null);
         wp_set_current_user(0);
         parent::tearDown();
     }
@@ -73,6 +77,125 @@ class SiteGateLiveTest extends \WP_UnitTestCase
         $this->$method();
         $status = Site_Gate::status(false);
         $this->assertContains(Site_Gate::source_for($this->slug), array_column($status['gates'], 'source'), 'an active plugin is listed');
+    }
+
+    /**
+     * Issue #1099: the settings ops write what the loaded plugin reads, and
+     * their undo leaves it exactly as its own code stored it.
+     */
+    public function test_the_settings_ops_write_what_the_plugin_reads(): void
+    {
+        $method = 'settings_' . str_replace('-', '_', $this->slug);
+        $this->$method();
+    }
+
+    private function settings(string $op, array $args): array
+    {
+        $out = $this->toggle($op, [ 'plugin' => $this->slug ] + $args, 'set-site-gate-bypass' === $op);
+        $this->assertArrayNotHasKey('error', $out, (string) wp_json_encode($out));
+        return $out;
+    }
+
+    private function settings_read(): array
+    {
+        return (new Theme_Integration())->handle_read([ 'operation' => 'get-site-gate-settings', 'args' => [] ]);
+    }
+
+    private function settings_under_construction_page(): void
+    {
+        update_option('ucp_options', \UCP::default_options());
+        $before = get_option('ucp_options');
+        $out    = $this->settings('set-site-gate-content', [ 'headline' => 'Live heading', 'message' => '<p>Live text</p>' ]);
+        $this->assertSame('Live heading', \UCP::get_options()['heading1'], 'the plugin reads the heading written');
+        (new Rollback_Operation())->handle([ 'operation_id' => $out['operation_id'] ]);
+        $this->assertSame($before, get_option('ucp_options'));
+
+        $this->toggle('enable-site-gate', [ 'plugin' => $this->slug ], true);
+        $this->assertSame('admin_not_bypassed', $this->toggle('set-site-gate-bypass', [ 'roles' => [ 'editor' ] ], true)['error']['code'] ?? '');
+        $this->settings('set-site-gate-bypass', [ 'roles' => [ 'administrator', 'editor' ] ]);
+        $this->assertFalse(\UCP::is_construction_mode_enabled(false), 'the administrator still walks past it');
+    }
+
+    private function settings_wp_maintenance_mode(): void
+    {
+        $wpmm = \WP_Maintenance_Mode::get_instance();
+        update_option('wpmm_settings', $wpmm->default_settings());
+        delete_option('wpmm_new_look');
+        $out = $this->settings('set-site-gate-content', [ 'headline' => 'Live heading', 'countdown' => gmdate('c', time() + DAY_IN_SECONDS + 600) ]);
+        $settings = new \ReflectionProperty(\WP_Maintenance_Mode::class, 'plugin_settings');
+        $settings->setValue($wpmm, get_option('wpmm_settings'));
+        $this->assertSame('Live heading', get_option('wpmm_settings')['design']['heading']);
+        $this->assertEqualsWithDelta(DAY_IN_SECONDS + 600, $wpmm->calculate_backtime(), 120, 'the plugin computes the countdown written');
+        (new Rollback_Operation())->handle([ 'operation_id' => $out['operation_id'] ]);
+
+        $this->settings('set-site-gate-bypass', [ 'ip_allowlist' => [ '203.0.113.5' ] ]);
+        $settings->setValue($wpmm, get_option('wpmm_settings'));
+        $_SERVER['REMOTE_ADDR'] = '203.0.113.5';
+        $this->assertTrue($wpmm->check_exclude(), 'the plugin lets the listed address through');
+        $_SERVER['REMOTE_ADDR'] = '198.51.100.1';
+        $this->assertFalse($wpmm->check_exclude());
+        $this->assertStringNotContainsString('203.0.113.5', (string) wp_json_encode($this->settings_read()));
+    }
+
+    private function settings_maintenance(): void
+    {
+        $load = new \ReflectionMethod(\MTNC::class, 'load_options');
+        $load->invoke(\MTNC::getInstance());
+        $before = get_option('mtnc-options');
+        $this->assertIsObject($before['options']['themes'][ $before['options']['theme_global'] ], 'the plugin stores its theme as an object');
+
+        $out   = $this->settings('set-site-gate-content', [ 'headline' => 'Live heading', 'message' => '<p>Live text</p>' ]);
+        $read  = $this->settings_read()['result']['content'] ?? [];
+        $this->assertSame('Live heading', $read['headline'] ?? null, 'the plugin\'s own default design has a header module');
+        $this->assertSame('<p>Live text</p>', $read['message'] ?? null);
+        (new Rollback_Operation())->handle([ 'operation_id' => $out['operation_id'] ]);
+        $this->assertEquals($before, get_option('mtnc-options'), 'undo puts the plugin\'s theme objects back');
+        $this->assertIsObject($load->invoke(\MTNC::getInstance())['options']['themes'][ $before['options']['theme_global'] ]);
+
+        $this->settings('set-site-gate-bypass', [ 'ip_allowlist' => [ '203.0.113.5' ], 'bypass_link' => 'liveLink1234' ]);
+        $loaded = $load->invoke(\MTNC::getInstance())['options'];
+        $this->assertSame('203.0.113.5', $loaded['ip_whitelist']);
+        $this->assertSame('liveLink1234', $loaded['direct_access_link']);
+    }
+
+    private function settings_cmp_coming_soon_maintenance(): void
+    {
+        $cmp = \CMP_Coming_Soon_and_Maintenance::instance();
+        $this->settings('set-site-gate-content', [ 'headline' => 'Live heading', 'countdown' => gmdate('c', time() + DAY_IN_SECONDS) ]);
+        $this->assertSame('Live heading', get_option('niteoCS_body_title'));
+
+        update_option('niteoCS_status', '1');
+        $this->act_as('editor');
+        update_option('niteoCS_roles', wp_json_encode([ 'editor' ]));
+        $this->assertTrue($cmp->cmp_roles_filter());
+        $this->assertSame('admin_not_bypassed', $this->toggle('set-site-gate-bypass', [ 'roles' => [ 'author' ] ], true)['error']['code'] ?? '', 'an editor with manage_options would lock themself out');
+        $this->settings('set-site-gate-bypass', [ 'roles' => [ 'editor', 'author' ], 'bypass_link' => 'liveLink1234' ]);
+        $this->assertTrue($cmp->cmp_roles_filter(), 'the plugin still lets the editor through');
+        $this->assertSame('liveLink1234', get_option('niteoCS_bypass_id'));
+    }
+
+    private function settings_coming_soon(): void
+    {
+        $page = self::factory()->post->create([ 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Soon', 'post_content_filtered' => wp_json_encode([ 'access_by_role' => [], 'document' => [ 'sections' => [] ] ]) ]);
+        update_option('seedprod_coming_soon_page_id', $page);
+        update_option('seedprod_settings', wp_json_encode([ 'enable_coming_soon_mode' => true ]));
+
+        $this->assertSame('seedprod_builder_content', $this->toggle('set-site-gate-content', [ 'headline' => 'x' ])['error']['code'] ?? '');
+        $this->assertSame('admin_not_bypassed', $this->toggle('set-site-gate-bypass', [ 'roles' => [ 'editor' ] ], true)['error']['code'] ?? '');
+        $out = $this->settings('set-site-gate-bypass', [ 'roles' => [ 'administrator' ] ]);
+        $this->assertSame([ 'administrator' ], json_decode(get_post($page)->post_content_filtered, true)['access_by_role']);
+        (new Rollback_Operation())->handle([ 'operation_id' => $out['operation_id'] ]);
+        clean_post_cache($page);
+        $this->assertSame([], json_decode(get_post($page)->post_content_filtered, true)['access_by_role']);
+    }
+
+    /** An acting user with this role plus manage_options, so the theme pair lets them write. */
+    private function act_as(string $role): void
+    {
+        $id = self::factory()->user->create([ 'role' => $role ]);
+        get_userdata($id)->add_cap('manage_options');
+        get_userdata($id)->add_cap('edit_theme_options');
+        wp_set_current_user($id);
     }
 
     private function check_wp_maintenance_mode(): void

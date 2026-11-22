@@ -446,8 +446,11 @@ final class Compiler
             }
         } else {
             $this->notes[] = sprintf('%s is an instance method; its op names are not compiled (make it static or list the ops in the attribute).', $label);
-            $this->factory($class);
         }
+        // Operation_Registry binds the method names a definition gives
+        // (handler, validate, snapshot, ...) to the instance the container
+        // builds, so the contributor needs its factory either way.
+        $this->factory($class);
         $hosts = null;
         if (null !== $o->hosts_method) {
             $hosts = $this->run_static($ref, $o->hosts_method, $label);
