@@ -55,11 +55,11 @@ class Builder_Design
         }
 
         if ('' === $builder) {
-            return new \WP_Error('missing_builder', 'A scope read needs builder (bricks, breakdance, oxygen, divi, wpbakery, avada, thrive, cornerstone, betheme or brizycornerstone, betheme or siteorigincornerstone, betheme or kirkicornerstone, betheme or visual-composercornerstone, betheme or beaver-builder) or a post_id to detect it from.');
+            return new \WP_Error('missing_builder', 'A scope read needs builder (' . implode(', ', self::BUILDERS) . ') or a post_id to detect it from.');
         }
 
         if (! in_array($builder, self::BUILDERS, true)) {
-            return new \WP_Error('unsupported_builder', "scope reads support 'bricks', 'breakdance', 'oxygen', 'divi', 'wpbakery', 'avada', 'thrive', 'cornerstone', 'betheme' and 'brizy' and 'siteorigin' and 'kirki' and 'visual-composer' and 'beaver-builder'; got '{$builder}'.");
+            return new \WP_Error('unsupported_builder', "scope reads support '" . implode("', '", self::BUILDERS) . "'; got '{$builder}'.");
         }
 
         $element = (string) ($args['element'] ?? '');
