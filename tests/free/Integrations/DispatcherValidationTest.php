@@ -128,6 +128,24 @@ class DispatcherValidationTest extends \WP_UnitTestCase
     }
 
     /**
+     * Issue #1156: confirm:true placed inside args is not the confirm the
+     * gate reads, so the refusal names the top-level parameter of the tool,
+     * and following it word for word runs the op on the next call.
+     */
+    public function test_confirm_inside_args_is_refused_with_a_message_naming_the_top_level_parameter(): void
+    {
+        $out = $this->integration->handle_write([ 'operation' => 'nuke', 'args' => [ 'confirm' => true ] ]);
+
+        $this->assertSame('confirmation_required', $out['error']['code']);
+        $this->assertStringContainsString('top-level confirm parameter of testint-write', $out['error']['message']);
+        $this->assertStringContainsString('not inside args', $out['error']['message']);
+        $this->assertSame([], Fixture_Integration::$calls);
+
+        $out = $this->integration->handle_write([ 'operation' => 'nuke', 'confirm' => true ]);
+        $this->assertArrayNotHasKey('error', $out);
+    }
+
+    /**
      * Issue #886: a destructive op with no undo point takes confirm:true
      * only from the call's arguments, so its refusal is never turned into
      * an elicitation a client could answer by itself. A snapshotted one
