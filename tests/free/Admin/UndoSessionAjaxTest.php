@@ -132,7 +132,10 @@ class UndoSessionAjaxTest extends \WP_Ajax_UnitTestCase
         $response = $this->call('sess-a', wp_create_nonce(Restore_Controller::SESSION_ACTION));
 
         $this->assertFalse($response['success']);
-        $this->assertSame($tool_message, $response['data']['message']);
+        // The message names how many seconds ago the lock was refreshed,
+        // which can tick over between the two calls.
+        $seconds = static fn (string $m): string => (string) preg_replace('/\(\d+ seconds? ago\)/', '(N seconds ago)', $m);
+        $this->assertSame($seconds($tool_message), $seconds($response['data']['message']));
         foreach ($ids as $id) {
             $this->assertSame(self::V1, get_post($id)->post_content, 'no partial undo');
         }
