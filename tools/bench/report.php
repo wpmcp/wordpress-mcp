@@ -12,88 +12,103 @@
  * REPO-ONLY: plain PHP, no WordPress load.
  */
 
+declare(strict_types=1);
+
+use WPMCP\Bench\Data;
+
+require_once __DIR__ . '/Data.php';
+
 if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
-$file     = $argv[1] ?? '';
-$markdown = in_array('--markdown', $argv, true);
-$doc      = is_readable($file) ? json_decode((string) file_get_contents($file), true) : null;
+$args     = Data::strs($_SERVER, 'argv');
+$file     = $args[1] ?? '';
+$markdown = in_array('--markdown', $args, true);
+$doc      = '' !== $file && is_readable($file) ? json_decode((string) file_get_contents($file), true) : null;
 if (! is_array($doc)) {
     fwrite(STDERR, "usage: php tools/bench/report.php RESULTS.json [--markdown]\n");
     exit(2);
 }
 
-$factor = (float) ($doc['tokens']['bytes_per_token'] ?? 4.0);
+$factor = Data::float($doc, 'tokens', 'bytes_per_token');
+$factor = $factor > 0 ? $factor : 4.0;
 $tok    = static fn(int $bytes): string => number_format((int) round($bytes / $factor));
 $num    = static fn(int $n): string => number_format($n);
+$or     = static fn(string $value, string $fallback): string => '' === $value ? $fallback : $value;
 
 $head = ['#', 'scenario', 'surface', 'tools/list B', '~tok', 'calls', 'turns', 'result B', '~tok', 'total ~tok', 'ms', 'status'];
 $rows = [];
-foreach ((array) ($doc['scenarios'] ?? []) as $scenario) {
+foreach (Data::rows($doc, 'scenarios') as $scenario) {
     foreach (['full', 'compact'] as $surface) {
-        $r    = $scenario['surfaces'][ $surface ] ?? null;
-        $list = (int) ($doc['tools_list'][ $surface ]['bytes'] ?? 0);
+        $r    = Data::at($scenario, 'surfaces', $surface);
+        $list = Data::int($doc, 'tools_list', $surface, 'bytes');
         if (! is_array($r)) {
             continue;
         }
-        if ('skipped' === ($r['status'] ?? '')) {
-            $rows[] = [(string) $scenario['id'], (string) $scenario['slug'], $surface, $num($list), $tok($list), '-', '-', '-', '-', '-', '-', 'skipped: ' . (string) $r['reason']];
+        $id   = Data::str($scenario, 'id');
+        $slug = Data::str($scenario, 'slug');
+        if ('skipped' === Data::str($r, 'status')) {
+            $rows[] = [$id, $slug, $surface, $num($list), $tok($list), '-', '-', '-', '-', '-', '-', 'skipped: ' . Data::str($r, 'reason')];
             continue;
         }
-        $result = (int) ($r['result_bytes'] ?? 0);
-        $status = 'ok' === $r['status'] ? 'ok' : 'FAILED: ' . (string) $r['reason'];
+        $result = Data::int($r, 'result_bytes');
+        $status = 'ok' === Data::str($r, 'status') ? 'ok' : 'FAILED: ' . Data::str($r, 'reason');
         $rows[] = [
-            (string) $scenario['id'],
-            (string) $scenario['slug'],
+            $id,
+            $slug,
             $surface,
             $num($list),
             $tok($list),
-            (string) $r['calls'],
-            (string) $r['turns'],
+            (string) Data::int($r, 'calls'),
+            (string) Data::int($r, 'turns'),
             $num($result),
             $tok($result),
             $tok($list + $result),
-            (string) round((float) $r['ms']),
+            (string) round(Data::float($r, 'ms')),
             $status,
         ];
     }
 }
 
+$commit = Data::str($doc, 'commit');
 printf(
     "%s mode, %s, WordPress %s, wpmcp %s%s\n",
-    (string) ($doc['mode'] ?? '?'),
-    (string) ($doc['generated_at'] ?? '?'),
-    (string) ($doc['wordpress'] ?? '?'),
-    (string) ($doc['wpmcp'] ?? '?'),
-    '' !== (string) ($doc['commit'] ?? '') ? ' at ' . $doc['commit'] : ''
+    $or(Data::str($doc, 'mode'), '?'),
+    $or(Data::str($doc, 'generated_at'), '?'),
+    $or(Data::str($doc, 'wordpress'), '?'),
+    $or(Data::str($doc, 'wpmcp'), '?'),
+    '' !== $commit ? ' at ' . $commit : ''
 );
-foreach ((array) ($doc['tools_list'] ?? []) as $surface => $list) {
-    printf("tools/list %s: %s tools, %s bytes, %s\n", $surface, $num((int) $list['tools']), $num((int) $list['bytes']), (string) $list['source']);
+foreach (Data::map($doc, 'tools_list') as $surface => $list) {
+    printf("tools/list %s: %s tools, %s bytes, %s\n", $surface, $num(Data::int($list, 'tools')), $num(Data::int($list, 'bytes')), Data::str($list, 'source'));
 }
-printf("tokens: %s\n\n", (string) ($doc['tokens']['method'] ?? 'bytes / 4'));
+printf("tokens: %s\n\n", $or(Data::str($doc, 'tokens', 'method'), 'bytes / 4'));
 
 if ($markdown) {
     echo '| ' . implode(' | ', $head) . " |\n";
     echo '|' . str_repeat(' --- |', count($head)) . "\n";
     foreach ($rows as $row) {
-        echo '| ' . implode(' | ', array_map(static fn($c) => str_replace('|', '\\|', $c), $row)) . " |\n";
+        echo '| ' . implode(' | ', array_map(static fn(string $c): string => str_replace('|', '\\|', $c), $row)) . " |\n";
     }
     exit(0);
 }
 
 $widths = array_map('strlen', $head);
+$last   = count($head) - 1;
 foreach ($rows as $row) {
     foreach ($row as $i => $cell) {
-        if ($i < count($head) - 1) {
-            $widths[ $i ] = max($widths[ $i ], strlen($cell));
+        if ($i < $last) {
+            $widths[ $i ] = max($widths[ $i ] ?? 0, strlen($cell));
         }
     }
 }
 $line = static function (array $cells) use ($widths): string {
-    $out = [];
-    foreach ($cells as $i => $cell) {
-        $out[] = $i === count($cells) - 1 ? $cell : str_pad($cell, $widths[ $i ], ' ', $i >= 3 ? STR_PAD_LEFT : STR_PAD_RIGHT);
+    $out  = [];
+    $last = count($cells) - 1;
+    foreach (array_values($cells) as $i => $cell) {
+        $text  = is_string($cell) ? $cell : '';
+        $out[] = $i === $last ? $text : str_pad($text, $widths[ $i ] ?? 0, ' ', $i >= 3 ? STR_PAD_LEFT : STR_PAD_RIGHT);
     }
     return implode('  ', $out) . "\n";
 };

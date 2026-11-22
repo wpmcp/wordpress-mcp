@@ -26,6 +26,8 @@
  * REPO-ONLY: plain PHP with the curl extension, no WordPress load.
  */
 
+declare(strict_types=1);
+
 namespace WPMCP\Bench;
 
 if (PHP_SAPI !== 'cli') {
@@ -33,28 +35,28 @@ if (PHP_SAPI !== 'cli') {
 }
 
 require_once __DIR__ . '/Runner.php';
-require_once __DIR__ . '/Surface.php';
+require_once __DIR__ . '/Scenarios.php';
 
 $opts = getopt('', ['url:', 'user:', 'password:', 'wp-path::', 'wp-cli::', 'scenario::', 'json::', 'save-tools-list::', 'plain-permalinks']);
-if (! isset($opts['url'], $opts['user'], $opts['password']) || ! function_exists('curl_init')) {
+$opts = is_array($opts) ? $opts : [];
+if ('' === Data::str($opts, 'url') || '' === Data::str($opts, 'user') || '' === Data::str($opts, 'password') || ! function_exists('curl_init')) {
     fwrite(STDERR, "usage: php tools/bench/http.php --url=URL --user=USER --password=APP_PASSWORD [--wp-path=SITE] [--wp-cli=wp] [--scenario=N] [--json=OUT] [--save-tools-list=DIR] [--plain-permalinks]\n(needs the curl extension)\n");
     exit(2);
 }
 
 final class Http_Client
 {
-    private string $endpoint;
-    private string $auth;
     private string $session = '';
-    private int $id = 1;
+    private int $id         = 1;
 
-    public function __construct(string $endpoint, string $auth)
+    public function __construct(private readonly string $endpoint, private readonly string $auth)
     {
-        $this->endpoint = $endpoint;
-        $this->auth     = $auth;
     }
 
-    /** @return array{status: int, body: string, headers: array<string,string>} */
+    /**
+     * @param array<string, mixed> $message
+     * @return array{status: int, body: string, headers: array<string, string>}
+     */
     public function post(array $message): array
     {
         $lines = ['Content-Type: application/json', 'Accept: application/json, text/event-stream', 'Authorization: ' . $this->auth, 'MCP-Protocol-Version: 2025-11-25'];
@@ -63,22 +65,20 @@ final class Http_Client
         }
         $headers = [];
         $ch      = curl_init($this->endpoint);
-        curl_setopt_array($ch, [
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode($message),
-            CURLOPT_HTTPHEADER     => $lines,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 120,
-            CURLOPT_HEADERFUNCTION => static function ($ch, string $line) use (&$headers): int {
-                $parts = explode(':', $line, 2);
-                if (2 === count($parts)) {
-                    $headers[ strtolower(trim($parts[0])) ] = trim($parts[1]);
-                }
-                return strlen($line);
-            },
-        ]);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, Data::json($message));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $lines);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function (\CurlHandle $handle, string $line) use (&$headers): int {
+            $parts = explode(':', $line, 2);
+            if (2 === count($parts)) {
+                $headers[ strtolower(trim($parts[0])) ] = trim($parts[1]);
+            }
+            return strlen($line);
+        });
         $body = curl_exec($ch);
-        return ['status' => (int) curl_getinfo($ch, CURLINFO_HTTP_CODE), 'body' => is_string($body) ? $body : '', 'headers' => $headers];
+        return ['status' => curl_getinfo($ch, CURLINFO_HTTP_CODE), 'body' => is_string($body) ? $body : '', 'headers' => $headers];
     }
 
     public function initialize(): void
@@ -95,14 +95,19 @@ final class Http_Client
         $this->post(['jsonrpc' => '2.0', 'method' => 'notifications/initialized']);
     }
 
-    /** The JSON-RPC message in a body, which is JSON or a text/event-stream. */
+    /**
+     * The JSON-RPC message in a body, which is JSON or a text/event-stream.
+     *
+     * @return ?array<mixed>
+     */
     public static function decode(string $body): ?array
     {
         $json = json_decode($body, true);
         if (is_array($json)) {
             return $json;
         }
-        foreach (preg_split('/\r?\n/', $body) ?: [] as $line) {
+        $lines = preg_split('/\r?\n/', $body);
+        foreach (false === $lines ? [] : $lines as $line) {
             if (str_starts_with($line, 'data:')) {
                 $json = json_decode(trim(substr($line, 5)), true);
                 if (is_array($json)) {
@@ -117,8 +122,7 @@ final class Http_Client
     public function tools_list(): array
     {
         $r    = $this->post(['jsonrpc' => '2.0', 'id' => $this->id++, 'method' => 'tools/list']);
-        $msg  = self::decode($r['body']);
-        $list = $msg['result']['tools'] ?? null;
+        $list = Data::at(self::decode($r['body']), 'result', 'tools');
         if (! is_array($list)) {
             throw new \RuntimeException(sprintf('tools/list answered HTTP %d: %s', $r['status'], substr($r['body'], 0, 300)));
         }
@@ -129,44 +133,57 @@ final class Http_Client
      * The HTTP transport for Runner: one tools/call, measured as the
      * response body the client receives.
      *
+     * @param array<string, mixed> $args
      * @return array{value: mixed, bytes: int, error: ?string}
      */
     public function call(string $ability, array $args): array
     {
-        $r   = $this->post(['jsonrpc' => '2.0', 'id' => $this->id++, 'method' => 'tools/call', 'params' => [
+        $r     = $this->post(['jsonrpc' => '2.0', 'id' => $this->id++, 'method' => 'tools/call', 'params' => [
             'name'      => str_replace('/', '-', $ability),
             'arguments' => [] === $args ? new \stdClass() : $args,
         ]]);
-        $msg = self::decode($r['body']);
-        if (! is_array($msg)) {
-            return ['value' => null, 'bytes' => strlen($r['body']), 'error' => sprintf('HTTP %d, not JSON-RPC: %s', $r['status'], substr($r['body'], 0, 200))];
+        $bytes = strlen($r['body']);
+        $msg   = self::decode($r['body']);
+        if (null === $msg) {
+            return ['value' => null, 'bytes' => $bytes, 'error' => sprintf('HTTP %d, not JSON-RPC: %s', $r['status'], substr($r['body'], 0, 200))];
         }
-        if (isset($msg['error'])) {
-            return ['value' => null, 'bytes' => strlen($r['body']), 'error' => (string) ($msg['error']['message'] ?? json_encode($msg['error']))];
-        }
-
-        $result = (array) ($msg['result'] ?? []);
-        $text   = (string) ($result['content'][0]['text'] ?? '');
-        if (! empty($result['isError'])) {
-            return ['value' => null, 'bytes' => strlen($r['body']), 'error' => $text];
-        }
-        $value = $result['structuredContent'] ?? json_decode($text, true);
-
-        $error = null;
-        if (is_array($value) && ! empty($value['error'])) {
-            $error = is_array($value['error']) ? (string) ($value['error']['code'] ?? '') . ': ' . (string) ($value['error']['message'] ?? '') : (string) $value['error'];
-        } elseif (is_array($value) && isset($value['status']) && is_int($value['status']) && $value['status'] >= 400) {
-            $error = 'HTTP ' . $value['status'];
+        if (null !== Data::at($msg, 'error')) {
+            $message = Data::str($msg, 'error', 'message');
+            return ['value' => null, 'bytes' => $bytes, 'error' => '' !== $message ? $message : Data::json($msg['error'])];
         }
 
-        return ['value' => $value, 'bytes' => strlen($r['body']), 'error' => $error];
+        $result = Data::arr($msg, 'result');
+        $text   = Data::str($result, 'content', 0, 'text');
+        if (Data::truthy($result, 'isError')) {
+            return ['value' => null, 'bytes' => $bytes, 'error' => $text];
+        }
+        $value = Data::at($result, 'structuredContent') ?? json_decode($text, true);
+
+        $error  = null;
+        $status = Data::at($value, 'status');
+        if (Data::truthy($value, 'error') || [] !== Data::arr($value, 'error')) {
+            $error = is_array(Data::at($value, 'error'))
+                ? Data::str($value, 'error', 'code') . ': ' . Data::str($value, 'error', 'message')
+                : Data::str($value, 'error');
+        } elseif (is_int($status) && $status >= 400) {
+            $error = 'HTTP ' . $status;
+        }
+
+        return ['value' => $value, 'bytes' => $bytes, 'error' => $error];
     }
 }
 
-/** Runs WP-CLI on the site and decodes the last JSON line it printed. */
+/**
+ * Runs WP-CLI on the site and decodes the last JSON line it printed.
+ *
+ * @param list<string> $args
+ * @return ?array<mixed>
+ */
 function wp_cli(string $wp, string $path, array $args): ?array
 {
-    $cmd = escapeshellcmd($wp) . ' --path=' . escapeshellarg($path) . ' ' . implode(' ', array_map('escapeshellarg', $args)) . ' 2>&1';
+    $cmd   = escapeshellcmd($wp) . ' --path=' . escapeshellarg($path) . ' ' . implode(' ', array_map(static fn(string $arg): string => escapeshellarg($arg), $args)) . ' 2>&1';
+    $lines = [];
+    $code  = 0;
     exec($cmd, $lines, $code);
     foreach (array_reverse($lines) as $line) {
         $json = json_decode($line, true);
@@ -178,18 +195,19 @@ function wp_cli(string $wp, string $path, array $args): ?array
     return null;
 }
 
-$site     = rtrim((string) $opts['url'], '/');
-$endpoint = isset($opts['plain-permalinks']) ? $site . '/?rest_route=/mcp/wpmcp-server' : $site . '/wp-json/mcp/wpmcp-server';
-$client   = new Http_Client($endpoint, 'Basic ' . base64_encode($opts['user'] . ':' . $opts['password']));
-$wp_path  = (string) ($opts['wp-path'] ?? '');
-$wp       = (string) ($opts['wp-cli'] ?? 'wp');
-$only     = (string) ($opts['scenario'] ?? '');
-$dump     = (string) ($opts['save-tools-list'] ?? '');
+$site     = rtrim(Data::str($opts, 'url'), '/');
+$endpoint = array_key_exists('plain-permalinks', $opts) ? $site . '/?rest_route=/mcp/wpmcp-server' : $site . '/wp-json/mcp/wpmcp-server';
+$client   = new Http_Client($endpoint, 'Basic ' . base64_encode(Data::str($opts, 'user') . ':' . Data::str($opts, 'password')));
+$wp_path  = Data::str($opts, 'wp-path');
+$wp       = Data::str($opts, 'wp-cli');
+$wp       = '' === $wp ? 'wp' : $wp;
+$only     = Data::int($opts, 'scenario');
+$dump     = Data::str($opts, 'save-tools-list');
 $remote   = __DIR__ . '/remote.php';
 
 $client->initialize();
 
-$doc = [
+$doc    = [
     'issue'        => 1130,
     'mode'         => 'http',
     'generated_at' => gmdate('Y-m-d\TH:i:s\Z'),
@@ -207,16 +225,18 @@ $doc = [
     'scenarios'    => [],
 ];
 $factor = __DIR__ . '/token-factor.json';
-if (is_readable($factor)) {
-    $data = json_decode((string) file_get_contents($factor), true);
-    if (is_array($data) && (float) ($data['bytes_per_token'] ?? 0) > 0) {
-        $doc['tokens'] = ['bytes_per_token' => (float) $data['bytes_per_token'], 'method' => sprintf('bytes / %.2f, calibrated with count_tokens on %s', (float) $data['bytes_per_token'], (string) ($data['measured_at'] ?? '?'))];
-    }
+$data   = is_readable($factor) ? json_decode((string) file_get_contents($factor), true) : null;
+$per    = Data::float($data, 'bytes_per_token');
+if ($per > 0) {
+    $measured      = Data::str($data, 'measured_at');
+    $doc['tokens'] = ['bytes_per_token' => $per, 'method' => sprintf('bytes / %.2f, calibrated with count_tokens on %s', $per, '' === $measured ? '?' : $measured)];
 }
 
 $surfaces = '' === $wp_path ? ['current'] : [Surface::FULL, Surface::COMPACT];
 foreach ($surfaces as $surface) {
     if ('current' !== $surface) {
+        $ignored = [];
+        $code    = 0;
         exec(escapeshellcmd($wp) . ' --path=' . escapeshellarg($wp_path) . ' option update wpmcp_tool_exposure_mode ' . escapeshellarg($surface) . ' 2>&1', $ignored, $code);
         if (0 !== $code) {
             fwrite(STDERR, "could not set the exposure mode to {$surface} through WP-CLI\n");
@@ -227,64 +247,64 @@ foreach ($surfaces as $surface) {
     if ('' !== $dump && is_dir($dump)) {
         file_put_contents($dump . '/tools-list-' . $surface . '.json', $list['payload']);
     }
-    unset($list['payload']);
-    $doc['tools_list'][ $surface ] = $list + ['source' => 'HTTP tools/list response body'];
+    $doc['tools_list'][ $surface ] = ['bytes' => $list['bytes'], 'tools' => $list['tools'], 'source' => 'HTTP tools/list response body'];
 }
 
-$files = glob(__DIR__ . '/scenarios/*.php') ?: [];
-sort($files, SORT_NATURAL);
 $failed = 0;
-foreach ($files as $file) {
-    if ('' !== $only && (int) $only !== (int) basename($file)) {
+foreach (Scenarios::all() as $scenario) {
+    if (0 !== $only && $only !== $scenario->id()) {
         continue;
     }
-    $scenario = require $file;
-    $entry    = ['id' => (int) $scenario['id'], 'slug' => (string) $scenario['slug'], 'title' => (string) $scenario['title'], 'surfaces' => []];
+    $id       = (string) $scenario->id();
+    $surfaces = [];
 
     foreach ([Surface::FULL, Surface::COMPACT] as $surface) {
         if ('' === $wp_path) {
-            $entry['surfaces'][ $surface ] = ['status' => 'skipped', 'reason' => 'needs --wp-path to seed the fixtures'];
+            $surfaces[ $surface ] = ['status' => 'skipped', 'reason' => 'needs --wp-path to seed the fixtures'];
             continue;
         }
-        $seeded = wp_cli($wp, $wp_path, ['eval-file', $remote, 'seed', (string) $scenario['id']]);
+        $seeded = wp_cli($wp, $wp_path, ['eval-file', $remote, 'seed', $id]);
         if (null === $seeded) {
-            $entry['surfaces'][ $surface ] = ['status' => 'failed', 'reason' => 'seeding through WP-CLI failed'];
+            $surfaces[ $surface ] = ['status' => 'failed', 'reason' => 'seeding through WP-CLI failed'];
             $failed++;
             continue;
         }
-        if (isset($seeded['skipped'])) {
-            $entry['surfaces'][ $surface ] = ['status' => 'skipped', 'reason' => (string) $seeded['skipped']];
+        if (null !== Data::at($seeded, 'skipped')) {
+            $surfaces[ $surface ] = ['status' => 'skipped', 'reason' => Data::str($seeded, 'skipped')];
             continue;
         }
 
-        $fixtures = (array) $seeded['fixtures'];
-        $steps    = ($scenario['surfaces'])($fixtures)[ $surface ];
-        $out      = (new Runner([$client, 'call']))->run($steps);
+        $fixtures = Data::map($seeded, 'fixtures');
+        $out      = (new Runner($client->call(...)))->run(Scenarios::sequence($scenario, $fixtures, $surface));
 
         if ('ok' === $out['status']) {
             $tmp = tempnam(sys_get_temp_dir(), 'wpmcp-bench-');
-            file_put_contents($tmp, json_encode(['fixtures' => $fixtures, 'state' => $out['state']]));
-            $checked = wp_cli($wp, $wp_path, ['eval-file', $remote, 'verify', (string) $scenario['id'], $tmp]);
+            if (false === $tmp) {
+                throw new \RuntimeException('could not create a temp file for verify');
+            }
+            file_put_contents($tmp, Data::json(['fixtures' => $fixtures, 'state' => $out['state']]));
+            $checked = wp_cli($wp, $wp_path, ['eval-file', $remote, 'verify', $id, $tmp]);
             unlink($tmp);
-            if (null === $checked || null !== ($checked['problem'] ?? null)) {
+            if (null === $checked || null !== Data::at($checked, 'problem')) {
                 $out['status'] = 'failed';
-                $out['reason'] = 'verify: ' . (string) ($checked['problem'] ?? 'WP-CLI failed');
+                $out['reason'] = 'verify: ' . (null === $checked ? 'WP-CLI failed' : Data::str($checked, 'problem'));
             }
         }
         wp_cli($wp, $wp_path, ['eval-file', $remote, 'prune']);
 
         unset($out['state']);
-        $entry['surfaces'][ $surface ] = $out;
+        $surfaces[ $surface ] = $out;
         if ('failed' === $out['status']) {
             $failed++;
         }
     }
-    $doc['scenarios'][] = $entry;
+    $doc['scenarios'][] = ['id' => $scenario->id(), 'slug' => $scenario->slug(), 'title' => $scenario->title(), 'surfaces' => $surfaces];
 }
 
-$json = json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
-if (isset($opts['json']) && '' !== (string) $opts['json']) {
-    file_put_contents((string) $opts['json'], $json);
+$json = Data::json($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+$dest = Data::str($opts, 'json');
+if ('' !== $dest) {
+    file_put_contents($dest, $json);
 } else {
     echo $json;
 }

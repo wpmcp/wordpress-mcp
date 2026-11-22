@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WPMCP\Bench;
 
 /**
@@ -26,24 +28,29 @@ namespace WPMCP\Bench;
  * as cheap.
  *
  * REPO-ONLY, like everything under tools/: the release zips ship src/ only.
+ *
+ * @phpstan-type Call_Result array{value: mixed, bytes: int, error: ?string}
+ * @phpstan-type Step_Record array{tool: string, via: ?string, calls: int, bytes: int, ms: float}
+ * @phpstan-type Outcome array{status: string, reason: ?string, calls: int, turns: int, result_bytes: int, ms: float, steps: list<Step_Record>, state: array<string, mixed>}
  */
 final class Runner
 {
-    /** @var callable(string, array): array{value: mixed, bytes: int, error: ?string} */
-    private $transport;
+    /** @var \Closure(string, array<string, mixed>): Call_Result */
+    private readonly \Closure $transport;
 
-    public function __construct(callable $transport)
+    /** @param \Closure(string, array<string, mixed>): Call_Result $transport */
+    public function __construct(\Closure $transport)
     {
         $this->transport = $transport;
     }
 
     /**
      * @param array<int, array<string, mixed>> $steps
-     * @return array{status: string, reason: ?string, calls: int, turns: int, result_bytes: int, ms: float, steps: array<int, array<string, mixed>>, state: array<string, mixed>}
+     * @return Outcome
      */
     public function run(array $steps): array
     {
-        $out = [
+        $out   = [
             'status'       => 'ok',
             'reason'       => null,
             'calls'        => 0,
@@ -54,45 +61,51 @@ final class Runner
             'state'        => [],
         ];
         $start = microtime(true);
+        $index = 0;
 
         try {
-            foreach ($steps as $i => $step) {
-                $this->run_step($i, $step, $out);
+            foreach ($steps as $index => $step) {
+                $out = $this->run_step($index, $step, $out);
                 if ('ok' !== $out['status']) {
                     break;
                 }
             }
         } catch (\Throwable $e) {
             $out['status'] = 'failed';
-            $out['reason'] = sprintf('step %d: %s', $i ?? 0, $e->getMessage());
+            $out['reason'] = sprintf('step %d: %s', $index, $e->getMessage());
         }
 
         $out['ms'] = round((microtime(true) - $start) * 1000, 1);
         return $out;
     }
 
-    /** @param array<string, mixed> $step */
-    private function run_step(int $i, array $step, array &$out): void
+    /**
+     * @param array<string, mixed> $step
+     * @param Outcome              $out
+     * @return Outcome
+     */
+    private function run_step(int $index, array $step, array $out): array
     {
-        $tool = isset($step['tool']) && is_string($step['tool']) ? $step['tool'] : '';
+        $tool = Data::str($step, 'tool');
         if ('' === $tool) {
             throw new \InvalidArgumentException('a step needs a tool name');
         }
-        if (array_key_exists('args', $step) === array_key_exists('each', $step)) {
+        $fan_out = array_key_exists('each', $step);
+        if (array_key_exists('args', $step) === $fan_out) {
             throw new \InvalidArgumentException($tool . ': a step has exactly one of args or each');
         }
 
-        $fan_out = array_key_exists('each', $step);
-        $list    = $fan_out
+        $list = $fan_out
             ? $this->resolve($step['each'], $out['state'])
             : [$this->resolve($step['args'], $out['state'])];
-        if (! is_array($list) || ($fan_out && ! array_is_list($list))) {
+        if (! is_array($list) || ! array_is_list($list)) {
             throw new \UnexpectedValueException($tool . ': each must return a list of argument arrays');
         }
 
+        $label  = Data::str($step, 'label');
         $record = [
-            'tool'  => (string) ($step['label'] ?? $tool),
-            'via'   => isset($step['label']) ? $tool : null,
+            'tool'  => '' !== $label ? $label : $tool,
+            'via'   => '' !== $label ? $tool : null,
             'calls' => 0,
             'bytes' => 0,
             'ms'    => 0.0,
@@ -104,20 +117,19 @@ final class Runner
             if (! is_array($args)) {
                 throw new \UnexpectedValueException($tool . ': arguments must be an array');
             }
-            $result = ($this->transport)($tool, $args);
-            $bytes  = (int) ($result['bytes'] ?? 0);
+            $result = ($this->transport)($tool, Data::map([$args], 0));
 
             $record['calls']++;
-            $record['bytes']     += $bytes;
+            $record['bytes']     += $result['bytes'];
             $out['calls']++;
-            $out['result_bytes'] += $bytes;
+            $out['result_bytes'] += $result['bytes'];
 
-            if (null !== ($result['error'] ?? null)) {
+            if (null !== $result['error']) {
                 $out['status'] = 'failed';
-                $out['reason'] = sprintf('step %d (%s): %s', $i, $record['tool'], (string) $result['error']);
+                $out['reason'] = sprintf('step %d (%s): %s', $index, $record['tool'], $result['error']);
                 break;
             }
-            $values[] = $result['value'] ?? null;
+            $values[] = $result['value'];
         }
 
         $record['ms'] = round((microtime(true) - $began) * 1000, 1);
@@ -126,13 +138,19 @@ final class Runner
             $out['steps'][] = $record;
         }
 
-        if (isset($step['as']) && 'ok' === $out['status']) {
-            $out['state'][ (string) $step['as'] ] = $fan_out ? $values : ($values[0] ?? null);
+        $as = Data::str($step, 'as');
+        if ('' !== $as && 'ok' === $out['status']) {
+            $out['state'][ $as ] = $fan_out ? $values : ($values[0] ?? null);
         }
+        return $out;
     }
 
-    /** @param mixed $spec An array, or a closure of the state returning one. */
-    private function resolve($spec, array $state)
+    /**
+     * An array, or a closure of the state returning one.
+     *
+     * @param array<string, mixed> $state
+     */
+    private function resolve(mixed $spec, array $state): mixed
     {
         return $spec instanceof \Closure ? $spec($state) : $spec;
     }

@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WPMCP\Bench;
 
 use WPMCP\MCP\Stdio_Transport;
 use WPMCP\MCP\Tool_Exposure;
 use WPMCP\Plugin;
+
+require_once __DIR__ . '/Data.php';
 
 /**
  * tools/list as the client receives it, measured in-process (issue #1130).
@@ -42,9 +46,9 @@ final class Wire
                 ],
             ]);
             $response = $transport->handle_request(['jsonrpc' => '2.0', 'id' => 2, 'method' => 'tools/list']);
-            $tools    = $response['result']['tools'] ?? null;
-            if (is_array($tools) && [] !== $tools) {
-                $payload = (string) wp_json_encode($response);
+            $tools    = Data::arr($response, 'result', 'tools');
+            if ([] !== $tools) {
+                $payload = Data::json($response);
                 return ['bytes' => strlen($payload), 'tools' => count($tools), 'source' => 'wire (Stdio_Transport tools/list, 2025-11-25)', 'payload' => $payload];
             }
         } catch (\Throwable $e) {
@@ -56,7 +60,7 @@ final class Wire
             $tools[] = [
                 'name'        => Tool_Exposure::tool_name($a->name),
                 'description' => $a->description,
-                'inputSchema' => empty($a->input_schema) ? new \stdClass() : $a->input_schema,
+                'inputSchema' => [] === $a->input_schema ? new \stdClass() : $a->input_schema,
                 'annotations' => [
                     'readOnlyHint'    => $a->read_only_hint,
                     'destructiveHint' => $a->destructive_hint,
@@ -65,7 +69,7 @@ final class Wire
             ];
         }
         $tools   = array_values((array) (new Tool_Exposure())->filter_tools_list($tools));
-        $payload = (string) wp_json_encode(['jsonrpc' => '2.0', 'id' => 2, 'result' => ['tools' => $tools]]);
+        $payload = Data::json(['jsonrpc' => '2.0', 'id' => 2, 'result' => ['tools' => $tools]]);
 
         return ['bytes' => strlen($payload), 'tools' => count($tools), 'source' => 'approximate (no outputSchema or _meta)', 'payload' => $payload];
     }
@@ -79,15 +83,19 @@ final class Wire
     public static function token_factor(string $dir): array
     {
         $file = $dir . '/token-factor.json';
-        if (is_readable($file)) {
-            $data = json_decode((string) file_get_contents($file), true);
-            if (is_array($data) && isset($data['bytes_per_token']) && (float) $data['bytes_per_token'] > 0) {
-                return [
-                    'bytes_per_token' => (float) $data['bytes_per_token'],
-                    'method'          => sprintf('bytes / %.2f, calibrated with count_tokens on %s (%s)', (float) $data['bytes_per_token'], (string) ($data['measured_at'] ?? '?'), (string) ($data['model'] ?? '?')),
-                ];
-            }
+        $data = is_readable($file) ? json_decode((string) file_get_contents($file), true) : null;
+        $per  = Data::float($data, 'bytes_per_token');
+        if ($per > 0) {
+            return [
+                'bytes_per_token' => $per,
+                'method'          => sprintf('bytes / %.2f, calibrated with count_tokens on %s (%s)', $per, self::or_unknown(Data::str($data, 'measured_at')), self::or_unknown(Data::str($data, 'model'))),
+            ];
         }
         return ['bytes_per_token' => 4.0, 'method' => 'bytes / 4, not calibrated (tools/bench/calibrate-tokens.php has not been run)'];
+    }
+
+    private static function or_unknown(string $value): string
+    {
+        return '' === $value ? '?' : $value;
     }
 }

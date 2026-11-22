@@ -1,5 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
+namespace WPMCP\Bench\Scenarios;
+
+use WPMCP\Bench\Data;
+use WPMCP\Bench\Scenario;
+
 /**
  * Scenario 1: "Find the 5 most recent orders of the customer with email X
  * and refund the newest one" (WooCommerce).
@@ -13,19 +20,34 @@
  * that customer (newest first, 5), and refunds.create on the newest with
  * confirm:true (the description says refunds need it).
  */
+final class Woo_Refund implements Scenario
+{
+    private const EMAIL       = 'bench.buyer@example.test';
+    private const OTHER_EMAIL = 'bench.other@example.test';
 
-use WPMCP\Bench\Surface;
+    public function id(): int
+    {
+        return 1;
+    }
 
-return [
-    'id'       => 1,
-    'slug'     => 'woo-refund',
-    'title'    => 'Find the 5 most recent orders of a customer by email and refund the newest',
-    'requires' => [
-        'WooCommerce' => static fn(): bool => class_exists('WooCommerce') && function_exists('wc_create_order'),
-    ],
+    public function slug(): string
+    {
+        return 'woo-refund';
+    }
 
-    'seed' => static function (): array {
-        add_filter('wpmcp_woo_op_enabled', static fn($enabled, $op) => 'refunds.create' === $op ? true : $enabled, 10, 2);
+    public function title(): string
+    {
+        return 'Find the 5 most recent orders of a customer by email and refund the newest';
+    }
+
+    public function missing(): array
+    {
+        return class_exists('WooCommerce') && function_exists('wc_create_order') ? [] : ['WooCommerce'];
+    }
+
+    public function seed(): array
+    {
+        add_filter('wpmcp_woo_op_enabled', static fn(mixed $enabled, mixed $op): mixed => 'refunds.create' === $op ? true : $enabled, 10, 2);
 
         $product = new \WC_Product_Simple();
         $product->set_name('Bench Mug');
@@ -33,91 +55,101 @@ return [
         $product->set_status('publish');
         $product->save();
 
-        $email    = 'bench.buyer@example.test';
-        $customer = wp_insert_user([
-            'user_login' => 'bench_buyer',
-            'user_email' => $email,
-            'user_pass'  => wp_generate_password(24),
-            'role'       => 'customer',
-        ]);
-        $other = wp_insert_user([
-            'user_login' => 'bench_other',
-            'user_email' => 'bench.other@example.test',
-            'user_pass'  => wp_generate_password(24),
-            'role'       => 'customer',
-        ]);
-
-        $make = static function (int $user, string $email, int $days_ago, int $qty) use ($product): int {
-            $order = wc_create_order(['customer_id' => $user]);
-            $order->add_product($product, $qty);
-            $order->set_billing_email($email);
-            $order->set_billing_first_name('Bench');
-            $order->set_billing_last_name('Buyer');
-            $order->calculate_totals();
-            $order->set_status('processing');
-            $order->set_date_created(time() - $days_ago * DAY_IN_SECONDS);
-            $order->save();
-            return $order->get_id();
-        };
+        $customer = $this->customer('bench_buyer', self::EMAIL);
+        $other    = $this->customer('bench_other', self::OTHER_EMAIL);
 
         $mine = [];
         for ($i = 7; $i >= 1; $i--) {
-            $mine[ $i ] = $make((int) $customer, $email, $i * 3, $i);
+            $mine[ $i ] = $this->order($product, $customer, self::EMAIL, $i * 3, $i);
         }
         for ($i = 1; $i <= 5; $i++) {
-            $make((int) $other, 'bench.other@example.test', $i, 1);
+            $this->order($product, $other, self::OTHER_EMAIL, $i, 1);
         }
 
-        return ['email' => $email, 'newest_order' => $mine[1]];
-    },
+        return ['email' => self::EMAIL, 'newest_order' => $mine[1]];
+    }
 
-    'surfaces' => static function (array $f): array {
-        $full = [
+    public function steps(array $fixtures): array
+    {
+        return [
             ['tool' => 'wpmcp/woo-ops', 'args' => [], 'as' => 'ops'],
-            ['tool' => 'wpmcp/woo-read', 'args' => ['op' => 'customers.list', 'params' => ['email' => $f['email']]], 'as' => 'customers'],
+            ['tool' => 'wpmcp/woo-read', 'args' => ['op' => 'customers.list', 'params' => ['email' => Data::str($fixtures, 'email')]], 'as' => 'customers'],
             [
                 'tool' => 'wpmcp/woo-read',
                 'args' => static function (array $r): array {
-                    $id = $r['customers']['body'][0]['id'] ?? null;
-                    if (null === $id) {
+                    $id = Data::int($r, 'customers', 'body', 0, 'id');
+                    if (0 === $id) {
                         throw new \RuntimeException('customers.list found no customer with that email');
                     }
-                    return ['op' => 'orders.list', 'params' => ['customer' => (int) $id, 'per_page' => 5, 'orderby' => 'date', 'order' => 'desc']];
+                    return ['op' => 'orders.list', 'params' => ['customer' => $id, 'per_page' => 5, 'orderby' => 'date', 'order' => 'desc']];
                 },
                 'as'   => 'orders',
             ],
             [
                 'tool' => 'wpmcp/woo-write',
                 'args' => static function (array $r): array {
-                    $newest = $r['orders']['body'][0] ?? null;
-                    if (null === $newest) {
+                    $newest = Data::arr($r, 'orders', 'body', 0);
+                    if ([] === $newest) {
                         throw new \RuntimeException('orders.list returned no orders');
                     }
                     return [
                         'op'      => 'refunds.create',
-                        'params'  => ['order_id' => (int) $newest['id'], 'amount' => (string) $newest['total'], 'reason' => 'Bench refund'],
+                        'params'  => ['order_id' => Data::int($newest, 'id'), 'amount' => Data::str($newest, 'total'), 'reason' => 'Bench refund'],
                         'confirm' => true,
                     ];
                 },
                 'as'   => 'refund',
             ],
         ];
+    }
 
-        return [
-            Surface::FULL    => $full,
-            Surface::COMPACT => Surface::compact(['woo'], $full),
-        ];
-    },
+    public function searches(): array
+    {
+        return ['woo'];
+    }
 
-    'verify' => static function (array $f, array $state): ?string {
-        $orders = $state['orders']['body'] ?? [];
+    public function verify(array $fixtures, array $state): ?string
+    {
+        $orders = Data::rows($state, 'orders', 'body');
         if (5 !== count($orders)) {
             return sprintf('expected 5 orders, got %d', count($orders));
         }
-        if ((int) $orders[0]['id'] !== (int) $f['newest_order']) {
+        $newest = Data::int($fixtures, 'newest_order');
+        if (Data::int($orders, 0, 'id') !== $newest) {
             return 'the first order listed is not the newest';
         }
-        $refunds = wc_get_order($f['newest_order'])->get_refunds();
-        return 1 === count($refunds) ? null : 'the newest order has no refund';
-    },
-];
+        $order = wc_get_order($newest);
+        return $order instanceof \WC_Order && 1 === count($order->get_refunds()) ? null : 'the newest order has no refund';
+    }
+
+    private function customer(string $login, string $email): int
+    {
+        $id = wp_insert_user([
+            'user_login' => $login,
+            'user_email' => $email,
+            'user_pass'  => wp_generate_password(24),
+            'role'       => 'customer',
+        ]);
+        if (! is_int($id)) {
+            throw new \RuntimeException('could not create the customer ' . $login . ': ' . $id->get_error_message());
+        }
+        return $id;
+    }
+
+    private function order(\WC_Product $product, int $user, string $email, int $days_ago, int $qty): int
+    {
+        $order = wc_create_order(['customer_id' => $user]);
+        if (! $order instanceof \WC_Order) {
+            throw new \RuntimeException('wc_create_order failed');
+        }
+        $order->add_product($product, $qty);
+        $order->set_billing_email($email);
+        $order->set_billing_first_name('Bench');
+        $order->set_billing_last_name('Buyer');
+        $order->calculate_totals();
+        $order->set_status('processing');
+        $order->set_date_created(time() - $days_ago * DAY_IN_SECONDS);
+        $order->save();
+        return $order->get_id();
+    }
+}

@@ -1,5 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
+namespace WPMCP\Bench\Scenarios;
+
+use WPMCP\Bench\Data;
+use WPMCP\Bench\Scenario;
+
 /**
  * Scenario 5: "Create a draft post per row of a 10-row list and tag them".
  *
@@ -9,16 +16,30 @@
  *
  * Ideal sequence on full: one create-post per row, all in one turn.
  */
+final class Draft_Posts implements Scenario
+{
+    public function id(): int
+    {
+        return 5;
+    }
 
-use WPMCP\Bench\Surface;
+    public function slug(): string
+    {
+        return 'draft-posts';
+    }
 
-return [
-    'id'       => 5,
-    'slug'     => 'draft-posts',
-    'title'    => 'Create a draft post per row of a 10-row list and tag them',
-    'requires' => [],
+    public function title(): string
+    {
+        return 'Create a draft post per row of a 10-row list and tag them';
+    }
 
-    'seed' => static function (): array {
+    public function missing(): array
+    {
+        return [];
+    }
+
+    public function seed(): array
+    {
         $rows = [];
         for ($i = 1; $i <= 10; $i++) {
             $rows[] = [
@@ -27,31 +48,36 @@ return [
             ];
         }
         return ['rows' => $rows, 'tag' => 'bench-batch'];
-    },
+    }
 
-    'surfaces' => static function (array $f): array {
-        $full = [
+    public function steps(array $fixtures): array
+    {
+        $tag  = Data::str($fixtures, 'tag');
+        $rows = Data::rows($fixtures, 'rows');
+
+        return [
             [
                 'tool' => 'wpmcp/create-post',
                 'each' => static fn(): array => array_map(static fn(array $row): array => [
                     'post_type' => 'post',
                     'status'    => 'draft',
-                    'title'     => $row['title'],
-                    'content'   => $row['body'],
-                    'terms'     => ['post_tag' => [$f['tag']]],
-                ], $f['rows']),
+                    'title'     => Data::str($row, 'title'),
+                    'content'   => Data::str($row, 'body'),
+                    'terms'     => ['post_tag' => [$tag]],
+                ], $rows),
                 'as'   => 'created',
             ],
         ];
+    }
 
-        return [
-            Surface::FULL    => $full,
-            Surface::COMPACT => Surface::compact(['create-post'], $full),
-        ];
-    },
+    public function searches(): array
+    {
+        return ['create-post'];
+    }
 
-    'verify' => static function (array $f, array $state): ?string {
-        $posts = get_posts(['post_type' => 'post', 'post_status' => 'draft', 'tag' => $f['tag'], 'numberposts' => 50]);
+    public function verify(array $fixtures, array $state): ?string
+    {
+        $posts = get_posts(['post_type' => 'post', 'post_status' => 'draft', 'tag' => Data::str($fixtures, 'tag'), 'numberposts' => 50]);
         return 10 === count($posts) ? null : sprintf('expected 10 tagged drafts, found %d', count($posts));
-    },
-];
+    }
+}

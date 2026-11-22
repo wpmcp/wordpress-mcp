@@ -23,59 +23,71 @@
  * REPO-ONLY, like the rest of tools/.
  */
 
+declare(strict_types=1);
+
+use WPMCP\Bench\Data;
+use WPMCP\Bench\Scenario;
+use WPMCP\Bench\Scenarios;
+
 if (! defined('ABSPATH') || ! defined('WP_CLI')) {
     exit(1);
 }
 
-require_once __DIR__ . '/Surface.php';
+require_once __DIR__ . '/Scenarios.php';
 
 const WPMCP_BENCH_TAG_META = '_wpmcp_bench';
 
-$wpmcp_bench_args   = isset($args) && is_array($args) ? array_values($args) : [];
-$wpmcp_bench_action = (string) ($wpmcp_bench_args[0] ?? '');
+$wpmcp_bench_args   = Data::strs(get_defined_vars(), 'args');
+$wpmcp_bench_action = $wpmcp_bench_args[0] ?? '';
 
-/** @return array<string, mixed> */
-function wpmcp_bench_remote_scenario(string $id): array
+/** Prints $message on stderr and ends the WP-CLI command with exit 1. */
+function wpmcp_bench_remote_fail(string $message): never
 {
-    foreach (glob(__DIR__ . '/scenarios/*.php') ?: [] as $file) {
-        if ((int) basename($file) === (int) $id) {
-            return require $file;
-        }
-    }
-    WP_CLI::error('no scenario ' . $id);
-    return [];
+    fwrite(STDERR, 'Error: ' . $message . "\n");
+    exit(1);
 }
 
+function wpmcp_bench_remote_scenario(string $id): Scenario
+{
+    $scenario = Scenarios::find((int) $id);
+    return null === $scenario ? wpmcp_bench_remote_fail('no scenario ' . $id) : $scenario;
+}
+
+/** @param array<string, mixed> $data */
 function wpmcp_bench_remote_print(array $data): void
 {
-    echo wp_json_encode($data, JSON_UNESCAPED_SLASHES) . "\n";
+    echo Data::json($data, JSON_UNESCAPED_SLASHES) . "\n";
 }
 
+/** @return array{posts: int, users: int, orders: int, terms: int} */
 function wpmcp_bench_remote_prune(): array
 {
     $removed = ['posts' => 0, 'users' => 0, 'orders' => 0, 'terms' => 0];
 
-    $users = get_users(['meta_key' => WPMCP_BENCH_TAG_META, 'fields' => 'ID', 'number' => -1]);
+    $users = array_map('intval', get_users(['meta_key' => WPMCP_BENCH_TAG_META, 'fields' => 'ID', 'number' => -1]));
     if (function_exists('wc_get_orders') && [] !== $users) {
-        foreach ((array) wc_get_orders(['customer_id' => array_map('intval', $users), 'limit' => -1, 'status' => 'any']) as $order) {
-            $order->delete(true);
-            $removed['orders']++;
+        $orders = wc_get_orders(['customer_id' => $users, 'limit' => -1, 'status' => 'any']);
+        foreach (is_array($orders) ? $orders : [] as $order) {
+            if ($order instanceof \WC_Order) {
+                $order->delete(true);
+                $removed['orders']++;
+            }
         }
     }
 
-    $posts = get_posts([
+    $posts = Data::ints([get_posts([
         'post_type'   => 'any',
         'post_status' => 'any',
         'numberposts' => -1,
         'fields'      => 'ids',
         'meta_key'    => WPMCP_BENCH_TAG_META,
-    ]);
+    ])], 0);
     $tag   = get_term_by('slug', 'bench-batch', 'post_tag');
     if ($tag instanceof WP_Term) {
-        $posts = array_merge($posts, get_posts(['post_type' => 'post', 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids', 'tag_id' => $tag->term_id]));
+        $posts = array_merge($posts, Data::ints([get_posts(['post_type' => 'post', 'post_status' => 'any', 'numberposts' => -1, 'fields' => 'ids', 'tag_id' => $tag->term_id])], 0));
     }
-    foreach (array_unique(array_map('intval', $posts)) as $id) {
-        if (wp_delete_post($id, true)) {
+    foreach (array_unique($posts) as $id) {
+        if (wp_delete_post($id, true) instanceof WP_Post) {
             $removed['posts']++;
         }
     }
@@ -85,15 +97,15 @@ function wpmcp_bench_remote_prune(): array
 
     require_once ABSPATH . 'wp-admin/includes/user.php';
     foreach ($users as $id) {
-        if (wp_delete_user((int) $id)) {
+        if (wp_delete_user($id)) {
             $removed['users']++;
         }
     }
 
     $offer = get_site_transient('update_plugins');
-    if (is_object($offer) && is_array($offer->response ?? null)) {
+    if (is_object($offer) && property_exists($offer, 'response') && is_array($offer->response)) {
         foreach ($offer->response as $update) {
-            if ('99.0.0' === ($update->new_version ?? null)) {
+            if (is_object($update) && property_exists($update, 'new_version') && '99.0.0' === $update->new_version) {
                 delete_site_transient('update_plugins');
                 break;
             }
@@ -105,31 +117,27 @@ function wpmcp_bench_remote_prune(): array
 
 switch ($wpmcp_bench_action) {
     case 'seed':
-        $scenario = wpmcp_bench_remote_scenario((string) ($wpmcp_bench_args[1] ?? ''));
-        $missing  = [];
-        foreach ((array) $scenario['requires'] as $name => $check) {
-            if (! $check()) {
-                $missing[] = $name;
-            }
-        }
+        $scenario = wpmcp_bench_remote_scenario($wpmcp_bench_args[1] ?? '');
+        $missing  = $scenario->missing();
         if ([] !== $missing) {
             wpmcp_bench_remote_print(['skipped' => 'needs ' . implode(', ', $missing)]);
             break;
         }
-        add_action('wp_insert_post', static function ($id): void {
-            update_post_meta((int) $id, WPMCP_BENCH_TAG_META, 1);
+        add_action('wp_insert_post', static function (int $id): void {
+            update_post_meta($id, WPMCP_BENCH_TAG_META, 1);
         });
-        add_action('user_register', static function ($id): void {
-            update_user_meta((int) $id, WPMCP_BENCH_TAG_META, 1);
+        add_action('user_register', static function (int $id): void {
+            update_user_meta($id, WPMCP_BENCH_TAG_META, 1);
         });
-        wpmcp_bench_remote_print(['fixtures' => ($scenario['seed'])()]);
+        wpmcp_bench_remote_print(['fixtures' => $scenario->seed()]);
         break;
 
     case 'verify':
-        $scenario = wpmcp_bench_remote_scenario((string) ($wpmcp_bench_args[1] ?? ''));
-        $run      = json_decode((string) file_get_contents((string) ($wpmcp_bench_args[2] ?? '')), true);
-        $problem  = isset($scenario['verify']) && is_array($run)
-            ? ($scenario['verify'])((array) $run['fixtures'], (array) $run['state'])
+        $scenario = wpmcp_bench_remote_scenario($wpmcp_bench_args[1] ?? '');
+        $file     = $wpmcp_bench_args[2] ?? '';
+        $run      = '' !== $file && is_readable($file) ? json_decode((string) file_get_contents($file), true) : null;
+        $problem  = is_array($run)
+            ? $scenario->verify(Data::map($run, 'fixtures'), Data::map($run, 'state'))
             : 'no run to verify';
         wpmcp_bench_remote_print(['problem' => $problem]);
         break;
@@ -139,5 +147,5 @@ switch ($wpmcp_bench_action) {
         break;
 
     default:
-        WP_CLI::error('usage: wp eval-file tools/bench/remote.php seed <scenario> | verify <scenario> <run.json> | prune');
+        wpmcp_bench_remote_fail('usage: wp eval-file tools/bench/remote.php seed <scenario> | verify <scenario> <run.json> | prune');
 }

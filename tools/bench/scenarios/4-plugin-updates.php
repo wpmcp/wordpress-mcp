@@ -1,5 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
+namespace WPMCP\Bench\Scenarios;
+
+use WPMCP\Bench\Data;
+use WPMCP\Bench\Scenario;
+
 /**
  * Scenario 4: "List plugins with updates available and the pages that use
  * each one's blocks or widgets".
@@ -13,28 +20,52 @@
  * plugin (wp:woocommerce/) and one page listing for the widget plugin
  * (list-posts reports is_elementor per post). Read-only.
  */
+final class Plugin_Updates implements Scenario
+{
+    /** What the agent knows about each plugin: a block namespace it searches post content for. */
+    private const BLOCKS = ['woocommerce/woocommerce.php' => 'wp:woocommerce/'];
 
-use WPMCP\Bench\Surface;
+    /** Page builders: list-posts reports is_elementor per post. */
+    private const BUILDERS = ['elementor/elementor.php' => 'is_elementor'];
 
-return [
-    'id'       => 4,
-    'slug'     => 'plugin-updates',
-    'title'    => 'List plugins with updates available and the pages that use their blocks or widgets',
-    'requires' => [
-        'WooCommerce' => static fn(): bool => class_exists('WooCommerce'),
-        'Elementor'   => static fn(): bool => defined('ELEMENTOR_VERSION'),
-    ],
+    public function id(): int
+    {
+        return 4;
+    }
 
-    'seed' => static function (): array {
+    public function slug(): string
+    {
+        return 'plugin-updates';
+    }
+
+    public function title(): string
+    {
+        return 'List plugins with updates available and the pages that use their blocks or widgets';
+    }
+
+    public function missing(): array
+    {
+        $missing = [];
+        if (! class_exists('WooCommerce')) {
+            $missing[] = 'WooCommerce';
+        }
+        if (! defined('ELEMENTOR_VERSION')) {
+            $missing[] = 'Elementor';
+        }
+        return $missing;
+    }
+
+    public function seed(): array
+    {
         if (! function_exists('get_plugins')) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
-        $offer = new \stdClass();
+        $offer               = new \stdClass();
         $offer->last_checked = time();
         $offer->checked      = [];
-        $offer->response     = [];
+        $response            = [];
         foreach (['woocommerce/woocommerce.php' => 'woocommerce', 'elementor/elementor.php' => 'elementor'] as $file => $slug) {
-            $offer->response[ $file ] = (object) [
+            $response[ $file ] = (object) [
                 'slug'        => $slug,
                 'plugin'      => $file,
                 'new_version' => '99.0.0',
@@ -42,56 +73,50 @@ return [
                 'url'         => 'https://example.test/' . $slug,
             ];
         }
+        $offer->response = $response;
         set_site_transient('update_plugins', $offer);
-
-        $make = static function (string $title, string $content): int {
-            return (int) wp_insert_post(['post_type' => 'page', 'post_status' => 'publish', 'post_title' => $title, 'post_content' => $content]);
-        };
 
         $woo = [];
         foreach (['Shop', 'Featured', 'Cart Help'] as $i => $name) {
-            $woo[] = $make("Bench {$name}", '<!-- wp:woocommerce/product-collection {"queryId":' . ($i + 1) . '} /--><!-- wp:paragraph --><p>Bench.</p><!-- /wp:paragraph -->');
+            $woo[] = self::page("Bench {$name}", '<!-- wp:woocommerce/product-collection {"queryId":' . ($i + 1) . '} /--><!-- wp:paragraph --><p>Bench.</p><!-- /wp:paragraph -->');
         }
         $elementor = [];
         for ($i = 1; $i <= 4; $i++) {
-            $id = $make("Bench Landing {$i}", '');
+            $id = self::page("Bench Landing {$i}", '');
             update_post_meta($id, '_elementor_edit_mode', 'builder');
-            update_post_meta($id, '_elementor_data', wp_slash((string) wp_json_encode([[
+            update_post_meta($id, '_elementor_data', wp_slash(Data::json([[
                 'id' => "w{$i}", 'elType' => 'widget', 'widgetType' => 'heading', 'settings' => ['title' => "Landing {$i}"], 'elements' => [],
             ]])));
             $elementor[] = $id;
         }
         for ($i = 1; $i <= 5; $i++) {
-            $make("Bench Plain {$i}", '<!-- wp:paragraph --><p>Plain page.</p><!-- /wp:paragraph -->');
+            self::page("Bench Plain {$i}", '<!-- wp:paragraph --><p>Plain page.</p><!-- /wp:paragraph -->');
         }
 
         return ['woo' => $woo, 'elementor' => $elementor];
-    },
+    }
 
-    'surfaces' => static function (array $f): array {
-        // What the agent knows about each plugin: block namespaces it
-        // searches post content for, or that it is a page builder.
-        $blocks   = ['woocommerce/woocommerce.php' => 'wp:woocommerce/'];
-        $builders = ['elementor/elementor.php' => 'is_elementor'];
-
-        $full = [
+    public function steps(array $fixtures): array
+    {
+        return [
             ['tool' => 'wpmcp/list-plugins', 'args' => [], 'as' => 'plugins'],
             [
                 'tool' => 'wpmcp/list-posts',
-                'each' => static function (array $r) use ($blocks, $builders): array {
+                'each' => static function (array $r): array {
                     // Block searches first, then one page listing for the
                     // builders: verify reads the results in that order.
                     $calls   = [];
                     $listing = false;
-                    foreach ((array) ($r['plugins']['plugins'] ?? $r['plugins']) as $plugin) {
-                        if (empty($plugin['update_available'])) {
+                    $plugins = null !== Data::at($r, 'plugins', 'plugins') ? Data::rows($r, 'plugins', 'plugins') : Data::rows($r, 'plugins');
+                    foreach ($plugins as $plugin) {
+                        if (! Data::truthy($plugin, 'update_available')) {
                             continue;
                         }
-                        $file = (string) ($plugin['file'] ?? $plugin['plugin'] ?? '');
-                        if (isset($blocks[ $file ])) {
-                            $calls[] = ['post_type' => 'page', 'search' => $blocks[ $file ], 'per_page' => 100];
+                        $file = null !== Data::at($plugin, 'file') ? Data::str($plugin, 'file') : Data::str($plugin, 'plugin');
+                        if (isset(self::BLOCKS[ $file ])) {
+                            $calls[] = ['post_type' => 'page', 'search' => self::BLOCKS[ $file ], 'per_page' => 100];
                         }
-                        $listing = $listing || isset($builders[ $file ]);
+                        $listing = $listing || isset(self::BUILDERS[ $file ]);
                     }
                     if ($listing) {
                         $calls[] = ['post_type' => 'page', 'per_page' => 100];
@@ -104,31 +129,36 @@ return [
                 'as'   => 'pages',
             ],
         ];
+    }
 
-        return [
-            Surface::FULL    => $full,
-            Surface::COMPACT => Surface::compact(['plugins', 'list-posts'], $full),
-        ];
-    },
+    public function searches(): array
+    {
+        return ['plugins', 'list-posts'];
+    }
 
-    'verify' => static function (array $f, array $state): ?string {
-        [$woo, $all] = array_pad((array) $state['pages'], 2, null);
-        $woo_ids     = array_map(static fn($p) => (int) $p['post_id'], (array) ($woo['posts'] ?? []));
+    public function verify(array $fixtures, array $state): ?string
+    {
+        $woo_ids = array_map(static fn(array $p): int => Data::int($p, 'post_id'), Data::rows($state, 'pages', 0, 'posts'));
         sort($woo_ids);
-        $want = $f['woo'];
+        $want = Data::ints($fixtures, 'woo');
         sort($want);
         if ($woo_ids !== $want) {
             return sprintf('the block search returned [%s], the WooCommerce pages are [%s]', implode(',', $woo_ids), implode(',', $want));
         }
         $el = [];
-        foreach ((array) ($all['posts'] ?? []) as $p) {
-            if (! empty($p['is_elementor'])) {
-                $el[] = (int) $p['post_id'];
+        foreach (Data::rows($state, 'pages', 1, 'posts') as $p) {
+            if (Data::truthy($p, 'is_elementor')) {
+                $el[] = Data::int($p, 'post_id');
             }
         }
         sort($el);
-        $want = $f['elementor'];
+        $want = Data::ints($fixtures, 'elementor');
         sort($want);
         return $el === $want ? null : sprintf('the listing flagged [%s] as Elementor, the Elementor pages are [%s]', implode(',', $el), implode(',', $want));
-    },
-];
+    }
+
+    private static function page(string $title, string $content): int
+    {
+        return Page::create(['post_type' => 'page', 'post_status' => 'publish', 'post_title' => $title, 'post_content' => $content]);
+    }
+}

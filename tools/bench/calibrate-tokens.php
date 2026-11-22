@@ -23,14 +23,22 @@
  * REPO-ONLY: plain PHP, no WordPress load.
  */
 
+declare(strict_types=1);
+
+use WPMCP\Bench\Data;
+
+require_once __DIR__ . '/Data.php';
+
 if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
 $opts  = getopt('', ['tools-list:', 'model::', 'write']);
-$files = array_values(array_filter((array) ($opts['tools-list'] ?? []), 'is_string'));
+$opts  = is_array($opts) ? $opts : [];
+$files = is_string($opts['tools-list'] ?? null) ? [$opts['tools-list']] : Data::strs($opts, 'tools-list');
 $key   = (string) getenv('ANTHROPIC_API_KEY');
-$model = (string) ($opts['model'] ?? 'claude-opus-5-5');
+$model = Data::str($opts, 'model');
+$model = '' === $model ? 'claude-opus-5-5' : $model;
 
 if ([] === $files || ! function_exists('curl_init')) {
     fwrite(STDERR, "usage: ANTHROPIC_API_KEY=... php tools/bench/calibrate-tokens.php --tools-list=FILE [--tools-list=FILE] [--model=ID] [--write]\n");
@@ -41,7 +49,11 @@ if ('' === $key) {
     exit(2);
 }
 
-/** @return int input_tokens of a count_tokens request. */
+/**
+ * input_tokens of a count_tokens request.
+ *
+ * @param ?list<array{name: string, description: string, input_schema: mixed}> $tools
+ */
 function wpmcp_bench_count(string $key, string $model, ?array $tools): int
 {
     $body = [
@@ -52,21 +64,19 @@ function wpmcp_bench_count(string $key, string $model, ?array $tools): int
         $body['tools'] = $tools;
     }
     $ch = curl_init('https://api.anthropic.com/v1/messages/count_tokens');
-    curl_setopt_array($ch, [
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode($body),
-        CURLOPT_HTTPHEADER     => ['Content-Type: application/json', 'x-api-key: ' . $key, 'anthropic-version: 2023-06-01'],
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 60,
-    ]);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, Data::json($body));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json', 'x-api-key: ' . $key, 'anthropic-version: 2023-06-01']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     $out    = curl_exec($ch);
-    $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $json   = is_string($out) ? json_decode($out, true) : null;
-    if (200 !== $status || ! isset($json['input_tokens'])) {
+    if (200 !== $status || null === Data::at($json, 'input_tokens')) {
         fwrite(STDERR, sprintf("count_tokens answered HTTP %d: %s\n", $status, is_string($out) ? substr($out, 0, 500) : ''));
         exit(1);
     }
-    return (int) $json['input_tokens'];
+    return Data::int($json, 'input_tokens');
 }
 
 $baseline = wpmcp_bench_count($key, $model, null);
@@ -76,17 +86,17 @@ $per_file = [];
 foreach ($files as $file) {
     $raw  = (string) file_get_contents($file);
     $msg  = json_decode($raw, true);
-    $list = $msg['result']['tools'] ?? ($msg['tools'] ?? null);
+    $list = Data::at($msg, 'result', 'tools') ?? Data::at($msg, 'tools');
     if (! is_array($list)) {
         fwrite(STDERR, "{$file} holds no tools/list result\n");
         exit(1);
     }
     // The MCP tool as an Anthropic tool definition: what a client sends.
     $tools = array_map(static fn(array $t): array => [
-        'name'         => (string) $t['name'],
-        'description'  => (string) ($t['description'] ?? ''),
-        'input_schema' => $t['inputSchema'] ?? ['type' => 'object'],
-    ], $list);
+        'name'         => Data::str($t, 'name'),
+        'description'  => Data::str($t, 'description'),
+        'input_schema' => Data::at($t, 'inputSchema') ?? ['type' => 'object'],
+    ], Data::rows([$list], 0));
     $count       = wpmcp_bench_count($key, $model, $tools) - $baseline;
     $bytes      += strlen($raw);
     $tokens     += $count;
@@ -97,8 +107,8 @@ foreach ($files as $file) {
 $factor = round($bytes / max(1, $tokens), 3);
 printf("factor: %.3f bytes per token (%s)\n", $factor, $model);
 
-if (isset($opts['write'])) {
-    file_put_contents(__DIR__ . '/token-factor.json', json_encode([
+if (array_key_exists('write', $opts)) {
+    file_put_contents(__DIR__ . '/token-factor.json', Data::json([
         'bytes_per_token' => $factor,
         'model'           => $model,
         'measured_at'     => gmdate('Y-m-d\TH:i:s\Z'),

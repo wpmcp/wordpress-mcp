@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WPMCP\Bench;
 
 /**
@@ -49,7 +51,7 @@ final class Surface
     {
         $needed = [];
         foreach ($steps as $step) {
-            $tool = (string) ($step['tool'] ?? '');
+            $tool = Data::str($step, 'tool');
             if ('' !== $tool && ! in_array($tool, self::COMPACT_CORE, true) && ! in_array($tool, $needed, true)) {
                 $needed[] = $tool;
             }
@@ -69,10 +71,11 @@ final class Surface
                 'tool' => 'wpmcp/get-tool-schema',
                 'each' => static function (array $state) use ($needed): array {
                     $found = [];
-                    foreach ((array) ($state['_compact_search'] ?? []) as $listing) {
-                        foreach ((array) ($listing['tools'] ?? []) as $hit) {
-                            if (isset($hit['name'])) {
-                                $found[ (string) $hit['name'] ] = true;
+                    foreach (Data::rows($state, '_compact_search') as $listing) {
+                        foreach (Data::rows($listing, 'tools') as $hit) {
+                            $name = Data::str($hit, 'name');
+                            if ('' !== $name) {
+                                $found[ $name ] = true;
                             }
                         }
                     }
@@ -90,7 +93,7 @@ final class Surface
         }
 
         foreach ($steps as $step) {
-            $tool = (string) ($step['tool'] ?? '');
+            $tool = Data::str($step, 'tool');
             if (in_array($tool, self::COMPACT_CORE, true)) {
                 $out[] = $step;
                 continue;
@@ -104,7 +107,7 @@ final class Surface
                 $each            = $step['each'];
                 $wrapped['each'] = static function (array $state) use ($each, $tool): array {
                     $list = $each instanceof \Closure ? $each($state) : $each;
-                    return array_map(static fn($args): array => ['name' => $tool, 'arguments' => $args], (array) $list);
+                    return array_map(static fn(mixed $args): array => ['name' => $tool, 'arguments' => $args], is_array($list) ? $list : []);
                 };
             } else {
                 $args            = $step['args'] ?? [];

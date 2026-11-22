@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WPMCP\Bench;
 
 use WPMCP\Governance\Governance;
@@ -11,7 +13,7 @@ use WPMCP\Pro\Gate;
 use WPMCP\Safety\Snapshot_Store;
 
 require_once __DIR__ . '/Runner.php';
-require_once __DIR__ . '/Surface.php';
+require_once __DIR__ . '/Scenarios.php';
 require_once __DIR__ . '/wire.php';
 
 /**
@@ -36,10 +38,15 @@ require_once __DIR__ . '/wire.php';
  *
  * @group bench
  */
-class BenchTest extends \WP_UnitTestCase
+final class BenchTest extends \WP_UnitTestCase
 {
-    /** @var array<string, mixed> */
-    private static array $results = [];
+    /**
+     * Collected across the tests of the class and written once by
+     * wpTearDownAfterClass(): PHPUnit builds a new instance per test.
+     *
+     * @var array{tools_list: array<string, array{bytes: int, tools: int, source: string}>, scenarios: array<string, array<string, mixed>>}
+     */
+    private static array $results = ['tools_list' => [], 'scenarios' => []];
 
     public static function wpSetUpBeforeClass(): void
     {
@@ -81,18 +88,19 @@ class BenchTest extends \WP_UnitTestCase
 
     public static function wpTearDownAfterClass(): void
     {
-        $out = getenv('WPMCP_BENCH_OUT');
-        if (! $out) {
+        $out = (string) getenv('WPMCP_BENCH_OUT');
+        if ('' === $out) {
             return;
         }
 
         $plugins = [];
         foreach (['WooCommerce' => 'WC_VERSION', 'Elementor' => 'ELEMENTOR_VERSION', 'Yoast SEO' => 'WPSEO_VERSION'] as $name => $const) {
             if (defined($const)) {
-                $plugins[ $name ] = constant($const);
+                $plugins[ $name ] = Data::str([constant($const)], 0);
             }
         }
-        ksort(self::$results['scenarios']);
+        $scenarios = self::$results['scenarios'];
+        ksort($scenarios);
 
         $doc = [
             'issue'        => 1130,
@@ -101,7 +109,7 @@ class BenchTest extends \WP_UnitTestCase
             'commit'       => (string) getenv('WPMCP_BENCH_COMMIT'),
             'wordpress'    => get_bloginfo('version'),
             'php'          => PHP_VERSION,
-            'wpmcp'        => defined('WPMCP_VERSION') ? WPMCP_VERSION : '',
+            'wpmcp'        => defined('WPMCP_VERSION') ? Data::str([constant('WPMCP_VERSION')], 0) : '',
             'site'         => 'single site, Pro licence open, wpmcp integrations registered for the active plugins',
             'plugins'      => $plugins,
             'tokens'       => Wire::token_factor(__DIR__),
@@ -113,10 +121,10 @@ class BenchTest extends \WP_UnitTestCase
                 'ms'               => 'wall time of the replay in-process, without the tools/list',
             ],
             'tools_list'   => self::$results['tools_list'],
-            'scenarios'    => array_values(self::$results['scenarios']),
+            'scenarios'    => array_values($scenarios),
         ];
 
-        file_put_contents($out, wp_json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+        file_put_contents($out, Data::json($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
     }
 
     protected function setUp(): void
@@ -132,7 +140,11 @@ class BenchTest extends \WP_UnitTestCase
             $GLOBALS['wp_roles'] = null;
             wp_roles();
         }
-        wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
+        $admin = wp_insert_user(['user_login' => 'bench_admin_' . wp_generate_password(8, false), 'user_pass' => wp_generate_password(24), 'role' => 'administrator']);
+        if (! is_int($admin)) {
+            throw new \RuntimeException('could not create the bench administrator: ' . $admin->get_error_message());
+        }
+        wp_set_current_user($admin);
         global $wp_rest_server;
         $wp_rest_server = null;
         rest_get_server();
@@ -150,97 +162,88 @@ class BenchTest extends \WP_UnitTestCase
         parent::tearDown();
     }
 
-    /** @return array<string, array{0: string, 1: string}> */
+    /** @return array<string, array{0: int, 1: string}> */
     public static function cases(): array
     {
-        $only  = (string) getenv('WPMCP_BENCH_SCENARIO');
+        $only  = (int) getenv('WPMCP_BENCH_SCENARIO');
         $cases = [];
-        foreach (self::scenario_files() as $file) {
-            $id = (int) basename($file);
-            if ('' !== $only && (int) $only !== $id) {
+        foreach (Scenarios::all() as $scenario) {
+            if (0 !== $only && $only !== $scenario->id()) {
                 continue;
             }
             foreach ([Surface::FULL, Surface::COMPACT] as $surface) {
-                $cases[ basename($file, '.php') . ' ' . $surface ] = [$file, $surface];
+                $cases[ sprintf('%d-%s %s', $scenario->id(), $scenario->slug(), $surface) ] = [$scenario->id(), $surface];
             }
         }
         return $cases;
     }
 
-    /** @return string[] */
-    private static function scenario_files(): array
-    {
-        $files = glob(__DIR__ . '/scenarios/*.php') ?: [];
-        sort($files, SORT_NATURAL);
-        return $files;
-    }
-
     public function test_tools_list_on_each_surface(): void
     {
-        $this->assertSame(Tool_Exposure::COMPACT_CORE, Surface::COMPACT_CORE, 'Surface::COMPACT_CORE drifted from Tool_Exposure::COMPACT_CORE');
+        self::assertSame(Tool_Exposure::COMPACT_CORE, Surface::COMPACT_CORE, 'Surface::COMPACT_CORE drifted from Tool_Exposure::COMPACT_CORE');
 
-        $dump = (string) getenv('WPMCP_BENCH_SAVE_TOOLS_LIST');
+        $dump  = (string) getenv('WPMCP_BENCH_SAVE_TOOLS_LIST');
+        $bytes = [];
         foreach ([Surface::FULL, Surface::COMPACT] as $surface) {
             $wire = Wire::tools_list($surface);
             if ('' !== $dump && is_dir($dump)) {
                 file_put_contents($dump . '/tools-list-' . $surface . '.json', $wire['payload']);
             }
-            unset($wire['payload']);
-            self::$results['tools_list'][ $surface ] = $wire;
-            $this->assertGreaterThan(0, $wire['tools']);
+            self::$results['tools_list'][ $surface ] = ['bytes' => $wire['bytes'], 'tools' => $wire['tools'], 'source' => $wire['source']];
+            $bytes[ $surface ]                       = $wire['bytes'];
+            self::assertGreaterThan(0, $wire['tools']);
         }
-        $this->assertLessThan(self::$results['tools_list']['full']['bytes'], self::$results['tools_list']['compact']['bytes']);
+        self::assertLessThan($bytes[ Surface::FULL ], $bytes[ Surface::COMPACT ]);
     }
 
     /**
      * @dataProvider cases
      */
-    public function test_scenario(string $file, string $surface): void
+    public function test_scenario(int $id, string $surface): void
     {
-        $scenario = require $file;
-        $key      = sprintf('%02d', (int) $scenario['id']);
-        self::$results['scenarios'][ $key ] ??= [
-            'id'       => (int) $scenario['id'],
-            'slug'     => (string) $scenario['slug'],
-            'title'    => (string) $scenario['title'],
+        $scenario = Scenarios::find($id);
+        if (null === $scenario) {
+            throw new \InvalidArgumentException('no scenario ' . $id);
+        }
+        $key   = sprintf('%02d', $id);
+        $entry = self::$results['scenarios'][ $key ] ?? [
+            'id'       => $id,
+            'slug'     => $scenario->slug(),
+            'title'    => $scenario->title(),
             'surfaces' => [],
         ];
 
-        $missing = [];
-        foreach ((array) $scenario['requires'] as $name => $check) {
-            if (! $check()) {
-                $missing[] = $name;
-            }
-        }
+        $missing = $scenario->missing();
         if ([] !== $missing) {
-            self::$results['scenarios'][ $key ]['surfaces'][ $surface ] = [
-                'status' => 'skipped',
-                'reason' => 'needs ' . implode(', ', $missing),
-            ];
-            $this->markTestSkipped('needs ' . implode(', ', $missing));
+            $entry['surfaces']                   = Data::map($entry, 'surfaces') + [$surface => ['status' => 'skipped', 'reason' => 'needs ' . implode(', ', $missing)]];
+            self::$results['scenarios'][ $key ] = $entry;
+            self::markTestSkipped('needs ' . implode(', ', $missing));
         }
 
-        $fixtures = ($scenario['seed'])();
-        $steps    = ($scenario['surfaces'])($fixtures)[ $surface ];
-        $out      = (new Runner([self::class, 'execute']))->run($steps);
+        $fixtures = $scenario->seed();
+        $out      = (new Runner(self::execute(...)))->run(Scenarios::sequence($scenario, $fixtures, $surface));
 
-        if ('ok' === $out['status'] && isset($scenario['verify'])) {
-            $problem = ($scenario['verify'])($fixtures, $out['state']);
+        if ('ok' === $out['status']) {
+            $problem = $scenario->verify($fixtures, $out['state']);
             if (null !== $problem) {
                 $out['status'] = 'failed';
                 $out['reason'] = 'verify: ' . $problem;
             }
         }
         unset($out['state']);
-        self::$results['scenarios'][ $key ]['surfaces'][ $surface ] = $out;
+        $surfaces                            = Data::map($entry, 'surfaces');
+        $surfaces[ $surface ]                = $out;
+        $entry['surfaces']                   = $surfaces;
+        self::$results['scenarios'][ $key ] = $entry;
 
-        $this->assertSame('ok', $out['status'], (string) $out['reason']);
+        self::assertSame('ok', $out['status'], (string) $out['reason']);
     }
 
     /**
      * The in-process transport: the ability's own execute(), with its result
      * measured as the JSON the model would read.
      *
+     * @param array<string, mixed> $args
      * @return array{value: mixed, bytes: int, error: ?string}
      */
     public static function execute(string $tool, array $args): array
@@ -257,21 +260,30 @@ class BenchTest extends \WP_UnitTestCase
             return ['value' => null, 'bytes' => strlen($text), 'error' => $text];
         }
 
-        if (is_wp_error($value)) {
+        if ($value instanceof \WP_Error) {
             $body = ['code' => $value->get_error_code(), 'message' => $value->get_error_message()];
-            return ['value' => null, 'bytes' => strlen((string) wp_json_encode($body)), 'error' => $value->get_error_code() . ': ' . $value->get_error_message()];
+            return ['value' => null, 'bytes' => strlen(Data::json($body)), 'error' => Data::str($body, 'code') . ': ' . $value->get_error_message()];
         }
 
-        $bytes = strlen((string) wp_json_encode($value));
-        $error = null;
-        if (is_array($value) && ! empty($value['error'])) {
-            $error = is_array($value['error'])
-                ? (string) ($value['error']['code'] ?? '') . ': ' . (string) ($value['error']['message'] ?? wp_json_encode($value['error']))
-                : (string) $value['error'];
-        } elseif (is_array($value) && isset($value['status']) && is_int($value['status']) && $value['status'] >= 400) {
-            $error = 'HTTP ' . $value['status'] . ': ' . substr((string) wp_json_encode($value['body'] ?? $value), 0, 300);
-        }
+        return ['value' => $value, 'bytes' => strlen(Data::json($value)), 'error' => self::result_error($value)];
+    }
 
-        return ['value' => $value, 'bytes' => $bytes, 'error' => $error];
+    /** The error a successful-looking result reports in its body, if any. */
+    private static function result_error(mixed $value): ?string
+    {
+        if (Data::truthy($value, 'error') || [] !== Data::arr($value, 'error')) {
+            $error = Data::at($value, 'error');
+            if (! is_array($error)) {
+                return Data::str($value, 'error');
+            }
+            $message = null !== Data::at($error, 'message') ? Data::str($error, 'message') : Data::json($error);
+            return Data::str($error, 'code') . ': ' . $message;
+        }
+        $status = Data::at($value, 'status');
+        if (is_int($status) && $status >= 400) {
+            $body = Data::at($value, 'body') ?? $value;
+            return 'HTTP ' . $status . ': ' . substr(Data::json($body), 0, 300);
+        }
+        return null;
     }
 }

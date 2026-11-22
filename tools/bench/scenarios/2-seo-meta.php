@@ -1,5 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
+namespace WPMCP\Bench\Scenarios;
+
+use WPMCP\Bench\Data;
+use WPMCP\Bench\Scenario;
+use WPMCP\Tools\SEO\SEO_Adapter;
+
 /**
  * Scenario 2: "Set the meta description on every published page that has
  * none" (SEO, 40 pages).
@@ -13,37 +21,49 @@
  * page, all in one turn), then set the description on each page that has
  * none (one turn).
  */
+final class Seo_Meta implements Scenario
+{
+    public function id(): int
+    {
+        return 2;
+    }
 
-use WPMCP\Bench\Surface;
+    public function slug(): string
+    {
+        return 'seo-meta';
+    }
 
-return [
-    'id'       => 2,
-    'slug'     => 'seo-meta',
-    'title'    => 'Set the meta description on every published page that has none (40 pages)',
-    'requires' => [
-        'an SEO plugin (Yoast SEO, Rank Math or similar)' => static fn(): bool => function_exists('wp_has_ability') && wp_has_ability('wpmcp/update-seo-meta'),
-    ],
+    public function title(): string
+    {
+        return 'Set the meta description on every published page that has none (40 pages)';
+    }
 
-    'seed' => static function (): array {
+    public function missing(): array
+    {
+        return function_exists('wp_has_ability') && wp_has_ability('wpmcp/update-seo-meta') ? [] : ['an SEO plugin (Yoast SEO, Rank Math or similar)'];
+    }
+
+    public function seed(): array
+    {
         $with    = [];
         $without = [];
         for ($i = 1; $i <= 40; $i++) {
-            $id = wp_insert_post([
+            $id = Page::create([
                 'post_type'    => 'page',
                 'post_status'  => 'publish',
                 'post_title'   => sprintf('Bench Service Page %02d', $i),
                 'post_content' => sprintf('<!-- wp:paragraph --><p>Bench page %d about a made-up service.</p><!-- /wp:paragraph -->', $i),
             ]);
             if (0 === $i % 2 && count($with) < 15) {
-                \WPMCP\Tools\SEO\SEO_Adapter::update_meta((int) $id, ['description' => sprintf('Existing description %d.', $i)]);
-                $with[] = (int) $id;
+                SEO_Adapter::update_meta($id, ['description' => sprintf('Existing description %d.', $i)]);
+                $with[] = $id;
             } else {
-                $without[] = (int) $id;
+                $without[] = $id;
             }
         }
         $drafts = [];
         for ($i = 1; $i <= 5; $i++) {
-            $drafts[] = (int) wp_insert_post([
+            $drafts[] = Page::create([
                 'post_type'   => 'page',
                 'post_status' => 'draft',
                 'post_title'  => sprintf('Bench Draft %d', $i),
@@ -51,16 +71,17 @@ return [
         }
 
         return ['with' => $with, 'without' => $without, 'drafts' => $drafts];
-    },
+    }
 
-    'surfaces' => static function (array $f): array {
-        $full = [
+    public function steps(array $fixtures): array
+    {
+        return [
             ['tool' => 'wpmcp/list-posts', 'args' => ['post_type' => 'page', 'status' => 'publish', 'per_page' => 100], 'as' => 'pages'],
             [
                 'tool' => 'wpmcp/get-seo-meta',
                 'each' => static fn(array $r): array => array_map(
-                    static fn(array $p): array => ['post_id' => (int) $p['post_id']],
-                    (array) ($r['pages']['posts'] ?? [])
+                    static fn(array $p): array => ['post_id' => Data::int($p, 'post_id')],
+                    Data::rows($r, 'pages', 'posts')
                 ),
                 'as'   => 'meta',
             ],
@@ -68,9 +89,10 @@ return [
                 'tool' => 'wpmcp/update-seo-meta',
                 'each' => static function (array $r): array {
                     $calls = [];
-                    foreach ((array) $r['meta'] as $meta) {
-                        if ('' === trim((string) ($meta['description'] ?? ''))) {
-                            $calls[] = ['post_id' => (int) $meta['post_id'], 'description' => sprintf('Bench description for page %d.', (int) $meta['post_id'])];
+                    foreach (Data::rows($r, 'meta') as $meta) {
+                        if ('' === trim(Data::str($meta, 'description'))) {
+                            $id      = Data::int($meta, 'post_id');
+                            $calls[] = ['post_id' => $id, 'description' => sprintf('Bench description for page %d.', $id)];
                         }
                     }
                     return $calls;
@@ -78,32 +100,39 @@ return [
                 'as'   => 'updated',
             ],
         ];
+    }
 
-        return [
-            Surface::FULL    => $full,
-            Surface::COMPACT => Surface::compact(['seo', 'list-posts'], $full),
-        ];
-    },
+    public function searches(): array
+    {
+        return ['seo', 'list-posts'];
+    }
 
-    'verify' => static function (array $f, array $state): ?string {
-        if (40 !== count((array) ($state['pages']['posts'] ?? []))) {
+    public function verify(array $fixtures, array $state): ?string
+    {
+        if (40 !== count(Data::arr($state, 'pages', 'posts'))) {
             return 'list-posts did not return the 40 published pages';
         }
-        foreach ($f['without'] as $id) {
-            if (! str_starts_with((string) (\WPMCP\Tools\SEO\SEO_Adapter::get_meta($id)['description'] ?? ''), 'Bench description')) {
+        foreach (Data::ints($fixtures, 'without') as $id) {
+            if (! str_starts_with(self::description($id), 'Bench description')) {
                 return sprintf('page %d still has no description', $id);
             }
         }
-        foreach ($f['with'] as $id) {
-            if (! str_starts_with((string) (\WPMCP\Tools\SEO\SEO_Adapter::get_meta($id)['description'] ?? ''), 'Existing description')) {
+        foreach (Data::ints($fixtures, 'with') as $id) {
+            if (! str_starts_with(self::description($id), 'Existing description')) {
                 return sprintf('page %d lost its existing description', $id);
             }
         }
-        foreach ($f['drafts'] as $id) {
-            if ('' !== (string) (\WPMCP\Tools\SEO\SEO_Adapter::get_meta($id)['description'] ?? '')) {
+        foreach (Data::ints($fixtures, 'drafts') as $id) {
+            if ('' !== self::description($id)) {
                 return sprintf('draft %d was changed', $id);
             }
         }
-        return 25 === count((array) $state['updated']) ? null : sprintf('expected 25 updates, made %d', count((array) $state['updated']));
-    },
-];
+        $updated = count(Data::arr($state, 'updated'));
+        return 25 === $updated ? null : sprintf('expected 25 updates, made %d', $updated);
+    }
+
+    private static function description(int $id): string
+    {
+        return Data::str(SEO_Adapter::get_meta($id), 'description');
+    }
+}
