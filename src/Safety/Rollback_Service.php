@@ -1721,7 +1721,12 @@ class Rollback_Service
             return;
         }
 
-        self::resurrect_comment($snapshot['data']['comment'], (array) $snapshot['data']['meta']);
+        $restored_id = self::resurrect_comment($snapshot['data']['comment'], (array) $snapshot['data']['meta']);
+        Comment_Replies::relink(
+            array_map('intval', (array) ($snapshot['data']['replies'] ?? [])),
+            (int) ($snapshot['data']['comment']['comment_parent'] ?? 0),
+            $restored_id
+        );
     }
 
     /**
@@ -1768,7 +1773,7 @@ class Rollback_Service
      * and WordPress assigns a new one; every other captured field, plus the
      * commentmeta, is restored under that new ID.
      */
-    private static function resurrect_comment(array $comment_row, array $meta): void
+    private static function resurrect_comment(array $comment_row, array $meta): int
     {
         unset($comment_row['comment_ID']);
         $new_comment_id = wp_insert_comment(wp_slash($comment_row));
@@ -1776,6 +1781,7 @@ class Rollback_Service
             throw new Mutation_Failed('Rollback failed to resurrect a force-deleted comment.');
         }
         self::reconcile_comment_meta((int) $new_comment_id, $meta);
+        return (int) $new_comment_id;
     }
 
     /**
