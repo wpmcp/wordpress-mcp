@@ -6,6 +6,7 @@ use WPMCP\Integrations\Integration_Dispatcher;
 use WPMCP\MCP\Ability;
 use WPMCP\MCP\Registrar;
 use WPMCP\Pro\Gate;
+use WPMCP\Tests\Support\Edition_Tree;
 
 /**
  * Registry-wide companion to PackObjectCapabilityTest (issue #450).
@@ -419,6 +420,23 @@ class PackObjectCapabilityRegistryTest extends \WP_UnitTestCase
         parent::tearDown();
     }
 
+    /**
+     * Pack floors, per edition. The full surface (unsplit, or split with
+     * pro/) carries 19 packs; the free build lacks the Pro packs (block
+     * suites, WooCommerce and the forms adapter pack) and registers 13. A
+     * walk well under its tree's floor means the enumeration broke. The
+     * walked-key floor needs no split: the free build alone walks about 300
+     * keys, well over it.
+     */
+    private const MIN_PACKS_FULL = 19;
+    private const MIN_PACKS_FREE = 12;
+
+    /** Whether this tree registers the integration pack $slug (Pro packs are absent from the free build). */
+    private static function pack_in_edition(string $slug): bool
+    {
+        return isset(Edition_Tree::ability_manifest()['abilities'][ 'wpmcp/' . $slug . '-read' ]);
+    }
+
     /** @param array<string,bool> $allcaps */
     public function grant_pair_capability(array $allcaps): array
     {
@@ -482,7 +500,8 @@ class PackObjectCapabilityRegistryTest extends \WP_UnitTestCase
     public function test_every_pack_operation_that_names_an_id_declares_it(): void
     {
         $packs = self::packs();
-        $this->assertGreaterThanOrEqual(19, count($packs), 'Too few packs: ' . implode(', ', array_keys($packs)));
+        $min   = Edition_Tree::has_pro_code() ? self::MIN_PACKS_FULL : self::MIN_PACKS_FREE;
+        $this->assertGreaterThanOrEqual($min, count($packs), 'Too few packs: ' . implode(', ', array_keys($packs)));
 
         $undeclared = [];
         $stale      = self::NOT_WP_OBJECTS;
@@ -499,6 +518,15 @@ class PackObjectCapabilityRegistryTest extends \WP_UnitTestCase
             }
         }
         $this->assertSame([], $undeclared, 'Declare these in the op\'s objects map');
+        // Staleness is judged against the whole surface: the free build lacks
+        // the Pro packs, so their entries cannot be seen from it.
+        if (! Edition_Tree::has_pro_code()) {
+            $stale = array_filter(
+                $stale,
+                static fn (string $label): bool => self::pack_in_edition(strstr($label, ':', true)),
+                ARRAY_FILTER_USE_KEY
+            );
+        }
         $this->assertSame([], array_keys($stale), 'No longer an op key; drop it from NOT_WP_OBJECTS');
     }
 
@@ -563,6 +591,9 @@ class PackObjectCapabilityRegistryTest extends \WP_UnitTestCase
             'contactform7:get-entry:entry_id',
             'forminator:delete-entry:entry_id',
         ] as $label) {
+            if (! self::pack_in_edition(strstr($label, ':', true))) {
+                continue; // A Pro pack (block-suites), absent from the free build.
+            }
             $this->assertContains($label, $walked);
         }
         $this->assertSame([], $failures);
