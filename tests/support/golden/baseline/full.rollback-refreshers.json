@@ -1,0 +1,134 @@
+[
+  {
+    "class": "WPMCP\\Integrations\\Theme_Framework_Pack",
+    "method": "refresh_after_restore",
+    "hook": "wpmcp_rollback_options_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Elementor_Addon_Packs",
+    "method": "after_restore",
+    "hook": "wpmcp_rollback_options_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Block_Suite",
+    "method": "refresh_after_restore",
+    "hook": "wpmcp_rollback_post_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\MemberPress_Pack",
+    "method": "after_post_change",
+    "hook": "wpmcp_rollback_post_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\MemberPress_Pack",
+    "method": "after_post_change",
+    "hook": "trashed_post",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\MemberPress_Pack",
+    "method": "after_rows_restored",
+    "hook": "wpmcp_rollback_table_rows_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\TablePress_Pack",
+    "method": "after_options_restored",
+    "hook": "wpmcp_rollback_options_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\TablePress_Pack",
+    "method": "after_post_restored",
+    "hook": "wpmcp_rollback_post_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\TablePress_Pack",
+    "method": "narrow_map_restore",
+    "hook": "wpmcp_rollback_option_snapshot",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Core_Site_Pack",
+    "method": "after_options_restored",
+    "hook": "wpmcp_rollback_options_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Core_Patterns_Pack",
+    "method": "restore_refusal",
+    "hook": "wpmcp_rollback_post_refusal",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\PublishPress_Pack",
+    "method": "after_post_restored",
+    "hook": "wpmcp_rollback_post_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Listings_Pack",
+    "method": "after_post_restored",
+    "hook": "wpmcp_rollback_post_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Cache_Settings_Pack",
+    "method": "after_options_restored",
+    "hook": "wpmcp_rollback_options_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Consent_Pack",
+    "method": "after_rows_restored",
+    "hook": "wpmcp_rollback_db_rows_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\WPCode_Pack",
+    "method": "after_post_restored",
+    "hook": "wpmcp_rollback_post_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\WPCode_Pack",
+    "method": "after_trash",
+    "hook": "trashed_post",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\WPCode_Pack",
+    "method": "after_options_restored",
+    "hook": "wpmcp_rollback_options_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Tools\\I18n\\I18n_Adapter",
+    "method": "restore_translation_group",
+    "hook": "wpmcp_rollback_translation_group",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Tools\\I18n\\I18n_Adapter",
+    "method": "hold_sync",
+    "hook": "wpmcp_rollback_hold_translation_sync",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Tools\\I18n\\I18n_Adapter",
+    "method": "release_sync",
+    "hook": "wpmcp_rollback_release_translation_sync",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Modern_Events_Calendar_Writes",
+    "method": "after_post_restored",
+    "hook": "wpmcp_rollback_post_restored",
+    "shipped": true
+  }
+]
