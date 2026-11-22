@@ -400,6 +400,11 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "\\WPMCP\\Tools\\BlockBuilder\\Block_Registry::register",
           1
@@ -411,7 +416,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1081",
+          "closure@src/Plugin.php:1092",
           1
         ]
       ],
@@ -561,7 +566,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:938",
+          "closure@src/Plugin.php:949",
           1
         ]
       ],
@@ -1654,6 +1659,16 @@
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
+          2
         ]
       ],
       "wpmcp_rollback_hold_translation_sync": [
@@ -1818,7 +1833,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:725",
+          "closure@src/Plugin.php:736",
           1
         ]
       ],
@@ -2332,6 +2347,11 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "\\WPMCP\\Tools\\BlockBuilder\\Block_Registry::register",
           1
@@ -2343,7 +2363,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1081",
+          "closure@src/Plugin.php:1092",
           1
         ],
         [
@@ -2508,7 +2528,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:938",
+          "closure@src/Plugin.php:949",
           1
         ]
       ],
@@ -3601,6 +3621,16 @@
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
+          2
         ]
       ],
       "wpmcp_rollback_hold_translation_sync": [
@@ -3765,7 +3795,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:725",
+          "closure@src/Plugin.php:736",
           1
         ]
       ],
@@ -4281,6 +4311,11 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "\\WPMCP\\Tools\\BlockBuilder\\Block_Registry::register",
           1
@@ -4292,7 +4327,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1081",
+          "closure@src/Plugin.php:1092",
           1
         ]
       ],
@@ -4447,7 +4482,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:938",
+          "closure@src/Plugin.php:949",
           1
         ]
       ],
@@ -5540,6 +5575,16 @@
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
+          2
         ]
       ],
       "wpmcp_rollback_hold_translation_sync": [
@@ -5704,7 +5749,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:725",
+          "closure@src/Plugin.php:736",
           1
         ]
       ],
@@ -6196,6 +6241,11 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "\\WPMCP\\Tools\\BlockBuilder\\Block_Registry::register",
           1
@@ -6207,7 +6257,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1081",
+          "closure@src/Plugin.php:1092",
           1
         ]
       ],
@@ -6357,7 +6407,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:938",
+          "closure@src/Plugin.php:949",
           1
         ]
       ],
@@ -7450,6 +7500,16 @@
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
+          2
         ]
       ],
       "wpmcp_rollback_hold_translation_sync": [
@@ -7614,7 +7674,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:725",
+          "closure@src/Plugin.php:736",
           1
         ]
       ],
@@ -8106,6 +8166,11 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "\\WPMCP\\Tools\\BlockBuilder\\Block_Registry::register",
           1
@@ -8117,7 +8182,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1081",
+          "closure@src/Plugin.php:1092",
           1
         ]
       ],
@@ -8267,7 +8332,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:938",
+          "closure@src/Plugin.php:949",
           1
         ]
       ],
@@ -9360,6 +9425,16 @@
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
+          2
         ]
       ],
       "wpmcp_rollback_hold_translation_sync": [
@@ -9524,7 +9599,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:725",
+          "closure@src/Plugin.php:736",
           1
         ]
       ],
@@ -10016,6 +10091,11 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "\\WPMCP\\Tools\\BlockBuilder\\Block_Registry::register",
           1
@@ -10027,7 +10107,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1081",
+          "closure@src/Plugin.php:1092",
           1
         ]
       ],
@@ -10177,7 +10257,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:938",
+          "closure@src/Plugin.php:949",
           1
         ]
       ],
@@ -11270,6 +11350,16 @@
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
+          2
         ]
       ],
       "wpmcp_rollback_hold_translation_sync": [
@@ -11434,7 +11524,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:725",
+          "closure@src/Plugin.php:736",
           1
         ]
       ],

@@ -5523,6 +5523,34 @@
         "name": "BuddyPress, BuddyBoss Platform",
         "several": true
       },
+      "cartabandonment-get-settings": {
+        "name": "Cart Abandonment Recovery for WooCommerce",
+        "several": false
+      },
+      "cartabandonment-get-stats": {
+        "name": "Cart Abandonment Recovery for WooCommerce",
+        "several": false
+      },
+      "cartabandonment-get-template": {
+        "name": "Cart Abandonment Recovery for WooCommerce",
+        "several": false
+      },
+      "cartabandonment-list-carts": {
+        "name": "Cart Abandonment Recovery for WooCommerce",
+        "several": false
+      },
+      "cartabandonment-list-templates": {
+        "name": "Cart Abandonment Recovery for WooCommerce",
+        "several": false
+      },
+      "cartabandonment-update-template": {
+        "name": "Cart Abandonment Recovery for WooCommerce",
+        "several": false
+      },
+      "cartabandonment-update-timing": {
+        "name": "Cart Abandonment Recovery for WooCommerce",
+        "several": false
+      },
       "checklists-list-requirements": {
         "name": "PublishPress Checklists",
         "several": false
@@ -5592,6 +5620,18 @@
         "several": false
       },
       "depicter-list-documents": {
+        "name": "Depicter",
+        "several": false
+      },
+      "depicter-rename-document": {
+        "name": "Depicter",
+        "several": false
+      },
+      "depicter-set-display-rules": {
+        "name": "Depicter",
+        "several": false
+      },
+      "depicter-set-status": {
         "name": "Depicter",
         "several": false
       },
@@ -5738,6 +5778,30 @@
       "emaillog-list-emails": {
         "name": "WP Mail Logging, Check and Log Email, Email Log",
         "several": true
+      },
+      "envira-add-images": {
+        "name": "Envira Gallery",
+        "several": false
+      },
+      "envira-create-gallery": {
+        "name": "Envira Gallery",
+        "several": false
+      },
+      "envira-get-gallery": {
+        "name": "Envira Gallery",
+        "several": false
+      },
+      "envira-list-galleries": {
+        "name": "Envira Gallery",
+        "several": false
+      },
+      "envira-remove-images": {
+        "name": "Envira Gallery",
+        "several": false
+      },
+      "envira-reorder-images": {
+        "name": "Envira Gallery",
+        "several": false
       },
       "eventsmanager-create-event": {
         "name": "Events Manager",
@@ -6156,6 +6220,22 @@
         "several": false
       },
       "hustle-list-modules": {
+        "name": "Hustle",
+        "several": false
+      },
+      "hustle-set-active": {
+        "name": "Hustle",
+        "several": false
+      },
+      "hustle-set-display-conditions": {
+        "name": "Hustle",
+        "several": false
+      },
+      "hustle-set-schedule": {
+        "name": "Hustle",
+        "several": false
+      },
+      "hustle-update-content": {
         "name": "Hustle",
         "several": false
       },
@@ -6719,6 +6799,54 @@
         "name": "MemberPress",
         "several": false
       },
+      "metaslider-add-slides": {
+        "name": "MetaSlider",
+        "several": false
+      },
+      "metaslider-create-slider": {
+        "name": "MetaSlider",
+        "several": false
+      },
+      "metaslider-get-slider": {
+        "name": "MetaSlider",
+        "several": false
+      },
+      "metaslider-list-sliders": {
+        "name": "MetaSlider",
+        "several": false
+      },
+      "metaslider-reorder-slides": {
+        "name": "MetaSlider",
+        "several": false
+      },
+      "metaslider-update-slide": {
+        "name": "MetaSlider",
+        "several": false
+      },
+      "modula-add-images": {
+        "name": "Modula",
+        "several": false
+      },
+      "modula-create-gallery": {
+        "name": "Modula",
+        "several": false
+      },
+      "modula-get-gallery": {
+        "name": "Modula",
+        "several": false
+      },
+      "modula-list-galleries": {
+        "name": "Modula",
+        "several": false
+      },
+      "modula-remove-images": {
+        "name": "Modula",
+        "several": false
+      },
+      "modula-reorder-images": {
+        "name": "Modula",
+        "several": false
+      },
       "newsletter-create-contact": {
         "name": "Newsletter",
         "several": false
@@ -6749,6 +6877,22 @@
       },
       "newsletter-update-contact-lists": {
         "name": "Newsletter",
+        "several": false
+      },
+      "nextgen-get-gallery": {
+        "name": "NextGEN Gallery",
+        "several": false
+      },
+      "nextgen-list-galleries": {
+        "name": "NextGEN Gallery",
+        "several": false
+      },
+      "nextgen-reorder-images": {
+        "name": "NextGEN Gallery",
+        "several": false
+      },
+      "nextgen-update-image": {
+        "name": "NextGEN Gallery",
         "several": false
       },
       "ninjatables-delete-rows": {
@@ -6899,6 +7043,22 @@
         "name": "Pretty Links",
         "several": false
       },
+      "productfeed-get-feed": {
+        "name": "Product Feed Pro for WooCommerce",
+        "several": false
+      },
+      "productfeed-list-excluded-products": {
+        "name": "Product Feed Pro for WooCommerce",
+        "several": false
+      },
+      "productfeed-list-feeds": {
+        "name": "Product Feed Pro for WooCommerce",
+        "several": false
+      },
+      "productfeed-refresh-feed": {
+        "name": "Product Feed Pro for WooCommerce",
+        "several": false
+      },
       "publishpress-get-editorial-calendar": {
         "name": "PublishPress Planner",
         "several": false
@@ -7001,6 +7161,22 @@
       },
       "sitereviews-unapprove-review": {
         "name": "Site Reviews",
+        "several": false
+      },
+      "smartslider-get-slider": {
+        "name": "Smart Slider 3",
+        "several": false
+      },
+      "smartslider-list-sliders": {
+        "name": "Smart Slider 3",
+        "several": false
+      },
+      "smartslider-reorder-slides": {
+        "name": "Smart Slider 3",
+        "several": false
+      },
+      "smartslider-update-slide": {
+        "name": "Smart Slider 3",
         "several": false
       },
       "ssa-cancel-appointment": {
@@ -7387,6 +7563,18 @@
         "name": "Polylang, WPML",
         "several": true
       },
+      "variationswatches-get-attribute": {
+        "name": "Variation Swatches for WooCommerce",
+        "several": false
+      },
+      "variationswatches-list-attributes": {
+        "name": "Variation Swatches for WooCommerce",
+        "several": false
+      },
+      "variationswatches-set-attribute-type": {
+        "name": "Variation Swatches for WooCommerce",
+        "several": false
+      },
       "weglot-get-settings": {
         "name": "Weglot",
         "several": false
@@ -7685,6 +7873,26 @@
       "jetpackforms-list-forms",
       "jetpackforms-list-entries",
       "jetpackforms-get-entry",
+      "variationswatches-list-attributes",
+      "variationswatches-get-attribute",
+      "productfeed-list-feeds",
+      "productfeed-get-feed",
+      "productfeed-list-excluded-products",
+      "cartabandonment-get-settings",
+      "cartabandonment-get-stats",
+      "cartabandonment-list-carts",
+      "cartabandonment-list-templates",
+      "cartabandonment-get-template",
+      "metaslider-list-sliders",
+      "metaslider-get-slider",
+      "modula-list-galleries",
+      "modula-get-gallery",
+      "envira-list-galleries",
+      "envira-get-gallery",
+      "smartslider-list-sliders",
+      "smartslider-get-slider",
+      "nextgen-list-galleries",
+      "nextgen-get-gallery",
       "wpforo-list-forums",
       "wpforo-list-topics",
       "wpforo-get-topic",
@@ -7939,6 +8147,13 @@
       "popupbuilder-update-popup",
       "popupbuilder-enable-popup",
       "popupbuilder-disable-popup",
+      "hustle-update-content",
+      "hustle-set-schedule",
+      "hustle-set-active",
+      "hustle-set-display-conditions",
+      "depicter-rename-document",
+      "depicter-set-status",
+      "depicter-set-display-rules",
       "popupmaker-create-popup",
       "popupmaker-update-popup",
       "popupmaker-set-popup-triggers",
@@ -7969,6 +8184,26 @@
       "kadenceforms-update-notification",
       "jetpackforms-update-entry-status",
       "jetpackforms-delete-entry",
+      "variationswatches-set-attribute-type",
+      "productfeed-refresh-feed",
+      "cartabandonment-update-template",
+      "cartabandonment-update-timing",
+      "metaslider-create-slider",
+      "metaslider-add-slides",
+      "metaslider-reorder-slides",
+      "metaslider-update-slide",
+      "modula-create-gallery",
+      "modula-add-images",
+      "modula-remove-images",
+      "modula-reorder-images",
+      "envira-create-gallery",
+      "envira-add-images",
+      "envira-remove-images",
+      "envira-reorder-images",
+      "smartslider-reorder-slides",
+      "smartslider-update-slide",
+      "nextgen-reorder-images",
+      "nextgen-update-image",
       "wpforo-moderate-topic",
       "wpforo-move-topic",
       "asgaros-create-topic",
@@ -11504,6 +11739,127 @@
             }
           },
           {
+            "name": "hustle-update-content",
+            "mode": "write",
+            "description": "Change a Hustle module's copy: content {field: value} with fields title, sub_title, main_content (HTML), feature_image, background_image, show_cta, cta_label, cta_url, cta_target, cta_two_label, cta_two_url, cta_two_target, show_never_see_link, never_see_link_text. Other fields stay. Undo: rollback-operation. Disabled by default (wpmcp_enable_hustle_write filter)",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "module_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "content": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "maxProperties": 20
+                }
+              },
+              "required": [
+                "module_id",
+                "content"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "hustle-set-schedule",
+            "mode": "write",
+            "description": "Schedule a Hustle module: enabled (true or false), start and end as site-local \"YYYY-MM-DD HH:MM\" (null for none). Undo: rollback-operation. Disabled by default (wpmcp_enable_hustle_write filter)",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "module_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "start": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}$"
+                },
+                "end": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}$"
+                }
+              },
+              "required": [
+                "module_id",
+                "enabled"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "hustle-set-active",
+            "mode": "write",
+            "description": "Turn a Hustle module on or off (active). Undo: rollback-operation. Disabled by default (wpmcp_enable_hustle_write filter)",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "module_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "active": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "module_id",
+                "active"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "hustle-set-display-conditions",
+            "mode": "write",
+            "description": "Replace a Hustle module's display conditions (visibility, the object hustle-get-module returns). Undo: rollback-operation. Disabled by default (wpmcp_enable_hustle_write filter)",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "module_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "visibility": {
+                  "type": "object",
+                  "maxProperties": 50
+                }
+              },
+              "required": [
+                "module_id",
+                "visibility"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
             "name": "hustle-list-modules",
             "mode": "read",
             "description": "List Hustle popups, slide-ins and embeds: id, name, type, mode, active, title, triggers, schedule dates, views, conversions. Filter by type, active, search. page, per_page (max 100)",
@@ -11561,6 +11917,91 @@
               "required": [
                 "module_id"
               ]
+            }
+          },
+          {
+            "name": "depicter-rename-document",
+            "mode": "write",
+            "description": "Rename a Depicter slider, popup or bar (name). Undo: rollback-operation. Disabled by default (wpmcp_enable_depicter_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "id",
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "depicter-set-status",
+            "mode": "write",
+            "description": "Publish a Depicter document (status publish: it goes live and a published revision is saved, as Depicter's Publish does) or unpublish it (status draft). Undo: rollback-session. Disabled by default (wpmcp_enable_depicter_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "publish",
+                    "draft"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "status"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "depicter-set-display-rules",
+            "mode": "write",
+            "description": "Replace a Depicter document's display rules (rules, the object depicter-get-document returns). Undo: rollback-operation. Disabled by default (wpmcp_enable_depicter_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "rules": {
+                  "type": "object",
+                  "maxProperties": 50
+                }
+              },
+              "required": [
+                "id",
+                "rules"
+              ],
+              "additionalProperties": false
             }
           },
           {
@@ -13976,6 +14417,1142 @@
               "required": [
                 "entry_id"
               ]
+            }
+          },
+          {
+            "name": "variationswatches-list-attributes",
+            "mode": "read",
+            "description": "List WooCommerce global product attributes with their Variation Swatches type (select, color, image, button, radio...), whether it shows as swatches, term count, and the types this site offers",
+            "capability": "manage_product_terms",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object"
+            }
+          },
+          {
+            "name": "variationswatches-get-attribute",
+            "mode": "read",
+            "description": "Read one WooCommerce product attribute with its Variation Swatches type and its terms, each with its swatch colour and image id",
+            "capability": "manage_product_terms",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "attribute_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "attribute_id"
+              ]
+            }
+          },
+          {
+            "name": "variationswatches-set-attribute-type",
+            "mode": "write",
+            "description": "Set the Variation Swatches type of one WooCommerce product attribute (type: one of the types variationswatches-list-attributes reports, such as color, image, button, radio or select). Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_variation_swatches_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "attribute_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "type": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 50
+                }
+              },
+              "required": [
+                "attribute_id",
+                "type"
+              ]
+            }
+          },
+          {
+            "name": "productfeed-list-feeds",
+            "mode": "read",
+            "description": "List Product Feed Pro feeds: active, status (ready, processing, stopped, error), channel, file URL, last run (UTC), products in the catalogue and in the last file, products the last run left out, refresh interval. active filters",
+            "capability": "manage_woocommerce",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "active": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          {
+            "name": "productfeed-get-feed",
+            "mode": "read",
+            "description": "Read one Product Feed Pro feed with the products its last run left out, per reason (filters and rules, manual exclusions, not sold, catalog visibility...)",
+            "capability": "manage_woocommerce",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "feed_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "feed_id"
+              ]
+            }
+          },
+          {
+            "name": "productfeed-list-excluded-products",
+            "mode": "read",
+            "description": "List the products and variations excluded from every Product Feed Pro feed by hand (the product's \"Exclude from feeds\" box). page_size (default 50, max 100) and offset",
+            "capability": "manage_woocommerce",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "page_size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "name": "productfeed-refresh-feed",
+            "mode": "destructive",
+            "description": "Regenerate one active Product Feed Pro feed now, through the plugin's own background generation. Rewrites the feed file; cannot be undone. Needs confirm:true. Disabled by default (wpmcp_enable_product_feed_write filter)",
+            "capability": "manage_woocommerce",
+            "enabled": false,
+            "requires_confirm": true,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "feed_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "feed_id"
+              ]
+            },
+            "confirm_in_arguments": true
+          },
+          {
+            "name": "cartabandonment-get-settings",
+            "mode": "read",
+            "description": "Cart Abandonment Recovery settings: tracking on or off, minutes until a cart counts as abandoned and days until lost, excluded roles and order statuses, sender, coupon, GDPR and webhook switches (the webhook URL is never returned)",
+            "capability": "manage_woocommerce",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object"
+            }
+          },
+          {
+            "name": "cartabandonment-get-stats",
+            "mode": "read",
+            "description": "Cart Abandonment Recovery totals for a date range (start_date, end_date as YYYY-MM-DD, default the last 7 days): recoverable, recovered and lost carts with their revenue, and the recovery rate",
+            "capability": "manage_woocommerce",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "start_date": {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                "end_date": {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                }
+              }
+            }
+          },
+          {
+            "name": "cartabandonment-list-carts",
+            "mode": "read",
+            "description": "List tracked carts newest first: id, status (abandoned, completed = recovered, lost, normal), total, items, date, unsubscribed, emails sent, customer email MASKED. status filters; page_size (default 20, max 100) and offset. Personal data",
+            "capability": "manage_woocommerce",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "normal",
+                    "abandoned",
+                    "completed",
+                    "lost"
+                  ]
+                },
+                "page_size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "name": "cartabandonment-list-templates",
+            "mode": "read",
+            "description": "List Cart Abandonment Recovery follow-up emails: id, name, subject, active, delay after abandonment (delay, delay_unit, delay_minutes), sent and queued counts",
+            "capability": "manage_woocommerce",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object"
+            }
+          },
+          {
+            "name": "cartabandonment-get-template",
+            "mode": "read",
+            "description": "Read one Cart Abandonment Recovery follow-up email in full: subject, HTML body, delay and its coupon settings",
+            "capability": "manage_woocommerce",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "template_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "template_id"
+              ]
+            }
+          },
+          {
+            "name": "cartabandonment-update-template",
+            "mode": "write",
+            "description": "Edit one Cart Abandonment Recovery follow-up email: name, subject, body (HTML), active, delay and delay_unit (MINUTE, HOUR, DAY). Emails already queued keep their send time. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_cart_abandonment_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "template_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "subject": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "body": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200000
+                },
+                "active": {
+                  "type": "boolean"
+                },
+                "delay": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100000
+                },
+                "delay_unit": {
+                  "type": "string",
+                  "enum": [
+                    "MINUTE",
+                    "HOUR",
+                    "DAY"
+                  ]
+                }
+              },
+              "required": [
+                "template_id"
+              ]
+            }
+          },
+          {
+            "name": "cartabandonment-update-timing",
+            "mode": "write",
+            "description": "Set when Cart Abandonment Recovery counts a cart as abandoned (abandoned_after_minutes, 10 at least) and as lost (lost_after_days, 10 at least). Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_cart_abandonment_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "abandoned_after_minutes": {
+                  "type": "integer",
+                  "minimum": 10,
+                  "maximum": 100000
+                },
+                "lost_after_days": {
+                  "type": "integer",
+                  "minimum": 10,
+                  "maximum": 3650
+                }
+              }
+            }
+          },
+          {
+            "name": "metaslider-list-sliders",
+            "mode": "read",
+            "description": "List MetaSlider sliders by title: id, title, status, type, width, height, slide_count, shortcode. search, page and per_page (max 100)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "metaslider-get-slider",
+            "mode": "read",
+            "description": "Read one MetaSlider slider: settings and its slides in display order (id, type, image, title, alt, caption, url, new_window, hidden)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "metaslider-create-slider",
+            "mode": "write",
+            "description": "Create a published MetaSlider slider: title required; image_ids (media library images, one image slide each, in order), type (flex default), width, height. Undo: rollback-session trashes it and its slides",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "image_ids": {
+                  "minItems": 0,
+                  "type": "array",
+                  "maxItems": 200,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "flex",
+                    "coin",
+                    "nivo",
+                    "responsive"
+                  ]
+                },
+                "width": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10000
+                },
+                "height": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10000
+                }
+              },
+              "required": [
+                "title"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "metaslider-add-slides",
+            "mode": "write",
+            "description": "Append an image slide per media library image to a MetaSlider slider, after its last slide. Undo: rollback-session trashes the new slides",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "image_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 200,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "image_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "metaslider-reorder-slides",
+            "mode": "write",
+            "description": "Set the display order of a MetaSlider slider: slide_ids must be exactly its current slides (get-slider lists them). Undo: rollback-session",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "slide_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 200,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "slide_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "metaslider-update-slide",
+            "mode": "write",
+            "description": "Change a MetaSlider image slide: caption, url (empty removes the link), new_window, title and alt (either stops inheriting the image's own). Undo: rollback-operation",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "slide_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "caption": {
+                  "type": "string",
+                  "maxLength": 5000
+                },
+                "url": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "new_window": {
+                  "type": "boolean"
+                },
+                "title": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "alt": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "slide_id"
+              ],
+              "minProperties": 2,
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "modula-list-galleries",
+            "mode": "read",
+            "description": "List Modula galleries by title: id, title, status, type, image_count, shortcode. Filter by status, search. page and per_page (max 100)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "publish",
+                    "draft",
+                    "pending",
+                    "private"
+                  ]
+                },
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "modula-get-gallery",
+            "mode": "read",
+            "description": "Read one Modula gallery: image_ids in display order and each image's title, alt, link and url (first 200), type, shortcode",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "modula-create-gallery",
+            "mode": "write",
+            "description": "Create a Modula gallery: title required; image_ids (media library ids, display order), status draft (default) or publish. Undo: rollback-session trashes it",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "image_ids": {
+                  "minItems": 0,
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "draft",
+                    "publish"
+                  ]
+                }
+              },
+              "required": [
+                "title"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "modula-add-images",
+            "mode": "write",
+            "description": "Append media library images to a Modula gallery (ones already in it are skipped). Undo: rollback-operation",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "image_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 500,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "image_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "modula-remove-images",
+            "mode": "write",
+            "description": "Remove images from a Modula gallery (the media files stay). Undo: rollback-operation",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "image_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 500,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "image_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "modula-reorder-images",
+            "mode": "write",
+            "description": "Set the display order of a Modula gallery: image_ids must be exactly its current images; each image keeps its settings. Undo: rollback-operation",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "image_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 500,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "image_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "envira-list-galleries",
+            "mode": "read",
+            "description": "List Envira galleries by title: id, title, status, slug, image_count, shortcode. Filter by status, search. page and per_page (max 100)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "publish",
+                    "draft",
+                    "pending",
+                    "private"
+                  ]
+                },
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "envira-get-gallery",
+            "mode": "read",
+            "description": "Read one Envira gallery: image_ids in display order and each image's status, title, alt, caption, link and src (first 200), shortcode",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "envira-create-gallery",
+            "mode": "write",
+            "description": "Create an Envira gallery: title required; image_ids (media library ids, display order), status draft (default) or publish. Undo: rollback-session trashes it and clears the images' membership",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "image_ids": {
+                  "minItems": 0,
+                  "type": "array",
+                  "maxItems": 500,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "draft",
+                    "publish"
+                  ]
+                }
+              },
+              "required": [
+                "title"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "envira-add-images",
+            "mode": "write",
+            "description": "Append media library images to an Envira gallery (ones already in it are skipped). Undo: rollback-session",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "image_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 500,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "image_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "envira-remove-images",
+            "mode": "write",
+            "description": "Remove images from an Envira gallery (the media files stay). Undo: rollback-session",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "image_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 500,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "image_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "envira-reorder-images",
+            "mode": "write",
+            "description": "Set the display order of an Envira gallery: image_ids must be exactly its current images; each keeps its settings. Undo: rollback-operation",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "image_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 500,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "image_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "smartslider-list-sliders",
+            "mode": "read",
+            "description": "List Smart Slider 3 sliders (trashed ones left out) by title: id, title, alias, type, status, slide_count, shortcode. search, page and per_page (max 100)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "smartslider-get-slider",
+            "mode": "read",
+            "description": "Read one Smart Slider 3 slider: its slides in display order (id, title, description, published, publish window, image, generator_id)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "smartslider-reorder-slides",
+            "mode": "write",
+            "description": "Set the display order of a Smart Slider 3 slider: slide_ids must be exactly its slides (get-slider lists them). Undo: rollback-session",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "slide_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 200,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "slide_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "smartslider-update-slide",
+            "mode": "write",
+            "description": "Change a Smart Slider 3 slide: title, description, published (false hides it). Undo: rollback-operation",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "slide_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "title": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 5000
+                },
+                "published": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "slide_id"
+              ],
+              "minProperties": 2,
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "nextgen-list-galleries",
+            "mode": "read",
+            "description": "List NextGEN Gallery galleries by title: id, title, slug, path, author, image_count, shortcode. search, page and per_page (max 100)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "nextgen-get-gallery",
+            "mode": "read",
+            "description": "Read one NextGEN Gallery gallery: its images in stored order (id, filename, alttext, description, excluded, sortorder, url)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "nextgen-reorder-images",
+            "mode": "write",
+            "description": "Set the stored order of a NextGEN Gallery gallery (sortorder, shown when the gallery sorts by it, NextGEN's default): image_ids must be exactly its images. Undo: rollback-session",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "image_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 500,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "image_ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "nextgen-update-image",
+            "mode": "write",
+            "description": "Change a NextGEN Gallery image: alttext (its title), description, excluded (true hides it from the gallery). Undo: rollback-operation",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "image_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "alttext": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 5000
+                },
+                "excluded": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "image_id"
+              ],
+              "minProperties": 2,
+              "additionalProperties": false
             }
           },
           {
@@ -30447,6 +32024,54 @@
         "snapshot": "<closure>",
         "handler": "<closure>"
       },
+      "hustle-update-content": {
+        "mode": "write",
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_hustle_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "hustle-set-schedule": {
+        "mode": "write",
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_hustle_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "hustle-set-active": {
+        "mode": "write",
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_hustle_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "hustle-set-display-conditions": {
+        "mode": "write",
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_hustle_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
       "hustle-list-modules": {
         "mode": "read",
         "capability": "edit_posts",
@@ -30463,6 +32088,42 @@
         "description": "<as listed>",
         "input_schema": "<as listed>",
         "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "depicter-rename-document": {
+        "mode": "write",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_depicter_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "depicter-set-status": {
+        "mode": "write",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_depicter_write",
+        "self_snapshotting": true,
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "depicter-set-display-rules": {
+        "mode": "write",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_depicter_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
         "handler": "<closure>"
       },
       "depicter-list-documents": {
@@ -31498,6 +33159,554 @@
         "input_schema": "<as listed>",
         "validate": "<closure>",
         "confirm_preview": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "variationswatches-list-attributes": {
+        "capability": "manage_product_terms",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "variationswatches-get-attribute": {
+        "capability": "manage_product_terms",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "variationswatches-set-attribute-type": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_variation_swatches_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "productfeed-list-feeds": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "productfeed-get-feed": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "productfeed-list-excluded-products": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "productfeed-refresh-feed": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "destructive",
+        "undoable": false,
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_product_feed_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "confirm_preview": "<closure>",
+        "handler": "<closure>"
+      },
+      "cartabandonment-get-settings": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "cartabandonment-get-stats": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "cartabandonment-list-carts": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "cartabandonment-list-templates": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "cartabandonment-get-template": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "cartabandonment-update-template": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_cart_abandonment_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "cartabandonment-update-timing": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_cart_abandonment_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "metaslider-list-sliders": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "metaslider-get-slider": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "metaslider-create-slider": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_metaslider_write",
+        "self_snapshotting": true,
+        "objects": {
+          "image_ids": {
+            "type": "post",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "metaslider-add-slides": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_metaslider_write",
+        "self_snapshotting": true,
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          },
+          "image_ids": {
+            "type": "post",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "metaslider-reorder-slides": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_metaslider_write",
+        "self_snapshotting": true,
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          },
+          "slide_ids": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "metaslider-update-slide": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_metaslider_write",
+        "objects": {
+          "slide_id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "modula-list-galleries": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "modula-get-gallery": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "modula-create-gallery": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_modula_write",
+        "self_snapshotting": true,
+        "objects": {
+          "image_ids": {
+            "type": "post",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "modula-add-images": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_modula_write",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          },
+          "image_ids": {
+            "type": "post",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "snapshot": "<closure>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "modula-remove-images": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_modula_write",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          },
+          "image_ids": {
+            "type": "post",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "snapshot": "<closure>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "modula-reorder-images": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_modula_write",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          },
+          "image_ids": {
+            "type": "post",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "snapshot": "<closure>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "envira-list-galleries": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "envira-get-gallery": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "envira-create-gallery": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_envira_write",
+        "self_snapshotting": true,
+        "objects": {
+          "image_ids": {
+            "type": "post",
+            "access": "write"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "envira-add-images": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_envira_write",
+        "self_snapshotting": true,
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          },
+          "image_ids": {
+            "type": "post",
+            "access": "write"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "envira-remove-images": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_envira_write",
+        "self_snapshotting": true,
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          },
+          "image_ids": {
+            "type": "post",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "envira-reorder-images": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_envira_write",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          },
+          "image_ids": {
+            "type": "post",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "smartslider-list-sliders": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "smartslider-get-slider": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "smartslider-reorder-slides": {
+        "mode": "write",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_smartslider_write",
+        "self_snapshotting": true,
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "smartslider-update-slide": {
+        "mode": "write",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_smartslider_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "nextgen-list-galleries": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "nextgen-get-gallery": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "nextgen-reorder-images": {
+        "mode": "write",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_nextgen_write",
+        "self_snapshotting": true,
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "nextgen-update-image": {
+        "mode": "write",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_nextgen_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
         "snapshot": "<closure>",
         "handler": "<closure>"
       },

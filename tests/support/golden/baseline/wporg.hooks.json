@@ -172,13 +172,18 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
           1
         ],
         [
           20,
-          "closure@src/Plugin.php:788",
+          "closure@src/Plugin.php:799",
           1
         ]
       ],
@@ -1076,6 +1081,16 @@
         [
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
           2
         ]
       ],
@@ -1369,13 +1384,18 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
           1
         ],
         [
           20,
-          "closure@src/Plugin.php:788",
+          "closure@src/Plugin.php:799",
           1
         ]
       ],
@@ -2273,6 +2293,16 @@
         [
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
           2
         ]
       ],
@@ -2566,13 +2596,18 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
           1
         ],
         [
           20,
-          "closure@src/Plugin.php:788",
+          "closure@src/Plugin.php:799",
           1
         ]
       ],
@@ -3470,6 +3505,16 @@
         [
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
           2
         ]
       ],
@@ -3763,13 +3808,18 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
           1
         ],
         [
           20,
-          "closure@src/Plugin.php:788",
+          "closure@src/Plugin.php:799",
           1
         ]
       ],
@@ -4667,6 +4717,16 @@
         [
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
           2
         ]
       ],
@@ -4960,13 +5020,18 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
           1
         ],
         [
           20,
-          "closure@src/Plugin.php:788",
+          "closure@src/Plugin.php:799",
           1
         ]
       ],
@@ -5864,6 +5929,16 @@
         [
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
           2
         ]
       ],
@@ -6157,13 +6232,18 @@
           1
         ],
         [
+          10,
+          "WPMCP\\Integrations\\Gallery_Packs::attach_refreshers",
+          2
+        ],
+        [
           20,
           "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
           1
         ],
         [
           20,
-          "closure@src/Plugin.php:788",
+          "closure@src/Plugin.php:799",
           1
         ]
       ],
@@ -7061,6 +7141,16 @@
         [
           10,
           "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Variation_Swatches_Pack::after_rows_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Hustle_Pack::after_rows_restored",
           2
         ]
       ],
