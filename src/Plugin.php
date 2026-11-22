@@ -9907,4 +9907,12 @@ final class Plugin
             false
         ));
     }
+
+    private ?\WPMCP\Kernel\Kernel_Boot $kernel = null;
+
+    /** The kernel boot (D11): the compiled module registry and what modules contribute. */
+    public function kernel(): \WPMCP\Kernel\Kernel_Boot // central-list-ok: D11 kernel boot, one accessor
+    {
+        return $this->kernel ??= new \WPMCP\Kernel\Kernel_Boot(); // central-list-ok: D11 kernel boot
+    }
 }

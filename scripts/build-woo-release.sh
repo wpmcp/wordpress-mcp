@@ -118,6 +118,12 @@ fi
 # the cloud client's only caller here, so both leave together.
 php "$ROOT/scripts/flavors/wporg/strip.php" "$STAGE" "$ROOT/scripts/flavors/woocommerce/manifest.php"
 
+# The compiled module registry for this flavor, shipped as build/registry
+# (D11); modules the flavor does not ship leave with their own folder.
+# shellcheck source=scripts/lib/stage-registry.sh
+. "$ROOT/scripts/lib/stage-registry.sh"
+stage_registry "$STAGE" woocommerce || { echo "ERROR: the woocommerce module registry did not build" >&2; exit 1; }
+
 # A textual transform that produces an unparsable file must never reach a zip,
 # so the stage is linted after every transform (the strip here, the
 # text-domain rewrite below), the way build-wporg-release.sh does.

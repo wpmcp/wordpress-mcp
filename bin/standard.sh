@@ -101,11 +101,12 @@ else
 	say "${#changed[@]} changed PHP file(s) under src/ and tools/ against $diff_ref ($base)"
 	if [ "${#changed[@]}" -gt 0 ]; then
 		phpstan_diff() {
-			"${PHPSTAN[@]}" analyse -c phpstan.neon.dist -a tools/phpstan/autoload.php --no-progress --memory-limit=1G --error-format=json "${changed[@]}" 2>/dev/null \
+			# The tool exits non-zero on any finding; only the filter's verdict counts.
+			{ "${PHPSTAN[@]}" analyse -c phpstan.neon.dist -a tools/phpstan/autoload.php --no-progress --memory-limit=1G --error-format=json "${changed[@]}" 2>/dev/null || true; } \
 				| php tools/standard/diff-filter.php phpstan "$base"
 		}
 		phpcs_diff() {
-			"${PHPCS[@]}" -q --report=json "${changed[@]}" | php tools/standard/diff-filter.php phpcs "$base"
+			{ "${PHPCS[@]}" -q --report=json "${changed[@]}" || true; } | php tools/standard/diff-filter.php phpcs "$base"
 		}
 		gate "phpstan (level max, changed lines)" phpstan_diff
 		gate "phpcs (changed lines)" phpcs_diff

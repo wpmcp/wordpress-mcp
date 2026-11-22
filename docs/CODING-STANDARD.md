@@ -213,12 +213,12 @@ from `composer make:module`) and declares itself with attributes
 `#[Feature]`). The generated registry picks it up. It never edits a central
 list: the Plugin_Data_Integration lists, Opt_In_Settings, Plugin_Refusal,
 Data_Registry, scripts/flavors/wporg/strip.php and policy.php, Plugin.php, or
-the readme counts. Until a seam exists for a legacy list, keep the
-central-file edit to the one registration line, and put the logic in its own
-class behind an interface. The central-list guard fails a change that grows
-any of those files by more than one line (blank and comment lines aside), or
-that adds a hand-maintained count to readme.txt or README.md. A justified extra
-line carries `// central-list-ok: <reason>`.
+the readme counts. See "How to add an integration" below. The central-list guard fails a
+change that adds a literal entry to a list that reads the registry
+(Opt_In_Settings, Plugin_Refusal, Theme_Integration, Data_Registry) or any
+line to strip.php or policy.php; grows Plugin.php or Plugin_Data_Integration
+by more than one line; or adds a hand-maintained count to readme.txt or
+README.md. A justified line carries `// central-list-ok: <reason>`.
 
 ```php
 // Good: src/Modules/Acme_Forms/Ops/Acme_Forms_Ops.php
@@ -227,3 +227,34 @@ line carries `// central-list-ok: <reason>`.
 final class Acme_Forms_Ops implements Operation_Provider {}
 // Bad: new rows for Acme Forms in Opt_In_Settings, Plugin_Data_Integration and strip.php
 ```
+
+## How to add an integration
+
+An integration is a module: a directory under `src/Modules/<Id>/` with
+attributes, compiled by `bin/build-registry.php` into `build/registry/`. The
+release builds write that registry for each flavor and ship it, and the
+plugin reads it at runtime (`Plugin::instance()->kernel()`, D11). The legacy
+central lists keep their own rows and then take in the registry's, so you
+never edit them. A key that is in both (a filter, a plugin name, a table, an
+operation) throws a `LogicException`: move the row, do not copy it.
+
+1. `composer make:module -- <Id> --plugin=<dir/main.php> --plugin-name="<Name>" --slug=<wporg-slug>`
+   scaffolds the module, its adapter, value, ops and tests.
+2. Declare everything on the module's own classes, using this table:
+
+| What you used to add by hand | Declare instead | Where it lands |
+|---|---|---|
+| Opt_In_Settings `all_groups()` row and `labels()` row | `#[Opt_In_Gate(filter: 'wpmcp_enable_<id>_write', destructive: true, labels: 'opt_in_labels')]` on the Ops class, plus a static `opt_in_labels(): array` returning filter => label | `opt_in_gates` in boot.php; `Opt_In_Settings::all_groups()` and `labels()` |
+| Plugin_Refusal `PLUGINS` and `ALT_FILES` rows | `requires: new Requires(plugin: ['<dir>/<main>.php', '<pro-dir>/<main>.php'], name: '<Name>', slug: '<wporg-slug>')` (or `url:` for a paid plugin) on `#[Module]` or `#[Operations]` | `refusal-plugins.php`; `Plugin_Refusal::make()` and `install_url()` |
+| `Some_Pack::operations(),` in Theme_Integration | `#[Operations(dispatcher: 'theme', host: '<Name>', summary: '...')]` on a class implementing `Operation_Provider` (add `variant: '<framework>'` for a theme framework pack) | `ops/theme.php`; the theme pair's operations |
+| Data_Registry `TABLES` (and options or user meta outside the `wpmcp_` prefixes) | `#[Owns_Data(tables: [...], options: [...], user_meta: [...])]` on the Module class | `data.php`; `Data_Registry::tables()`, `module_options()`, `module_user_meta()`, the uninstaller |
+| A strip.php edit or a policy.php path for the wp.org or WooCommerce build | `#[Module(flavors: [...], exclude_flavors: [...], tier: ...)]` | the release build drops the module folder from flavors that do not ship it (scripts/lib/stage-registry.sh) |
+
+3. Run `composer registry:build` and commit the module's `surface.lock.php`,
+   then `composer standard:diff`, `composer lint`, `composer check:flavors`
+   and the module's tests.
+
+Moving an existing pack follows the same table: add the declaration and
+delete the literal row in the same change (the guard counts only additions).
+The plugin-data pair (Plugin_Data_Integration) does not read the registry
+yet. Until it does, a pack there still adds its one registration line.

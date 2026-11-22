@@ -8,10 +8,14 @@
  *
  *   php bin/build-registry.php [--root=src] [--root=pro/modules] [--flavor=full]
  *       [--out=build/registry] [--artifacts=build/artifacts] [--exclude=path]
- *       [--check] [--all-flavors] [--auto] [--addon] [--quiet]
+ *       [--check] [--all-flavors] [--auto] [--addon] [--quiet] [--no-locks]
  *
  *   composer registry:build   build the full flavor
  *   composer registry:check   validate every flavor and fail on a stale lock; writes nothing
+ *
+ * --artifacts= (empty) writes no artifacts and --no-locks no surface.lock.php,
+ * so a release build can write build/registry into its stage and leave the
+ * checkout untouched (scripts/lib/stage-registry.sh).
  *
  * --auto exits 0 without writing when no module exists yet (the composer
  * post-autoload-dump hook). Exit codes: 0 ok, 1 build failed, 2 bad usage.
@@ -48,7 +52,7 @@ foreach (array_slice($argv, 1) as $arg) {
     }
     $args[ $m[1] ][] = $m[2] ?? true;
 }
-$known = ['root', 'flavor', 'out', 'artifacts', 'exclude', 'check', 'all-flavors', 'auto', 'addon', 'quiet'];
+$known = ['root', 'flavor', 'out', 'artifacts', 'exclude', 'check', 'all-flavors', 'auto', 'addon', 'quiet', 'no-locks'];
 foreach (array_keys($args) as $key) {
     if (! in_array($key, $known, true)) {
         fwrite(STDERR, "Unknown option --{$key}\n");
@@ -71,12 +75,13 @@ foreach ($flavors as $flavor) {
         roots: $roots,
         out: count($flavors) > 1 ? $out . '/' . $flavor : $out,
         flavor: $flavor,
-        artifacts: $abs($one('artifacts', 'build/artifacts')),
+        artifacts: '' === $one('artifacts', 'build/artifacts') ? null : $abs($one('artifacts', 'build/artifacts')),
         repo_root: $root,
         check: $check,
         auto: isset($args['auto']),
         addon: isset($args['addon']),
         exclude: $exclude,
+        locks: ! isset($args['no-locks']),
     );
     $result = (new \WPMCP\Registry\Builder($options))->run();
     if ($result->skipped) {

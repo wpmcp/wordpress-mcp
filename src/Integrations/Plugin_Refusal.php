@@ -2,6 +2,9 @@
 
 namespace WPMCP\Integrations;
 
+use WPMCP\Kernel\Registry_Rows;
+use WPMCP\Plugin;
+
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -131,10 +134,73 @@ final class Plugin_Refusal
         'Max Mega Menu'    => [ 'file' => 'megamenu/megamenu.php', 'slug' => 'megamenu' ],
     ];
 
+    /**
+     * PLUGINS, then the host plugins modules declare (#[Module] or
+     * #[Operations] requires: name, plugin, slug or url), from the compiled
+     * registry.
+     *
+     * @return array<string, array{file: string, slug?: string, url?: string}>
+     */
+    private static function known(): array
+    {
+        /** @var array<string, array{file: string, slug?: string, url?: string}> $declared */
+        $declared = [];
+        foreach (self::module_refusals() as $name => $row) {
+            $entry = [ 'file' => self::plugin_files($row)[0] ?? '' ];
+            if (is_string($row['slug'] ?? null) && '' !== $row['slug']) {
+                $entry['slug'] = $row['slug'];
+            } elseif (is_string($row['url'] ?? null) && '' !== $row['url']) {
+                $entry['url'] = $row['url'];
+            }
+            $declared[ $name ] = $entry;
+        }
+        return Registry_Rows::merge(self::PLUGINS, $declared, 'Refusal plugin');
+    }
+
+    /**
+     * ALT_FILES, then a module's further plugin files (requires: plugin
+     * lists the main file first, then other directories it can live in).
+     *
+     * @return array<string, string[]>
+     */
+    private static function alt_files(): array
+    {
+        /** @var array<string, string[]> $declared */
+        $declared = [];
+        foreach (self::module_refusals() as $name => $row) {
+            $files = self::plugin_files($row);
+            if (count($files) > 1) {
+                $declared[ $name ] = array_slice($files, 1);
+            }
+        }
+        return Registry_Rows::merge(self::ALT_FILES, $declared, 'Refusal plugin directory');
+    }
+
+    /** @return array<string, array<array-key, mixed>> name => plugin, slug, url, several */
+    private static function module_refusals(): array
+    {
+        $rows = [];
+        foreach (Plugin::instance()->kernel()->registry()->data_file('refusal-plugins') as $name => $row) {
+            if (is_string($name) && is_array($row)) {
+                $rows[ $name ] = $row;
+            }
+        }
+        return $rows;
+    }
+
+    /**
+     * @param array<array-key, mixed> $row
+     * @return list<string> the main plugin file first
+     */
+    private static function plugin_files(array $row): array
+    {
+        return array_values(array_filter((array) ($row['plugin'] ?? []), 'is_string'));
+    }
+
     /** Where to get a known plugin: its wordpress.org page or vendor page, else null. */
     public static function install_url(string $plugin): ?string
     {
-        $known = self::PLUGINS[ $plugin ] ?? null;
+        $known = self::known()[ $plugin ] ?? null;
         if (isset($known['slug'])) {
             return 'https://wordpress.org/plugins/' . $known['slug'] . '/';
         }
@@ -189,10 +255,10 @@ final class Plugin_Refusal
      */
     public static function make(string $code, string $plugin, ?string $file = null): array
     {
-        $known     = self::PLUGINS[ $plugin ] ?? null;
+        $known     = self::known()[ $plugin ] ?? null;
         $file      = $file ?? ($known['file'] ?? '');
         $installed = '';
-        foreach (array_merge([ $file ], self::ALT_FILES[ $plugin ] ?? []) as $candidate) {
+        foreach (array_merge([ $file ], self::alt_files()[ $plugin ] ?? []) as $candidate) {
             if ('' === $installed && '' !== $candidate && defined('WP_PLUGIN_DIR') && file_exists(WP_PLUGIN_DIR . '/' . $candidate)) {
                 $installed = $candidate;
             }
