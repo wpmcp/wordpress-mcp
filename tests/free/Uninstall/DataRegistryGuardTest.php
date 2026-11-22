@@ -163,6 +163,9 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             // Checkout Field Editor's checkout sections, whose fields the
             // update-checkout-fields op changes (issue #660).
             'wc_fields_*',
+            // SearchWP's engines config, which the SearchWP ops change
+            // (issue #993).
+            'searchwp_engines',
         ],
         'transient'      => [
             'scrape_key_*',
