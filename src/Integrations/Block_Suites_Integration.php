@@ -12,9 +12,9 @@ if (! defined('ABSPATH')) {
  * Block suite packs (issue #287) as one pro dispatcher pair,
  * wpmcp/block-suites-read and wpmcp/block-suites-write, registered only
  * while at least one supported suite is loaded: Kadence Blocks,
- * GenerateBlocks, Spectra, Otter Blocks and the Blocksy companion blocks
- * (see Block_Suite), plus browsing and importing registered block patterns
- * (see Block_Suite_Patterns).
+ * GenerateBlocks, Spectra, Otter Blocks, the Blocksy companion blocks,
+ * Stackable and Ultimate Blocks (see Block_Suite), plus browsing and importing registered
+ * block patterns (see Block_Suite_Patterns).
  *
  * Every write goes through the surgical block engine (Block_Tree): the
  * expected_hash freshness proof, the round-trip guard, and one post
@@ -36,7 +36,9 @@ if (! defined('ABSPATH')) {
  * Directory (source "directory", names "directory:<id>") and Spectra's
  * remote library (source "spectra", names "spectra:<id>"), through the
  * guarded and cached clients in Block_Suite_Pattern_Directory and
- * Block_Suite_Spectra_Library (issue #364).
+ * Block_Suite_Spectra_Library (issue #364). get-pattern returns one
+ * pattern's markup, and Otter Blocks' own settings and generated page CSS
+ * have their ops in Block_Suite_Otter (issue #647).
  *
  * import-pattern inserts a registered pattern's blocks the same way, in one
  * snapshot, with two differences: attributes are not refused (a suite's own
@@ -126,7 +128,7 @@ final class Block_Suites_Integration extends Integration_Dispatcher
             'get-block-schemas' => [
                 'mode'         => 'read',
                 'tier'         => 'pro',
-                'description'  => 'The active suite\'s blocks (block.json; Spectra: its attribute defaults, typed from the values, unknown attributes allowed). Without name: every block with title, parent/ancestor and attribute names. With name: that block with its full attribute definitions (type, default, enum)',
+                'description'  => 'The active suite\'s blocks (block.json; Spectra: its attribute defaults, typed from the values; Spectra, Stackable, Ultimate Blocks: unknown attributes allowed). Without name: every block with title, parent/ancestor and attribute names. With name: that block with its full attribute definitions (type, default, enum)',
                 'input_schema' => [
                     'type'       => 'object',
                     'properties' => [ 'suite' => $suite_prop, 'name' => [ 'type' => 'string' ] ],
@@ -184,6 +186,17 @@ final class Block_Suites_Integration extends Integration_Dispatcher
                 'validate'     => [ Block_Suite_Patterns::class, 'refuse_remote' ],
                 'handler'      => [ Block_Suite_Patterns::class, 'list_patterns' ],
             ],
+            'get-pattern'       => [
+                'mode'         => 'read',
+                'tier'         => 'pro',
+                'description'  => 'One pattern by a name from list-patterns: title, categories, the suites it uses, its remote images and its block markup',
+                'input_schema' => [
+                    'type'       => 'object',
+                    'properties' => [ 'name' => [ 'type' => 'string', 'minLength' => 1 ] ],
+                    'required'   => [ 'name' ],
+                ],
+                'handler'      => [ Block_Suite_Patterns::class, 'get_pattern' ],
+            ],
             'import-pattern'    => [
                 'mode'              => 'write',
                 'objects'           => [ 'id' => 'post' ],
@@ -200,7 +213,7 @@ final class Block_Suites_Integration extends Integration_Dispatcher
                 ],
                 'handler'           => [ self::class, 'import_pattern' ],
             ],
-        ] + Block_Suite_Settings::operations();
+        ] + Block_Suite_Settings::operations() + Block_Suite_Otter::operations();
     }
 
     /** Refuse, before any handler or snapshot, an op on a suite that is not loaded. */
