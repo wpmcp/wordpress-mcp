@@ -78,6 +78,7 @@ use WPMCP\Admin\Handshake_Settings_Page;
 use WPMCP\Admin\Connection_Page;
 use WPMCP\Admin\Announcements;
 use WPMCP\Admin\Snapshot_Retention_Notice;
+use WPMCP\Admin\Backup_Dir_Notice;
 use WPMCP\Admin\New_Tools_Notice;
 use WPMCP\Admin\Pro_Banner;
 use WPMCP\Admin\Ability_Grid_Page;
@@ -522,6 +523,12 @@ final class Plugin
         // An undo of a cache plugin settings write lets the plugin rebuild
         // what it derives from its settings, as its own save does (#692).
         [\WPMCP\Integrations\Cache_Settings_Pack::class, 'after_options_restored'],
+        // An undo of a WPCode snippet write never leaves the snippet active
+        // and rebuilds WPCode's cache of active snippets; an undo of
+        // set-header-footer clears page caches as WPCode's save does (#697).
+        [\WPMCP\Integrations\WPCode_Pack::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],
+        [\WPMCP\Integrations\WPCode_Pack::class, 'after_trash', 'trashed_post'],
+        [\WPMCP\Integrations\WPCode_Pack::class, 'after_options_restored'],
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'restore_translation_group', 'wpmcp_rollback_translation_group'],
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'hold_sync', 'wpmcp_rollback_hold_translation_sync'],
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'release_sync', 'wpmcp_rollback_release_translation_sync'],
@@ -901,6 +908,10 @@ final class Plugin
             // `wp wpmcp gateway-revoke` kill switch. src/Gateway ships on every
             // flavor, so this is unconditional.
             \WPMCP\Gateway\Gateway_Guard::register();
+            // The hardening settings set-hardening switches on (issue #847):
+            // WP MCP's own hooks, each a no-op until its setting is on.
+            // src/Tools/Security ships on every flavor.
+            \WPMCP\Tools\Security\Hardening_Settings::register();
             // OAuth access levels (issue #454): a connection approved as
             // read-only runs read abilities only, and one bound to a scoped
             // identity acts as it. The consent screen is where the approving
@@ -961,6 +972,9 @@ final class Plugin
             // a deeper history than the flat cap keeps it until the owner
             // decides, and this is the notice that asks.
             Snapshot_Retention_Notice::register();
+            // Backup folder served over the web (issue #846): a Dashboard
+            // warning from the stored self-check, no request on page load.
+            Backup_Dir_Notice::register();
             // Tools an update added and the state they arrived in (issue
             // #853), on the Dashboard until an administrator dismisses it.
             New_Tools_Notice::register();
@@ -985,6 +999,14 @@ final class Plugin
             // A direct call to a plugin-data tool held back for want of an
             // active plugin names the plugin to activate (issue #876).
             (new \WPMCP\MCP\Hidden_Tool_Refusal())->register();
+            // The page request get-query-monitor-page-profile loads with a
+            // one-time token (issue #703); a no-op on every other request.
+            // src/Integrations is not in the WooCommerce build, so the call
+            // is guarded: an unguarded reference fataled every request on
+            // that build (issue #1142).
+            if (class_exists(\WPMCP\Integrations\Query_Monitor_Status::class)) {
+                \WPMCP\Integrations\Query_Monitor_Status::register();
+            }
             // Mounts /wp-json/mcp/wpmcp-server, the JSON-RPC endpoint the
             // README and get-connection-info have always advertised. Without
             // it wp_register_ability() gives us abilities but no MCP
@@ -1090,13 +1112,17 @@ final class Plugin
         // pending-proposal bubble, and the bubble must appear once. Passing
         // the parent's own slug suppresses the auto-copy (see add_submenu_page)
         // and keeps this entry's label exactly what it has always rendered as.
+        // No callback here: this entry shares the parent's slug, so both
+        // resolve to the toplevel_page_wpmcp hook, and add_menu_page above
+        // already attached History_Page::render to it. A second callback
+        // printed the screen twice, and with it the Restore script, so one
+        // click sent two restore requests.
         add_submenu_page(
             'wpmcp',
             self::BRAND,
             self::BRAND,
             Management_Access::CAPABILITY,
-            'wpmcp',
-            [new History_Page(), 'render']
+            'wpmcp'
         );
 
         // Same management gate as the top-level page and Restore_Controller's
@@ -2795,7 +2821,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/scan-security',
             'free',
-            'Scan this site for malware (deep=true: whole tree), core file integrity, hardening gaps, outdated software and known vulnerabilities (vulnerabilities=true; sends slugs and versions to wpvulnerability.net). Returns a 0-100 score, A-F grade and ranked fixes',
+            'Scan this site for malware (deep=true: whole tree), core file integrity, hardening gaps, outdated software and known vulnerabilities (vulnerabilities=true; sends slugs and versions to wpvulnerability.net); checks:[compromise] looks for hack traces. Returns a 0-100 score, A-F grade and ranked fixes',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -2803,7 +2829,7 @@ final class Plugin
                         'type'  => 'array',
                         'items' => [
                             'type' => 'string',
-                            'enum' => ['malware', 'integrity', 'hardening', 'software'],
+                            'enum' => ['malware', 'integrity', 'hardening', 'software', 'compromise'],
                         ],
                     ],
                     'deep'            => [ 'type' => 'boolean' ],
@@ -2826,7 +2852,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/incident-response',
             'free',
-            'list-app-passwords (no secrets); revoke-app-password (uuid or all); list-sessions (one user, masked, no tokens); end-sessions (user_id or all); rotate-salts (wp-config.php, backup kept; refused if unwritable or defined elsewhere); reinstall-core-files (files scan-security flags, from the checksum-verified official package, never wp-content; undo: rollback-operation). Writes need confirm:true. Cannot be undone: revoke, end-sessions, rotate-salts (logs out everyone, your cookie session too, not app passwords). Your session and app password stay unless include_current. Other users take edit_users',
+            'list-app-passwords (no secrets); revoke-app-password (uuid or all); list-sessions (one user, masked, no tokens); end-sessions (user_id or all); rotate-salts (wp-config.php, backup kept; refused if unwritable or defined elsewhere); reinstall-core-files (files scan-security flags, from the checksum-verified official package, never wp-content; undo: rollback-operation); quarantine-file (path, reason: moves it to a private folder; not core, wp-config or WP MCP files; undo: rollback-operation); list-quarantine; restore-quarantined-file (id, overwrite); purge-quarantined-file (id). Quarantine needs the wpmcp_enable_fs_writes opt-in. Writes need confirm:true. Cannot be undone: revoke, end-sessions, rotate-salts (logs out everyone, your cookie session too, not app passwords). Your session and app password stay unless include_current. Other users take edit_users',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -2839,6 +2865,11 @@ final class Plugin
                     'all'             => [ 'type' => 'boolean' ],
                     'include_current' => [ 'type' => 'boolean' ],
                     'paths'           => [ 'type' => 'array', 'items' => [ 'type' => 'string' ] ],
+                    'path'            => [ 'type' => 'string' ],
+                    'reason'          => [ 'type' => 'string' ],
+                    'id'              => [ 'type' => 'string' ],
+                    'overwrite'       => [ 'type' => 'boolean' ],
+                    'unchecked'       => [ 'type' => 'boolean' ],
                     'confirm'         => [ 'type' => 'boolean' ],
                 ],
                 'required'   => [ 'action' ],
@@ -3706,8 +3737,9 @@ final class Plugin
     }
 
     /**
-     * Block suite packs (issue #287): Kadence Blocks, GenerateBlocks,
-     * Spectra, Otter Blocks and the Blocksy companion blocks, plus pattern
+     * Block suite packs (issues #287, #649): Kadence Blocks, GenerateBlocks,
+     * Spectra, Otter Blocks, the Blocksy companion blocks, Stackable and
+     * Ultimate Blocks, plus pattern
      * import, behind one pro dispatcher pair that registers only while a supported
      * suite is loaded. Its own method so the WordPress.org directory build
      * drops it by name, with the pack's files.
@@ -5989,6 +6021,20 @@ final class Plugin
     }
 
     /**
+     * The `source` argument of get-analytics-summary and get-top-pages
+     * (issue #699): Site Kit or one of the stats plugins.
+     *
+     * @return array<string,mixed>
+     */
+    private static function analytics_source_schema(): array
+    {
+        return [
+            'type' => 'string',
+            'enum' => [ 'site-kit', 'independent-analytics', 'burst', 'wp-statistics', 'monsterinsights', 'jetpack' ],
+        ];
+    }
+
+    /**
      * Register the analytics/Search Console reporting tools as free-tier
      * abilities (issue #49).
      *
@@ -6056,12 +6102,13 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/get-analytics-summary',
             'free',
-            'Read-only sessions/users/pageviews summary over a date range (Y-m-d; default the 28 days ending yesterday) from the connected analytics provider. Errors when no provider is connected',
+            'Read-only sessions/users/pageviews summary over a date range (Y-m-d; default the 28 days ending yesterday) from the connected analytics provider, or the stats plugin named in source (default: first active). Errors when no provider is connected',
             [
                 'type'       => 'object',
                 'properties' => [
                     'start_date' => [ 'type' => 'string' ],
                     'end_date'   => [ 'type' => 'string' ],
+                    'source'     => self::analytics_source_schema(),
                 ],
             ],
             [$get_analytics_summary, 'handle'],
@@ -6073,13 +6120,14 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/get-top-pages',
             'free',
-            'Read-only list of top pages by pageviews over a date range (Y-m-d; default the 28 days ending yesterday) from the connected analytics provider; limit default 10, max 100. Errors when no provider is connected',
+            'Read-only list of top pages by pageviews over a date range (Y-m-d; default the 28 days ending yesterday) from the connected analytics provider or the stats plugin named in source; limit default 10, max 100. Errors when no provider is connected',
             [
                 'type'       => 'object',
                 'properties' => [
                     'start_date' => [ 'type' => 'string' ],
                     'end_date'   => [ 'type' => 'string' ],
                     'limit'      => [ 'type' => 'integer' ],
+                    'source'     => self::analytics_source_schema(),
                 ],
             ],
             [$get_top_pages, 'handle'],
