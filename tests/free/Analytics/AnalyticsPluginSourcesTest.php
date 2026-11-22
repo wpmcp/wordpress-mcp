@@ -51,6 +51,7 @@ class AnalyticsPluginSourcesTest extends \WP_UnitTestCase
             $wpdb->query("DROP TABLE IF EXISTS `{$wpdb->prefix}{$table}`"); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery -- test fixture DDL.
         }
         delete_option('wpmcp_analytics_config');
+        remove_all_filters('wpmcp_jetpack_stats_state');
         parent::tearDown();
     }
 
@@ -348,6 +349,47 @@ class AnalyticsPluginSourcesTest extends \WP_UnitTestCase
         $data = $out->get_error_data();
         $this->assertSame('Burst Statistics', $data['plugin_name']);
         $this->assertSame(admin_url('plugins.php'), $data['plugins_url']);
+    }
+
+    /**
+     * Issue #1158: Jetpack active but not connected, or connected with Stats
+     * off, is not told to install Jetpack.
+     */
+    public function test_jetpack_active_but_not_connected_names_the_connection_and_stats(): void
+    {
+        add_filter('wpmcp_jetpack_stats_state', static fn () => 'not_connected');
+
+        $out = Analytics_Adapter::top_pages('2026-03-01', '2026-03-31', 10, 'jetpack');
+
+        $this->assertWPError($out);
+        $this->assertSame('jetpack_not_connected', $out->get_error_code());
+        $this->assertStringContainsString('Jetpack is active but not connected to WordPress.com', $out->get_error_message());
+        $this->assertStringContainsString('Stats', $out->get_error_message());
+        $this->assertStringNotContainsString('Install and activate', $out->get_error_message());
+        $this->assertSame(admin_url('admin.php?page=jetpack'), $out->get_error_data()['settings_url']);
+    }
+
+    public function test_jetpack_connected_with_stats_off_says_to_switch_on_stats(): void
+    {
+        add_filter('wpmcp_jetpack_stats_state', static fn () => 'stats_off');
+
+        $out = Analytics_Adapter::analytics_summary('2026-03-01', '2026-03-31', 'jetpack');
+
+        $this->assertWPError($out);
+        $this->assertSame('jetpack_stats_off', $out->get_error_code());
+        $this->assertStringContainsString('switch on the Stats module', $out->get_error_message());
+        $this->assertStringNotContainsString('Install and activate', $out->get_error_message());
+    }
+
+    public function test_jetpack_inactive_keeps_the_plugin_refusal(): void
+    {
+        add_filter('wpmcp_jetpack_stats_state', static fn () => 'inactive');
+
+        $out = Analytics_Adapter::analytics_summary('2026-03-01', '2026-03-31', 'jetpack');
+
+        $this->assertWPError($out);
+        $this->assertContains($out->get_error_code(), [ 'plugin_missing', 'plugin_inactive' ]);
+        $this->assertStringContainsString('Install and activate Jetpack', $out->get_error_message());
     }
 
     public function test_an_unknown_source_is_refused(): void

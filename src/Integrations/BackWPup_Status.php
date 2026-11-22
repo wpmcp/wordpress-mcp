@@ -132,6 +132,21 @@ final class BackWPup_Status
     }
 
     /**
+     * BackWPup stores a job's lastrun as current_time('timestamp'), the
+     * site's local time counted as if it were UTC, so the site's offset comes
+     * off to give the real Unix time (issue #1161).
+     *
+     * @param mixed $local
+     */
+    private static function local_to_utc($local): ?int
+    {
+        if (! is_numeric($local) || (int) $local <= 0) {
+            return null;
+        }
+        return (int) $local - (int) round((float) get_option('gmt_offset') * HOUR_IN_SECONDS);
+    }
+
+    /**
      * @return array{jobs:array<int,array<string,mixed>>,backups:array<int,array<string,mixed>>,total:int,running:bool}
      */
     private static function list_backups(int $limit, int $job_id): array
@@ -148,7 +163,7 @@ final class BackWPup_Status
                 'destinations' => self::destinations($job),
                 'cron'         => is_string($job['cron'] ?? null) ? sanitize_text_field($job['cron']) : null,
                 'next_run'     => Ops_Status_Packs::iso_time(wp_next_scheduled('backwpup_cron', [ 'arg' => $id ])),
-                'last_run'     => Ops_Status_Packs::iso_time($job['lastrun'] ?? null),
+                'last_run'     => Ops_Status_Packs::iso_time(self::local_to_utc($job['lastrun'] ?? null)),
             ];
             if ($job_id > 0 && $job_id !== $id) {
                 continue;
