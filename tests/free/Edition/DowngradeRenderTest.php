@@ -48,13 +48,20 @@ final class DowngradeRenderTest extends \WP_UnitTestCase
 
     public function test_the_runtime_hooks_are_wired_without_pro(): void
     {
-        $this->assertNotFalse(has_action('elementor/widgets/register', [Widget_Registry::class, 'register']), 'custom widgets are not registered with Elementor');
-        $this->assertNotFalse(has_action('init', [Block_Registry::class, 'register']), 'custom blocks are not registered');
-        $this->assertNotFalse(has_action('wp', [Dynamic_Templates::class, 'boot']), 'dynamic templates do not boot');
-        $this->assertNotFalse(has_filter('wpmcp_site_part_rendered', [Binding_Resolver::class, 'filter_rendered']), 'dynamic bindings are not resolved');
+        // Plugin.php wires these as string callables ('\\WPMCP\\...'), so both
+        // spellings of the class name are checked.
+        $this->assertTrue(self::hooked('elementor/widgets/register', Widget_Registry::class, 'register'), 'custom widgets are not registered with Elementor');
+        $this->assertTrue(self::hooked('init', Block_Registry::class, 'register'), 'custom blocks are not registered');
+        $this->assertTrue(self::hooked('wp', Dynamic_Templates::class, 'boot'), 'dynamic templates do not boot');
+        $this->assertTrue(self::hooked('wpmcp_site_part_rendered', Binding_Resolver::class, 'filter_rendered'), 'dynamic bindings are not resolved');
         $this->assertTrue(post_type_exists(Widget_Spec_Store::POST_TYPE));
         $this->assertTrue(post_type_exists(Block_Spec_Store::POST_TYPE));
         $this->assertTrue(post_type_exists(Conversation_Store::POST_TYPE));
+    }
+
+    private static function hooked(string $hook, string $class, string $method): bool
+    {
+        return false !== has_filter($hook, [$class, $method]) || false !== has_filter($hook, ['\\' . $class, $method]);
     }
 
     public function test_a_custom_block_made_with_pro_still_renders(): void

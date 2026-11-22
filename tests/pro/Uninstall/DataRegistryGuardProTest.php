@@ -53,7 +53,6 @@ class DataRegistryGuardProTest extends \WP_UnitTestCase
      */
     private const DYNAMIC_KEY_FILES = [
         'src/Cloud/Settings_Sync.php'                        => 'applies synced site settings the owner chose',
-        'src/Tools/CustomCode/Custom_Code_Store.php'         => 'per-post option built from POST_OPTION_PREFIX (wpmcp_custom_code_post_)',
         'src/Tools/Builders/Builder_Design_Write.php'        => 'page builder design options',
         'src/Tools/WooCommerce/Catalog/Shipping_Ops.php'     => 'WooCommerce shipping method settings',
         'src/Tools/Analysis/SeoData/Seo_Data_Lookup.php'     => 'cache key built by cache_name() from CACHE_PREFIX (wpmcp_seod_)',
@@ -124,6 +123,6 @@ class DataRegistryGuardProTest extends \WP_UnitTestCase
     public function test_registry_entries_match_their_owners(): void
     {
         $this->assertContains(Compiled_Widget_Manifest::DIR_NAME, Data_Registry::CONTENT_DIRS);
-        $this->assertContains(Compiled_Widget_Manifest::DIR_NAME, DataRegistryGuardTest::PRO_OWNED_DIRS);
+        $this->assertNotContains(Compiled_Widget_Manifest::DIR_NAME, DataRegistryGuardTest::PRO_OWNED_DIRS);
     }
 }

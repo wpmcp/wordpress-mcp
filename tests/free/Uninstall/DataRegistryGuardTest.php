@@ -212,6 +212,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         'src/Integrations/PixelYourSite_Store.php'           => 'writes the legacy option of one network (pys_facebook, pys_ga or pys_gtm), named by PixelYourSite_Network::row(); PixelYourSite\'s own data, never WP MCP\'s',
         'src/Integrations/Site_Gate_Pack.php'                => 'puts back the one gate option (seedprod_settings or ucp_options) it just wrote, named by WRITABLE; both are FOREIGN',
         'src/Tools/Meta/Update_Option.php'                   => 'edits a named option on request',
+        'src/Tools/CustomCode/Custom_Code_Store.php'         => 'per-post option built from POST_OPTION_PREFIX (wpmcp_custom_code_post_)',
         'src/Tools/Packages/Manage_Updates.php'              => 'core auto-update lists',
         'src/Tools/Packages/Safe_Package_Update.php'         => 'puts back the options a rolled-back package update changed (issue #843)',
         'src/Tools/Sync/Change_Set_Applier.php'              => 'applies a change set to named options',
@@ -301,13 +302,12 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
     }
 
     /**
-     * Data_Registry directories only a Pro constant names: the compiled
-     * widget store (Compiled_Widget_Manifest::DIR_NAME). The Pro half finds
-     * the constant.
+     * Data_Registry directories only a Pro constant names; the Pro half finds
+     * the constant. Empty: the compiled widget store
+     * (Compiled_Widget_Manifest::DIR_NAME) is display code and stays public,
+     * so a site keeps its compiled widgets after a downgrade.
      */
-    public const PRO_OWNED_DIRS = [
-        'wpmcp-widgets',
-    ];
+    public const PRO_OWNED_DIRS = [];
 
     public function test_every_written_key_is_registered_or_declared_foreign(): void
     {
