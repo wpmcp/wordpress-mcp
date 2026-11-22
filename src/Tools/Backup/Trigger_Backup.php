@@ -29,6 +29,17 @@ class Trigger_Backup
         $type  = isset($args['type']) ? (string) $args['type'] : 'full';
         $scope = isset($args['scope']) ? (string) $args['scope'] : 'all';
 
+        // A job kind a module adds on top of the backups (issue #854: the
+        // static HTML export, type=static) answers here, through a filter so
+        // this shared tool never names the module. Null means unhandled.
+        $kind = apply_filters('wpmcp_trigger_backup_kind', null, $type, $args);
+        if (null !== $kind) {
+            return $kind;
+        }
+        if ('static' === $type) {
+            return new \WP_Error('wpmcp_backup_type_unavailable', 'Static HTML export is not available on this install.');
+        }
+
         if (isset($args['every'])) {
             $keep = isset($args['keep']) ? (int) $args['keep'] : null;
             return Backup_Schedule::set($type, $scope, (string) $args['every'], $keep);
@@ -43,15 +54,26 @@ class Trigger_Backup
             return new \WP_Error('wpmcp_backup_network_only', 'A backup on a multisite network holds every site\'s tables and the network users, so it needs a network administrator (manage_network_options).');
         }
 
+        // Move archives left in uploads once WPMCP_BACKUP_DIR is set, and
+        // check, at most daily, that the folder is not downloadable
+        // (issue #846). Never throws.
+        Backup_Dir_Health::maintain();
+
         // Who queued it: Run_Backup_Job re-checks this user's capability
         // when the job runs under WP-Cron (issue #563).
         $job = Backup_Job_Store::create($type, $scope, ['user_id' => get_current_user_id()]);
 
         wp_schedule_single_event(time(), Run_Backup_Job::HOOK, [$job['id']]);
 
-        return [
+        $out = [
             'job_id' => $job['id'],
             'status' => $job['status'],
         ];
+        $warning = Backup_Dir_Health::warning();
+        if (null !== $warning) {
+            $out['warning'] = $warning;
+        }
+
+        return $out;
     }
 }
