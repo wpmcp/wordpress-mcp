@@ -154,8 +154,12 @@ if (! defined('ABSPATH')) {
  */
 class Update_Builder_Content
 {
+    /** @param array<string,mixed> $args */
     public function handle(array $args)
     {
+        if (Oxygen6_Operations::handles($args)) {
+            return Oxygen6_Operations::standard()->run($args); // Issue #805, see Oxygen6_Operations.
+        }
         $scope = (string) ($args['scope'] ?? '');
         if ('' !== $scope) {
             if ('templates' === $scope && 'wpbakery' === ($args['builder'] ?? '')) {
