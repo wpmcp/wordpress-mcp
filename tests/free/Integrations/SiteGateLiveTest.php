@@ -169,7 +169,6 @@ class SiteGateLiveTest extends \WP_UnitTestCase
         $out = $this->toggle('enable-site-gate', [ 'plugin' => 'maintenance' ], true);
         $this->assertArrayNotHasKey('error', $out, (string) wp_json_encode($out));
         $load = new \ReflectionMethod(\MTNC::class, 'load_options');
-        $load->setAccessible(true);
         $this->assertSame('1', (string) $load->invoke(\MTNC::getInstance())['options']['status'], 'the plugin loads the status the toggle wrote');
 
         $this->assertArrayNotHasKey('error', $this->toggle('disable-site-gate', [ 'plugin' => 'maintenance' ]));
