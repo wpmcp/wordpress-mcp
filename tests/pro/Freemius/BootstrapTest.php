@@ -20,6 +20,7 @@ class BootstrapTest extends \WP_UnitTestCase
         $this->assertIsArray($config);
         $this->assertSame('wpmcp', $config['slug']);
         $this->assertSame('plugin', $config['type']);
+        // A checkout carries no .wpmcp-pro marker, so it runs as the free build.
         $this->assertFalse($config['is_premium']);
         $this->assertTrue($config['has_premium_version']);
         $this->assertSame('wpmcp-pro', $config['premium_slug']);
@@ -28,6 +29,33 @@ class BootstrapTest extends \WP_UnitTestCase
         // Guideline 7: the stock default-off opt-in screen must show (#164).
         $this->assertFalse($config['anonymous_mode']);
         $this->assertSame('wpmcp', $config['menu']['slug']);
+    }
+
+    /**
+     * The free and premium zips run the same code. Only the premium zip
+     * carries the .wpmcp-pro marker, which wpmcp.php turns into
+     * WPMCP_PREMIUM_BUILD, so is_premium follows that flag and the rest of
+     * the premium settings are the same in both.
+     */
+    public function test_config_reads_is_premium_from_the_premium_build_flag(): void
+    {
+        $config = Bootstrap::config();
+
+        $this->assertSame(Bootstrap::is_premium_build(), $config['is_premium']);
+        $this->assertSame(defined('WPMCP_PREMIUM_BUILD') && true === constant('WPMCP_PREMIUM_BUILD'), $config['is_premium']);
+        $this->assertTrue($config['has_premium_version']);
+        $this->assertSame('wpmcp-pro', $config['premium_slug']);
+        $this->assertSame('Pro', $config['premium_suffix']);
+    }
+
+    public function test_the_premium_flag_is_true_only_for_a_defined_true_constant(): void
+    {
+        $this->assertFalse(Bootstrap::premium_flag(false, null));
+        $this->assertFalse(Bootstrap::premium_flag(false, true));
+        $this->assertFalse(Bootstrap::premium_flag(true, false));
+        $this->assertFalse(Bootstrap::premium_flag(true, 1));
+        $this->assertFalse(Bootstrap::premium_flag(true, '1'));
+        $this->assertTrue(Bootstrap::premium_flag(true, true));
     }
 
     public function test_config_pins_enable_anonymous_so_the_skip_path_exists(): void

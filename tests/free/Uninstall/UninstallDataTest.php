@@ -168,6 +168,103 @@ class UninstallDataTest extends \WP_UnitTestCase
         }
     }
 
+    /**
+     * Write a plugin main file in a fresh directory under WP_PLUGIN_DIR and
+     * return that directory. With a flavor it is another WP MCP build.
+     */
+    private function install_plugin(string $main, ?string $flavor): string
+    {
+        $dir = WP_PLUGIN_DIR . '/wpmcp-fixture-' . wp_generate_password(6, false, false);
+        wp_mkdir_p($dir);
+        $header = "<?php\n/**\n * Plugin Name: uninstall fixture\n";
+        if (null !== $flavor) {
+            $header .= " * WPMCP Flavor: {$flavor}\n";
+        }
+        file_put_contents($dir . '/' . $main, $header . " */\n");
+        wp_clean_plugins_cache(false);
+
+        return $dir;
+    }
+
+    private function remove_plugin(string $dir): void
+    {
+        $this->remove_tree($dir);
+        wp_clean_plugins_cache(false);
+    }
+
+    /**
+     * Deleting one WP MCP build while another is installed (the free copy
+     * next to the premium one, say) must leave the stores and the cron
+     * events the build that stays depends on, even with the delete-all-data
+     * setting on: they share every one of them.
+     */
+    public function test_with_another_build_installed_uninstall_is_a_no_op(): void
+    {
+        $dir = $this->install_plugin('wpmcp.php', 'full');
+
+        try {
+            $this->seed();
+            Data_Registry::set_delete_on_uninstall(true);
+            wp_schedule_event(time() + 600, 'daily', 'wpmcp_run_backup_schedule', [ 'database' ]);
+            $queries = $this->capture_queries();
+
+            Uninstaller::uninstall();
+
+            $this->assertSame('kept', get_option('wpmcp_test_store'), 'Another build lost its data.');
+            $this->assertSame('kept', get_user_meta($this->user_id, '_wpmcp_test_meta', true));
+            $this->assertTrue((bool) get_site_option(Data_Registry::SETTING, false));
+            $this->assertIsInt(wp_next_scheduled('wpmcp_run_backup_schedule', [ 'database' ]), 'Another build lost its cron event.');
+            $this->assertFileExists($this->site_uploads() . '/wpmcp-site-backups/archive.zip');
+            $this->assertFileExists($this->content . '/wpmcp-restore/staged.txt');
+            $this->assertSame([], preg_grep('/DROP/i', $queries->list));
+        } finally {
+            wp_clear_scheduled_hook('wpmcp_run_backup_schedule', [ 'database' ]);
+            $this->remove_plugin($dir);
+        }
+    }
+
+    /** A plugin that only shares part of the name is not another build. */
+    public function test_an_unrelated_plugin_does_not_stop_the_uninstall(): void
+    {
+        $dir = $this->install_plugin('wpmcp-companion.php', null);
+
+        try {
+            $this->seed();
+            Data_Registry::set_delete_on_uninstall(true);
+            wp_schedule_event(time() + 600, 'daily', 'wpmcp_run_backup_schedule', [ 'database' ]);
+
+            Uninstaller::uninstall();
+
+            $this->assertFalse(get_option('wpmcp_test_store', false));
+            $this->assertFalse(wp_next_scheduled('wpmcp_run_backup_schedule', [ 'database' ]));
+        } finally {
+            wp_clear_scheduled_hook('wpmcp_run_backup_schedule', [ 'database' ]);
+            $this->remove_plugin($dir);
+        }
+    }
+
+    /**
+     * Both entry points reach the guard: it is the first thing
+     * Uninstaller::uninstall() does, ahead of the Data_Registry read, and
+     * uninstall.php loads the guard file before the Uninstaller.
+     */
+    public function test_the_other_build_check_runs_first_on_both_entry_points(): void
+    {
+        $root   = dirname(__DIR__, 3);
+        $source = (string) file_get_contents($root . '/src/Uninstaller.php');
+        $body   = substr($source, (int) strpos($source, 'public static function uninstall(): void'));
+
+        $guard = strpos($body, 'wpmcp_other_build_installed(dirname(__DIR__))');
+        $this->assertNotFalse($guard, 'Uninstaller::uninstall() does not check for another build');
+        $this->assertLessThan((int) strpos($body, 'Data_Registry::delete_on_uninstall()'), $guard);
+        $this->assertLessThan((int) strpos($body, 'Cron_Registry::'), $guard);
+
+        $file   = (string) file_get_contents($root . '/uninstall.php');
+        $flavor = strpos($file, "require_once __DIR__ . '/src/flavor-guard.php';");
+        $this->assertNotFalse($flavor, 'uninstall.php does not load the guard');
+        $this->assertLessThan((int) strpos($file, "\n\\WPMCP\\Uninstaller::uninstall();"), $flavor);
+    }
+
     public function test_uninstall_leaves_everything_else_alone(): void
     {
         $this->seed();

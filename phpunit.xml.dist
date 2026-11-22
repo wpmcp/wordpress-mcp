@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <phpunit bootstrap="tests/bootstrap.php" colors="true">
+  <!-- pro/tests/* is the private Pro suite (the pro/ submodule); tests/pro empties when the split runs. A trailing * makes
+       PHPUnit skip its missing-directory check, so either tree still runs. -->
   <testsuites>
-    <testsuite name="free"><directory>tests/free</directory></testsuite>
-    <testsuite name="pro"><directory>tests/pro</directory></testsuite>
+    <testsuite name="free"><directory>tests/free</directory><directory>pro/tests/free*</directory></testsuite>
+    <testsuite name="pro"><directory>tests/pro*</directory><directory>pro/tests/pro*</directory></testsuite>
   </testsuites>
   <listeners>
     <!-- Fails any test that makes an unmocked HTTP request (issue #323). -->

@@ -16,12 +16,20 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once __DIR__ . '/src/flavor-guard.php';
+// The premium zip (a .wpmcp-pro file beside this one) replaces the free
+// zip: it deactivates any free copy on its own activation and on admin_init.
+// Wired before the guard, because a copy that stands down returns below.
+if ( wpmcp_is_pro_build( __FILE__ ) ) {
+	register_activation_hook( __FILE__, static function () { wpmcp_pro_deactivate_free_copies( __FILE__ ); } );
+	add_action( 'admin_init', static function () { wpmcp_pro_deactivate_free_copies( __FILE__ ); } );
+}
 // Only one WP MCP build may boot per request: they share the WPMCP_* constants,
 // the \WPMCP\ namespace and all persisted state. The guard ranks builds by the
 // WPMCP Flavor header above, and 'full' ranks highest, so this file only
 // stands down for a copy that already booted this request (a second install
 // of the full plugin in another directory, or a vertical booted in the same
-// request that activates this file). That return also skips Plugin::boot(),
+// request that activates this file) or, as the free zip, for an active
+// premium copy. That return also skips Plugin::boot(),
 // so register_activation_hook() is not reached and Activator::activate does
 // not run for this activation. Acceptable: every table it would create is
 // shared with the copy that booted, which created them on its own activation.
@@ -37,6 +45,10 @@ if ( wpmcp_flavor_should_defer( __FILE__, 'full', defined( 'WPMCP_VERSION' ) ) )
 		echo '</p></div>';
 	} );
 	return;
+}
+// After the guard, so only the copy that boots defines it.
+if ( ! defined( 'WPMCP_PREMIUM_BUILD' ) ) {
+	define( 'WPMCP_PREMIUM_BUILD', is_readable( __DIR__ . '/.wpmcp-pro' ) );
 }
 define( 'WPMCP_VERSION', '1.2.1' );
 // Must match the Text Domain header above: Plugin::load_textdomain() loads
@@ -56,5 +68,11 @@ wpmcp_prefer_shared_mcp_adapter( __DIR__ . '/vendor' );
 // Free installs of this build hear about new versions from GitHub releases;
 // a licensed site is updated by the licensing SDK instead. The wordpress.org
 // builds ship their own loader and no src/Updates (src/Updates/GitHub_Releases.php).
-\WPMCP\Updates\GitHub_Releases::register();
+// The premium zip is updated by the licensing SDK only.
+if ( ! WPMCP_PREMIUM_BUILD ) {
+	\WPMCP\Updates\GitHub_Releases::register();
+}
+// Pro, when this copy carries it (pro/ in a dev checkout or the premium zip);
+// the free zip has no pro/ and boots with every edition slot empty.
+( new \WPMCP\Edition\Pro_Loader( __DIR__ ) )->load();
 \WPMCP\Plugin::instance()->boot();

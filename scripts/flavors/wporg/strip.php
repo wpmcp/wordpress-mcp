@@ -340,7 +340,7 @@ $edits['src/Tools/Compose/Build_Page.php'][] = [
 $edits['src/Tools/Compose/Build_Page.php'][] = [
     <<<'SRC'
         if ('elementor' === $spec['dialect']) {
-            $composed = Elementor_Composer::compose($spec['content']);
+            $composed = self::compose_dialect('elementor', $spec['content']);
             $content  = '';
         } else {
             $composed = Block_Composer::compose($spec['content']);
@@ -424,7 +424,7 @@ SRC . "\n\n",
 $edits['src/Tools/Compose/Build_Page.php'][] = [
     <<<'SRC'
         if ('elementor' === $spec['dialect']) {
-            $composed = Elementor_Composer::compose($spec['content']);
+            $composed = self::compose_dialect('elementor', $spec['content']);
             $markup   = 0;
         } else {
             $composed = Block_Composer::compose($spec['content']);

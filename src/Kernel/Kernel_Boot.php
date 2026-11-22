@@ -37,7 +37,7 @@ final class Kernel_Boot
         if (null === $this->kernel_registry) {
             (new Registry_Health(dirname(self::registry_dir(), 2)))->report();
         }
-        return $this->kernel_registry ??= Registry::from_dirs([self::registry_dir()]);
+        return $this->kernel_registry ??= Registry::from_dirs([self::registry_dir(), ...\WPMCP\Edition\Edition::registry_roots()]);
     }
 
     /**

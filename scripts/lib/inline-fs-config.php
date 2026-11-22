@@ -11,14 +11,23 @@
  * can never be deployed. This runs on the STAGED copy only, after which the
  * shipped file carries the same values Bootstrap::config() returns.
  *
- * Usage: php inline-fs-config.php <repo-root> <stage-root>
+ * The free and premium self-hosted zips differ in one config value,
+ * is_premium, which Bootstrap::config() derives from WPMCP_PREMIUM_BUILD.
+ * The constant is defined here, before Bootstrap is loaded, from the third
+ * argument: --premium inlines the premium config, no third argument the free
+ * one. Defining it in both cases means nothing in the build environment can
+ * decide the value.
+ *
+ * Usage: php inline-fs-config.php <repo-root> <stage-root> [--premium]
  */
 
-if ($argc < 3) {
-    fwrite(STDERR, "usage: inline-fs-config.php <repo-root> <stage-root>\n");
+$usage = "usage: inline-fs-config.php <repo-root> <stage-root> [--premium]\n";
+if ($argc < 3 || $argc > 4 || (4 === $argc && '--premium' !== $argv[3])) {
+    fwrite(STDERR, $usage);
     exit(2);
 }
-[, $root, $stage] = $argv;
+[$root, $stage] = [$argv[1], $argv[2]];
+$premium        = 4 === $argc;
 
 $main = (string) file_get_contents($root . '/wpmcp.php');
 if (
@@ -30,6 +39,7 @@ if (
 }
 
 define('ABSPATH', '/');
+define('WPMCP_PREMIUM_BUILD', $premium);
 define('WPMCP_FS_ID', (int) $id[1]);
 define('WPMCP_FS_PUBLIC_KEY', $key[1]);
 require $root . '/src/Freemius/Bootstrap.php';
@@ -42,4 +52,14 @@ if (substr_count($source, $call) !== 1) {
     exit(1);
 }
 
-file_put_contents($target, str_replace($call, 'fs_dynamic_init(' . var_export(\WPMCP\Freemius\Bootstrap::config(), true) . ')', $source));
+$config = \WPMCP\Freemius\Bootstrap::config();
+if (! array_key_exists('is_premium', $config) || $premium !== $config['is_premium']) {
+    fwrite(STDERR, sprintf(
+        "Bootstrap::config() returned is_premium %s for a %s build; it must follow WPMCP_PREMIUM_BUILD\n",
+        var_export($config['is_premium'] ?? null, true),
+        $premium ? 'premium' : 'free'
+    ));
+    exit(1);
+}
+
+file_put_contents($target, str_replace($call, 'fs_dynamic_init(' . var_export($config, true) . ')', $source));

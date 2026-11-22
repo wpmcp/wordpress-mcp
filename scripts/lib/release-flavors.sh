@@ -18,6 +18,11 @@ WPMCP_UPDATE_URI='https://wpmcp-pro.com/'
 # One row per release asset, headline first:
 #   versioned-prefix | main file inside the zip | kind | stable name | notes text
 # kind: self-hosted (licensing SDK, banner, Update URI) or wporg (none of them).
+# There is no premium kind: the premium zip (scripts/build-release.sh
+# --premium, dist/wpmcp-pro-<version>.zip) carries the private Pro code and
+# must never be a GitHub release asset. scripts/release-assets.sh refuses a
+# premium row, a wpmcp-pro prefix, and any self-hosted zip that fails
+# assert_free_zip (scripts/lib/pro-leak-gate.sh).
 # stable name: the unversioned copy published every release, so
 # releases/latest/download/<stable> always works; "-" for none.
 # The versioned asset is <prefix>-<version>.zip.

@@ -23,4 +23,10 @@ class PackageGuardTest extends \WP_UnitTestCase
         add_filter('filesystem_method', fn () => 'direct');
         $this->assertTrue(Package_Guard::filesystem_ready());
     }
+
+    public function test_the_premium_build_folder_is_protected_too(): void
+    {
+        $this->assertTrue(\WPMCP\Tools\Packages\Package_Guard::is_protected_plugin('wpmcp-pro/wpmcp.php'));
+        $this->assertTrue(\WPMCP\Tools\Packages\Package_Guard::is_protected_plugin('wpmcp/wpmcp.php'));
+    }
 }

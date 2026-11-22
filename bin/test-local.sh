@@ -2566,6 +2566,8 @@ run_leg_body() {
 		drift) say "composer drift:check"; composer drift:check ;;
 		phpunit) if [ "$cov" = floor ]; then run_suite "$wp" "$want_coverage"; else run_suite "$wp" false; fi ;;
 		multisite) run_multisite "$wp" ;;
+		# The free tree on its own (pro/ absent): bin/free-tree-smoke.sh.
+		free-tree) say "free tree (pro/ absent)"; bash "$ROOT/bin/free-tree-smoke.sh" ;;
 		live-forms) run_live_forms "$wp" ;;
 		live-blocks) run_live_blocks "$wp" ;;
 		live-buddypress) run_live_buddypress "$wp" ;;

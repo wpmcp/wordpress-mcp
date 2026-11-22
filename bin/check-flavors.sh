@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # composer check:flavors
 #
-# Runs the strip and the class-reference guard for BOTH release flavors (the
-# wp.org build and the WooCommerce vertical) without zipping or running Plugin
-# Check. It calls the build scripts' own --check-only path, so it can never
+# Runs the Pro leak gate, the strip and the class-reference guard for BOTH
+# release flavors (the wp.org build and the WooCommerce vertical) without
+# zipping or running Plugin Check. The leak gate is skipped with a warning
+# when pro-manifest.txt does not exist. It calls the build scripts' own --check-only path, so it can never
 # disagree with the CI "compliance" and "plugin-check" jobs. Takes seconds.
 # Each build script stages into its own mktemp dir and removes it on exit,
 # including on failure and Ctrl-C (bash runs the EXIT trap on INT/TERM).
@@ -30,6 +31,9 @@ Fix it one of two ways:
      name an integration or Pro class; let the integration register itself.
   2. add a strip rule in scripts/flavors/wporg/strip.php (or the woocommerce
      manifest.php) in the same commit, where the codebase already does so.
+If the lines above say "carries Pro-only paths" instead, the Pro leak gate
+(scripts/lib/pro-leak-gate.sh) failed: a path listed in pro-manifest.txt is
+still at its public location. Move it under pro/ or drop it from the manifest.
 Re-run with: composer check:flavors   (see CONTRIBUTING.md)
 MSG
 fi
