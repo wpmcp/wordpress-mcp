@@ -107,6 +107,26 @@ class WooNarrowingTest extends \WP_UnitTestCase
         $this->assertSame(0, self::lint(self::stage() . '/src/Tools/Security/Incident_Response.php'));
     }
 
+    /**
+     * Issues #843 and #1147: safe package updates ship in this build, but
+     * the package-tables replay goes with the SQL importer, so the stage's
+     * Package_Tables_Snapshot says it is unavailable, names no importer
+     * class and still lints.
+     */
+    public function test_safe_updates_keep_their_file_rollback_without_the_sql_importer(): void
+    {
+        $file   = self::stage() . '/src/Tools/Packages/Package_Tables_Snapshot.php';
+        $source = (string) file_get_contents($file);
+
+        $this->assertStringNotContainsString('Sql_Importer', $source);
+        $this->assertStringNotContainsString('Sql_Import_Policy', $source);
+        $this->assertMatchesRegularExpression('#function available\(\): bool\s*\{\s*return false;#', $source);
+        $this->assertStringContainsString('return [ self::unavailable_reason() ];', $source);
+        $this->assertSame(0, self::lint($file));
+        $this->assertFileExists(self::stage() . '/src/Tools/Packages/Safe_Package_Update.php');
+        $this->assertStringContainsString('File_Backup::backup_directory', (string) file_get_contents(self::stage() . '/src/Tools/Packages/Safe_Package_Update.php'));
+    }
+
     public function test_the_security_scan_hints_name_no_stripped_tool(): void
     {
         foreach (['Compromise_Audit.php', 'Malware_Audit.php'] as $file) {

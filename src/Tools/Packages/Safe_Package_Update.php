@@ -8,9 +8,6 @@ use WPMCP\Safety\Mutation_Failed;
 use WPMCP\Safety\Rollback_Service;
 use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Snapshot_Store;
-use WPMCP\Tools\Backup\Db_Dumper;
-use WPMCP\Tools\Backup\Sql_Import_Policy;
-use WPMCP\Tools\Backup\Sql_Importer;
 
 if (! defined('ABSPATH')) {
     exit;
@@ -182,9 +179,9 @@ class Safe_Package_Update
                 'version'     => $info['version'],
                 'new_version' => $info['new_version'],
                 'size_bytes'  => null === $dir ? 0 : self::dir_size($dir),
-                'snapshot'    => null === $blocker
+                'snapshot'    => (null === $blocker
                     ? [ 'possible' => true, 'tables' => $tables ]
-                    : [ 'possible' => false, 'reason' => $blocker, 'tables' => $tables ],
+                    : [ 'possible' => false, 'reason' => $blocker, 'tables' => $tables ]) + self::tables_coverage($tables),
             ];
         }
 
@@ -283,7 +280,7 @@ class Safe_Package_Update
             return $package + [ 'status' => 'skipped', 'message' => sprintf('%s was not updated: its folder could not be archived.', $item) ];
         }
         $dump = '';
-        if ([] !== $tables) {
+        if ([] !== $tables && Package_Tables_Snapshot::available()) {
             try {
                 $dump = self::dump_tables($operation_id, $tables);
             } catch (\Throwable $e) {
@@ -387,6 +384,7 @@ class Safe_Package_Update
             'checks'       => $checks,
             'tables'       => $tables,
             'tables_dump'  => '' !== $dump,
+        ] + self::tables_coverage($tables) + [
             'active'       => $active,
             'options'      => $changed,
             'expires_at'   => self::now() + self::retention(),
@@ -750,26 +748,7 @@ class Safe_Package_Update
     private static function dump_tables(string $operation_id, array $tables): string
     {
         $path = File_Backup::operation_dir($operation_id) . '/' . self::TABLES_DUMP;
-        if (false === file_put_contents($path, '')) {
-            throw new \RuntimeException('the dump file could not be created');
-        }
-        $buffer = '';
-        $flush  = static function (string $chunk) use ($path): void {
-            if ('' !== $chunk && false === file_put_contents($path, $chunk, FILE_APPEND)) {
-                throw new \RuntimeException('writing the dump failed (out of disk space?)');
-            }
-        };
-        (new Db_Dumper())->dump(
-            static function (string $sql) use (&$buffer, $flush): void {
-                $buffer .= $sql;
-                if (strlen($buffer) >= 1048576) {
-                    $flush($buffer);
-                    $buffer = '';
-                }
-            },
-            $tables
-        );
-        $flush($buffer);
+        Package_Tables_Snapshot::dump($path, $tables);
         return $path;
     }
 
@@ -785,17 +764,13 @@ class Safe_Package_Update
         global $wpdb;
         $warnings = [];
 
+        if (! Package_Tables_Snapshot::available()) {
+            // No dump was taken, so tables the update created are kept too:
+            // the update may have moved data into them (issue #1147).
+            return [] === $tables ? [] : [ Package_Tables_Snapshot::unavailable_reason() ];
+        }
         if ('' !== $dump && is_file($dump)) {
-            try {
-                $importer = new Sql_Importer($dump, new Sql_Import_Policy($wpdb->prefix, $tables));
-                $scan     = $importer->scan();
-                $result   = $importer->import($scan['placeholder']);
-                if (null !== $result['failure']) {
-                    $warnings[] = 'Some of the package\'s table rows could not be put back.';
-                }
-            } catch (\Throwable $e) {
-                $warnings[] = 'The package\'s tables could not be put back: ' . $e->getMessage();
-            }
+            $warnings = array_merge($warnings, Package_Tables_Snapshot::replay($dump, $tables));
         } elseif ([] !== $tables) {
             $warnings[] = 'The dump of the package\'s tables is gone, so they were not put back.';
         }
@@ -806,6 +781,21 @@ class Safe_Package_Update
         }
 
         return $warnings;
+    }
+
+    /**
+     * Whether a package's own tables are part of its snapshot in this build
+     * (issue #1147: the WooCommerce wp.org build has no SQL importer).
+     *
+     * @param string[] $tables
+     * @return array{tables_covered: bool, tables_note?: string}
+     */
+    private static function tables_coverage(array $tables): array
+    {
+        if ([] === $tables || Package_Tables_Snapshot::available()) {
+            return [ 'tables_covered' => true ];
+        }
+        return [ 'tables_covered' => false, 'tables_note' => Package_Tables_Snapshot::unavailable_reason() ];
     }
 
     /** The WHERE clause for the options a snapshot keeps: no transients, no cron, none of WP MCP's own. */
