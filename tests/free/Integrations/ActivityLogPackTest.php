@@ -238,6 +238,45 @@ class ActivityLogPackTest extends \WP_UnitTestCase
         $this->assertStringNotContainsString('NULL', $one['message']);
     }
 
+    /**
+     * Issue #1139: WP Activity Log stores PluginData as a serialized
+     * stdClass. It is read as one, so the plugin name, version and
+     * information link appear as in the Log viewer.
+     */
+    public function test_wp_activity_log_plugin_events_show_the_plugin_data(): void
+    {
+        $data = (object) [ 'Name' => 'Pretty Links', 'Version' => '3.6.2', 'PluginRepoUrl' => 'https://wordpress.org/plugins/pretty-link/', 'Network' => 'False' ];
+        $id   = wpmcp_test_wsal_event(
+            [ 'alert_id' => 5002, 'object' => 'plugin', 'event_type' => 'deactivated', 'post_id' => 0 ],
+            [ 'PluginFile' => '/var/www/html/wp-content/plugins/pretty-link/pretty-link.php', 'PluginData' => serialize($data) ] // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- the plugin stores it with maybe_serialize().
+        );
+
+        $expected = "Deactivated the plugin Pretty Links.\nVersion: 3.6.2\nInstall location: /var/www/html/wp-content/plugins/pretty-link/pretty-link.php\nView plugin information: https://wordpress.org/plugins/pretty-link/";
+        $one      = $this->ok($this->read('activitylog-get-activity', [ 'id' => $id ]))['event'];
+        $this->assertSame($expected, $one['message']);
+        $list = $this->ok($this->read('activitylog-list-activity', [ 'source' => 'wp-activity-log' ]));
+        $this->assertStringContainsString('Deactivated the plugin Pretty Links.', $list['events'][0]['message']);
+        $this->assertStringNotContainsString('NULL', $list['events'][0]['message']);
+        $this->assertDoesNotMatchRegularExpression('/%[A-Za-z-]+%/', $list['events'][0]['message']);
+    }
+
+    /** Issue #1139: an object of any class but stdClass is still never instantiated, nested or not. */
+    public function test_serialized_objects_other_than_stdclass_stay_inert(): void
+    {
+        \WPMCP\Tests\Free\Integrations\Wsal_Wakeup_Probe::$woken = 0;
+        $probe  = 'O:' . strlen(Wsal_Wakeup_Probe::class) . ':"' . Wsal_Wakeup_Probe::class . '":0:{}';
+        $nested = 'O:8:"stdClass":2:{s:4:"Name";s:5:"Inner";s:5:"Probe";' . $probe . '}';
+        $id     = wpmcp_test_wsal_event(
+            [ 'alert_id' => 5001, 'object' => 'plugin', 'event_type' => 'activated', 'post_id' => 0 ],
+            [ 'PluginFile' => $probe, 'PluginData' => $nested ]
+        );
+
+        $one = $this->ok($this->read('activitylog-get-activity', [ 'id' => $id ]))['event'];
+        $this->ok($this->read('activitylog-list-activity', [ 'source' => 'wp-activity-log' ]));
+        $this->assertSame(0, Wsal_Wakeup_Probe::$woken, 'no __wakeup ran');
+        $this->assertStringContainsString('Activated the plugin Inner.', $one['message']);
+    }
+
     /** Issue #949: the free version's upsell and tip links are left out of a message. */
     public function test_wp_activity_log_messages_leave_out_upsell_and_tip_text(): void
     {
@@ -261,5 +300,16 @@ class ActivityLogPackTest extends \WP_UnitTestCase
         $this->assertSame('2001:db8:*', Activity_Log_Pack::mask_ip('2001:db8::1'));
         $this->assertSame('', Activity_Log_Pack::mask_ip(''));
         $this->assertSame('j***@example.com from 10.1.*.*', Activity_Log_Pack::mask_text('jane.doe@example.com from 10.1.2.3'));
+    }
+}
+
+/** Counts __wakeup() calls: an unserialize that instantiated it would count one. */
+class Wsal_Wakeup_Probe
+{
+    public static int $woken = 0;
+
+    public function __wakeup()
+    {
+        ++self::$woken;
     }
 }

@@ -2,11 +2,12 @@
 /**
  * Plugin Name: WP MCP - MCP Server with Snapshot Undo for AI Agents
  * Description: AI builds and edits your WordPress site, and physically can't wreck it. MCP server + snapshot/rollback safety.
- * Version: 1.0.1
+ * Version: 1.2.1
  * Requires at least: 6.9
  * Requires PHP: 8.1
  * Author: Fahad Murtaza
  * Author URI: https://wpmcp-pro.com/
+ * Update URI: https://wpmcp-pro.com/
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: wpmcp
@@ -37,7 +38,7 @@ if ( wpmcp_flavor_should_defer( __FILE__, 'full', defined( 'WPMCP_VERSION' ) ) )
 	} );
 	return;
 }
-define( 'WPMCP_VERSION', '1.0.1' );
+define( 'WPMCP_VERSION', '1.2.1' );
 // Must match the Text Domain header above: Plugin::load_textdomain() loads
 // the self-hosted .mo from languages/ into this domain (issue #184).
 define( 'WPMCP_TEXT_DOMAIN', 'wpmcp' );
@@ -52,4 +53,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/src/adapter-guard.php';
 wpmcp_prefer_shared_mcp_adapter( __DIR__ . '/vendor' );
 \WPMCP\Freemius\Bootstrap::init();
+// Free installs of this build hear about new versions from GitHub releases;
+// a licensed site is updated by the licensing SDK instead. The wordpress.org
+// builds ship their own loader and no src/Updates (src/Updates/GitHub_Releases.php).
+\WPMCP\Updates\GitHub_Releases::register();
 \WPMCP\Plugin::instance()->boot();
