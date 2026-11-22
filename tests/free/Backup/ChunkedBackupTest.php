@@ -475,4 +475,82 @@ class ChunkedBackupTest extends \WP_UnitTestCase
         }
         $this->fail('The build never reached ' . $phase);
     }
+
+    /**
+     * Issue #1152: make Restore_Site_Backup::is_running() true, as during a
+     * restore's import: its progress file is on disk and its lock is held.
+     *
+     * @return callable that ends the pretend restore
+     */
+    private function pretend_restore_running(): callable
+    {
+        global $wpdb;
+        $lock = (new \ReflectionMethod(Restore_Site_Backup::class, 'lock_name'));
+        $lock->setAccessible(true);
+        $name  = (string) $lock->invoke(null);
+        $state = Site_Backup_Dir::path() . '/restore-in-progress.json';
+        file_put_contents($state, (string) wp_json_encode(['started_at' => gmdate('c'), 'statement' => 5, 'table' => $wpdb->options]));
+        // The restore is another request: its lock is held by another connection.
+        [$host, $port, $socket] = $wpdb->parse_db_host(DB_HOST);
+        $other = mysqli_init();
+        $other->real_connect((string) $host, DB_USER, DB_PASSWORD, DB_NAME, null === $port ? null : (int) $port, null === $socket ? null : (string) $socket);
+        $other->query("SELECT GET_LOCK('" . $other->real_escape_string($name) . "', 0)");
+        $this->assertTrue(Restore_Site_Backup::is_running());
+        $this->assertFalse(Restore_Site_Backup::holds_lock());
+
+        return static function () use ($other, $state): void {
+            $other->close();
+            if (is_file($state)) {
+                unlink($state);
+            }
+        };
+    }
+
+    public function test_no_backup_step_runs_or_starts_while_a_restore_is_importing(): void
+    {
+        $running = $this->queue('uploads');
+        $this->drive_until($running, 'files');
+        $queued = $this->queue('uploads');
+        $before = Backup_Job_Store::get($running);
+        $end    = $this->pretend_restore_running();
+
+        try {
+            wp_clear_scheduled_hook(Run_Backup_Job::HOOK, [$running]);
+            (new Run_Backup_Job())->handle_scheduled($running);
+            wp_clear_scheduled_hook(Run_Backup_Job::HOOK, [$queued]);
+            (new Run_Backup_Job())->handle_scheduled($queued);
+            (new Run_Backup_Job())->handle($queued);
+        } finally {
+            $end();
+        }
+
+        $this->assertSame($before['build'], Backup_Job_Store::get($running)['build'], 'The build did not move.');
+        $this->assertSame('queued', Backup_Job_Store::get($queued)['status'], 'The queued job did not start.');
+    }
+
+    public function test_a_resumed_build_never_writes_outside_the_current_backup_folder(): void
+    {
+        $id = $this->queue('uploads');
+        $this->drive_until($id, 'files');
+        wp_clear_scheduled_hook(Run_Backup_Job::HOOK, [$id]);
+        (new Run_Backup_Job())->handle_scheduled($id);
+        $job = Backup_Job_Store::get($id);
+
+        // A record from before WPMCP_BACKUP_DIR was set: its partial
+        // archive is in another folder.
+        $elsewhere = $this->root . '/old-backups';
+        wp_mkdir_p($elsewhere);
+        $stale = $elsewhere . '/' . basename((string) $job['build']['partial']);
+        copy((string) $job['build']['partial'], $stale);
+        $size = filesize($stale);
+        Backup_Job_Store::update($id, ['build' => array_merge($job['build'], ['partial' => $stale])]);
+
+        $this->drive($id);
+
+        $done = Backup_Job_Store::get($id);
+        $this->assertSame('failed', $done['status']);
+        $this->assertStringContainsString('backup folder', (string) $done['error']);
+        clearstatcache();
+        $this->assertSame($size, filesize($stale), 'Nothing more was written to the old folder.');
+    }
 }

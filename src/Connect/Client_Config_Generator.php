@@ -39,6 +39,54 @@ class Client_Config_Generator
         return home_url(self::ROUTE);
     }
 
+    /** Reserved or local-only name suffixes no cloud client can reach (issue #1149). */
+    private const LOCAL_SUFFIXES = [ '.localhost', '.test', '.local', '.example', '.invalid', '.internal', '.lan', '.home.arpa' ];
+
+    /**
+     * Why a cloud client (ChatGPT, the Claude custom connector) cannot reach
+     * $url, or null when it looks like a public HTTPS address (issue #1149):
+     * not https, localhost or a local-only name, a single-label host, or a
+     * loopback, private, link-local or reserved IP. A name check only: a
+     * public name on a firewalled host still passes.
+     */
+    public static function public_address_warning(?string $url = null): ?string
+    {
+        $url    = $url ?? self::endpoint();
+        $scheme = strtolower((string) wp_parse_url($url, PHP_URL_SCHEME));
+        $host   = strtolower(trim((string) wp_parse_url($url, PHP_URL_HOST), '[]'));
+
+        $reason = null;
+        if ('https' !== $scheme) {
+            $reason = __('it does not use HTTPS', 'wpmcp');
+        } elseif ('' === $host || 'localhost' === $host) {
+            $reason = __('its host is localhost', 'wpmcp');
+        } elseif (false !== filter_var($host, FILTER_VALIDATE_IP)) {
+            if (false === filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                $reason = __('its host is a private or loopback IP address', 'wpmcp');
+            }
+        } elseif (false === strpos($host, '.')) {
+            $reason = __('its host is a local name with no domain', 'wpmcp');
+        } else {
+            foreach (self::LOCAL_SUFFIXES as $suffix) {
+                if (substr($host, -strlen($suffix)) === $suffix) {
+                    /* translators: %s: a domain suffix such as .test */
+                    $reason = sprintf(__('its host ends in %s, which only resolves locally', 'wpmcp'), $suffix);
+                    break;
+                }
+            }
+        }
+
+        if (null === $reason) {
+            return null;
+        }
+        return sprintf(
+            /* translators: 1: the MCP endpoint URL, 2: why it is not public */
+            __('This client connects from the internet and needs a public HTTPS address for this site, and %1$s is not one (%2$s). It will fail to connect until the site is reachable at a public HTTPS address, for example through a tunnel or the live domain.', 'wpmcp'),
+            $url,
+            $reason
+        );
+    }
+
     public static function auth_header(string $username, string $password): string
     {
         // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- RFC 7617 HTTP Basic Authorization header encoding, not obfuscation.
@@ -181,7 +229,7 @@ class Client_Config_Generator
      *
      * @param bool $on_connection_screen True when rendered on the Connection screen (#751).
      *
-     * @return array{label: string, url: string, oauth_enabled: bool, note: string, enable_oauth: string[], steps: string[]}
+     * @return array{label: string, url: string, public_address_warning: ?string, oauth_enabled: bool, note: string, enable_oauth: string[], steps: string[]}
      */
     public static function custom_connector(bool $on_connection_screen = false): array
     {
@@ -190,6 +238,8 @@ class Client_Config_Generator
         return [
             'label'         => __('Claude Desktop and claude.ai: custom connector', 'wpmcp'),
             'url'           => self::endpoint(),
+            // Issue #1149: null on a public HTTPS site.
+            'public_address_warning' => self::public_address_warning(),
             'oauth_enabled' => $enabled,
             'note'          => $enabled
                 ? __('OAuth is on for this site, so the custom connector can sign in: add it with the steps below and approve the sign-in when your browser opens.', 'wpmcp')
@@ -214,7 +264,7 @@ class Client_Config_Generator
      *
      * @param bool $on_connection_screen True when rendered on the Connection screen (#751).
      *
-     * @return array{label: string, url: string, oauth_enabled: bool, note: string, enable_oauth: string[], steps: string[]}
+     * @return array{label: string, url: string, public_address_warning: ?string, oauth_enabled: bool, note: string, enable_oauth: string[], steps: string[]}
      */
     public static function chatgpt(bool $on_connection_screen = false): array
     {
@@ -224,6 +274,8 @@ class Client_Config_Generator
         return [
             'label'         => __('ChatGPT (web and desktop app): custom MCP connector', 'wpmcp'),
             'url'           => $endpoint,
+            // Issue #1149: null on a public HTTPS site.
+            'public_address_warning' => self::public_address_warning($endpoint),
             'oauth_enabled' => $enabled,
             'note'          => ($enabled
                 ? __('OAuth is on for this site, so ChatGPT can sign in: add it with the steps below and approve the sign-in when the WordPress window opens.', 'wpmcp')
