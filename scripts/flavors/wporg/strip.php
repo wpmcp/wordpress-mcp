@@ -66,7 +66,32 @@ foreach (['label' => 'is_string', 'removed_methods' => 'is_array', 'edits' => 'i
  * labelled strip failure rather than a TypeError halfway through the edits.
  */
 $manifest_errors = [];
-foreach (['removed_methods', 'removed_paths'] as $key) {
+/**
+ * Optional: inline ability registrations the flavor removes by name (issue
+ * #1140). Only the WooCommerce vertical narrows the unconditional
+ * registrations in register_abilities_into(), so the directory cut's
+ * manifest leaves this key out and nothing changes for it.
+ */
+if (! array_key_exists('removed_abilities', $manifest)) {
+    $manifest['removed_abilities'] = [];
+} elseif (! is_array($manifest['removed_abilities'])) {
+    fwrite(STDERR, sprintf("%s: 'removed_abilities' must be a list of ability names\n", $manifest_path));
+    exit(2);
+}
+/**
+ * Optional: files the flavor adds to the stage (issue #1140), as staged
+ * relative path => source path relative to the manifest's directory. Copied
+ * before any edit, so the edits and every later gate see them; a target that
+ * already exists fails the strip, because an overlay must never replace a
+ * file the source tree ships.
+ */
+if (! array_key_exists('added_files', $manifest)) {
+    $manifest['added_files'] = [];
+} elseif (! is_array($manifest['added_files'])) {
+    fwrite(STDERR, sprintf("%s: 'added_files' must map a staged path to a source path\n", $manifest_path));
+    exit(2);
+}
+foreach (['removed_methods', 'removed_paths', 'removed_abilities'] as $key) {
     foreach ($manifest[$key] as $index => $entry) {
         if (! is_string($entry) || '' === trim($entry)) {
             $manifest_errors[] = sprintf("'%s'[%s] must be a non-empty string", $key, $index);
@@ -1383,6 +1408,19 @@ $edits['src/Integrations/ACF_Integration.php'] = [
     ["            'batch-update-fields' => ACF_Batch_Update::definition(),\n", '', 1],
 ];
 
+// The Paid Memberships Pro member, order and discount code reads and the
+// writes (issue #667) are the paid add-on's. Their file is removed by
+// policy.php, so the line that merges them into the pmpro pair leaves, and
+// the pair's summary goes back to what the free level reads cover.
+$edits['src/Integrations/Paid_Memberships_Pro_Integration.php'] = [
+    ["        return \$this->level_reads()\n            + Paid_Memberships_Pro_Pack::operations();\n", "        return \$this->level_reads();\n", 1],
+    [
+        "        return 'Paid Memberships Pro (membership levels, pricing, member counts, members, orders and discount codes)';\n",
+        "        return 'Paid Memberships Pro (membership levels, pricing, and member counts)';\n",
+        1,
+    ],
+];
+
 // All in One SEO support (issue #294) is the paid add-on's. Its store file
 // is removed by policy.php, so only its entry in the adapter's table-store
 // map leaves SEO_Adapter; detection then never reports it.
@@ -1440,15 +1478,16 @@ $edits['src/Integrations/Theme_Framework_Pack.php'] = [
 // file is removed by policy.php, so the line that merges their ops into the
 // theme pair, the docblock sentence describing them, and the rollback hook
 // that refreshes one suite's cache all leave with it. The dynamic template
-// ops (issue #290), the FunnelKit funnel reads (issue #356) and the core
-// personal data request ops (issue #714) leave through the same two edits:
-// their files are removed by policy.php too.
+// ops (issue #290), the FunnelKit funnel reads (issue #356), the CartFlows
+// ops (issue #662) and the core personal data request ops (issue #714) leave
+// through the same two edits: their files are removed by policy.php too.
 $edits['src/Integrations/Theme_Integration.php'] = [
     [
         "            Redirection_Pack::operations(),\n"
             . "            Rank_Math_Redirects_Pack::operations(),\n"
             . "            Elementor_Addon_Packs::operations(),\n"
             . "            FunnelKit_Pack::operations(),\n"
+            . "            CartFlows_Pack::operations(),\n"
             . "            Core_Privacy_Pack::operations(),\n"
             . "            \\WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Dynamic_Template_Ops::operations()\n",
         "            Redirection_Pack::operations(),\n            Rank_Math_Redirects_Pack::operations()\n",
@@ -1464,6 +1503,9 @@ $edits['src/Integrations/Theme_Integration.php'] = [
             . "     * single, archive and search templates on the site parts store.\n"
             . "     * Issue #356 adds the paid-tier FunnelKit funnel reads (FunnelKit_Pack),\n"
             . "     * which answer funnelkit_inactive while FunnelKit is not loaded.\n"
+            . "     * Issue #662 adds the paid-tier CartFlows flow, step and checkout\n"
+            . "     * product ops (CartFlows_Pack), which answer cartflows_inactive while\n"
+            . "     * CartFlows is not loaded.\n"
             . "     * Issue #714 adds the paid-tier WordPress core personal data request\n"
             . "     * ops (Core_Privacy_Pack): requests listed and read, export and erasure\n"
             . "     * requests filed and marked complete, every write undoable.\n",
@@ -1485,6 +1527,89 @@ $edits['src/Plugin.php'][] = [
     1,
 ];
 $edits['src/Integrations/Plugin_Data_Integration.php'] = [
+    // The SureCart ops (issue #665) are the paid add-on's too, removed by
+    // policy.php; their lines go first, so the Checkout Field Editor edits
+    // below still match. SureCart_Api and SureCart_Snapshot stay: the
+    // safety core names them for a snapshot already taken.
+    [
+        " *  - Issue #665 adds the paid-tier SureCart ops (SureCart_Pack): products,\n"
+            . " *    orders and customers (masked) and coupons read from SureCart's cloud,\n"
+            . " *    and product edits and coupon creates (off until\n"
+            . " *    wpmcp_enable_surecart_write), each snapshotted as a 'surecart_object'\n"
+            . " *    image read from SureCart's API.\n",
+        '',
+        1,
+    ],
+    [
+        "            || Checkout_Field_Editor_Pack::active()\n"
+            . "            || SureCart_Pack::active();\n",
+        "            || Checkout_Field_Editor_Pack::active();\n",
+        1,
+    ],
+    [
+        "            . ', Checkout Field Editor fields'\n"
+            . "            . ', SureCart store data';\n",
+        "            . ', Checkout Field Editor fields';\n",
+        1,
+    ],
+    [ "        \$groups[] = [ 'SureCart', false, SureCart_Pack::operations() ];\n", '', 1 ],
+    [
+        "            Checkout_Field_Editor_Pack::operations(),\n"
+            . "            SureCart_Pack::operations()\n",
+        "            Checkout_Field_Editor_Pack::operations()\n",
+        1,
+    ],
+    // The Checkout Field Editor ops (issue #660) are the paid add-on's,
+    // removed by policy.php; their lines go first, so every edit below
+    // still matches the text it was written against.
+    [
+        " *  - Issue #660 adds the paid-tier Checkout Field Editor for WooCommerce\n"
+            . " *    ops (Checkout_Field_Editor_Pack): billing, shipping and additional\n"
+            . " *    checkout fields listed, and existing fields changed (off until\n"
+            . " *    wpmcp_enable_checkout_field_editor_write), the write snapshotted on the\n"
+            . " *    section's option.\n",
+        '',
+        1,
+    ],
+    [
+        "            || Translation_Settings_Pack::active()\n"
+            . "            || Checkout_Field_Editor_Pack::active();\n",
+        "            || Translation_Settings_Pack::active();\n",
+        1,
+    ],
+    [
+        "            . ', Weglot and GTranslate language settings, Loco Translate .po strings'\n"
+            . "            . ', Checkout Field Editor fields';\n",
+        "            . ', Weglot and GTranslate language settings, Loco Translate .po strings';\n",
+        1,
+    ],
+    [
+        "        \$groups[] = [ 'Checkout Field Editor', false, Checkout_Field_Editor_Pack::operations() ];\n",
+        '',
+        1,
+    ],
+    [
+        "            Translation_Settings_Pack::operations(),\n"
+            . "            Checkout_Field_Editor_Pack::operations()\n",
+        "            Translation_Settings_Pack::operations()\n",
+        1,
+    ],
+    // The WPCode ops (issue #697) are the paid add-on's, removed by
+    // policy.php. Each line stands alone, so these go first and match
+    // wherever the lines around them are edited below.
+    [
+        " *  - Issue #697 adds the paid-tier WPCode ops (WPCode_Pack): snippets and\n"
+            . " *    the global header and footer scripts read, snippets created inactive,\n"
+            . " *    changed, activated behind the PHP execution or code injection gate and\n"
+            . " *    deactivated, and the global scripts replaced, each write off until\n"
+            . " *    wpmcp_enable_wpcode_write and undoable.\n",
+        '',
+        1,
+    ],
+    [ "            || WPCode_Pack::active()\n", '', 1 ],
+    [ "            . ', WPCode snippets'\n", '', 1 ],
+    [ "        \$groups[] = [ 'WPCode', false, WPCode_Pack::operations() ];\n", '', 1 ],
+    [ "            WPCode_Pack::operations(),\n", '', 1 ],
     // The WP Offload Media ops (issue #701) are the paid add-on's, removed
     // by policy.php. Their lines go first, so every edit below matches the
     // file as it was before them.
@@ -1519,7 +1644,8 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
             . "            \$groups[] = [ \$adapter->label(), false, \$adapter->operations() ];\n"
             . "        }\n"
             . "        \$groups[] = [ 'Weglot', false, Translation_Settings_Pack::weglot_operations() ];\n"
-            . "        \$groups[] = [ 'GTranslate', false, Translation_Settings_Pack::gtranslate_operations() ];\n",
+            . "        \$groups[] = [ 'GTranslate', false, Translation_Settings_Pack::gtranslate_operations() ];\n"
+            . "        \$groups[] = [ 'Loco Translate', false, Loco_Translate_Pack::operations() ];\n",
         '',
         1,
     ],
@@ -1527,7 +1653,7 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
         "            . ', FluentCRM and MailPoet'\n"
             . "            . ', Amelia bookings, Polylang and WPML translations, MemberPress memberships, Elementor Pro forms'\n"
             . "            . ', BetterDocs docs, Fluent Support and Awesome Support tickets'\n"
-            . "            . ', Weglot and GTranslate language settings';\n",
+            . "            . ', Weglot and GTranslate language settings, Loco Translate .po strings';\n",
         "            . ', FluentCRM and MailPoet';\n",
         1,
     ],
@@ -1724,9 +1850,9 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
         1,
     ],
     [
-        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans'\n"
+        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores'\n"
             . "            . ', Tutor LMS, LifterLMS and LearnDash courses, TablePress tables';\n",
-        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans';\n",
+        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores';\n",
         1,
     ],
     [
@@ -1742,6 +1868,16 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
 // them into the theme pair and their rollback refresher leave with them.
 $edits['src/Integrations/Theme_Integration.php'][] = [
     "            Cache_Settings_Pack::operations(),\n",
+    '',
+    1,
+];
+$edits['src/Plugin.php'][] = [
+    "        // An undo of a WPCode snippet write never leaves the snippet active\n"
+        . "        // and rebuilds WPCode's cache of active snippets; an undo of\n"
+        . "        // set-header-footer clears page caches as WPCode's save does (#697).\n"
+        . "        [\\WPMCP\\Integrations\\WPCode_Pack::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],\n"
+        . "        [\\WPMCP\\Integrations\\WPCode_Pack::class, 'after_trash', 'trashed_post'],\n"
+        . "        [\\WPMCP\\Integrations\\WPCode_Pack::class, 'after_options_restored'],\n",
     '',
     1,
 ];
@@ -2050,6 +2186,25 @@ foreach ($manifest['edits'] as $relative => $file_edits) {
 $failures = [];
 $applied = 0;
 
+/** The flavor's added files, before the edits so the edits can wire them in. */
+foreach ($manifest['added_files'] as $relative => $source) {
+    $from = dirname($manifest_path) . '/' . $source;
+    $to   = $stage . '/' . $relative;
+    if (! is_string($relative) || ! is_string($source) || ! is_file($from)) {
+        $failures[] = sprintf('added file %s: source %s not found', $relative, $source);
+        continue;
+    }
+    if (file_exists($to)) {
+        $failures[] = sprintf('added file %s: already exists in the staged tree', $relative);
+        continue;
+    }
+    if (! is_dir(dirname($to)) || ! copy($from, $to)) {
+        $failures[] = sprintf('added file %s: could not be copied', $relative);
+        continue;
+    }
+    $applied++;
+}
+
 /** Apply the exact-string edits. */
 foreach ($edits as $relative => $file_edits) {
     $path = $stage . '/' . $relative;
@@ -2161,6 +2316,21 @@ foreach ($manifest['removed_paths'] as $relative) {
     $undeleted = remove_path($path);
     if ([] !== $undeleted) {
         $failures[] = sprintf('%s: could not be removed (%s)', $relative, implode(', ', $undeleted));
+        continue;
+    }
+    $applied++;
+}
+
+/**
+ * The flavor's named inline registrations (issue #1140). Each name must
+ * match exactly one `$registrar->register(new Ability('<name>', ...));`
+ * statement in Plugin.php, so a rename upstream fails the strip instead of
+ * silently shipping the ability.
+ */
+foreach ($manifest['removed_abilities'] as $ability_name) {
+    $result = remove_named_ability($plugin_php, $ability_name);
+    if (true !== $result) {
+        $failures[] = sprintf('src/Plugin.php: %s', $result);
         continue;
     }
     $applied++;
@@ -2376,6 +2546,33 @@ function remove_pro_abilities(string $path): int
     }
 
     return $removed;
+}
+
+/**
+ * Delete the one `$registrar->register(new Ability( '<name>', ...));`
+ * statement registering $name (issue #1140).
+ *
+ * @return true|string true on success, else why it could not be removed.
+ */
+function remove_named_ability(string $path, string $name)
+{
+    $contents = (string) file_get_contents($path);
+    $pattern  = '/\$registrar->register\(new Ability\(\s*\n\s*\'' . preg_quote($name, '/') . '\',/';
+    $found    = preg_match_all($pattern, $contents, $matches, PREG_OFFSET_CAPTURE);
+    if (1 !== $found) {
+        return sprintf('expected exactly 1 inline registration of %s, found %d', $name, (int) $found);
+    }
+    $start = $matches[0][0][1];
+    $end   = statement_end($contents, $start);
+    if (null === $end) {
+        return sprintf('unbalanced registration of %s', $name);
+    }
+    $line_start = (int) strrpos(substr($contents, 0, $start), "\n") + 1;
+    $line_end   = strpos($contents, "\n", $end);
+    $contents   = substr($contents, 0, $line_start) . substr($contents, false === $line_end ? $end + 1 : $line_end + 1);
+    file_put_contents($path, $contents);
+
+    return true;
 }
 
 /** Offset of the ';' closing the statement that starts at $from. */
