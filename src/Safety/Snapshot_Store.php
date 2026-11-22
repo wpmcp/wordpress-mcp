@@ -418,6 +418,18 @@ class Snapshot_Store
         );
     }
 
+    /**
+     * How many of a session's undo points are not undone yet, without
+     * reading their before-images (the Audit Log's Undo session button,
+     * issue #1150).
+     */
+    public static function live_count_for_session(string $session_id): int
+    {
+        global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- wpmcp_snapshots is this plugin's own table; undo state must never be stale.
+        return (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(DISTINCT operation_id) FROM %i WHERE session_id = %s AND rolled_back_at IS NULL', self::table_name(), $session_id));
+    }
+
     public static function list_by_session(string $session_id): array
     {
         global $wpdb;
