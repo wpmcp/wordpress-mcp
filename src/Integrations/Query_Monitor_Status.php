@@ -560,15 +560,39 @@ final class Query_Monitor_Status
         return is_string($caller) && '' !== $caller ? $caller : null;
     }
 
-    /** SQL with every quoted string literal masked, cut to MAX_SQL bytes. */
+    /**
+     * SQL with every quoted string literal masked, cut to MAX_SQL bytes.
+     *
+     * A linear scan, not a regex: a backtracking pattern over a long
+     * statement (a large serialized option value) hits PCRE's JIT stack
+     * limit and returns null (issue #1157). A literal left open at the end
+     * is masked to the end, so a cut or malformed statement never leaks.
+     */
     private static function mask_sql(string $sql): string
     {
-        $masked = (string) preg_replace_callback(
-            '/([\'"])((?:\\\\.|(?!\1).)*)\1/s',
-            static fn (array $m): string => $m[1] . ('' === $m[2] ? '' : (string) Masking::value(stripslashes($m[2]))) . $m[1],
-            $sql
-        );
-        return strlen($masked) > self::MAX_SQL ? substr($masked, 0, self::MAX_SQL) . '...' : $masked;
+        $out    = '';
+        $length = strlen($sql);
+        $i      = 0;
+        while ($i < $length) {
+            $quote = strcspn($sql, '\'"', $i);
+            $out  .= substr($sql, $i, $quote);
+            $i    += $quote;
+            if ($i >= $length) {
+                break;
+            }
+            $char = $sql[ $i ];
+            $end  = $i + 1;
+            while ($end < $length && $char !== $sql[ $end ]) {
+                $end += '\\' === $sql[ $end ] ? 2 : 1;
+            }
+            $inner = substr($sql, $i + 1, min($end, $length) - $i - 1);
+            $out  .= $char . ('' === $inner ? '' : (string) Masking::value(stripslashes($inner))) . $char;
+            $i     = $end + 1;
+            if (strlen($out) > self::MAX_SQL) {
+                break;
+            }
+        }
+        return strlen($out) > self::MAX_SQL ? substr($out, 0, self::MAX_SQL) . '...' : $out;
     }
 
     /** A URL with every query value masked. */

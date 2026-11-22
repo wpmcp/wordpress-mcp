@@ -57,6 +57,10 @@ class ArticleBeforePlaceholderGuardTest extends \WP_UnitTestCase
         'src/Integrations/LMS_Adapter.php'                      => ["'a ' . \$section", 'a {$label}', 'A {$label}', 'a {$section}', 'a %s', 'A %s'],
         // Every label is a fixed Modern Events Calendar or The Events Calendar noun (category, location, organizer, venue).
         'src/Integrations/Event_Calendar_Writes.php'            => ['a %s'],
+        // kind is lesson or quiz.
+        'src/Integrations/LMS_LearnPress.php'                   => ['a {$kind}'],
+        // label() is Sensei LMS; the kind after it is lesson or quiz.
+        'src/Integrations/LMS_Sensei.php'                       => ['a %s', 'A %s'],
     ];
 
     public function test_no_message_puts_a_fixed_article_before_a_runtime_value(): void
