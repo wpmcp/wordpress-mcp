@@ -84,6 +84,16 @@ if (! defined('ABSPATH')) {
  * copies of the rows are dropped (its BerlinDB cache group
  * rcp-membership_levels), as its own query does after a write.
  *
+ * LearnPress (issue #672) keeps a course's curriculum in two tables of its
+ * own: `learnpress_sections` (kind learnpress_sections, the one suffix
+ * "sections"), keyed by the course (`section_course_id`), and
+ * `learnpress_section_items` (kind learnpress_section_items, the one suffix
+ * "section_items"), keyed by the section (`section_id`). A snapshot taken
+ * before a write therefore covers the rows the write inserts, the way the
+ * MemberPress kind does. After a restore, LearnPress's cached copy of each
+ * course it touched is rebuilt through LearnPress's own course model, as its
+ * curriculum editor does after a change.
+ *
  * Easy Digital Downloads discounts (issue #664, the `edd_adjustments` table,
  * the one suffix "adjustments") are keyed by their own id; a create
  * reserves its id the same way. EDD reads the table through BerlinDB, which
@@ -92,7 +102,9 @@ if (! defined('ABSPATH')) {
  * BerlinDB's own writes do.
  *
  * Restoring takes the capability the write itself needs: edit_post on each
- * captured post for a Pods row or a MemberPress rule's rows, manage_options
+ * captured post for a Pods row, a MemberPress rule's rows or a LearnPress
+ * course's sections, edit_post on the course a LearnPress section belongs to
+ * for that section's items, manage_options
  * for a dictionary row, a Pretty Links link, a Restrict Content level, an EDD discount or a forum row, and Wordfence's own admin capability (manage_options,
  * manage_network on a multisite network) for a Wordfence row.
  */
@@ -118,6 +130,8 @@ final class Plugin_Table_Rows_Snapshot
         'pmpro_members'    => 'pmpro_',
         'pmpro_codes'      => 'pmpro_',
         'rcp_levels'       => 'restrict_content_',
+        'learnpress_sections'      => 'learnpress_',
+        'learnpress_section_items' => 'learnpress_',
         'edd'              => 'edd_',
     ];
 
@@ -135,6 +149,8 @@ final class Plugin_Table_Rows_Snapshot
         'mepr_rule_access' => 'rule_id',
         'wordfence_blocks' => 'IP',
         'pmpro_members'    => 'user_id',
+        'learnpress_sections'      => 'section_course_id',
+        'learnpress_section_items' => 'section_id',
         'wpforo_forum'          => 'forumid',
         'wpforo_topic'          => 'topicid',
         'wpforo_topic_posts'    => 'topicid',
@@ -144,6 +160,8 @@ final class Plugin_Table_Rows_Snapshot
 
     /** kind => the column its rows are read in order of, for a table with no `id` column. */
     private const ORDER_COLUMNS = [
+        'learnpress_sections'      => 'section_id',
+        'learnpress_section_items' => 'section_item_id',
         'wpforo_forum'          => 'forumid',
         'wpforo_topic'          => 'topicid',
         'wpforo_topic_posts'    => 'postid',
@@ -166,6 +184,8 @@ final class Plugin_Table_Rows_Snapshot
         'pmpro_members'    => [ 'memberships_users' ],
         'pmpro_codes'      => [ 'discount_codes' ],
         'rcp_levels'       => [ 'pro' ],
+        'learnpress_sections'      => [ 'sections' ],
+        'learnpress_section_items' => [ 'section_items' ],
         'edd'              => [ 'adjustments' ],
     ];
 
@@ -499,6 +519,12 @@ final class Plugin_Table_Rows_Snapshot
         if ('rcp_levels' === $kind) {
             self::flush_rcp_level_cache($ids);
         }
+        if ('learnpress_sections' === $kind) {
+            self::refresh_learnpress_courses($ids);
+        }
+        if ('learnpress_section_items' === $kind) {
+            self::refresh_learnpress_courses(self::learnpress_courses_of($ids));
+        }
         if ('edd' === $kind) {
             self::purge_edd_cache((string) $data['suffix'], $ids);
         }
@@ -557,6 +583,68 @@ final class Plugin_Table_Rows_Snapshot
         $class = '\\RankMath\\Redirections\\Cache';
         if (class_exists($class) && method_exists($class, 'purge')) {
             $class::purge(array_map('intval', $ids));
+        }
+    }
+
+    /**
+     * The courses LearnPress sections belong to (0 for a section that is
+     * gone), section id => course id.
+     *
+     * @param array<int, int|string> $sections
+     * @return array<int, int>
+     */
+    public static function learnpress_courses_of(array $sections): array
+    {
+        global $wpdb;
+
+        $sections = array_values(array_filter(array_map('intval', $sections), static fn (int $id): bool => $id > 0));
+        $table    = (string) self::table('learnpress_sections', 'sections');
+        if ([] === $sections || ! self::table_exists($table)) {
+            return array_fill_keys($sections, 0);
+        }
+        $in = implode(',', array_fill(0, count($sections), '%d'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- LearnPress's own table; $in holds only %d placeholders.
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT section_id, section_course_id FROM %i WHERE section_id IN ($in)", $table, ...$sections), ARRAY_A);
+
+        $out = array_fill_keys($sections, 0);
+        foreach ((array) $rows as $row) {
+            $out[ (int) $row['section_id'] ] = (int) $row['section_course_id'];
+        }
+        return $out;
+    }
+
+    /**
+     * Rebuild LearnPress's cached copy of each course (its learnpress_courses
+     * row and object cache) after its curriculum rows changed, the way
+     * LearnPress's own section models do after a save. A no-op while
+     * LearnPress is not loaded.
+     *
+     * @param array<int, int|string> $courses
+     */
+    public static function refresh_learnpress_courses(array $courses): void
+    {
+        $model = '\\LearnPress\\Models\\CourseModel';
+        $cache = '\\LP_Cache';
+        foreach (array_unique(array_filter(array_map('intval', $courses))) as $course) {
+            if (class_exists($model) && method_exists($model, 'find')) {
+                try {
+                    $found = $model::find($course, true);
+                    if (is_object($found) && method_exists($found, 'save')) {
+                        $found->sections_items = null;
+                        $found->total_items    = null;
+                        $found->save();
+                    }
+                } catch (\Throwable $e) {
+                    // A cache rebuild that fails leaves LearnPress to rebuild it on its next save.
+                    unset($e);
+                }
+            }
+            if (class_exists($cache)) {
+                $lp_cache = new $cache();
+                if (method_exists($lp_cache, 'clear')) {
+                    $lp_cache->clear("courseSection/find/course/{$course}");
+                }
+            }
         }
     }
 
@@ -715,6 +803,15 @@ final class Plugin_Table_Rows_Snapshot
             }
             return;
         }
+        if ('learnpress_section_items' === $kind) {
+            // A section is a row, not a post: its items take edit_post on its
+            // course, and a section that is gone takes manage_options.
+            $ids = array_values(self::learnpress_courses_of($ids));
+            if (in_array(0, $ids, true) && ! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring the items of a LearnPress section that is gone requires the manage_options capability.');
+            }
+            $ids = array_values(array_filter($ids));
+        }
         if ('edd' === $kind) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring Easy Digital Downloads discounts requires the manage_options capability.');
@@ -727,6 +824,9 @@ final class Plugin_Table_Rows_Snapshot
             }
             if ('mepr_rule_access' === $kind) {
                 throw new Mutation_Failed('Rollback refused: restoring the MemberPress access conditions of rule ' . (int) $id . ' requires permission to edit it.');
+            }
+            if (str_starts_with($kind, 'learnpress_')) {
+                throw new Mutation_Failed('Rollback refused: restoring the curriculum of LearnPress course ' . (int) $id . ' requires permission to edit it.');
             }
             throw new Mutation_Failed('Rollback refused: restoring the Pods fields of post ' . (int) $id . ' requires permission to edit it.');
         }
