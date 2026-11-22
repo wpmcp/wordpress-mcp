@@ -523,6 +523,12 @@ final class Plugin
         // An undo of a cache plugin settings write lets the plugin rebuild
         // what it derives from its settings, as its own save does (#692).
         [\WPMCP\Integrations\Cache_Settings_Pack::class, 'after_options_restored'],
+        // An undo of a WPCode snippet write never leaves the snippet active
+        // and rebuilds WPCode's cache of active snippets; an undo of
+        // set-header-footer clears page caches as WPCode's save does (#697).
+        [\WPMCP\Integrations\WPCode_Pack::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],
+        [\WPMCP\Integrations\WPCode_Pack::class, 'after_trash', 'trashed_post'],
+        [\WPMCP\Integrations\WPCode_Pack::class, 'after_options_restored'],
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'restore_translation_group', 'wpmcp_rollback_translation_group'],
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'hold_sync', 'wpmcp_rollback_hold_translation_sync'],
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'release_sync', 'wpmcp_rollback_release_translation_sync'],
@@ -902,6 +908,10 @@ final class Plugin
             // `wp wpmcp gateway-revoke` kill switch. src/Gateway ships on every
             // flavor, so this is unconditional.
             \WPMCP\Gateway\Gateway_Guard::register();
+            // The hardening settings set-hardening switches on (issue #847):
+            // WP MCP's own hooks, each a no-op until its setting is on.
+            // src/Tools/Security ships on every flavor.
+            \WPMCP\Tools\Security\Hardening_Settings::register();
             // OAuth access levels (issue #454): a connection approved as
             // read-only runs read abilities only, and one bound to a scoped
             // identity acts as it. The consent screen is where the approving
@@ -991,7 +1001,12 @@ final class Plugin
             (new \WPMCP\MCP\Hidden_Tool_Refusal())->register();
             // The page request get-query-monitor-page-profile loads with a
             // one-time token (issue #703); a no-op on every other request.
-            \WPMCP\Integrations\Query_Monitor_Status::register();
+            // src/Integrations is not in the WooCommerce build, so the call
+            // is guarded: an unguarded reference fataled every request on
+            // that build (issue #1142).
+            if (class_exists(\WPMCP\Integrations\Query_Monitor_Status::class)) {
+                \WPMCP\Integrations\Query_Monitor_Status::register();
+            }
             // Mounts /wp-json/mcp/wpmcp-server, the JSON-RPC endpoint the
             // README and get-connection-info have always advertised. Without
             // it wp_register_ability() gives us abilities but no MCP
@@ -1097,13 +1112,17 @@ final class Plugin
         // pending-proposal bubble, and the bubble must appear once. Passing
         // the parent's own slug suppresses the auto-copy (see add_submenu_page)
         // and keeps this entry's label exactly what it has always rendered as.
+        // No callback here: this entry shares the parent's slug, so both
+        // resolve to the toplevel_page_wpmcp hook, and add_menu_page above
+        // already attached History_Page::render to it. A second callback
+        // printed the screen twice, and with it the Restore script, so one
+        // click sent two restore requests.
         add_submenu_page(
             'wpmcp',
             self::BRAND,
             self::BRAND,
             Management_Access::CAPABILITY,
-            'wpmcp',
-            [new History_Page(), 'render']
+            'wpmcp'
         );
 
         // Same management gate as the top-level page and Restore_Controller's
@@ -2802,7 +2821,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/scan-security',
             'free',
-            'Scan this site for malware (deep=true: whole tree), core file integrity, hardening gaps, outdated software and known vulnerabilities (vulnerabilities=true; sends slugs and versions to wpvulnerability.net). Returns a 0-100 score, A-F grade and ranked fixes',
+            'Scan this site for malware (deep=true: whole tree), core file integrity, hardening gaps, outdated software and known vulnerabilities (vulnerabilities=true; sends slugs and versions to wpvulnerability.net); checks:[compromise] looks for hack traces. Returns a 0-100 score, A-F grade and ranked fixes',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -2810,7 +2829,7 @@ final class Plugin
                         'type'  => 'array',
                         'items' => [
                             'type' => 'string',
-                            'enum' => ['malware', 'integrity', 'hardening', 'software'],
+                            'enum' => ['malware', 'integrity', 'hardening', 'software', 'compromise'],
                         ],
                     ],
                     'deep'            => [ 'type' => 'boolean' ],
@@ -2833,7 +2852,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/incident-response',
             'free',
-            'list-app-passwords (no secrets); revoke-app-password (uuid or all); list-sessions (one user, masked, no tokens); end-sessions (user_id or all); rotate-salts (wp-config.php, backup kept; refused if unwritable or defined elsewhere); reinstall-core-files (files scan-security flags, from the checksum-verified official package, never wp-content; undo: rollback-operation). Writes need confirm:true. Cannot be undone: revoke, end-sessions, rotate-salts (logs out everyone, your cookie session too, not app passwords). Your session and app password stay unless include_current. Other users take edit_users',
+            'list-app-passwords (no secrets); revoke-app-password (uuid or all); list-sessions (one user, masked, no tokens); end-sessions (user_id or all); rotate-salts (wp-config.php, backup kept; refused if unwritable or defined elsewhere); reinstall-core-files (files scan-security flags, from the checksum-verified official package, never wp-content; undo: rollback-operation); quarantine-file (path, reason: moves it to a private folder; not core, wp-config or WP MCP files; undo: rollback-operation); list-quarantine; restore-quarantined-file (id, overwrite); purge-quarantined-file (id). Quarantine needs the wpmcp_enable_fs_writes opt-in. Writes need confirm:true. Cannot be undone: revoke, end-sessions, rotate-salts (logs out everyone, your cookie session too, not app passwords). Your session and app password stay unless include_current. Other users take edit_users',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -2846,6 +2865,11 @@ final class Plugin
                     'all'             => [ 'type' => 'boolean' ],
                     'include_current' => [ 'type' => 'boolean' ],
                     'paths'           => [ 'type' => 'array', 'items' => [ 'type' => 'string' ] ],
+                    'path'            => [ 'type' => 'string' ],
+                    'reason'          => [ 'type' => 'string' ],
+                    'id'              => [ 'type' => 'string' ],
+                    'overwrite'       => [ 'type' => 'boolean' ],
+                    'unchecked'       => [ 'type' => 'boolean' ],
                     'confirm'         => [ 'type' => 'boolean' ],
                 ],
                 'required'   => [ 'action' ],

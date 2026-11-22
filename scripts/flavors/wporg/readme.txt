@@ -66,8 +66,10 @@ WP MCP keeps copies of site data it needs to work: undo snapshots of what an age
 
 Used by the `scan-security` ability to compare this site's core files
 against the official checksums for its version, so modified core files can
-be reported. It is contacted only when an administrator or an agent runs
-that ability. What is sent: the WordPress version and the site locale, under
+be reported, and by the `incident-response` ability's `quarantine-file`
+action for a file in wp-admin, wp-includes or the install root, so a core
+file is never quarantined. It is contacted only when an administrator or an
+agent runs one of these. What is sent: the WordPress version and the site locale, under
 a `WPMCP-Security-Scanner/1.0` user agent. No content and no personal data.
 Privacy policy: https://wordpress.org/about/privacy/
 
@@ -236,6 +238,13 @@ Statistics from their own tables on this site, MonsterInsights and Jetpack
 through their own reporting code, which uses the account that plugin is
 already connected to. This plugin holds no analytics credentials of its own
 and talks to no analytics provider directly.
+
+With `checks:["compromise"]`, `scan-security` also fetches up to three of
+this site's pages as a browser, as a search crawler (a Googlebot user agent)
+and with a www.google.com Referer header, to spot content shown only to
+search engines, and sends HEAD requests for backup or dump files it finds in
+public folders. Nothing is sent to www.google.com: the Referer is only a
+header on the request to your own site.
 
 = WP MCP Cloud (only if a cloud connection was saved elsewhere) =
 

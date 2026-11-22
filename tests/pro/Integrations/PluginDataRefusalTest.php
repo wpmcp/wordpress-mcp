@@ -38,6 +38,8 @@ class PluginDataRefusalTest extends \WP_UnitTestCase
         'wpmcp_wpforo_active',
         'wpmcp_asgaros_active',
         'wpmcp_gtranslate_active',
+        'wpmcp_loco_active',
+        'wpmcp_surecart_active',
         'wpmcp_wpgraphql_active',
         'wpmcp_checkout_field_editor_active',
     ];
