@@ -44,8 +44,12 @@ final class Ability_Loader
             if (null !== $include && ! $include($d)) {
                 continue;
             }
-            if (isset($d['condition']) && is_array($d['condition']) && ! (bool) call_user_func($d['condition'])) {
-                continue;
+            if (isset($d['condition']) && is_array($d['condition'])) {
+                /** @var callable-array $condition a [class, static method] pair the generator validated */
+                $condition = $d['condition'];
+                if (! (bool) call_user_func($condition)) {
+                    continue;
+                }
             }
             $out[] = $this->ability($d);
         }

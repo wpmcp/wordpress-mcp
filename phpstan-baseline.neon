@@ -1,0 +1,253 @@
+parameters:
+	ignoreErrors:
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 7
+			path: src/Api/V1/Value/Requires.php
+
+		-
+			rawMessage: 'Method WPMCP\Api\V1\Value\Requires::to_array() should return array<string, mixed> but returns array<mixed>.'
+			identifier: return.type
+			count: 1
+			path: src/Api/V1/Value/Requires.php
+
+		-
+			rawMessage: 'Parameter #1 $callback of function array_map expects (callable(mixed): mixed)|null, ''strval'' given.'
+			identifier: argument.type
+			count: 1
+			path: src/Api/V1/Value/Requires.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 8
+			path: src/Kernel/Ability_Loader.php
+
+		-
+			rawMessage: 'Parameter #1 $callback of function array_map expects (callable(mixed): mixed)|null, ''strval'' given.'
+			identifier: argument.type
+			count: 1
+			path: src/Kernel/Ability_Loader.php
+
+		-
+			rawMessage: Variable method call on object.
+			identifier: method.dynamicName
+			count: 1
+			path: src/Kernel/Ability_Loader.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 4
+			path: src/Kernel/Flavor.php
+
+		-
+			rawMessage: 'Parameter #1 $callback of function array_map expects (callable(mixed): mixed)|null, ''strval'' given.'
+			identifier: argument.type
+			count: 1
+			path: src/Kernel/Flavor.php
+
+		-
+			rawMessage: 'Parameter $tier_overrides of class WPMCP\Kernel\Flavor constructor expects array<string, string>, array<string> given.'
+			identifier: argument.type
+			count: 1
+			path: src/Kernel/Flavor.php
+
+		-
+			rawMessage: Cannot cast mixed to int.
+			identifier: cast.int
+			count: 2
+			path: src/Kernel/Hook_Loader.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 4
+			path: src/Kernel/Hook_Loader.php
+
+		-
+			rawMessage: 'Method WPMCP\Kernel\Hook_Loader::callback() should return (non-empty-list&callable(): mixed)|Closure but returns non-empty-list&callable(): mixed.'
+			identifier: return.type
+			count: 1
+			path: src/Kernel/Hook_Loader.php
+
+		-
+			rawMessage: Variable method call on object.
+			identifier: method.dynamicName
+			count: 1
+			path: src/Kernel/Hook_Loader.php
+
+		-
+			rawMessage: Variable method call on object.
+			identifier: method.dynamicName
+			count: 1
+			path: src/Kernel/Lazy_Handler.php
+
+		-
+			rawMessage: Cannot access offset 'tier' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Kernel/Operation_Registry.php
+
+		-
+			rawMessage: Cannot cast mixed to int.
+			identifier: cast.int
+			count: 2
+			path: src/Kernel/Operation_Registry.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 8
+			path: src/Kernel/Operation_Registry.php
+
+		-
+			rawMessage: Casting to bool something that's already bool.
+			identifier: cast.useless
+			count: 1
+			path: src/Kernel/Operation_Registry.php
+
+		-
+			rawMessage: Casting to string something that's already string.
+			identifier: cast.useless
+			count: 2
+			path: src/Kernel/Operation_Registry.php
+
+		-
+			rawMessage: 'Method WPMCP\Kernel\Operation_Registry::permitted_ops() should return array<string, array<string, mixed>> but returns array<string, array<mixed>>.'
+			identifier: return.type
+			count: 1
+			path: src/Kernel/Operation_Registry.php
+
+		-
+			rawMessage: 'Parameter #1 $requires of method WPMCP\Kernel\Presence::satisfies() expects array<string, mixed>|WPMCP\Api\V1\Value\Requires|null, array<mixed, mixed>|null given.'
+			identifier: argument.type
+			count: 1
+			path: src/Kernel/Operation_Registry.php
+
+		-
+			rawMessage: 'Parameter #2 $def of method WPMCP\Kernel\Operation_Registry::bind_methods() expects array<string, mixed>, array<mixed, mixed> given.'
+			identifier: argument.type
+			count: 1
+			path: src/Kernel/Operation_Registry.php
+
+		-
+			rawMessage: Variable method call on object.
+			identifier: method.dynamicName
+			count: 2
+			path: src/Kernel/Operation_Registry.php
+
+		-
+			rawMessage: 'Call to function array_filter() requires parameter #2 to be passed to avoid loose comparison semantics.'
+			identifier: arrayFilter.strict
+			count: 1
+			path: src/Kernel/Presence.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 3
+			path: src/Kernel/Presence.php
+
+		-
+			rawMessage: 'Parameter #1 $callback of function array_map expects (callable(mixed): mixed)|null, ''strval'' given.'
+			identifier: argument.type
+			count: 2
+			path: src/Kernel/Presence.php
+
+		-
+			rawMessage: Cannot access offset 'namespaces' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: Cannot cast mixed to int.
+			identifier: cast.int
+			count: 3
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 10
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Method WPMCP\Kernel\Registry::bindings() should return array<string, string> but returns array<string, mixed>.'
+			identifier: return.type
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Method WPMCP\Kernel\Registry::factories() should return array<string, list<string>> but returns array<string, mixed>.'
+			identifier: return.type
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Method WPMCP\Kernel\Registry::hooks() should return list<array<string, mixed>> but returns list<mixed>.'
+			identifier: return.type
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Method WPMCP\Kernel\Registry::list() should return list<array<string, mixed>> but returns list<mixed>.'
+			identifier: return.type
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Method WPMCP\Kernel\Registry::opt_in_gates() should return array<string, array<string, mixed>> but returns array<string, mixed>.'
+			identifier: return.type
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Method WPMCP\Kernel\Registry::read_file() should return array<int|string, array<string, mixed>> but returns array<mixed>.'
+			identifier: return.type
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Parameter #1 $boot of method WPMCP\Kernel\Registry::add_root() expects array<string, mixed>, array<mixed, mixed> given.'
+			identifier: argument.type
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Property WPMCP\Kernel\Registry::$families (array<string, list<array<string, mixed>>>) does not accept non-empty-array<string, list<mixed>>.'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Property WPMCP\Kernel\Registry::$modules (array<string, array<string, mixed>>) does not accept array<string, array<mixed>>.'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Property WPMCP\Kernel\Registry::$providers (array<string, list<array<string, mixed>>>) does not accept non-empty-array<string, list<mixed>>.'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: Short ternary operator is not allowed. Use null coalesce operator if applicable or consider using long ternary.
+			identifier: ternary.shortNotAllowed
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: 'Value assigned to $accepted[] is never read.'
+			identifier: assign.unused
+			count: 1
+			path: src/Kernel/Registry.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 2
+			path: src/Kernel/Request_Context.php

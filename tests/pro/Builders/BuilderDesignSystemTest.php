@@ -352,6 +352,24 @@ namespace WPMCP\Tests\Pro\Builders {
             $this->assertSame('Top bar', $header_tree[0]->data->properties->content->content->text);
         }
 
+        /** @dataProvider engine_builders */
+        public function test_engine_templates_read_settings_stored_double_encoded(string $builder, string $prefix): void
+        {
+            // Breakdance and Oxygen 6 save template settings with
+            // set_meta( $id, '_<prefix>template_settings', json_encode( $settings ) ),
+            // and set_meta JSON-encodes its value again, so the row holds a
+            // JSON string of a JSON object.
+            $settings = ['type' => 'all', 'ruleGroups' => [], 'priority' => 1, 'triggers' => []];
+            $id       = self::factory()->post->create(['post_type' => $prefix . 'header', 'post_title' => 'Header', 'post_status' => 'publish']);
+            add_post_meta($id, '_' . $prefix . 'template_settings', wp_slash((string) wp_json_encode((string) wp_json_encode($settings))));
+
+            $out = $this->read(['builder' => $builder, 'scope' => 'templates']);
+
+            $this->assertIsArray($out, is_wp_error($out) ? $out->get_error_message() : '');
+            $by_id = array_column($out['templates'], null, 'id');
+            $this->assertSame($settings, $by_id[$id]['settings']);
+        }
+
         public function test_breakdance_1x_templates_read_their_unprefixed_rows(): void
         {
             // Breakdance 1.x keeps a template's tree and conditions in

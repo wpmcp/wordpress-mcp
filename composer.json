@@ -32,7 +32,8 @@
       "WPMCP\\PHPStan\\": "tools/phpstan/src/",
       "WPMCP\\Tests\\Kernel\\": "tests/kernel/",
       "WPMCP\\Tests\\Modules\\": "tests/modules/"
-    }
+    },
+    "classmap": ["tests/kernel/Fixture/"]
   },
   "scripts": {
     "test": "phpunit",
@@ -53,6 +54,8 @@
     "build:woo": "bash scripts/build-woo-release.sh",
     "registry:build": "@php bin/build-registry.php",
     "registry:check": "@php bin/build-registry.php --check --all-flavors",
+    "standard": "bash bin/standard.sh",
+    "standard:diff": "bash bin/standard.sh --diff=origin/main",
     "make:module": "@php bin/make-module.php",
     "test:kernel": "phpunit -c phpunit-fast.xml.dist --testsuite kernel,modules",
     "test:module": "@php bin/test-module.php",

@@ -25,8 +25,8 @@ final class Container
     private array $building = [];
 
     /**
-     * @param array<string, list<string>> $factories class => constructor dependency ids, in order
-     * @param array<string, string>       $bindings  interface => implementing class
+     * @param array<string, list<class-string>> $factories class => constructor dependency ids, in order
+     * @param array<string, class-string>       $bindings  interface => implementing class
      */
     public function __construct(
         private readonly array $factories = [],

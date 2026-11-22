@@ -8,10 +8,11 @@
 #
 # Skip it for one push with WPMCP_SKIP_LOCAL_TESTS=1 git push, or git push --no-verify.
 #
-# The release-flavor class guard (bin/check-flavors.sh, `composer check:flavors`)
-# is the exception: it takes seconds, and CI's compliance and plugin-check jobs
-# fail on it, so it also runs when WPMCP_SKIP_LOCAL_TESTS=1 is set. Only
-# --no-verify or WPMCP_SKIP_FLAVOR_CHECK=1 bypasses it.
+# Two checks are exceptions and run even when WPMCP_SKIP_LOCAL_TESTS=1 is set,
+# since each takes seconds: the release-flavor class guard (bin/check-flavors.sh,
+# `composer check:flavors`; bypass with WPMCP_SKIP_FLAVOR_CHECK=1) and the
+# coding standard on changed lines (bin/standard.sh --diff, `composer
+# standard:diff`; only --no-verify bypasses it).
 
 set -euo pipefail
 
@@ -28,6 +29,17 @@ if [ "${WPMCP_SKIP_FLAVOR_CHECK:-}" != 1 ] && [ -x bin/check-flavors.sh ]; then
 	echo "[pre-push] release-flavor class guard (composer check:flavors)..." >&2
 	if ! bash bin/check-flavors.sh </dev/null; then
 		echo "[pre-push] push blocked: fix the flavor class guard above (CI would fail on it)." >&2
+		exit 1
+	fi
+fi
+
+# The coding standard (docs/CODING-STANDARD.md) on new and changed lines. It
+# takes seconds, so like the flavor guard it also runs under
+# WPMCP_SKIP_LOCAL_TESTS=1; only --no-verify bypasses it.
+if [ -x bin/standard.sh ]; then
+	echo "[pre-push] coding standard on changed lines (composer standard:diff)..." >&2
+	if ! bash bin/standard.sh --diff=origin/main </dev/null; then
+		echo "[pre-push] push blocked: fix the coding standard findings above." >&2
 		exit 1
 	fi
 fi

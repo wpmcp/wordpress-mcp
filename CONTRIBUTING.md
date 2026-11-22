@@ -1,5 +1,20 @@
 # Contributing
 
+## Coding standard and the local merge gate
+
+All new and changed PHP follows [docs/CODING-STANDARD.md](docs/CODING-STANDARD.md).
+Nothing merges to main unless `composer standard` is green on the branch:
+
+```
+composer standard        # full run: v2 roots, gate rules, registry check, central-list guard
+composer standard:diff   # new and changed lines against origin/main (the pre-push hook runs this)
+```
+
+The local merge gate is: `composer standard`, `composer lint`, `composer
+check:flavors`, and the targeted tests for what changed. GitHub Actions is not
+part of it.
+
+
 ## Release flavors: shared code must not name integration or Pro classes
 
 The repository builds three artifacts from one tree: the full plugin, the

@@ -77,7 +77,9 @@ final class Operation_Registry
     {
         $predicate = $row['availability'] ?? null;
         if (is_string($predicate) && '' !== $predicate) {
-            return (bool) call_user_func([(string) $row['class'], $predicate]);
+            /** @var callable(): mixed $check a static method the generator validated */
+            $check = [(string) $row['class'], $predicate];
+            return (bool) call_user_func($check);
         }
         return $this->presence->satisfies(is_array($row['requires'] ?? null) ? $row['requires'] : null);
     }
@@ -162,9 +164,13 @@ final class Operation_Registry
             }
             $class = (string) $row['class'];
             $method = (string) ($row['method'] ?? 'operations');
-            /** @var class-string $class */
+            /**
+             * @var class-string $class
+             * @var callable(): mixed $static a static method the generator validated
+             */
+            $static = [$class, $method];
             $defs = (bool) ($row['static'] ?? true)
-                ? (array) call_user_func([$class, $method])
+                ? (array) call_user_func($static)
                 : (array) $this->container->get($class)->{$method}();
             foreach ($defs as $name => $def) {
                 if ($this->permitted((string) ($def['tier'] ?? 'free'))) {
