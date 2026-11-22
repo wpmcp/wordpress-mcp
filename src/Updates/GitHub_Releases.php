@@ -7,13 +7,16 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * Update notices for free installs of the self-hosted build, from GitHub
- * releases.
+ * Update notices for every install of the self-hosted build, licensed or
+ * not, from GitHub releases.
  *
  * wpmcp.php declares `Update URI: https://wpmcp-pro.com/`, so WordPress never
- * asks wordpress.org about this plugin, and the licensing SDK only runs its
- * own updater for a licensed (premium) install. A free install downloaded
- * from GitHub would otherwise never hear of a new version. Since WordPress
+ * asks wordpress.org about this plugin. The licensing SDK never runs its own
+ * updater for this build either: it starts FS_Plugin_Updater only for a
+ * premium code base (Freemius\Bootstrap sets is_premium to false, since one
+ * build serves free and licensed sites) or when a separate wpmcp-pro/ folder
+ * is installed, and neither holds (issue #1180). Without this class no
+ * install would ever hear of a new version. Since WordPress
  * 5.8, core asks the `update_plugins_{hostname}` filter about every plugin
  * with a custom Update URI, from inside its own update check, so this class
  * answers that filter and nothing else changes in how WordPress updates.
@@ -22,8 +25,12 @@ if (! defined('ABSPATH')) {
  *  - Self-hosted build only. src/Updates is removed from every wordpress.org
  *    style build (scripts/flavors/wporg/policy.php, shared by the WooCommerce
  *    flavor), whose updates come from the directory.
- *  - Licensed sites are left to the licensing SDK: when Pro\Gate::is_pro()
- *    is true every callback here returns what it was given.
+ *  - Licensed sites update from here too: the release's wpmcp-<version>.zip
+ *    is the same full build the licensing SDK ships, and the licence lives
+ *    in the database, so the update keeps it.
+ *  - Full build only (Plugin::flavor() 'full'): any other flavor (the
+ *    WooCommerce and Elementor builds) never takes wpmcp-<version>.zip, so
+ *    no build can update itself into the full plugin.
  *  - The only requests are to api.github.com (the latest release, and the
  *    readme.txt at that release's tag for its WordPress and PHP requirements)
  *    and, when the site owner runs the update, the release zip on
@@ -107,22 +114,22 @@ final class GitHub_Releases
     }
 
     /**
-     * True when this install should take its updates from GitHub: enabled,
-     * and not licensed (the licensing SDK updates licensed sites).
+     * True when this install should take its updates from GitHub: the full
+     * build, and enabled. Licensed or not (issue #1180).
      */
     public static function active(): bool
     {
-        $enabled = ! file_exists(dirname(WPMCP_FILE) . '/.git');
-        /**
-         * Whether free installs check GitHub releases for updates.
-         *
-         * @param bool $enabled Default true, false for a git checkout.
-         */
-        if (! (bool) apply_filters('wpmcp_github_updates_enabled', $enabled)) {
+        if ('full' !== \WPMCP\Plugin::flavor()) {
             return false;
         }
 
-        return ! (class_exists(\WPMCP\Pro\Gate::class) && \WPMCP\Pro\Gate::is_pro());
+        $enabled = ! file_exists(dirname(WPMCP_FILE) . '/.git');
+        /**
+         * Whether this install checks GitHub releases for updates.
+         *
+         * @param bool $enabled Default true, false for a git checkout.
+         */
+        return (bool) apply_filters('wpmcp_github_updates_enabled', $enabled);
     }
 
     /**

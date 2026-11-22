@@ -468,6 +468,8 @@ return [
         // Restore_Site_Backup::JOB_TYPE is 'restore'.
         'src/Tools/Backup/Run_Backup_Job.php' => [
             ["Restore_Site_Backup::JOB_TYPE === (\$job['type'] ?? null)", "'restore' === (\$job['type'] ?? null)", 2],
+            // Issue #1152: no restore imports in this build.
+            ["        return Restore_Site_Backup::is_running() && ! Restore_Site_Backup::holds_lock();\n", "        return false;\n", 1],
         ],
         'src/Tools/Backup/Cancel_Backup_Job.php' => [
             ["Restore_Site_Backup::JOB_TYPE === (\$job['type'] ?? null)", "'restore' === (\$job['type'] ?? null)", 1],
