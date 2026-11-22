@@ -63,14 +63,17 @@ final class Hook_Loader
 
     /**
      * Not typed callable on purpose: checking [Class, method] for
-     * callability autoloads Class, which is exactly what this avoids.
+     * callability autoloads Class, which is exactly what this avoids. The
+     * docblock type says callable only for static analysis.
      *
-     * @return array{0: string, 1: string}|\Closure
+     * @return callable-array|\Closure
      */
     private function callback(string $class, string $method, bool $static): array|\Closure
     {
         if ($static) {
-            return [$class, $method];
+            /** @var callable-array $pair a static method the generator validated */
+            $pair = [$class, $method];
+            return $pair;
         }
         $container = $this->container;
         return static function (mixed ...$args) use ($container, $class, $method): mixed {
@@ -79,7 +82,7 @@ final class Hook_Loader
         };
     }
 
-    /** @param array{0: string, 1: string}|\Closure $callback */
+    /** @param callable-array|\Closure $callback */
     private static function wordpress_adder(string $hook, array|\Closure $callback, int $priority, int $args, bool $filter): bool
     {
         if (! function_exists('add_filter')) {

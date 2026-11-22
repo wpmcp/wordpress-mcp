@@ -8,3 +8,6 @@ CLAUDE.md
 .env.freemius
 /build/
 .DS_Store
+
+# composer standard toolchain (tools/standard/composer.json); the PHPStan phar is cached outside the repo.
+/tools/standard/vendor/

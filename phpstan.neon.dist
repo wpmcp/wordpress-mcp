@@ -1,0 +1,28 @@
+# The PHPStan half of `composer standard` (docs/CODING-STANDARD.md).
+#
+#   bash bin/standard.sh                     # full: tools/phpstan + every v2 root
+#   bash bin/standard.sh --diff=origin/main  # new and changed lines only
+#
+# Level max with phpstan-strict-rules and bleedingEdge, plus the WPMCP module
+# rules (tools/phpstan/extension.neon, gates G2 to G5). The module rules only
+# act on module code (WPMCP\Modules\<Id>\ or the compiled registry) and on the
+# kernel naming a module, so on legacy src/ they are silent.
+#
+# Legacy src/ is not analysed whole: a --diff run analyses each changed file
+# and keeps only the errors on lines the change added or modified (all lines
+# of a new file). That line filter is the legacy baseline; it can only shrink
+# as files are brought up to the standard.
+
+includes:
+    - tools/phpstan/extensions.php
+    - tools/phpstan/extension.neon
+    - tools/phpstan/paths.php
+    # The kernel and API as they landed from v2/kernel (PR #1207) at level 8:
+    # their level max and strict-rules findings, mostly casts of the mixed
+    # values read from the compiled registry arrays. It may only shrink.
+    - phpstan-baseline.neon
+
+parameters:
+    level: max
+    phpVersion: 80100
+    tmpDir: build/phpstan
