@@ -373,6 +373,11 @@ class PackObjectCapabilityRegistryTest extends \WP_UnitTestCase
         'plugin-data:learnpress-update-item:section_id'        => 'a LearnPress section, a row of its own learnpress_sections table rather than a post; the op checks edit_post on the course it belongs to',
         'plugin-data:learnpress-move-item:section_id'          => 'a LearnPress section, a row of its own learnpress_sections table rather than a post; the op checks edit_post on the course it belongs to',
         'plugin-data:learnpress-move-item:parent_id'           => 'a LearnPress section, a row of its own learnpress_sections table rather than a post; the op checks edit_post on the course it belongs to',
+        'plugin-data:masterstudy-add-lesson:parent_id' => 'a MasterStudy LMS section, a row of its own stm_lms_curriculum_sections table rather than a post; the op checks edit_post on the course it belongs to',
+        'plugin-data:masterstudy-add-quiz:parent_id' => 'a MasterStudy LMS section, a row of its own stm_lms_curriculum_sections table rather than a post; the op checks edit_post on the course it belongs to',
+        'plugin-data:masterstudy-update-item:section_id' => 'a MasterStudy LMS section, a row of its own stm_lms_curriculum_sections table rather than a post; the op checks edit_post on the course it belongs to',
+        'plugin-data:masterstudy-move-item:section_id' => 'a MasterStudy LMS section, a row of its own stm_lms_curriculum_sections table rather than a post; the op checks edit_post on the course it belongs to',
+        'plugin-data:masterstudy-move-item:parent_id' => 'a MasterStudy LMS section, a row of its own stm_lms_curriculum_sections table rather than a post; the op checks edit_post on the course it belongs to',
     ];
 
     private string $granted = '';

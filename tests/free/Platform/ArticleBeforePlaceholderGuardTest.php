@@ -65,6 +65,8 @@ class ArticleBeforePlaceholderGuardTest extends \WP_UnitTestCase
         'src/Integrations/LMS_LearnPress.php'                   => ['a {$kind}'],
         // label() is Sensei LMS; the kind after it is lesson or quiz.
         'src/Integrations/LMS_Sensei.php'                       => ['a %s', 'A %s'],
+        // The kind after it is lesson or quiz (issue #1033).
+        'src/Integrations/LMS_MasterStudy.php'                  => ['a {$kind}'],
     ];
 
     public function test_no_message_puts_a_fixed_article_before_a_runtime_value(): void

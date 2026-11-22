@@ -272,6 +272,10 @@ return [
         'src/Integrations/LMS_Thrive_Apprentice.php',
         'src/Integrations/LMS_LearnPress.php',
         'src/Integrations/LMS_Sensei.php',
+        'src/Integrations/LMS_MasterStudy.php',
+        'src/Integrations/MasterStudy_Curriculum_Store.php',
+        'src/Integrations/MasterStudy_Section.php',
+        'src/Integrations/MasterStudy_Material.php',
         // TablePress tables (issue #481), paid-tier. strip.php takes out the
         // lines in Plugin_Data_Integration that merge the ops, count the pack
         // towards availability and name it, and its hooks in Plugin.
