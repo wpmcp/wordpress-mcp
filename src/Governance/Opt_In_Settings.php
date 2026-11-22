@@ -130,6 +130,7 @@ final class Opt_In_Settings
             'wpmcp_enable_font_library_write'      => __('Font Library: install and delete fonts', 'wpmcp'),
             'wpmcp_enable_cache_settings_write'    => __('Cache plugin settings: writes', 'wpmcp'),
             'wpmcp_enable_site_gate_write'         => __('Maintenance and coming soon mode', 'wpmcp'),
+            'wpmcp_enable_consent_write'           => __('Cookie consent banners: banner text writes and a Complianz scan restart', 'wpmcp'),
             'wpmcp_enable_action_scheduler_write'  => __('Action Scheduler: run and cancel actions', 'wpmcp'),
             'wpmcp_enable_crm_send'                => __('CRM: send email', 'wpmcp'),
             'wpmcp_enable_helpdesk_write'          => __('Helpdesk: ticket writes', 'wpmcp'),
