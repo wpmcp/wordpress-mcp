@@ -102,10 +102,10 @@ class ServerRouteScopeTest extends \WP_UnitTestCase
             $_GET                   = [];
             $_POST                  = ['rest_route' => '/mcp/wpmcp-server'];
             $_SERVER['REQUEST_URI'] = '/';
-            $this->assertSame(Context::Mcp, Request_Context::from_globals()->context(), 'WordPress reads rest_route from the POST body too');
+            $this->assertSame(Context::Mcp, Request_Context::from_globals(['rest_route' => '/mcp/wpmcp-server'])->context(), 'WordPress reads rest_route from the POST body too');
+            $this->assertSame(Context::Frontend, Request_Context::from_globals()->context(), 'The body is read from the request, not from $_POST');
 
-            $_POST = ['rest_route' => ['not', 'a', 'string']];
-            $this->assertSame(Context::Frontend, Request_Context::from_globals()->context(), 'A non-string rest_route is ignored');
+            $this->assertSame(Context::Frontend, Request_Context::from_globals(['rest_route' => ['not', 'a', 'string']])->context(), 'A non-string rest_route is ignored');
         } finally {
             $_GET  = $get;
             $_POST = $post;

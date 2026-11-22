@@ -234,6 +234,74 @@ class WporgStripTest extends \WP_UnitTestCase
         $this->assertStringContainsString('src/Thing.php', $output);
     }
 
+    /** The tier site of src/Kernel/Ability_Loader.php: compiled registry data. */
+    private const KERNEL_LOADER = <<<'PHP'
+<?php
+final class Ability_Loader {
+    public function ability(array $d): Ability
+    {
+        $tier = (string) ($d['tier'] ?? 'free');
+        return new Ability(
+            (string) $d['name'],
+            $tier,
+            'desc'
+        );
+    }
+}
+PHP;
+
+    /**
+     * The kernel's Ability_Loader builds abilities from the compiled registry
+     * the build ships (build/registry), so its tier is data, not a source
+     * literal. The gate classifies that one site as registry-sourced and
+     * checks the shipped registry instead: every compiled ability and every
+     * flavor tier override must be free.
+     */
+    public function test_the_gate_accepts_the_kernel_loader_when_the_shipped_registry_is_free(): void
+    {
+        [$status, $output] = $this->assert_free_tier($this->fixture_tree([
+            'src/Kernel/Ability_Loader.php'  => self::KERNEL_LOADER,
+            'build/registry/boot.php'        => "<?php\nreturn ['format' => 1, 'flavor_definition' => ['tier_overrides' => []]];\n",
+            'build/registry/abilities.php'   => "<?php\nreturn [['name' => 'wpmcp/demo', 'tier' => 'free'], ['name' => 'wpmcp/other']];\n",
+        ]));
+
+        $this->assertSame(0, $status, $output);
+    }
+
+    public function test_the_gate_reports_a_paid_ability_in_the_shipped_registry(): void
+    {
+        [$status, $output] = $this->assert_free_tier($this->fixture_tree([
+            'src/Kernel/Ability_Loader.php'  => self::KERNEL_LOADER,
+            'build/registry/boot.php'        => "<?php\nreturn ['format' => 1, 'flavor_definition' => ['tier_overrides' => []]];\n",
+            'build/registry/abilities.php'   => "<?php\nreturn [['name' => 'wpmcp/paid', 'tier' => 'pro']];\n",
+        ]));
+
+        $this->assertSame(1, $status);
+        $this->assertStringContainsString('wpmcp/paid', $output);
+    }
+
+    public function test_the_gate_reports_a_paid_tier_override_in_the_shipped_registry(): void
+    {
+        [$status, $output] = $this->assert_free_tier($this->fixture_tree([
+            'src/Kernel/Ability_Loader.php'  => self::KERNEL_LOADER,
+            'build/registry/boot.php'        => "<?php\nreturn ['format' => 1, 'flavor_definition' => ['tier_overrides' => ['wpmcp/demo' => 'pro']]];\n",
+        ]));
+
+        $this->assertSame(1, $status);
+        $this->assertStringContainsString('wpmcp/demo', $output);
+    }
+
+    /** The classification covers the loader's one `$tier` argument, not the file. */
+    public function test_the_gate_still_reports_another_computed_tier_in_the_kernel_loader(): void
+    {
+        [$status, $output] = $this->assert_free_tier($this->fixture_tree([
+            'src/Kernel/Ability_Loader.php' => "<?php\n\$x = new Ability(\n    'wpmcp/demo',\n    \$this->tier(),\n    'desc'\n);\n",
+        ]));
+
+        $this->assertSame(1, $status);
+        $this->assertStringContainsString('$this->tier()', $output);
+    }
+
     /** An argument list the scanner cannot read is a finding, not a skip. */
     public function test_the_gate_reports_an_ability_call_it_cannot_read(): void
     {
