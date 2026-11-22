@@ -12,8 +12,9 @@ use PHPUnit\Framework\TestCase;
  * three times over, and the Builder_Design refusal listed "betheme or
  * brizycornerstone, betheme or siteorigincornerstone". This scans every string
  * literal under src/ for a builder slug run into another slug or into a
- * capitalised word, and for a string that names one slug twice while listing
- * several. The slugs come from the code: what Builder_Detector returns and
+ * capitalised word (unless the word is an identifier the code uses as a
+ * literal of its own, such as a stored key), and for a string that names one
+ * slug twice while listing several. The slugs come from the code: what Builder_Detector returns and
  * Builder_Design::BUILDERS.
  */
 final class BuilderSlugGlueGuardTest extends TestCase
@@ -68,10 +69,25 @@ final class BuilderSlugGlueGuardTest extends TestCase
     {
         $any   = implode('|', array_map(static fn (string $s): string => preg_quote($s, '/'), self::slugs()));
         $glued = '/(?<![A-Za-z0-9_-])(?:' . $any . ')(?:(?:' . $any . ')(?![a-z0-9_])|[A-Z])/';
+        // Identifiers the code itself uses as one literal (a stored key such
+        // as Oxygen's 'breakdanceData') are names, not glued prose, also
+        // where a message quotes them.
+        $identifiers = [];
+        foreach (self::literals() as [$line, $literal]) {
+            if (1 === preg_match('/^([\'"])([A-Za-z_][A-Za-z0-9_]*)\1$/', $literal, $m)) {
+                $identifiers[ $m[2] ] = true;
+            }
+        }
         $found = [];
         foreach (self::literals() as $where => [$line, $literal]) {
-            if (preg_match($glued, $literal, $m)) {
-                $found[] = strstr($where, ':' . md5($literal), true) . ': "' . $m[0] . '"';
+            if (! preg_match_all($glued, $literal, $matches, PREG_OFFSET_CAPTURE)) {
+                continue;
+            }
+            foreach ($matches[0] as [$match, $offset]) {
+                preg_match('/[A-Za-z0-9_]*/', $literal, $word, 0, $offset);
+                if (! isset($identifiers[ $word[0] ])) {
+                    $found[] = strstr($where, ':' . md5($literal), true) . ': "' . $match . '"';
+                }
             }
         }
 
