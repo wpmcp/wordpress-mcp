@@ -162,11 +162,33 @@ abstract class Integration_Dispatcher
     /** Slug of the integration, e.g. 'acf'. Used in ability and synthetic op names. */
     abstract public function integration(): string;
 
+    /**
+     * Where an in-arguments confirm goes (issue #1156): the tool's own
+     * top-level parameter, beside operation and args. A confirm inside args
+     * is an op argument, never the gate's.
+     */
+    private function confirm_location(): string
+    {
+        return sprintf('the top-level confirm parameter of %s-write, next to operation and args (not inside args)', $this->integration());
+    }
+
     /** Whether the host plugin is loaded in this process. */
     abstract public function is_available(): bool;
 
     /** @return array<string, array> op name => definition (see class docblock). */
     abstract protected function operations(): array;
+
+    /**
+     * The host plugin's main file (for example give/give.php), for a pair
+     * with one host plugin (host_plugin() 'several' false). When set, a call
+     * while the plugin is not active is refused as plugin_inactive or
+     * plugin_missing with the plugins link (issue #1155); empty keeps the
+     * generic integration_unavailable answer.
+     */
+    protected function host_plugin_file(): string
+    {
+        return '';
+    }
 
     /**
      * Whether the pair registers only while its host plugin is loaded. The
@@ -537,6 +559,22 @@ abstract class Integration_Dispatcher
                     );
                 }
             }
+            // Issue #1155: a pair that names its host plugin answers
+            // plugin_inactive or plugin_missing with the plugins link, as
+            // the ops that name theirs do.
+            $host = $this->host_plugin();
+            $file = $this->host_plugin_file();
+            if ('' !== $file && empty($host['several'])) {
+                if (is_array($known)) {
+                    $denied = $this->capability_refusal($op, $known);
+                    if (null !== $denied) {
+                        return $denied;
+                    }
+                }
+                $refusal = Plugin_Refusal::make('plugin_missing', (string) $host['name'], $file);
+                $code    = 'inactive' === ($refusal['data']['state'] ?? '') ? 'plugin_inactive' : 'plugin_missing';
+                return $this->error($code, $refusal['message'], $refusal['data'] + [ 'operation' => $op ]);
+            }
             return $this->error('integration_unavailable', sprintf(
                 'The %s integration is not available: its host plugin is not active on this site.',
                 $this->integration()
@@ -582,8 +620,9 @@ abstract class Integration_Dispatcher
         if ($unconfirmed && ! isset($def['confirm_preview'])) {
             if ($in_arguments) {
                 return $this->error('confirmation_required', sprintf(
-                    'Operation "%s" is destructive and cannot be undone, so it requires confirm:true in the call\'s own arguments; a confirmation answered through the client does not count.',
-                    $op
+                    'Operation "%s" is destructive and cannot be undone, so it requires confirm:true in the call\'s own arguments: %s; a confirmation answered through the client does not count.',
+                    $op,
+                    $this->confirm_location()
                 ), [ Elicitation::IN_ARGUMENTS_KEY => true ]);
             }
             return $this->error('confirmation_required', sprintf(
@@ -643,8 +682,9 @@ abstract class Integration_Dispatcher
                     // Issue #886: the refusal is the whole question, so it
                     // says exactly what confirm:true will do.
                     return $this->error('confirmation_required', sprintf(
-                        'Operation "%s" requires confirm:true in the call\'s own arguments; a confirmation answered through the client does not count. With confirm:true: %s',
+                        'Operation "%s" requires confirm:true in the call\'s own arguments: %s; a confirmation answered through the client does not count. With confirm:true: %s',
                         $op,
+                        $this->confirm_location(),
                         (string) ($preview['message'] ?? '')
                     ), (array) ($preview['data'] ?? []) + [ Elicitation::IN_ARGUMENTS_KEY => true ]);
                 }
