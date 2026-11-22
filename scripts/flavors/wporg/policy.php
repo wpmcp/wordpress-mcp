@@ -36,10 +36,19 @@ return [
         // has nothing left to bite on.
         'src/Pro',
         'src/Freemius',
-        // The in-admin Pro banner links a free install to the paid tier. This
-        // build has no paid tier to link to, and guideline 11 keeps upgrade
-        // notices off a directory plugin anyway.
+        // The in-admin Pro banner links a free install to the paid tier.
+        // Guideline 11 does allow an upgrade prompt in a directory plugin, as
+        // long as it is dismissible and limited to the plugin's own screens,
+        // and guideline 5 allows upselling. The banner leaves anyway because
+        // the first submissions ship none (issue #1140, decision D5); a
+        // dismissible banner on WP MCP's own screens is planned for the first
+        // update after approval.
         'src/Admin/Pro_Banner.php',
+        // Update checks against GitHub releases for free installs of the
+        // self-hosted build. A directory plugin is updated by WordPress.org
+        // and nothing else (guideline 8), and the WooCommerce flavor shares
+        // this list, so neither ships it; their loaders never register it.
+        'src/Updates',
         // Paid ability groups, whole. These are the add-on.
         // Note: src/Cloud stays. Cloud_Client and Cloud_Config are a plain
         // HTTP seam and an option store with no paid gating in them, and the
@@ -179,6 +188,12 @@ return [
         'src/Integrations/Theme_Layouts_Astra.php',
         'src/Integrations/Theme_Layouts_Kadence.php',
         'src/Integrations/Theme_Layouts_GeneratePress.php',
+        'src/Integrations/Theme_Layouts_Hfe.php',
+        'src/Integrations/Theme_Layouts_Target_Rules.php',
+        // The Blocksy Companion extension ops (issue #650), paid-tier.
+        // strip.php takes out the merge and the rollback refresh in
+        // Theme_Framework_Pack.
+        'src/Integrations/Theme_Blocksy_Extensions.php',
         // The Elementor addon suite packs (issue #286): widget catalog and
         // module toggle ops for three addon suites, all paid-tier. strip.php
         // takes out the line in Theme_Integration that merges them and the
@@ -190,6 +205,23 @@ return [
         // And its funnel, step and checkout product writes (issue #500),
         // merged only by FunnelKit_Pack.
         'src/Integrations/FunnelKit_Writes.php',
+        // Thrive Theme Builder templates, sections and theme settings (issue
+        // #824), paid-tier. strip.php takes out the line in Theme_Integration
+        // that merges them.
+        'src/Integrations/Thrive_Theme_Pack.php',
+        // CartFlows flows, steps and checkout products (issue #662),
+        // paid-tier. strip.php takes out the line in Theme_Integration that
+        // merges them.
+        'src/Integrations/CartFlows_Pack.php',
+        // WordPress core personal data request ops (issue #714), paid-tier.
+        // strip.php takes out the line in Theme_Integration that merges them.
+        'src/Integrations/Core_Privacy_Pack.php',
+        // WPFunnels funnels, steps and checkout products (issue #834),
+        // paid-tier. strip.php takes out the line in Theme_Integration that
+        // merges them.
+        'src/Integrations/WPFunnels_Pack.php',
+        // And its order bump ops (issue #663), merged only by FunnelKit_Pack.
+        'src/Integrations/FunnelKit_Bumps.php',
         // LMS course structure and enrollments (issue #394), paid-tier.
         // strip.php takes out the lines in Plugin_Data_Integration that merge
         // the ops, count the pack towards availability and name it in the
@@ -199,6 +231,9 @@ return [
         'src/Integrations/LMS_Tutor.php',
         'src/Integrations/LMS_LifterLMS.php',
         'src/Integrations/LMS_LearnDash.php',
+        'src/Integrations/LMS_Thrive_Apprentice.php',
+        'src/Integrations/LMS_LearnPress.php',
+        'src/Integrations/LMS_Sensei.php',
         // TablePress tables (issue #481), paid-tier. strip.php takes out the
         // lines in Plugin_Data_Integration that merge the ops, count the pack
         // towards availability and name it, and its hooks in Plugin.
@@ -211,6 +246,9 @@ return [
         'src/Integrations/CRM_Adapter.php',
         'src/Integrations/CRM_FluentCRM.php',
         'src/Integrations/CRM_MailPoet.php',
+        // FunnelKit Automations contacts, lists, tags and automations
+        // (issue #831), merged only by CRM_Pack.
+        'src/Integrations/CRM_FunnelKit.php',
         // Amelia bookings (issue #499), paid-tier. strip.php takes out the
         // lines in Plugin_Data_Integration that merge the ops and count the
         // pack towards availability. Its snapshot type and the Amelia
@@ -224,6 +262,8 @@ return [
         // free i18n tools' adapter, stays.
         'src/Integrations/I18n_Pack.php',
         'src/Integrations/I18n_Page_Text.php',
+        // Theme and plugin string translation (issue #689), merged by I18n_Pack.
+        'src/Integrations/I18n_Strings.php',
         // MemberPress (issue #668), paid-tier. strip.php takes out the lines
         // in Plugin_Data_Integration that merge the ops and count the pack
         // towards availability. The plugin_table_rows kind for its rule
@@ -236,6 +276,16 @@ return [
         // needs no GamiPress class, so an undo recorded before a downgrade
         // still restores.
         'src/Integrations/Gamipress_Pack.php',
+        // Thrive Optimize A/B tests (issue #827), paid-tier. strip.php takes
+        // out the lines in Plugin_Data_Integration that merge the ops, count
+        // the pack towards availability and name it in the summary.
+        'src/Integrations/Thrive_Optimize_Pack.php',
+        // Paid Memberships Pro members, orders, discount codes and writes
+        // (issue #667), paid-tier. strip.php takes out the line in
+        // Paid_Memberships_Pro_Integration that merges them; the free level
+        // reads stay. The pmpro_* plugin_table_rows kinds stay: they act on
+        // PMPro's own tables and need no PMPro class.
+        'src/Integrations/Paid_Memberships_Pro_Pack.php',
         // Elementor Pro form submissions (issue #654), paid-tier. strip.php
         // takes out the lines in Plugin_Data_Integration that merge the ops
         // and count the pack towards availability. The dispatcher's
@@ -251,11 +301,29 @@ return [
         'src/Integrations/Helpdesk_Adapter.php',
         'src/Integrations/Helpdesk_Fluent_Support.php',
         'src/Integrations/Helpdesk_Awesome_Support.php',
+        // Thrive Automator automations (issue #830), paid-tier. strip.php
+        // takes out its lines in Plugin_Data_Integration and its rollback
+        // refresher in Plugin.
+        'src/Integrations/Thrive_Automator_Pack.php',
         // Weglot and GTranslate language settings (issue #690), paid-tier.
         // strip.php takes out the lines in Plugin_Data_Integration that merge
         // the ops and count the pack towards availability. The option
         // snapshot it writes is generic and needs no plugin class.
         'src/Integrations/Translation_Settings_Pack.php',
+        // Loco Translate .po files (issue #691), paid-tier, carried onto the
+        // pair by Translation_Settings_Pack; strip.php takes out the line in
+        // Plugin_Data_Integration that names its ops' plugin. The file_write
+        // snapshots it writes are the generic file tools' own.
+        'src/Integrations/Loco_Translate_Pack.php',
+        'src/Integrations/Po_File.php',
+        // SureCart store data (issue #665), paid-tier. strip.php takes out
+        // its lines in Plugin_Data_Integration; SureCart_Api and
+        // SureCart_Snapshot in src/Safety stay for the rollback core.
+        'src/Integrations/SureCart_Pack.php',
+        // Checkout Field Editor for WooCommerce checkout fields (issue #660),
+        // paid-tier. strip.php takes out its lines in Plugin_Data_Integration;
+        // the option snapshot it writes is generic.
+        'src/Integrations/Checkout_Field_Editor_Pack.php',
         // Cache and performance plugin settings (issue #692), paid-tier.
         // strip.php takes out the line in Theme_Integration that merges the
         // ops and the rollback refresher in Plugin.
@@ -269,6 +337,55 @@ return [
         // only. strip.php takes out the lines in Plugin_Data_Integration that
         // merge the ops and count the pack towards availability.
         'src/Integrations/Offload_Media_Pack.php',
+        // Thrive Ultimatum countdown campaigns (issue #828), paid-tier.
+        // strip.php takes out the lines in Plugin_Data_Integration that merge
+        // the ops, count the pack towards availability and name it. The
+        // tve_ult plugin_table_rows kinds stay: they act on the plugin's own
+        // tables and need no Thrive class.
+        'src/Integrations/Thrive_Ultimatum_Pack.php',
+        // Thrive Ovation testimonials (issue #829), paid-tier. strip.php takes
+        // out the lines in Plugin_Data_Integration that merge the ops and
+        // count the pack towards availability. Its writes are post snapshots,
+        // which need no Ovation class.
+        'src/Integrations/Thrive_Ovation_Pack.php',
+        // Thrive Leads (issue #825), paid-tier. strip.php takes out the lines
+        // in Plugin_Data_Integration that merge the ops and count the pack
+        // towards availability. Its two plugin_table_rows kinds stay: they act
+        // on Thrive Leads' own tables and need no Thrive Leads class.
+        'src/Integrations/Thrive_Leads_Pack.php',
+        // wpDataTables and Ninja Tables tables (issue #706), paid-tier.
+        // strip.php takes out the lines in Plugin_Data_Integration that merge
+        // the ops, name their plugins and count the pack towards availability.
+        'src/Integrations/Data_Tables_Pack.php',
+        // Newsletter, Groundhogg, MC4WP and Brevo mailing lists (issue #683),
+        // paid-tier. strip.php takes out the lines in Plugin_Data_Integration
+        // that merge the ops and count the pack towards availability.
+        'src/Integrations/Mailing_List_Pack.php',
+        'src/Integrations/Mailing_List_Newsletter.php',
+        'src/Integrations/Mailing_List_Groundhogg.php',
+        'src/Integrations/Mailing_List_Remote.php',
+        // Jetpack CRM contacts and forms and HubSpot forms (issue #684),
+        // paid-tier. strip.php takes out the lines in Plugin_Data_Integration
+        // that merge the ops and count the packs towards availability. The
+        // jpcrm kind of Plugin_Table_Rows_Snapshot stays: it acts on Jetpack
+        // CRM's own table and names no paid class.
+        'src/Integrations/Jetpack_Crm_Pack.php',
+        'src/Integrations/HubSpot_Pack.php',
+        // Appointment booking plugins (issue #679), paid-tier. strip.php
+        // takes out the lines in Plugin_Data_Integration that merge the ops
+        // and count the pack towards availability.
+        'src/Integrations/Booking_Pack.php',
+        'src/Integrations/Booking_Adapter.php',
+        'src/Integrations/Booking_Bookly.php',
+        'src/Integrations/Booking_Simply_Schedule.php',
+        'src/Integrations/Booking_BookingPress.php',
+        'src/Integrations/Booking_LatePoint.php',
+        // WPCode snippets and global scripts (issue #697), paid-tier.
+        // strip.php takes out the lines in Plugin_Data_Integration that merge
+        // the ops and count the pack towards availability, and its rollback
+        // refreshers in Plugin. The post and option_set snapshots its writes
+        // take are generic and need no WPCode class.
+        'src/Integrations/WPCode_Pack.php',
         // Dynamic single, archive and search templates (issue #290): source
         // discovery, bindings, the theme-pair ops and their front-end wiring,
         // all paid-tier. strip.php takes out the line in Theme_Integration
@@ -288,6 +405,8 @@ return [
         // Its Spectra library source (issue #364), the only path that
         // reaches websitedemos.net.
         'src/Integrations/Block_Suite_Spectra_Library.php',
+        // Otter Blocks settings and page styles (issue #647).
+        'src/Integrations/Block_Suite_Otter.php',
         // Its Kadence Blocks and Spectra settings and page CSS ops (issue #648).
         'src/Integrations/Block_Suite_Settings.php',
         // Stored custom CSS/JS (issue #63). The whole group is pro, so the
