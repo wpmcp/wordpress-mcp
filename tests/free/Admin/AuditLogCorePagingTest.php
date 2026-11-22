@@ -33,7 +33,7 @@ class AuditLogCorePagingTest extends \WP_UnitTestCase
     private function seed_mutations(int $count): void
     {
         for ($i = 1; $i <= $count; $i++) {
-            Snapshot_Store::save('op-' . $i, 'sess', [ 'object_type' => 'post', 'object_id' => $i, 'data' => [ 'post' => null, 'meta' => [] ] ], 'update-post', str_repeat('a', 64));
+            Snapshot_Store::save('op-' . $i, 'sess', [ 'object_type' => 'post', 'object_id' => $i, 'data' => [ 'post' => null, 'meta' => [] ] ], 'update-post', hash('sha256', (string) 'op-' . $i));
         }
     }
 

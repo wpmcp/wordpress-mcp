@@ -35,7 +35,7 @@ class AuditLogPagingTest extends \WP_UnitTestCase
                 'sess-' . $prefix,
                 ['object_type' => 'post', 'object_id' => $i, 'data' => ['post' => null, 'meta' => []]],
                 $tool,
-                str_repeat('a', 64)
+                hash('sha256', (string) $prefix . $i)
             );
         }
     }

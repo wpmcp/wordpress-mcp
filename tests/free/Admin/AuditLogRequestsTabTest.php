@@ -133,7 +133,7 @@ class AuditLogRequestsTabTest extends \WP_UnitTestCase
     public function test_the_history_row_anchor_matches_the_link_target(): void
     {
         $snapshot = ['object_type' => 'post', 'object_id' => 1, 'data' => ['post' => null, 'meta' => []]];
-        Snapshot_Store::save('op-abc-123', 'sess', $snapshot, 'update-post', str_repeat('a', 64));
+        Snapshot_Store::save('op-abc-123', 'sess', $snapshot, 'update-post', hash('sha256', (string) 'op-abc-123'));
         Request_Log::record(['tool' => 'wpmcp/update-post', 'ok' => true, 'operation_id' => 'op-abc-123']);
 
         ob_start();

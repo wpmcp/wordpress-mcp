@@ -17,7 +17,8 @@ class Restore_Controller
     /** AJAX action and nonce action of the Audit Log's Undo session button (issue #1150). */
     public const SESSION_ACTION = 'wpmcp_undo_session';
 
-    public function restore(string $operation_id): array
+    /** @return array|\WP_Error rollback-operation's result, or its error for an unknown id */
+    public function restore(string $operation_id)
     {
         return (new Rollback_Operation())->handle(['operation_id' => $operation_id]);
     }
@@ -28,7 +29,40 @@ class Restore_Controller
             wp_send_json_error(['message' => 'Forbidden'], 403);
         }
 
-        wp_send_json_success($this->restore(sanitize_text_field(wp_unslash($_POST['operation_id'] ?? ''))));
+        // One Audit Log row can stand for a call that wrote several
+        // operations (issue #1126): their ids come comma-separated, newest
+        // first, and are undone in that order. The first refusal stops the
+        // rest and is reported with the tool's own message.
+        $ids = array_values(array_filter(array_map('trim', explode(',', sanitize_text_field(wp_unslash($_POST['operation_id'] ?? '')))), 'strlen'));
+        if ([] === $ids) {
+            wp_send_json_error(['message' => __('No change was named to restore.', 'wpmcp')], 400);
+        }
+
+        $restored = 0;
+        $warnings = [];
+        $last     = [];
+        foreach ($ids as $operation_id) {
+            try {
+                $out = $this->restore($operation_id);
+            } catch (Mutation_Failed $e) {
+                wp_send_json_error(['message' => $e->getMessage(), 'restored_count' => $restored], 409);
+            }
+            if (is_wp_error($out)) {
+                wp_send_json_error(['message' => $out->get_error_message(), 'restored_count' => $restored], 409);
+            }
+            if (empty($out['restored'])) {
+                $why = implode(' ', array_map('strval', (array) ($out['warnings'] ?? [])));
+                wp_send_json_error([
+                    'message'        => '' !== $why ? $why : __('Nothing was restored.', 'wpmcp'),
+                    'restored_count' => $restored,
+                ], 409);
+            }
+            $restored++;
+            $warnings = array_merge($warnings, array_map('strval', (array) ($out['warnings'] ?? [])));
+            $last     = $out;
+        }
+
+        wp_send_json_success(array_merge($last, ['restored' => true, 'restored_count' => $restored, 'warnings' => $warnings]));
     }
 
     /**
