@@ -100,8 +100,11 @@ else
 	done < <({ git diff --name-only --diff-filter=AMR "$base" -- 'src/*.php' 'tools/*.php'; git ls-files --others --exclude-standard -- 'src/*.php' 'tools/*.php'; } | sort -u)
 	say "${#changed[@]} changed PHP file(s) under src/ and tools/ against $diff_ref ($base)"
 	if [ "${#changed[@]}" -gt 0 ]; then
+		# The tools exit non-zero for any finding, legacy lines included, so
+		# their exit status is not the verdict (with pipefail it would fail
+		# every touched legacy file): diff-filter.php decides, and it exits 2
+		# when a tool crashed and printed no JSON report.
 		phpstan_diff() {
-			# The tool exits non-zero on any finding; only the filter's verdict counts.
 			{ "${PHPSTAN[@]}" analyse -c phpstan.neon.dist -a tools/phpstan/autoload.php --no-progress --memory-limit=1G --error-format=json "${changed[@]}" 2>/dev/null || true; } \
 				| php tools/standard/diff-filter.php phpstan "$base"
 		}

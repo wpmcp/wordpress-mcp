@@ -249,5 +249,5 @@ parameters:
 		-
 			rawMessage: Cannot cast mixed to string.
 			identifier: cast.string
-			count: 2
+			count: 1
 			path: src/Kernel/Request_Context.php
