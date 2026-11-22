@@ -26,6 +26,13 @@ final class UpdraftPlus_Status
     /** UpdraftPlus's own backup-now action (class-updraftplus.php, backup_all). */
     public const RUN_HOOK = 'updraft_backupnow_backup_all';
 
+    /**
+     * UpdraftPlus's database-only backup-now action. backup_all() backs up files
+     * whatever its options hold, so a database-only run must use this hook, as
+     * UpdraftPlus's own admin does when "nofiles" is set (issue #1159).
+     */
+    public const DB_RUN_HOOK = 'updraft_backupnow_backup_database';
+
     /** One run per this many seconds. */
     public const RATE_LIMIT = 600;
 
@@ -152,7 +159,7 @@ final class UpdraftPlus_Status
     {
         $crons = _get_cron_array();
         foreach (is_array($crons) ? $crons : [] as $events) {
-            if (! empty($events[ self::RUN_HOOK ])) {
+            if (! empty($events[ self::RUN_HOOK ]) || ! empty($events[ self::DB_RUN_HOOK ])) {
                 return true;
             }
         }
@@ -210,7 +217,7 @@ final class UpdraftPlus_Status
             'backupnow_nofiles' => $db_only ? 1 : 0,
         ];
         $when = time();
-        wp_schedule_single_event($when, self::RUN_HOOK, [ $options ]);
+        wp_schedule_single_event($when, $db_only ? self::DB_RUN_HOOK : self::RUN_HOOK, [ $options ]);
         set_transient(self::RATE_TRANSIENT, $when, self::RATE_LIMIT);
 
         return [
