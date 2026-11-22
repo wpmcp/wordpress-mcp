@@ -249,11 +249,65 @@ final class Analytics_Plugin_Sources
      */
     public static function inactive_error(string $source): \WP_Error
     {
+        if ('jetpack' === $source) {
+            $jetpack = self::jetpack_refusal();
+            if (null !== $jetpack) {
+                return $jetpack;
+            }
+        }
         [ $name, $file ] = self::SOURCES[ $source ];
         $refusal         = \WPMCP\Integrations\Plugin_Refusal::make('plugin_missing', $name, $file);
         $code            = 'inactive' === ($refusal['data']['state'] ?? '') ? 'plugin_inactive' : 'plugin_missing';
 
         return new \WP_Error($code, $refusal['message'], $refusal['data']);
+    }
+
+    /**
+     * Where Jetpack's Stats stand: 'inactive' (Jetpack not loaded),
+     * 'not_connected' (loaded, not connected to WordPress.com), 'stats_off'
+     * (connected, Stats module off) or 'ready'. Filterable through
+     * wpmcp_jetpack_stats_state so tests can stand in for Jetpack.
+     */
+    public static function jetpack_state(): string
+    {
+        $state = 'inactive';
+        if (defined('JETPACK__VERSION')) {
+            $connected = true;
+            if (is_callable([ 'Jetpack', 'is_connection_ready' ])) {
+                $connected = (bool) \Jetpack::is_connection_ready();
+            } elseif (class_exists('Automattic\\Jetpack\\Connection\\Manager')) {
+                $connected = (bool) ( new \Automattic\Jetpack\Connection\Manager() )->is_connected();
+            }
+            $stats = ! is_callable([ 'Jetpack', 'is_module_active' ]) || \Jetpack::is_module_active('stats');
+            $state = ! $connected ? 'not_connected' : ( $stats ? 'ready' : 'stats_off' );
+        }
+
+        return (string) apply_filters('wpmcp_jetpack_stats_state', $state);
+    }
+
+    /**
+     * Issue #1158: Jetpack is active but its Stats cannot answer, so the
+     * refusal names the connection or the Stats module, not the plugin.
+     * Null when Jetpack itself is not active.
+     */
+    private static function jetpack_refusal(): ?\WP_Error
+    {
+        $settings = admin_url('admin.php?page=jetpack');
+        $data     = [ 'plugin' => 'jetpack', 'plugin_name' => 'Jetpack', 'settings_url' => $settings ];
+        switch (self::jetpack_state()) {
+            case 'not_connected':
+                return new \WP_Error('jetpack_not_connected', sprintf(
+                    'Jetpack is active but not connected to WordPress.com, so its Stats are not available. Connect Jetpack to WordPress.com (%s) and switch on the Stats module (Jetpack > Settings > Traffic), then try again.',
+                    $settings
+                ), $data + [ 'state' => 'not_connected' ]);
+            case 'stats_off':
+                return new \WP_Error('jetpack_stats_off', sprintf(
+                    'Jetpack is active and connected, but its Stats module is off. In Jetpack > Settings > Traffic (%s), switch on the Stats module, then try again.',
+                    $settings
+                ), $data + [ 'state' => 'stats_off' ]);
+            default:
+                return null;
+        }
     }
 
     public static function invalid_source(string $source): \WP_Error

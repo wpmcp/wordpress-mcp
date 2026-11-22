@@ -162,6 +162,16 @@ abstract class Integration_Dispatcher
     /** Slug of the integration, e.g. 'acf'. Used in ability and synthetic op names. */
     abstract public function integration(): string;
 
+    /**
+     * Where an in-arguments confirm goes (issue #1156): the tool's own
+     * top-level parameter, beside operation and args. A confirm inside args
+     * is an op argument, never the gate's.
+     */
+    private function confirm_location(): string
+    {
+        return sprintf('the top-level confirm parameter of %s-write, next to operation and args (not inside args)', $this->integration());
+    }
+
     /** Whether the host plugin is loaded in this process. */
     abstract public function is_available(): bool;
 
@@ -582,8 +592,9 @@ abstract class Integration_Dispatcher
         if ($unconfirmed && ! isset($def['confirm_preview'])) {
             if ($in_arguments) {
                 return $this->error('confirmation_required', sprintf(
-                    'Operation "%s" is destructive and cannot be undone, so it requires confirm:true in the call\'s own arguments; a confirmation answered through the client does not count.',
-                    $op
+                    'Operation "%s" is destructive and cannot be undone, so it requires confirm:true in the call\'s own arguments: %s; a confirmation answered through the client does not count.',
+                    $op,
+                    $this->confirm_location()
                 ), [ Elicitation::IN_ARGUMENTS_KEY => true ]);
             }
             return $this->error('confirmation_required', sprintf(
@@ -643,8 +654,9 @@ abstract class Integration_Dispatcher
                     // Issue #886: the refusal is the whole question, so it
                     // says exactly what confirm:true will do.
                     return $this->error('confirmation_required', sprintf(
-                        'Operation "%s" requires confirm:true in the call\'s own arguments; a confirmation answered through the client does not count. With confirm:true: %s',
+                        'Operation "%s" requires confirm:true in the call\'s own arguments: %s; a confirmation answered through the client does not count. With confirm:true: %s',
                         $op,
+                        $this->confirm_location(),
                         (string) ($preview['message'] ?? '')
                     ), (array) ($preview['data'] ?? []) + [ Elicitation::IN_ARGUMENTS_KEY => true ]);
                 }
