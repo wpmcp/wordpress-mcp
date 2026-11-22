@@ -336,7 +336,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             . ', JetFormBuilder forms'
             . ', Kadence Blocks forms'
             . ', Jetpack Forms responses'
-            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS and Thrive Apprentice courses, TablePress tables'
+            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS, Thrive Apprentice and MasterStudy LMS courses, TablePress tables'
             . ', GamiPress points, achievements and ranks'
             . ', wpDataTables and Ninja Tables tables'
             . ', WP Offload Media status'

@@ -253,7 +253,7 @@ class I18nStringsTest extends \WP_UnitTestCase
         $this->assertStringContainsString(I18n_Strings::OPT_IN_FILTER, $out['error']['message']);
     }
 
-    public function test_wpml_answers_that_string_translation_needs_polylang(): void
+    public function test_wpml_without_string_translation_answers_unsupported(): void
     {
         I18n_Adapter::use_plugin_for_tests('wpml');
         foreach ([ 'list-string-domains', 'get-strings' ] as $op) {

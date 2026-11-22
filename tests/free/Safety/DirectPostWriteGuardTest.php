@@ -149,6 +149,10 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new LearnPress lesson or quiz post before placing it in a section row.',
         ],
+        'Integrations/LMS_MasterStudy.php'            => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new MasterStudy LMS lesson or quiz post before placing it in a curriculum materials row (issue #1033).',
+        ],
         'Integrations/Core_Patterns_Pack.php'         => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new synced pattern (wp_block) post.',

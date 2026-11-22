@@ -1567,6 +1567,7 @@ $edits['src/Integrations/Theme_Integration.php'] = [
             . "            CartFlows_Pack::operations(),\n"
             . "            Core_Privacy_Pack::operations(),\n"
             . "            WPFunnels_Pack::operations(),\n"
+            . "            Seo_Extras_Pack::operations(),\n"
             . "            \\WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Dynamic_Template_Ops::operations()\n",
         "            Redirection_Pack::operations(),\n            Rank_Math_Redirects_Pack::operations()\n",
         1,
@@ -2093,9 +2094,9 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
         1,
     ],
     [
-        "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS and Thrive Apprentice courses, TablePress tables'\n"
+        "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS, Thrive Apprentice and MasterStudy LMS courses, TablePress tables'\n"
             . "            . ', FluentCRM and MailPoet, FunnelKit Automations';\n",
-        "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS and Thrive Apprentice courses, TablePress tables';\n",
+        "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS, Thrive Apprentice and MasterStudy LMS courses, TablePress tables';\n",
         1,
     ],
     [
@@ -2134,7 +2135,7 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
             . "            . ', JetFormBuilder forms'\n"
             . "            . ', Kadence Blocks forms'\n"
             . "            . ', Jetpack Forms responses'\n"
-            . "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS and Thrive Apprentice courses, TablePress tables';\n",
+            . "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS, Thrive Apprentice and MasterStudy LMS courses, TablePress tables';\n",
         "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, Custom Post Type UI and MB Custom Post Types post types, Better Search Replace and Search Regex search and replace, Popup Builder, Hustle and Depicter popups, GTM4WP, PixelYourSite, Meta Pixel for WordPress and Microsoft Clarity tracking IDs, Discount Rules for WooCommerce pricing rules, Smash Balloon Instagram Feed feeds, WP All Import and WP All Export jobs, FileBird media folders, Max Mega Menu settings and themes, WP Go Maps, WP Maps and WP Store Locator locations'\n"
             . "            . ', FooGallery galleries'\n"
             . "            . ', JetFormBuilder forms'\n"

@@ -66,6 +66,8 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             'astra-settings',
             'woocommerce_gateway_order',
             'wpseo_taxonomy_meta',
+            // Yoast SEO Premium's redirect list and its exports (issue #681).
+            'wpseo-premium-redirects-*',
             'oxygen_vsb_css_files_state',
             'generateblocks_dynamic_css_posts',
             // Core's site identity and homepage settings, written by the

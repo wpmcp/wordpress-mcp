@@ -272,6 +272,10 @@ return [
         'src/Integrations/LMS_Thrive_Apprentice.php',
         'src/Integrations/LMS_LearnPress.php',
         'src/Integrations/LMS_Sensei.php',
+        'src/Integrations/LMS_MasterStudy.php',
+        'src/Integrations/MasterStudy_Curriculum_Store.php',
+        'src/Integrations/MasterStudy_Section.php',
+        'src/Integrations/MasterStudy_Material.php',
         // TablePress tables (issue #481), paid-tier. strip.php takes out the
         // lines in Plugin_Data_Integration that merge the ops, count the pack
         // towards availability and name it, and its hooks in Plugin.
@@ -302,6 +306,14 @@ return [
         'src/Integrations/I18n_Page_Text.php',
         // Theme and plugin string translation (issue #689), merged by I18n_Pack.
         'src/Integrations/I18n_Strings.php',
+        // Its WPML String Translation half (issue #1053).
+        'src/Integrations/WPML_String_Translation.php',
+        'src/Integrations/WPML_String_Store.php',
+        // Yoast SEO Premium redirects and the schema template reads (issue #681).
+        'src/Integrations/Seo_Extras_Pack.php',
+        'src/Integrations/Yoast_Premium_Redirect_Ops.php',
+        'src/Integrations/Yoast_Redirect_Store.php',
+        'src/Integrations/Seo_Schema_Template_Ops.php',
         // MemberPress (issue #668), paid-tier. strip.php takes out the lines
         // in Plugin_Data_Integration that merge the ops and count the pack
         // towards availability. The plugin_table_rows kind for its rule

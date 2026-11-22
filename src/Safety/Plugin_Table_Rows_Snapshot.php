@@ -160,6 +160,19 @@ if (! defined('ABSPATH')) {
  * course it touched is rebuilt through LearnPress's own course model, as its
  * curriculum editor does after a change.
  *
+ * MasterStudy LMS (issue #1033) keeps a course's curriculum the same way:
+ * `stm_lms_curriculum_sections` (kind masterstudy_sections, the one suffix
+ * "curriculum_sections"), keyed by the course (`course_id`), and
+ * `stm_lms_curriculum_materials` (kind masterstudy_materials, the one suffix
+ * "curriculum_materials"), keyed by the section (`section_id`). MasterStudy
+ * caches neither, so a restore puts the rows back and nothing more.
+ *
+ * WPML String Translation strings (issue #1053, the `icl_strings` table,
+ * the one suffix "strings") are keyed by their own id, with every
+ * `icl_string_translations` row of each string as a companion, so a restore
+ * puts back a string's status and all its translations and removes the
+ * ones a write added.
+ *
  * Easy Digital Downloads discounts (issue #664, the `edd_adjustments` table,
  * the one suffix "adjustments") are keyed by their own id; a create
  * reserves its id the same way. EDD reads the table through BerlinDB, which
@@ -216,6 +229,9 @@ final class Plugin_Table_Rows_Snapshot
         'jpcrm'            => 'zbs_',
         'learnpress_sections'      => 'learnpress_',
         'learnpress_section_items' => 'learnpress_',
+        'masterstudy_sections'     => 'stm_lms_',
+        'masterstudy_materials'    => 'stm_lms_',
+        'wpml_strings'             => 'icl_',
         'edd'              => 'edd_',
     ];
 
@@ -240,6 +256,8 @@ final class Plugin_Table_Rows_Snapshot
         'jpcrm'            => 'ID',
         'learnpress_sections'      => 'section_course_id',
         'learnpress_section_items' => 'section_id',
+        'masterstudy_sections'     => 'course_id',
+        'masterstudy_materials'    => 'section_id',
         'wpforo_forum'          => 'forumid',
         'wpforo_topic'          => 'topicid',
         'wpforo_topic_posts'    => 'topicid',
@@ -298,6 +316,9 @@ final class Plugin_Table_Rows_Snapshot
         'jpcrm'            => [ 'contacts' ],
         'learnpress_sections'      => [ 'sections' ],
         'learnpress_section_items' => [ 'section_items' ],
+        'masterstudy_sections'     => [ 'curriculum_sections' ],
+        'masterstudy_materials'    => [ 'curriculum_materials' ],
+        'wpml_strings'             => [ 'strings' ],
         'edd'              => [ 'adjustments' ],
     ];
 
@@ -314,6 +335,7 @@ final class Plugin_Table_Rows_Snapshot
     private const COMPANIONS = [
         'pmpro_levels' => [ 'membership_levels_groups' => 'level' ],
         'pmpro_codes'  => [ 'discount_codes_levels' => 'code_id' ],
+        'wpml_strings' => [ 'string_translations' => 'string_id' ],
     ];
 
     /** Booking plugin kinds (issue #679), restored under manage_options. */
@@ -800,6 +822,33 @@ final class Plugin_Table_Rows_Snapshot
     }
 
     /**
+     * The courses MasterStudy LMS sections belong to (0 for a section that
+     * is gone), section id => course id (issue #1033).
+     *
+     * @param array<int, int|string> $sections
+     * @return array<int, int>
+     */
+    public static function masterstudy_courses_of(array $sections): array
+    {
+        global $wpdb;
+
+        $sections = array_values(array_filter(array_map('intval', $sections), static fn (int $id): bool => $id > 0));
+        $table    = (string) self::table('masterstudy_sections', 'curriculum_sections');
+        if ([] === $sections || ! self::table_exists($table)) {
+            return array_fill_keys($sections, 0);
+        }
+        $in = implode(',', array_fill(0, count($sections), '%d'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- MasterStudy LMS's own table; $in holds only %d placeholders.
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT id, course_id FROM %i WHERE id IN ($in)", $table, ...$sections), ARRAY_A);
+
+        $out = array_fill_keys($sections, 0);
+        foreach ((array) $rows as $row) {
+            $out[ (int) $row['id'] ] = (int) $row['course_id'];
+        }
+        return $out;
+    }
+
+    /**
      * The courses LearnPress sections belong to (0 for a section that is
      * gone), section id => course id.
      *
@@ -986,6 +1035,12 @@ final class Plugin_Table_Rows_Snapshot
             }
             return;
         }
+        if ('wpml_strings' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring WPML string translations requires the manage_options capability.');
+            }
+            return;
+        }
         if ('trp_dictionary' === $kind) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring TranslatePress translations requires the manage_options capability.');
@@ -1079,6 +1134,15 @@ final class Plugin_Table_Rows_Snapshot
             }
             $ids = array_values(array_filter($ids));
         }
+        if ('masterstudy_materials' === $kind) {
+            // Issue #1033: as for LearnPress, a section is a row; its items
+            // take edit_post on its course, a gone section manage_options.
+            $ids = array_values(self::masterstudy_courses_of($ids));
+            if (in_array(0, $ids, true) && ! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring the items of a MasterStudy LMS section that is gone requires the manage_options capability.');
+            }
+            $ids = array_values(array_filter($ids));
+        }
         if ('edd' === $kind) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring Easy Digital Downloads discounts requires the manage_options capability.');
@@ -1094,6 +1158,9 @@ final class Plugin_Table_Rows_Snapshot
             }
             if (str_starts_with($kind, 'learnpress_')) {
                 throw new Mutation_Failed('Rollback refused: restoring the curriculum of LearnPress course ' . (int) $id . ' requires permission to edit it.');
+            }
+            if (str_starts_with($kind, 'masterstudy_')) {
+                throw new Mutation_Failed('Rollback refused: restoring the curriculum of MasterStudy LMS course ' . (int) $id . ' requires permission to edit it.');
             }
             throw new Mutation_Failed('Rollback refused: restoring the Pods fields of post ' . (int) $id . ' requires permission to edit it.');
         }
