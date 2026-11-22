@@ -6233,7 +6233,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/get-debug-log',
             'free',
-            'Bounded tail (max 200 lines / 64KB) of the debug log, by default WP_CONTENT_DIR/debug.log or the WP_DEBUG_LOG path. A path argument is confined to WP_CONTENT_DIR. source:access searches the web server access log newest first (opt-in, IPs masked): filter {ip,path,status,method,agent,since,until,around_file,window minutes}, lines max 200, cursor; summary:true gives top IPs, paths and PHP POSTs under wp-content',
+            'Bounded tail (max 200 lines / 64KB) of the debug log, by default WP_CONTENT_DIR/debug.log or the WP_DEBUG_LOG path. A path argument is confined to WP_CONTENT_DIR. source:access searches the access log, newest first (opt-in, IPs masked): filter {ip,path,status,method,agent,since,until,around_file,window minutes}, lines max 200, cursor; summary:true: top IPs, paths, wp-content PHP POSTs',
             [
                 'type'       => 'object',
                 'properties' => [
