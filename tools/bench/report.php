@@ -99,7 +99,7 @@ $last   = count($head) - 1;
 foreach ($rows as $row) {
     foreach ($row as $i => $cell) {
         if ($i < $last) {
-            $widths[ $i ] = max($widths[ $i ] ?? 0, strlen($cell));
+            $widths[ $i ] = max($widths[ $i ], strlen($cell));
         }
     }
 }

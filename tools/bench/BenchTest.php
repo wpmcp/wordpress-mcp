@@ -44,7 +44,7 @@ final class BenchTest extends \WP_UnitTestCase
      * Collected across the tests of the class and written once by
      * wpTearDownAfterClass(): PHPUnit builds a new instance per test.
      *
-     * @var array{tools_list: array<string, array{bytes: int, tools: int, source: string}>, scenarios: array<string, array<string, mixed>>}
+     * @var array{tools_list: array<string, array{bytes: int, tools: int, source: string}>, scenarios: array<array-key, array<string, mixed>>}
      */
     private static array $results = ['tools_list' => [], 'scenarios' => []];
 

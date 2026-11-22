@@ -26,3 +26,7 @@ parameters:
     level: max
     phpVersion: 80100
     tmpDir: build/phpstan
+    # The WordPress test case and the WooCommerce calls tools/bench uses,
+    # which the WordPress stubs do not declare.
+    scanFiles:
+        - tools/bench/phpstan-externals.stub

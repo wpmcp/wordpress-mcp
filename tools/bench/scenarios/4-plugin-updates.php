@@ -43,6 +43,7 @@ final class Plugin_Updates implements Scenario
         return 'List plugins with updates available and the pages that use their blocks or widgets';
     }
 
+    /** @return list<string> */
     public function missing(): array
     {
         $missing = [];
@@ -55,6 +56,7 @@ final class Plugin_Updates implements Scenario
         return $missing;
     }
 
+    /** @return array<string, mixed> */
     public function seed(): array
     {
         if (! function_exists('get_plugins')) {
@@ -96,6 +98,10 @@ final class Plugin_Updates implements Scenario
         return ['woo' => $woo, 'elementor' => $elementor];
     }
 
+    /**
+     * @param array<string, mixed> $fixtures
+     * @return array<int, array<string, mixed>>
+     */
     public function steps(array $fixtures): array
     {
         return [
@@ -131,11 +137,16 @@ final class Plugin_Updates implements Scenario
         ];
     }
 
+    /** @return list<string> */
     public function searches(): array
     {
         return ['plugins', 'list-posts'];
     }
 
+    /**
+     * @param array<string, mixed> $fixtures
+     * @param array<string, mixed> $state
+     */
     public function verify(array $fixtures, array $state): ?string
     {
         $woo_ids = array_map(static fn(array $p): int => Data::int($p, 'post_id'), Data::rows($state, 'pages', 0, 'posts'));

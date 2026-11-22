@@ -64,7 +64,7 @@ function wpmcp_bench_remote_prune(): array
 {
     $removed = ['posts' => 0, 'users' => 0, 'orders' => 0, 'terms' => 0];
 
-    $users = array_map('intval', get_users(['meta_key' => WPMCP_BENCH_TAG_META, 'fields' => 'ID', 'number' => -1]));
+    $users = Data::ints([get_users(['meta_key' => WPMCP_BENCH_TAG_META, 'fields' => 'ID', 'number' => -1])], 0);
     if (function_exists('wc_get_orders') && [] !== $users) {
         $orders = wc_get_orders(['customer_id' => $users, 'limit' => -1, 'status' => 'any']);
         foreach (is_array($orders) ? $orders : [] as $order) {

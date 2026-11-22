@@ -43,11 +43,13 @@ final class Elementor_Phone implements Scenario
         return 'Replace the phone number in every Elementor page that contains the old one';
     }
 
+    /** @return list<string> */
     public function missing(): array
     {
         return defined('ELEMENTOR_VERSION') ? [] : ['Elementor'];
     }
 
+    /** @return array<string, mixed> */
     public function seed(): array
     {
         $old   = self::OLD_PHONE;
@@ -102,6 +104,10 @@ final class Elementor_Phone implements Scenario
         return ['with' => $with, 'other' => $other];
     }
 
+    /**
+     * @param array<string, mixed> $fixtures
+     * @return array<int, array<string, mixed>>
+     */
     public function steps(array $fixtures): array
     {
         return [
@@ -137,11 +143,16 @@ final class Elementor_Phone implements Scenario
         ];
     }
 
+    /** @return list<string> */
     public function searches(): array
     {
         return ['search-content', 'elementor'];
     }
 
+    /**
+     * @param array<string, mixed> $fixtures
+     * @param array<string, mixed> $state
+     */
     public function verify(array $fixtures, array $state): ?string
     {
         foreach (Data::ints($fixtures, 'with') as $id) {

@@ -17,8 +17,8 @@ final class Page
     public static function create(array $post): int
     {
         $id = wp_insert_post($post, true);
-        if (! is_int($id) || 0 === $id) {
-            throw new \RuntimeException('could not create the fixture ' . $post['post_title']);
+        if ($id instanceof \WP_Error) {
+            throw new \RuntimeException('could not create the fixture ' . $post['post_title'] . ': ' . $id->get_error_message());
         }
         return $id;
     }

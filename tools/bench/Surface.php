@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WPMCP\Bench;
 
+require_once __DIR__ . '/Data.php';
+
 /**
  * The surfaces a scenario is replayed on (issue #1130).
  *

@@ -33,11 +33,13 @@ final class Draft_Posts implements Scenario
         return 'Create a draft post per row of a 10-row list and tag them';
     }
 
+    /** @return list<string> */
     public function missing(): array
     {
         return [];
     }
 
+    /** @return array<string, mixed> */
     public function seed(): array
     {
         $rows = [];
@@ -50,6 +52,10 @@ final class Draft_Posts implements Scenario
         return ['rows' => $rows, 'tag' => 'bench-batch'];
     }
 
+    /**
+     * @param array<string, mixed> $fixtures
+     * @return array<int, array<string, mixed>>
+     */
     public function steps(array $fixtures): array
     {
         $tag  = Data::str($fixtures, 'tag');
@@ -70,11 +76,16 @@ final class Draft_Posts implements Scenario
         ];
     }
 
+    /** @return list<string> */
     public function searches(): array
     {
         return ['create-post'];
     }
 
+    /**
+     * @param array<string, mixed> $fixtures
+     * @param array<string, mixed> $state
+     */
     public function verify(array $fixtures, array $state): ?string
     {
         $posts = get_posts(['post_type' => 'post', 'post_status' => 'draft', 'tag' => Data::str($fixtures, 'tag'), 'numberposts' => 50]);

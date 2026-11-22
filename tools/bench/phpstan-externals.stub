@@ -1,0 +1,126 @@
+<?php
+
+/**
+ * PHPStan stubs for the external APIs tools/bench calls that the standard's
+ * stubs (php-stubs/wordpress-stubs) do not cover: the WordPress test case
+ * and the WooCommerce calls the scenario fixtures use. Signatures follow
+ * WordPress 7.1's tests/phpunit/includes and WooCommerce 11.3. Read by
+ * PHPStan only (phpstan.neon.dist scanFiles), never loaded at runtime.
+ */
+
+abstract class WP_UnitTestCase extends \PHPUnit\Framework\TestCase
+{
+    public static function wpSetUpBeforeClass(): void
+    {
+    }
+
+    public static function wpTearDownAfterClass(): void
+    {
+    }
+}
+
+class WC_Install
+{
+    public static function create_roles(): void
+    {
+    }
+}
+
+abstract class WC_Data
+{
+    public function get_id(): int
+    {
+    }
+
+    public function save(): int
+    {
+    }
+
+    public function delete(bool $force_delete = false): bool
+    {
+    }
+}
+
+class WC_Product extends WC_Data
+{
+    public function set_name(string $name): void
+    {
+    }
+
+    public function set_regular_price(string $price): void
+    {
+    }
+
+    public function set_status(string $status): void
+    {
+    }
+}
+
+class WC_Product_Simple extends WC_Product
+{
+}
+
+abstract class WC_Abstract_Order extends WC_Data
+{
+    /**
+     * @param array<string, mixed> $args
+     * @return int|false The new item id.
+     */
+    public function add_product(WC_Product $product, int|float $qty = 1, array $args = [])
+    {
+    }
+
+    public function calculate_totals(bool $and_taxes = true): float
+    {
+    }
+
+    /** @return array{from: string, to: string} */
+    public function set_status(string $new_status, string $note = '', bool $manual_update = false): array
+    {
+    }
+
+    public function set_date_created(string|int|null $date = null): void
+    {
+    }
+}
+
+class WC_Order extends WC_Abstract_Order
+{
+    public function set_billing_email(string $value): void
+    {
+    }
+
+    public function set_billing_first_name(string $value): void
+    {
+    }
+
+    public function set_billing_last_name(string $value): void
+    {
+    }
+
+    /** @return list<WC_Order_Refund> */
+    public function get_refunds(): array
+    {
+    }
+}
+
+class WC_Order_Refund extends WC_Abstract_Order
+{
+}
+
+/** @param array<string, mixed> $args */
+function wc_create_order(array $args = []): WC_Order|WP_Error
+{
+}
+
+function wc_get_order(mixed $the_order = false): WC_Order|WC_Order_Refund|false
+{
+}
+
+/**
+ * @param array<string, mixed> $args
+ * @return array<int, WC_Order|WC_Order_Refund|int>|\stdClass
+ */
+function wc_get_orders(array $args)
+{
+}

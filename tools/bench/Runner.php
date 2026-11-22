@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace WPMCP\Bench;
 
+require_once __DIR__ . '/Data.php';
+
 /**
  * Replays one scripted call sequence and counts what it cost (issue #1130).
  *
@@ -50,7 +52,7 @@ final class Runner
      */
     public function run(array $steps): array
     {
-        $out   = [
+        $out = [
             'status'       => 'ok',
             'reason'       => null,
             'calls'        => 0,
@@ -61,18 +63,17 @@ final class Runner
             'state'        => [],
         ];
         $start = microtime(true);
-        $index = 0;
 
-        try {
-            foreach ($steps as $index => $step) {
+        foreach ($steps as $index => $step) {
+            try {
                 $out = $this->run_step($index, $step, $out);
-                if ('ok' !== $out['status']) {
-                    break;
-                }
+            } catch (\Throwable $e) {
+                $out['status'] = 'failed';
+                $out['reason'] = sprintf('step %d: %s', $index, $e->getMessage());
             }
-        } catch (\Throwable $e) {
-            $out['status'] = 'failed';
-            $out['reason'] = sprintf('step %d: %s', $index, $e->getMessage());
+            if ('ok' !== $out['status']) {
+                break;
+            }
         }
 
         $out['ms'] = round((microtime(true) - $start) * 1000, 1);
@@ -102,15 +103,9 @@ final class Runner
             throw new \UnexpectedValueException($tool . ': each must return a list of argument arrays');
         }
 
-        $label  = Data::str($step, 'label');
-        $record = [
-            'tool'  => '' !== $label ? $label : $tool,
-            'via'   => '' !== $label ? $tool : null,
-            'calls' => 0,
-            'bytes' => 0,
-            'ms'    => 0.0,
-        ];
         $values = [];
+        $calls  = 0;
+        $bytes  = 0;
         $began  = microtime(true);
 
         foreach ($list as $args) {
@@ -119,23 +114,29 @@ final class Runner
             }
             $result = ($this->transport)($tool, Data::map([$args], 0));
 
-            $record['calls']++;
-            $record['bytes']     += $result['bytes'];
+            $calls++;
+            $bytes               += $result['bytes'];
             $out['calls']++;
             $out['result_bytes'] += $result['bytes'];
 
             if (null !== $result['error']) {
                 $out['status'] = 'failed';
-                $out['reason'] = sprintf('step %d (%s): %s', $index, $record['tool'], $result['error']);
+                $out['reason'] = sprintf('step %d (%s): %s', $index, self::name($step, $tool), $result['error']);
                 break;
             }
             $values[] = $result['value'];
         }
 
-        $record['ms'] = round((microtime(true) - $began) * 1000, 1);
-        if ($record['calls'] > 0) {
+        if ($calls > 0) {
+            $label = Data::str($step, 'label');
             $out['turns']++;
-            $out['steps'][] = $record;
+            $out['steps'][] = [
+                'tool'  => self::name($step, $tool),
+                'via'   => '' !== $label ? $tool : null,
+                'calls' => $calls,
+                'bytes' => $bytes,
+                'ms'    => round((microtime(true) - $began) * 1000, 1),
+            ];
         }
 
         $as = Data::str($step, 'as');
@@ -143,6 +144,18 @@ final class Runner
             $out['state'][ $as ] = $fan_out ? $values : ($values[0] ?? null);
         }
         return $out;
+    }
+
+    /**
+     * The name a step is reported under: its label (the target tool of a
+     * call-tool wrapper) or the tool it calls.
+     *
+     * @param array<string, mixed> $step
+     */
+    private static function name(array $step, string $tool): string
+    {
+        $label = Data::str($step, 'label');
+        return '' !== $label ? $label : $tool;
     }
 
     /**

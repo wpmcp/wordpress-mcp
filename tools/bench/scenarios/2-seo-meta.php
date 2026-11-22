@@ -38,11 +38,13 @@ final class Seo_Meta implements Scenario
         return 'Set the meta description on every published page that has none (40 pages)';
     }
 
+    /** @return list<string> */
     public function missing(): array
     {
         return function_exists('wp_has_ability') && wp_has_ability('wpmcp/update-seo-meta') ? [] : ['an SEO plugin (Yoast SEO, Rank Math or similar)'];
     }
 
+    /** @return array<string, mixed> */
     public function seed(): array
     {
         $with    = [];
@@ -73,6 +75,10 @@ final class Seo_Meta implements Scenario
         return ['with' => $with, 'without' => $without, 'drafts' => $drafts];
     }
 
+    /**
+     * @param array<string, mixed> $fixtures
+     * @return array<int, array<string, mixed>>
+     */
     public function steps(array $fixtures): array
     {
         return [
@@ -102,11 +108,16 @@ final class Seo_Meta implements Scenario
         ];
     }
 
+    /** @return list<string> */
     public function searches(): array
     {
         return ['seo', 'list-posts'];
     }
 
+    /**
+     * @param array<string, mixed> $fixtures
+     * @param array<string, mixed> $state
+     */
     public function verify(array $fixtures, array $state): ?string
     {
         if (40 !== count(Data::arr($state, 'pages', 'posts'))) {

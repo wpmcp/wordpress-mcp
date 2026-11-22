@@ -40,11 +40,13 @@ final class Woo_Refund implements Scenario
         return 'Find the 5 most recent orders of a customer by email and refund the newest';
     }
 
+    /** @return list<string> */
     public function missing(): array
     {
         return class_exists('WooCommerce') && function_exists('wc_create_order') ? [] : ['WooCommerce'];
     }
 
+    /** @return array<string, mixed> */
     public function seed(): array
     {
         add_filter('wpmcp_woo_op_enabled', static fn(mixed $enabled, mixed $op): mixed => 'refunds.create' === $op ? true : $enabled, 10, 2);
@@ -69,6 +71,10 @@ final class Woo_Refund implements Scenario
         return ['email' => self::EMAIL, 'newest_order' => $mine[1]];
     }
 
+    /**
+     * @param array<string, mixed> $fixtures
+     * @return array<int, array<string, mixed>>
+     */
     public function steps(array $fixtures): array
     {
         return [
@@ -103,11 +109,16 @@ final class Woo_Refund implements Scenario
         ];
     }
 
+    /** @return list<string> */
     public function searches(): array
     {
         return ['woo'];
     }
 
+    /**
+     * @param array<string, mixed> $fixtures
+     * @param array<string, mixed> $state
+     */
     public function verify(array $fixtures, array $state): ?string
     {
         $orders = Data::rows($state, 'orders', 'body');
