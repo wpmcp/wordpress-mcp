@@ -65,11 +65,109 @@ if (! defined('ABSPATH')) {
  * assignment table has no id column, so its rows are read in attachment
  * order.
  *
+ * Smash Balloon Instagram Feed (issue #902) keeps its feeds in
+ * `sbi_feeds` and their fetched and rendered data in `sbi_feed_caches`,
+ * both keyed by id (kind sbi, suffixes "feeds" and "feed_caches" only, so
+ * its `sbi_sources` table, which holds access tokens, can never be
+ * captured). After a restore the plugin's object cache entry for each
+ * restored feed is dropped, so the next page view reads the rows back.
+ *
+ * Discount Rules for WooCommerce rules (issue #901, the `wdr_rules` table,
+ * the one suffix "rules") are keyed by their own id the same way; restoring
+ * one takes manage_woocommerce, the plugin's own capability.
+ *
+ * Thrive Ultimatum (issue #828) keeps a campaign's timeline
+ * (`tve_ult_events`, kind tve_ult_events, suffix "events") and its display
+ * settings (`tve_ult_settings_campaign`, kind tve_ult_display, suffix
+ * "settings_campaign") in tables of its own, keyed here by the campaign they
+ * belong to (`campaign_id`), so a snapshot taken before a write covers the
+ * rows it inserts and the ones it deletes. Restoring takes manage_options.
+ *
+ * Thrive Leads (issue #825) keeps a lead group's display rules as one row of
+ * `tve_leads_group_options` (kind tve_leads_options, the one suffix
+ * "group_options"), keyed by the `group` column because Thrive Leads saves
+ * them by deleting the group's row and inserting a new one, and a form
+ * design as a row of `tve_leads_form_variations` (kind tve_leads_variations,
+ * the one suffix "form_variations"), keyed and ordered by its `key` column.
+ * Restoring either takes manage_options or Thrive Leads' own tve-use-tl.
+ *
+ * Paid Memberships Pro (issue #667) keeps levels, memberships and discount
+ * codes in tables of its own, each kind with its one suffix: levels
+ * (`pmpro_membership_levels`) and discount codes (`pmpro_discount_codes`)
+ * by id, and a member's membership rows (`pmpro_memberships_users`) by
+ * user_id, so a snapshot taken before a level change covers the row PMPro
+ * inserts as well as the ones it ends. A level's group assignment
+ * (`pmpro_membership_levels_groups`, by level) and a code's level pricing
+ * (`pmpro_discount_codes_levels`, by code_id) are companion rows: captured
+ * and put back with their parent rows, when their table exists. After a
+ * membership restore PMPro's cached levels of each captured user are
+ * dropped, so its next read sees the restored rows.
+ *
+ * wpDataTables simple tables (issue #706) keep their cells as one JSON row
+ * per table row in `wpdatatables_rows` and their size in the table's own
+ * row in `wpdatatables`. Kind wpdatatables_rows (the one suffix "rows") is
+ * keyed by `table_id`, so one snapshot covers every row of a table, rows a
+ * write adds included; kind wpdatatables (the table name split as "wpdata"
+ * and the one suffix "tables") is the table's own row, keyed by id.
+ * Ninja Tables rows (kind ninja_table, the one suffix "items") are keyed by
+ * their own id; an insert names the ids it made once it has them. After a
+ * Ninja Tables restore its render cache of the tables involved is cleared
+ * through its own function, as its own row edits do.
+ *
+ * Booking plugin rows (issue #679) are one booking each: Bookly's
+ * `bookly_customer_appointments`, Simply Schedule Appointments'
+ * `ssa_appointments`, BookingPress's `bookingpress_appointment_bookings`
+ * (keyed by bookingpress_appointment_booking_id) and LatePoint's
+ * `latepoint_bookings`, each kind allowing only that one suffix.
+ *
+ * Forum rows (issue #671) come from two forum plugins' own tables. wpForo
+ * keeps its main board in {prefix}wpforo_forums, _topics, _posts and
+ * _postmeta, keyed by forumid and topicid (posts and postmeta captured by
+ * the topic they belong to, so a moved topic's rows all go back). Asgaros
+ * Forum keeps {prefix}forum_topics and forum_posts keyed by id, and a
+ * topic's posts by their parent_id. Each kind allows only its one table.
+ * After a wpForo restore its own cache is cleaned (wpforo_clean_cache), as
+ * its screens do after a change.
+ *
+ * Restrict Content membership levels (issue #669, the
+ * `restrict_content_pro` table the plugin names its levels table, so kind
+ * rcp_levels with the prefix "restrict_content_" and the one suffix
+ * "pro") are keyed by their own id. After a restore the plugin's cached
+ * copies of the rows are dropped (its BerlinDB cache group
+ * rcp-membership_levels), as its own query does after a write.
+ *
+ * Jetpack CRM contacts (issue #684, the `zbs_contacts` table, the one
+ * suffix "contacts") are keyed by their `ID` column. An update's image is
+ * put back as it was. A create's image holds no row: its undo removes the
+ * contact through Jetpack CRM's own deleteContact(), which also drops the
+ * tags, aliases, meta and logs the plugin added with it, and is refused,
+ * leaving the contact in place, once quotes, invoices, transactions or tasks
+ * have been linked to it since or while the plugin is not loaded.
+ *
+ * LearnPress (issue #672) keeps a course's curriculum in two tables of its
+ * own: `learnpress_sections` (kind learnpress_sections, the one suffix
+ * "sections"), keyed by the course (`section_course_id`), and
+ * `learnpress_section_items` (kind learnpress_section_items, the one suffix
+ * "section_items"), keyed by the section (`section_id`). A snapshot taken
+ * before a write therefore covers the rows the write inserts, the way the
+ * MemberPress kind does. After a restore, LearnPress's cached copy of each
+ * course it touched is rebuilt through LearnPress's own course model, as its
+ * curriculum editor does after a change.
+ *
+ * Easy Digital Downloads discounts (issue #664, the `edd_adjustments` table,
+ * the one suffix "adjustments") are keyed by their own id; a create
+ * reserves its id the same way. EDD reads the table through BerlinDB, which
+ * caches rows and query results in the object cache, so after a restore the
+ * cached lookups of the table are retired (purge_edd_cache()), the way
+ * BerlinDB's own writes do.
+ *
  * Restoring takes the capability the write itself needs: edit_post on each
- * captured post for a Pods row or a MemberPress rule's rows, manage_options
- * for a dictionary row or a Pretty Links link, upload_files for a FileBird
- * row, and Wordfence's own admin capability (manage_options,
- * manage_network on a multisite network) for a Wordfence row.
+ * captured post for a Pods row, a MemberPress rule's rows or a LearnPress
+ * course's sections, edit_post on the course a LearnPress section belongs to
+ * for that section's items, manage_options
+ * for a dictionary row, a Pretty Links link, a Restrict Content level, an EDD discount, a forum row, a booking, an Instagram Feed row or a wpDataTables or Ninja Tables row, upload_files for a FileBird row, and Wordfence's own admin capability (manage_options,
+ * manage_network on a multisite network) for a Wordfence row, and Jetpack
+ * CRM's admin_zerobs_customers (or manage_options) for a contact.
  */
 final class Plugin_Table_Rows_Snapshot
 {
@@ -84,6 +182,34 @@ final class Plugin_Table_Rows_Snapshot
         'prli'             => 'prli_',
         'fbv'              => '',
         'fbv_attachment'   => 'fbv_',
+        'sbi'              => 'sbi_',
+        'wdr'              => 'wdr_',
+        'tve_ult_events'   => 'tve_ult_',
+        'tve_ult_display'  => 'tve_ult_',
+        'tve_leads_options'    => 'tve_leads_',
+        'tve_leads_variations' => 'tve_leads_',
+        'bookly'           => 'bookly_',
+        'ssa'              => 'ssa_',
+        'bookingpress'     => 'bookingpress_',
+        'latepoint'        => 'latepoint_',
+        'wpforo_forum'          => 'wpforo_',
+        'wpforo_topic'          => 'wpforo_',
+        'wpforo_topic_posts'    => 'wpforo_',
+        'wpforo_topic_postmeta' => 'wpforo_',
+        'asgaros_topic'         => 'forum_',
+        'asgaros_post'          => 'forum_',
+        'asgaros_topic_posts'   => 'forum_',
+        'pmpro_levels'     => 'pmpro_',
+        'pmpro_members'    => 'pmpro_',
+        'pmpro_codes'      => 'pmpro_',
+        'wpdatatables'      => 'wpdata',
+        'wpdatatables_rows' => 'wpdatatables_',
+        'ninja_table'       => 'ninja_table_',
+        'rcp_levels'       => 'restrict_content_',
+        'jpcrm'            => 'zbs_',
+        'learnpress_sections'      => 'learnpress_',
+        'learnpress_section_items' => 'learnpress_',
+        'edd'              => 'edd_',
     ];
 
     /**
@@ -99,12 +225,35 @@ final class Plugin_Table_Rows_Snapshot
     private const KEY_COLUMNS = [
         'mepr_rule_access' => 'rule_id',
         'wordfence_blocks' => 'IP',
+        'tve_ult_events'   => 'campaign_id',
+        'tve_ult_display'  => 'campaign_id',
+        'bookingpress'     => 'bookingpress_appointment_booking_id',
+        'pmpro_members'    => 'user_id',
+        'wpdatatables_rows' => 'table_id',
+        'jpcrm'            => 'ID',
+        'learnpress_sections'      => 'section_course_id',
+        'learnpress_section_items' => 'section_id',
+        'wpforo_forum'          => 'forumid',
+        'wpforo_topic'          => 'topicid',
+        'wpforo_topic_posts'    => 'topicid',
+        'wpforo_topic_postmeta' => 'topicid',
+        'asgaros_topic_posts'   => 'parent_id',
+        'tve_leads_options'    => 'group',
+        'tve_leads_variations' => 'key',
         'fbv_attachment'   => 'attachment_id',
     ];
 
-    /** kind => the column its rows are read in order of, for a table with no id column. */
+    /** kind => the column its rows are read in order of, for a table with no `id` column. */
     private const ORDER_COLUMNS = [
-        'fbv_attachment' => 'attachment_id',
+        'bookingpress'             => 'bookingpress_appointment_booking_id',
+        'learnpress_sections'      => 'section_id',
+        'learnpress_section_items' => 'section_item_id',
+        'wpforo_forum'          => 'forumid',
+        'wpforo_topic'          => 'topicid',
+        'wpforo_topic_posts'    => 'postid',
+        'wpforo_topic_postmeta' => 'metaid',
+        'tve_leads_variations' => 'key',
+        'fbv_attachment'   => 'attachment_id',
     ];
 
     /** kind => the only suffixes it allows, for a kind with a fixed table. */
@@ -114,7 +263,48 @@ final class Plugin_Table_Rows_Snapshot
         'prli'             => [ 'links' ],
         'fbv'              => [ 'fbv' ],
         'fbv_attachment'   => [ 'attachment_folder' ],
+        'sbi'              => [ 'feeds', 'feed_caches' ],
+        'wdr'              => [ 'rules' ],
+        'tve_ult_events'   => [ 'events' ],
+        'tve_ult_display'  => [ 'settings_campaign' ],
+        'tve_leads_options'    => [ 'group_options' ],
+        'tve_leads_variations' => [ 'form_variations' ],
+        'bookly'           => [ 'customer_appointments' ],
+        'ssa'              => [ 'appointments' ],
+        'bookingpress'     => [ 'appointment_bookings' ],
+        'latepoint'        => [ 'bookings' ],
+        'wpforo_forum'          => [ 'forums' ],
+        'wpforo_topic'          => [ 'topics' ],
+        'wpforo_topic_posts'    => [ 'posts' ],
+        'wpforo_topic_postmeta' => [ 'postmeta' ],
+        'asgaros_topic'         => [ 'topics' ],
+        'asgaros_post'          => [ 'posts' ],
+        'asgaros_topic_posts'   => [ 'posts' ],
+        'pmpro_levels'     => [ 'membership_levels' ],
+        'pmpro_members'    => [ 'memberships_users' ],
+        'pmpro_codes'      => [ 'discount_codes' ],
+        'wpdatatables'      => [ 'tables' ],
+        'wpdatatables_rows' => [ 'rows' ],
+        'ninja_table'       => [ 'items' ],
+        'rcp_levels'       => [ 'pro' ],
+        'jpcrm'            => [ 'contacts' ],
+        'learnpress_sections'      => [ 'sections' ],
+        'learnpress_section_items' => [ 'section_items' ],
+        'edd'              => [ 'adjustments' ],
     ];
+
+    /**
+     * kind => [companion table suffix (after the kind's own prefix) => the
+     * column holding the parent id]. Companion rows are captured and
+     * restored with their parent rows, when the table exists.
+     */
+    private const COMPANIONS = [
+        'pmpro_levels' => [ 'membership_levels_groups' => 'level' ],
+        'pmpro_codes'  => [ 'discount_codes_levels' => 'code_id' ],
+    ];
+
+    /** Booking plugin kinds (issue #679), restored under manage_options. */
+    private const BOOKING_KINDS = [ 'bookly', 'ssa', 'bookingpress', 'latepoint' ];
 
     /** kind => its binary columns, carried as lowercase hex in the snapshot and in the key. */
     private const BINARY_COLUMNS = [
@@ -247,7 +437,7 @@ final class Plugin_Table_Rows_Snapshot
         $in = implode(',', array_fill(0, count($ids), '%d'));
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- a snapshot must read the live rows of a third-party table; $in holds only %d placeholders.
-        $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE %i IN ($in) ORDER BY %i ASC", $table, $column, ...array_merge($ids, [ $order ])), ARRAY_A);
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE %i IN ($in) ORDER BY %i ASC", ...array_merge([ $table, $column ], $ids, [ $order ])), ARRAY_A);
 
         return array_values((array) $rows);
     }
@@ -276,8 +466,104 @@ final class Plugin_Table_Rows_Snapshot
                 'ids'          => $parsed['ids'],
                 'table_exists' => $exists,
                 'rows'         => $exists ? self::kind_rows($parsed['kind'], (string) $table, $parsed['ids']) : [],
-            ],
+            ] + (isset(self::COMPANIONS[ $parsed['kind'] ]) ? [ 'companions' => self::capture_companions($parsed['kind'], $parsed['ids']) ] : []),
         ];
+    }
+
+    /**
+     * The companion rows of a kind under its ids: suffix => [exists, rows].
+     *
+     * @param array<int, int|string> $ids
+     * @return array<string, array{exists: bool, rows: array}>
+     */
+    private static function capture_companions(string $kind, array $ids): array
+    {
+        $out = [];
+        foreach (self::COMPANIONS[ $kind ] ?? [] as $suffix => $column) {
+            $table          = self::companion_table($kind, (string) $suffix);
+            $exists         = self::table_exists($table);
+            $out[ $suffix ] = [ 'exists' => $exists, 'rows' => $exists ? self::companion_rows($table, (string) $column, $ids) : [] ];
+        }
+        return $out;
+    }
+
+    /** A kind's companion table: the site prefix, the kind's prefix and the fixed companion suffix. */
+    private static function companion_table(string $kind, string $suffix): string
+    {
+        global $wpdb;
+        return $wpdb->prefix . self::KINDS[ $kind ] . $suffix;
+    }
+
+    /**
+     * Rows of a companion table under the parent ids, ordered by the parent
+     * column (a companion table need not have an id column).
+     *
+     * @param array<int, int|string> $ids
+     * @return array<int, array<string, string|null>>
+     */
+    private static function companion_rows(string $table, string $column, array $ids): array
+    {
+        global $wpdb;
+
+        $ids = array_values(array_filter(array_map('intval', $ids), static fn (int $id): bool => $id > 0));
+        if ([] === $ids) {
+            return [];
+        }
+        $in = implode(',', array_fill(0, count($ids), '%d'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- a snapshot must read the live rows of a third-party table; $in holds only %d placeholders.
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE %i IN ($in) ORDER BY %i ASC", $table, $column, ...array_merge($ids, [ $column ])), ARRAY_A);
+
+        return array_values((array) $rows);
+    }
+
+    /**
+     * Put a kind's companion rows back: delete every row under the captured
+     * ids, then insert each captured row. A companion table that did not
+     * exist at capture, or is gone now, is left alone.
+     *
+     * @param array<int, int|string> $ids
+     */
+    private static function restore_companions(string $kind, array $ids, array $captured): void
+    {
+        global $wpdb;
+
+        $in = implode(',', array_fill(0, count($ids), '%d'));
+        foreach (self::COMPANIONS[ $kind ] ?? [] as $suffix => $column) {
+            $data  = (array) ($captured[ $suffix ] ?? []);
+            $table = self::companion_table($kind, (string) $suffix);
+            if (empty($data['exists']) || ! self::table_exists($table)) {
+                continue;
+            }
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- third-party table with no WP API; $in holds only %d placeholders.
+            if (false === $wpdb->query($wpdb->prepare("DELETE FROM %i WHERE %i IN ($in)", $table, (string) $column, ...$ids))) {
+                throw new Mutation_Failed('Could not clear the rows being restored in ' . esc_html($table) . '.');
+            }
+            foreach ((array) ($data['rows'] ?? []) as $row) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- third-party table with no WP API.
+                if (false === $wpdb->insert($table, (array) $row)) {
+                    throw new Mutation_Failed('Could not restore a row of ' . esc_html($table) . ': ' . esc_html($wpdb->last_error));
+                }
+            }
+        }
+    }
+
+    /**
+     * Drop Paid Memberships Pro's cached levels of each user whose
+     * membership rows were restored (its own cache keys, group pmpro).
+     *
+     * @param array<int, int|string> $ids
+     */
+    private static function clear_pmpro_user_cache(array $ids): void
+    {
+        global $all_membership_levels;
+        foreach (array_map('intval', $ids) as $user_id) {
+            if (is_array($all_membership_levels)) {
+                unset($all_membership_levels[ $user_id ]);
+            }
+            foreach ([ '', '_all', '_active' ] as $suffix) {
+                wp_cache_delete('user_' . $user_id . '_levels' . $suffix, 'pmpro');
+            }
+        }
     }
 
     /**
@@ -301,6 +587,13 @@ final class Plugin_Table_Rows_Snapshot
         if (isset(self::BINARY_COLUMNS[ $kind ])) {
             self::restore_binary($kind, $table, $ids, (array) ($data['rows'] ?? []));
             self::after_wordfence_restore($kind);
+            return;
+        }
+
+        if ('jpcrm' === $kind && [] === (array) ($data['rows'] ?? [])) {
+            foreach ($ids as $id) {
+                self::remove_jpcrm_contact((int) $id);
+            }
             return;
         }
 
@@ -333,7 +626,138 @@ final class Plugin_Table_Rows_Snapshot
                 clean_post_cache((int) $id);
             }
         }
+        if ('sbi' === $kind) {
+            self::drop_instagram_feed_cache((string) ($data['suffix'] ?? ''), (array) ($data['rows'] ?? []));
+        }
+        if (isset(self::COMPANIONS[ $kind ])) {
+            self::restore_companions($kind, $ids, (array) ($data['companions'] ?? []));
+        }
+        if ('pmpro_members' === $kind) {
+            self::clear_pmpro_user_cache($ids);
+        }
+        if ('ninja_table' === $kind) {
+            self::clear_ninja_tables_cache(array_merge(array_column((array) ($data['rows'] ?? []), 'table_id'), (array) ($data['table_ids'] ?? [])));
+        }
+        if (str_starts_with($kind, 'wpforo_') && function_exists('wpforo_clean_cache')) {
+            wpforo_clean_cache();
+        }
+        if ('rcp_levels' === $kind) {
+            self::flush_rcp_level_cache($ids);
+        }
+        if ('learnpress_sections' === $kind) {
+            self::refresh_learnpress_courses($ids);
+        }
+        if ('learnpress_section_items' === $kind) {
+            self::refresh_learnpress_courses(self::learnpress_courses_of($ids));
+        }
+        if ('edd' === $kind) {
+            self::purge_edd_cache((string) $data['suffix'], $ids);
+        }
         self::after_wordfence_restore($kind);
+    }
+
+    /**
+     * Drop Instagram Feed's object cache entry (sbi_feed_<feed>_1, the key
+     * its cache class reads first) for every feed whose rows were restored.
+     */
+    private static function drop_instagram_feed_cache(string $suffix, array $rows): void
+    {
+        foreach ($rows as $row) {
+            $feed = 'feeds' === $suffix ? (string) ($row['id'] ?? '') : (string) ($row['feed_id'] ?? '');
+            if ('' !== $feed) {
+                wp_cache_delete('sbi_feed_' . $feed . '_1');
+            }
+        }
+    }
+
+    /**
+     * Drop Ninja Tables' cached rows and HTML of the given tables through
+     * its own function. A no-op while Ninja Tables is not loaded.
+     *
+     * @param array<int, int|string> $table_ids
+     */
+    public static function clear_ninja_tables_cache(array $table_ids): void
+    {
+        if (! function_exists('ninjaTablesClearTableDataCache')) {
+            return;
+        }
+        foreach (array_unique(array_filter(array_map('intval', $table_ids))) as $table_id) {
+            \ninjaTablesClearTableDataCache($table_id);
+        }
+    }
+
+    /**
+     * Drop Restrict Content's cached copies of the given membership level
+     * rows and move its level query cache on, as its own BerlinDB query does
+     * after a write (cache group rcp-membership_levels).
+     *
+     * @param array<int, int|string> $ids
+     */
+    public static function flush_rcp_level_cache(array $ids): void
+    {
+        foreach ($ids as $id) {
+            wp_cache_delete((int) $id, 'rcp-membership_levels');
+        }
+        wp_cache_set('last_changed', microtime(), 'rcp-membership_levels');
+    }
+
+    /**
+     * Undo a Jetpack CRM contact create: remove the contact through the
+     * plugin's own deleteContact(), so the tags, aliases, meta and logs it
+     * added go with it. Refused (Mutation_Failed, the contact left in place)
+     * once quotes, invoices, transactions or tasks are linked to it, or
+     * while the plugin's API is not loaded. A contact already gone is fine.
+     */
+    private static function remove_jpcrm_contact(int $id): void
+    {
+        global $wpdb;
+
+        $contacts = (string) self::table('jpcrm', 'contacts');
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table, read live.
+        if (0 === (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE ID = %d', $contacts, $id))) {
+            return;
+        }
+        $links = $wpdb->prefix . 'zbs_object_links';
+        if (self::table_exists($links)) {
+            // Quote 3, invoice 4, transaction 5 and task 6, linked to contact (type 1).
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Jetpack CRM's own table, read live.
+            $linked = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE zbsol_objtype_to = 1 AND zbsol_objid_to = %d AND zbsol_objtype_from IN (3, 4, 5, 6)', $links, $id));
+            if ($linked > 0) {
+                throw new Mutation_Failed(sprintf('Rollback refused: Jetpack CRM contact %d has %d quote(s), invoice(s), transaction(s) or task(s) linked since it was created, so it was left in place.', (int) $id, (int) $linked));
+            }
+        }
+        $zbs = $GLOBALS['zbs'] ?? null;
+        $api = is_object($zbs) && isset($zbs->DAL) && is_object($zbs->DAL) && isset($zbs->DAL->contacts) ? $zbs->DAL->contacts : null;
+        if (! is_object($api) || ! method_exists($api, 'deleteContact')) {
+            throw new Mutation_Failed(sprintf('Rollback refused: Jetpack CRM is not active, so contact %d was left in place. Activate it and undo again.', (int) $id));
+        }
+        $api->deleteContact([ 'id' => $id, 'saveOrphans' => false ]);
+    }
+
+    /**
+     * Retire Easy Digital Downloads' cached lookups for rows of one of its
+     * tables, as BerlinDB does after its own writes: the rows cached by id
+     * (group edd-<suffix>) are dropped, and the last_changed stamp of the
+     * table's query cache and of each by-column lookup group
+     * (edd-<suffix>-by-<column>) is rotated, so every cached result is
+     * rebuilt on the next read.
+     *
+     * @param array<int, int|string> $ids
+     */
+    public static function purge_edd_cache(string $suffix, array $ids): void
+    {
+        $table = self::table('edd', $suffix);
+        if (null === $table) {
+            return;
+        }
+        $group = 'edd-' . $suffix;
+        foreach ($ids as $id) {
+            wp_cache_delete((int) $id, $group);
+        }
+        wp_cache_set('last_changed', microtime(), $group);
+        foreach (self::columns($table) as $column) {
+            wp_cache_set('last_changed', microtime(), $group . '-by-' . $column);
+        }
     }
 
     /**
@@ -347,6 +771,68 @@ final class Plugin_Table_Rows_Snapshot
         $class = '\\RankMath\\Redirections\\Cache';
         if (class_exists($class) && method_exists($class, 'purge')) {
             $class::purge(array_map('intval', $ids));
+        }
+    }
+
+    /**
+     * The courses LearnPress sections belong to (0 for a section that is
+     * gone), section id => course id.
+     *
+     * @param array<int, int|string> $sections
+     * @return array<int, int>
+     */
+    public static function learnpress_courses_of(array $sections): array
+    {
+        global $wpdb;
+
+        $sections = array_values(array_filter(array_map('intval', $sections), static fn (int $id): bool => $id > 0));
+        $table    = (string) self::table('learnpress_sections', 'sections');
+        if ([] === $sections || ! self::table_exists($table)) {
+            return array_fill_keys($sections, 0);
+        }
+        $in = implode(',', array_fill(0, count($sections), '%d'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- LearnPress's own table; $in holds only %d placeholders.
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT section_id, section_course_id FROM %i WHERE section_id IN ($in)", $table, ...$sections), ARRAY_A);
+
+        $out = array_fill_keys($sections, 0);
+        foreach ((array) $rows as $row) {
+            $out[ (int) $row['section_id'] ] = (int) $row['section_course_id'];
+        }
+        return $out;
+    }
+
+    /**
+     * Rebuild LearnPress's cached copy of each course (its learnpress_courses
+     * row and object cache) after its curriculum rows changed, the way
+     * LearnPress's own section models do after a save. A no-op while
+     * LearnPress is not loaded.
+     *
+     * @param array<int, int|string> $courses
+     */
+    public static function refresh_learnpress_courses(array $courses): void
+    {
+        $model = '\\LearnPress\\Models\\CourseModel';
+        $cache = '\\LP_Cache';
+        foreach (array_unique(array_filter(array_map('intval', $courses))) as $course) {
+            if (class_exists($model) && method_exists($model, 'find')) {
+                try {
+                    $found = $model::find($course, true);
+                    if (is_object($found) && method_exists($found, 'save')) {
+                        $found->sections_items = null;
+                        $found->total_items    = null;
+                        $found->save();
+                    }
+                } catch (\Throwable $e) {
+                    // A cache rebuild that fails leaves LearnPress to rebuild it on its next save.
+                    unset($e);
+                }
+            }
+            if (class_exists($cache)) {
+                $lp_cache = new $cache();
+                if (method_exists($lp_cache, 'clear')) {
+                    $lp_cache->clear("courseSection/find/course/{$course}");
+                }
+            }
         }
     }
 
@@ -404,30 +890,27 @@ final class Plugin_Table_Rows_Snapshot
         $live   = self::columns($table);
         $binary = self::BINARY_COLUMNS[ $kind ];
         foreach ($rows as $row) {
-            $columns = [];
-            $values  = [];
-            $names   = [];
-            $args    = [];
+            $values = [];
+            $names  = [];
+            $args   = [];
             foreach ((array) $row as $column => $value) {
                 $column = (string) $column;
                 if (! in_array($column, $live, true)) {
                     throw new Mutation_Failed('Could not restore a row of ' . esc_html($table) . ': its column ' . esc_html($column) . ' is gone.');
                 }
-                $columns[] = '%i';
-                $names[]   = $column;
-                if (null === $value) {
-                    $values[] = 'NULL';
-                    continue;
+                $names[] = $column;
+                // Each value is one of three literals: NULL, %s, or UNHEX(%s)
+                // for a binary column.
+                $values[] = (null === $value ? 'NULL' : (in_array($column, $binary, true) ? 'UNHEX(%s)' : '%s'));
+                if (null !== $value) {
+                    $args[] = (string) $value;
                 }
-                $values[] = in_array($column, $binary, true) ? 'UNHEX(%s)' : '%s';
-                $args[]   = (string) $value;
             }
-            if ([] === $columns) {
+            if ([] === $names) {
                 continue;
             }
-            $sql = 'INSERT INTO %i (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ')';
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- third-party table with no WP API; $sql holds only %i, %s, UNHEX(%s) and NULL.
-            if (false === $wpdb->query($wpdb->prepare($sql, $table, ...$names, ...$args))) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- third-party table with no WP API; one %i per column, and $values holds only %s, UNHEX(%s) and NULL.
+            if (false === $wpdb->query($wpdb->prepare('INSERT INTO %i (' . implode(', ', array_fill(0, count($names), '%i')) . ') VALUES (' . implode(', ', $values) . ')', $table, ...$names, ...$args))) {
                 throw new Mutation_Failed('Could not restore a row of ' . esc_html($table) . ': ' . esc_html($wpdb->last_error));
             }
         }
@@ -490,9 +973,84 @@ final class Plugin_Table_Rows_Snapshot
             }
             return;
         }
+        if ('wdr' === $kind) {
+            if (! current_user_can('manage_woocommerce')) {
+                throw new Mutation_Failed('Rollback refused: restoring a Discount Rules rule requires the manage_woocommerce capability.');
+            }
+            return;
+        }
+        if ('tve_ult_events' === $kind || 'tve_ult_display' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring a Thrive Ultimatum campaign\'s ' . ('tve_ult_events' === $kind ? 'timeline' : 'display rules') . ' requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('tve_leads_options' === $kind || 'tve_leads_variations' === $kind) {
+            if (! current_user_can('manage_options') && ! current_user_can('tve-use-tl')) {
+                throw new Mutation_Failed('Rollback refused: restoring Thrive Leads settings requires the manage_options or tve-use-tl capability.');
+            }
+            return;
+        }
+        if (str_starts_with($kind, 'pmpro_')) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring Paid Memberships Pro levels, memberships or discount codes requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('jpcrm' === $kind) {
+            if (! current_user_can('admin_zerobs_customers') && ! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring a Jetpack CRM contact requires the admin_zerobs_customers capability.');
+            }
+            return;
+        }
+        if (in_array($kind, self::BOOKING_KINDS, true)) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring a booking requires the manage_options capability.');
+            }
+            return;
+        }
         if ('prli' === $kind) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring Pretty Links links requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('sbi' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring Instagram Feed feeds or caches requires the manage_options capability.');
+            }
+            return;
+        }
+        if (in_array($kind, [ 'wpdatatables', 'wpdatatables_rows', 'ninja_table' ], true)) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring ' . ('ninja_table' === $kind ? 'Ninja Tables' : 'wpDataTables') . ' rows requires the manage_options capability.');
+            }
+            return;
+        }
+        if (str_starts_with($kind, 'wpforo_') || str_starts_with($kind, 'asgaros_')) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring forum rows requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('rcp_levels' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring a Restrict Content membership level requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('learnpress_section_items' === $kind) {
+            // A section is a row, not a post: its items take edit_post on its
+            // course, and a section that is gone takes manage_options.
+            $ids = array_values(self::learnpress_courses_of($ids));
+            if (in_array(0, $ids, true) && ! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring the items of a LearnPress section that is gone requires the manage_options capability.');
+            }
+            $ids = array_values(array_filter($ids));
+        }
+        if ('edd' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring Easy Digital Downloads discounts requires the manage_options capability.');
             }
             return;
         }
@@ -502,6 +1060,9 @@ final class Plugin_Table_Rows_Snapshot
             }
             if ('mepr_rule_access' === $kind) {
                 throw new Mutation_Failed('Rollback refused: restoring the MemberPress access conditions of rule ' . (int) $id . ' requires permission to edit it.');
+            }
+            if (str_starts_with($kind, 'learnpress_')) {
+                throw new Mutation_Failed('Rollback refused: restoring the curriculum of LearnPress course ' . (int) $id . ' requires permission to edit it.');
             }
             throw new Mutation_Failed('Rollback refused: restoring the Pods fields of post ' . (int) $id . ' requires permission to edit it.');
         }
