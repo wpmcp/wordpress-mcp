@@ -20,7 +20,9 @@ function source_tree_scanning_tests( array $test_files ): array {
 		$src = (string) @file_get_contents( $file );
 		$walks = preg_match( '/RecursiveDirectoryIterator|\bglob\s*\(|\bscandir\s*\(|ls-files/', $src );
 		$names = preg_match( '#[\'"/]src[\'"/]|\'/src\b|"src"|\'src\'#', $src );
-		if ( $walks && $names ) {
+		// Guards that walk the source through the edition-aware helper
+		// (tests/support/edition-tree.php) scan src/ (and pro/src) too.
+		if ( ( $walks && $names ) || preg_match( '/Edition_Tree::\w*sources\s*\(/', $src ) ) {
 			$out[] = $file;
 		}
 	}

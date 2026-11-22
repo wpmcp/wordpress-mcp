@@ -160,7 +160,12 @@ class TestGateTest extends TestCase
     {
         $root  = $this->repository();
         $files = [];
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root . '/tests', \FilesystemIterator::SKIP_DOTS));
+        // tests/ and, when it is checked out, the Pro suite in pro/tests.
+        $dirs = array_filter([$root . '/tests', $root . '/pro/tests'], 'is_dir');
+        $iterator = new \AppendIterator();
+        foreach ($dirs as $dir) {
+            $iterator->append(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS)));
+        }
         foreach ($iterator as $file) {
             if (! str_ends_with((string) $file, 'Test.php')) {
                 continue;
@@ -188,7 +193,9 @@ class TestGateTest extends TestCase
                 $seen[$group] = true;
             }
             $want = array_values(array_unique($want));
-            $have = explode(',', $cols[7]);
+            // A file of the private Pro suite is listed at its pro/tests path;
+            // without pro/ it is not here to carry its group.
+            $have = array_values(array_filter(explode(',', $cols[7]), static fn (string $f): bool => ! str_starts_with($f, 'pro/') || is_file($root . '/' . $f)));
             sort($want);
             sort($have);
             $this->assertSame($want, $have, "the tests column of leg {$cols[0]}");

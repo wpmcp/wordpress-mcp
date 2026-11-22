@@ -22,7 +22,7 @@ class ImpactSrcScannersTest extends TestCase
         chdir($root);
         try {
             $tests = [];
-            foreach ([ 'tests/free', 'tests/pro' ] as $dir) {
+            foreach (array_filter([ 'tests/free', 'tests/pro', 'pro/tests' ], 'is_dir') as $dir) {
                 $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS));
                 foreach ($it as $f) {
                     if (str_ends_with($f->getFilename(), 'Test.php')) {

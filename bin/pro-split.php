@@ -431,6 +431,23 @@ function method_ranges(string $src): array
     return $out;
 }
 
+/**
+ * The slot id for a moved method: never the method name itself, so no
+ * build that removes the method still names it (the wp.org free-tier gate
+ * checks for exactly that). register_x_abilities -> abilities.x,
+ * register_x_runtime_hooks -> runtime.x.
+ */
+function slot_id(string $method): string
+{
+    if (1 === preg_match('/^register_(.+)_abilities$/', $method, $m)) {
+        return 'abilities.' . $m[1];
+    }
+    if (1 === preg_match('/^register_(.+)_runtime_hooks$/', $method, $m)) {
+        return 'runtime.' . $m[1];
+    }
+    return 'method.' . $method;
+}
+
 /** Index of the matching close paren for the open paren at $open in $s. */
 function match_paren(string $s, int $open): int
 {
@@ -615,12 +632,18 @@ function extract_plugin_slots(string $src): ?array
     foreach ($method_names as $name) {
         $plugin = (string) preg_replace_callback(
             '/\$this->' . preg_quote($name, '/') . '\((\$registrar)?\)/',
-            static fn (array $m): string => SLOT_MARKER . var_export($name, true) . ', $this->edition_context(' . (isset($m[1]) && '' !== $m[1] ? '$registrar' : 'null') . '))',
+            static fn (array $m): string => SLOT_MARKER . var_export(slot_id($name), true) . ', $this->edition_context(' . (isset($m[1]) && '' !== $m[1] ? '$registrar' : 'null') . '))',
             $plugin
         );
         if (str_contains($plugin, '$this->' . $name . '(')) {
             fail("Plugin.php still calls {$name}() in a form the split does not rewrite");
         }
+    }
+
+    // Comments that still name a moved method name its slot instead.
+    foreach ($method_names as $name) {
+        $plugin = (string) preg_replace('/\b' . preg_quote($name, '/') . '\(\)/', 'the ' . slot_id($name) . ' edition slot', $plugin);
+        $plugin = (string) preg_replace('/\b' . preg_quote($name, '/') . '\b/', slot_id($name), $plugin);
     }
 
     // The slot plumbing, added once after registrar().
@@ -763,13 +786,13 @@ function render_slot_class(string $plugin_src, array $methods, array $pieces, ar
         $has_registrar = 1 === preg_match('/function ' . preg_quote($name, '/') . '\(\s*Registrar \$registrar\s*\)/', $code);
         if ($has_registrar) {
             $code = (string) preg_replace('/function ' . preg_quote($name, '/') . '\(\s*Registrar \$registrar\s*\)/', 'function ' . $name . '(Registrar $registrar, Edition_Context $context)', $code, 1);
-            $arms[] = "            '{$name}' => \$this->with_registrar(\$context, fn (Registrar \$registrar) => \$this->{$name}(\$registrar, \$context)),";
+            $arms[] = "            '" . slot_id($name) . "' => \$this->with_registrar(\$context, fn (Registrar \$registrar) => \$this->{$name}(\$registrar, \$context)),";
         } else {
             $code = (string) preg_replace('/function ' . preg_quote($name, '/') . '\(\s*\)/', 'function ' . $name . '(Edition_Context $context)', $code, 1, $count);
             if (1 !== $count) {
                 fail("method {$name} has a signature the split does not handle");
             }
-            $arms[] = "            '{$name}' => \$this->run_plain(fn () => \$this->{$name}(\$context)),";
+            $arms[] = "            '" . slot_id($name) . "' => \$this->run_plain(fn () => \$this->{$name}(\$context)),";
         }
         $code = (string) preg_replace('/^(\s+)public function /m', '$1private function ', $code, 1);
         $bodies[] = $code;
@@ -805,11 +828,11 @@ function render_slot_class(string $plugin_src, array $methods, array $pieces, ar
 
 namespace WPMCP\\Pro;
 
-{$imports_s}
-
 if (! defined('ABSPATH')) {
     exit;
 }
+
+{$imports_s}
 
 /**
  * The Pro part of the Plugin.php surface: registration methods, ability
@@ -908,6 +931,12 @@ function rewrite_dir_paths(string $code, string $old, string $new, \Closure $map
             // `__DIR__ . '/../..'` rather than dirname(): it stays valid in a
             // constant expression.
             $up = rtrim(str_repeat('../', $new_depth), '/');
+            if (! $has_concat && '' === $target) {
+                // A bare repository root: keep it a real path (code compares
+                // it with resolved file names); dirname() is never valid in a
+                // constant expression, so neither was the original.
+                return 'dirname(__DIR__, ' . $new_depth . ')';
+            }
             return "__DIR__ . '/" . $up . ('' === $target ? '' : '/' . $target) . $trailing . "'";
         },
         $code
@@ -922,13 +951,13 @@ function rewrite_moved_method_uses(string $code, array $methods): string
         // Plugin::instance()->m() and ->m($registrar)
         $code = (string) preg_replace_callback(
             '/((?:\\\\?WPMCP\\\\)?Plugin::instance\(\))->' . $q . '\((\$\w+)?\)/',
-            static fn (array $mm): string => $mm[1] . "->run_edition_slot('{$m}'" . (isset($mm[2]) && '' !== $mm[2] ? ', ' . $mm[2] : '') . ')',
+            static fn (array $mm): string => $mm[1] . "->run_edition_slot('" . slot_id($m) . "'" . (isset($mm[2]) && '' !== $mm[2] ? ', ' . $mm[2] : '') . ')',
             $code
         );
         // new ReflectionMethod(Plugin::class, 'm')
         $code = (string) preg_replace('/(ReflectionMethod\(\s*)(?:\\\\?WPMCP\\\\)?Plugin::class(\s*,\s*\'' . $q . '\')/', '$1\\\\WPMCP\\\\Pro\\\\Plugin_Slots::class$2', $code);
         // A source assertion on the call text.
-        $code = str_replace("'" . $m . "()'", "'" . $m . "'", $code);
+        $code = str_replace("'" . $m . "()'", "'" . slot_id($m) . "'", $code);
     }
     return $code;
 }
@@ -1089,7 +1118,16 @@ function plan(string $root): array
         }
     }
 
-    // 6. Test tooling lists.
+    // 6. Test tooling lists. bin/legs.tsv names a live group's test files:
+    //    those keep their row, at their new path.
+    $legs_file = $root . '/bin/legs.tsv';
+    if (is_file($legs_file)) {
+        $legs = (string) file_get_contents($legs_file);
+        $new_legs = (string) preg_replace_callback('#tests/[A-Za-z0-9_./-]+\.php#', static fn (array $m): string => $moves[ $m[0] ] ?? $m[0], $legs);
+        if ($new_legs !== $legs) {
+            $writes['bin/legs.tsv'] = $new_legs;
+        }
+    }
     $lists = prune_test_lists($root, $moves);
     $writes += $lists['writes'];
     if ($lists['dropped'] > 0) {
