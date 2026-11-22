@@ -31,6 +31,9 @@ if (! defined('ABSPATH')) {
  *    switched off first;
  *  - deactivate-snippet is never gated, so an active snippet can always be
  *    switched off;
+ *  - trash-snippet (issue #1129) moves an inactive, unlocked snippet of
+ *    any type to the Code Snippets trash through its own trash_snippet();
+ *    rollback puts the row back as it was;
  *  - nothing here ever saves a snippet as active, so Code Snippets never
  *    runs its code on our behalf.
  * Only PHP snippets (global, admin, front-end and single-use scopes) are
@@ -169,6 +172,14 @@ final class Code_Snippets_Pack
                 'validate'     => static fn (array $args): ?array => self::access_refusal() ?? self::missing_refusal((int) $args['id']) ?? self::state_refusal((int) $args['id'], true),
                 'snapshot'     => $row,
                 'handler'      => static fn (array $args, array $context): array => self::deactivate((int) $args['id'], (string) ($context['operation_id'] ?? '')),
+            ],
+            'code-snippets-trash-snippet'      => $base + [
+                'mode'         => 'write',
+                'description'  => 'Move an inactive, unlocked Code Snippets snippet of any type to its trash. Active snippets are refused (deactivate first). Snapshotted; rollback brings it back',
+                'input_schema' => $id_only,
+                'validate'     => static fn (array $args): ?array => self::trash_refusal((int) $args['id']),
+                'snapshot'     => $row,
+                'handler'      => static fn (array $args, array $context): array => self::trash((int) $args['id'], (string) ($context['operation_id'] ?? '')),
             ],
         ];
     }
@@ -314,9 +325,45 @@ final class Code_Snippets_Pack
         return [ 'snippet' => self::view(self::find($id)) ];
     }
 
+    private static function trash(int $id, string $operation): array
+    {
+        // Re-checked at write time, as update() does.
+        $snippet = self::find($id);
+        if (! empty($snippet->active)) {
+            self::void($operation);
+            throw new Operation_Refused('snippet_active', 'The snippet was activated meanwhile; deactivate it before trashing it.');
+        }
+        if (! \Code_Snippets\trash_snippet($id, false)) {
+            self::void($operation);
+            throw new Operation_Refused('write_failed', 'Code Snippets did not move the snippet to the trash.');
+        }
+        return [ 'snippet' => self::view(self::find($id)) ];
+    }
+
     // -----------------------------------------------------------------
     // Checks
     // -----------------------------------------------------------------
+
+    /**
+     * Refusal for trash-snippet (issue #1129): Code Snippets 3.8+ has a
+     * trash; the snippet must exist, be neither trashed nor active, and not
+     * be locked. Any type may be trashed.
+     */
+    private static function trash_refusal(int $id): ?array
+    {
+        if (! function_exists('Code_Snippets\\trash_snippet')) {
+            return [ 'code' => 'code_snippets_unsupported', 'message' => 'This Code Snippets version has no trash (Code Snippets 3.8 or newer).' ];
+        }
+        $refusal = self::access_refusal() ?? self::missing_refusal($id) ?? self::state_refusal($id, false);
+        if (null !== $refusal) {
+            return $refusal;
+        }
+        $snippet = self::lookup($id);
+        if (null !== $snippet && ! empty($snippet->locked)) {
+            return [ 'code' => 'snippet_locked', 'message' => sprintf('Snippet %d is locked in Code Snippets.', $id), 'data' => [ 'id' => $id ] ];
+        }
+        return null;
+    }
 
     /** The snippet with this id, read through Code Snippets (fresh), or null. */
     public static function lookup(int $id): ?object

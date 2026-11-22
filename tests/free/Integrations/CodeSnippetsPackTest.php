@@ -28,6 +28,7 @@ class CodeSnippetsPackTest extends \WP_UnitTestCase
         'code-snippets-create-snippet'     => 'write',
         'code-snippets-update-snippet'     => 'write',
         'code-snippets-deactivate-snippet' => 'write',
+        'code-snippets-trash-snippet'      => 'write',
     ];
 
     private const NOOP = "// wpmcp test snippet: does nothing.\n\$wpmcp_cs_noop = 1;";
@@ -345,5 +346,49 @@ class CodeSnippetsPackTest extends \WP_UnitTestCase
         $this->assertTrue(Rollback_Service::restore_operation((string) $out['operation_id']));
         $this->assertSame('0', (string) $this->row($id)['active']);
         $this->assertSame('Seeded', $this->row($id)['name']);
+    }
+
+    // ---------------------------------------------------------------
+    // Trash (issue #1129)
+    // ---------------------------------------------------------------
+
+    public function test_trash_moves_an_inactive_snippet_of_any_type_to_the_trash_and_rollback_brings_it_back_unchanged(): void
+    {
+        foreach ([ 'global', 'site-css', 'site-head-js', 'content' ] as $scope) {
+            $id     = $this->seed([ 'scope' => $scope, 'name' => "Trash me $scope", 'priority' => 7 ]);
+            $before = $this->row($id);
+            $out    = $this->ok($this->write('code-snippets-trash-snippet', [ 'id' => $id ]));
+
+            $this->assertNotEmpty($out['operation_id'], $scope);
+            $this->assertSame('trashed', $out['result']['snippet']['status'], $scope);
+            $this->assertSame('-1', (string) $this->row($id)['active'], $scope);
+            $listed = $this->read('code-snippets-list-snippets', [ 'status' => 'trashed' ])['result']['snippets'];
+            $this->assertContains($id, array_column($listed, 'id'), $scope);
+            $this->assertNotNull(Snapshot_Store::get_by_operation((string) $out['operation_id']), 'the write is in History');
+
+            $this->assertTrue(Rollback_Service::restore_operation((string) $out['operation_id']), $scope);
+            $this->assertSame($before, $this->row($id), "$scope: name, type, status, tags, priority and code unchanged");
+        }
+        $this->assertSame(0, $GLOBALS['wpmcp_test_code_snippets_executed']);
+    }
+
+    public function test_trash_refuses_an_active_locked_already_trashed_or_unknown_snippet_and_writes_nothing(): void
+    {
+        $active = $this->seed([ 'active' => 1 ]);
+        $locked = $this->seed();
+        update_option('code_snippets_locked', [ $locked => true ]);
+        $trashed = $this->seed([ 'active' => -1 ]);
+        $rows    = [ $active => $this->row($active), $locked => $this->row($locked), $trashed => $this->row($trashed) ];
+
+        $this->assertSame('snippet_active', $this->write('code-snippets-trash-snippet', [ 'id' => $active ])['error']['code'] ?? null);
+        $this->assertSame('snippet_locked', $this->write('code-snippets-trash-snippet', [ 'id' => $locked ])['error']['code'] ?? null);
+        $this->assertSame('snippet_trashed', $this->write('code-snippets-trash-snippet', [ 'id' => $trashed ])['error']['code'] ?? null);
+        $this->assertSame('snippet_not_found', $this->write('code-snippets-trash-snippet', [ 'id' => 999999 ])['error']['code'] ?? null);
+
+        foreach ($rows as $id => $row) {
+            $this->assertSame($row, $this->row($id));
+        }
+        delete_option('code_snippets_locked');
+        $this->assertSame(0, (int) $GLOBALS['wpdb']->get_var('SELECT COUNT(*) FROM ' . Snapshot_Store::table_name()), 'no undo point is left by a refusal');
     }
 }

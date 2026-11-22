@@ -81,6 +81,7 @@ use WPMCP\Admin\Snapshot_Retention_Notice;
 use WPMCP\Admin\Backup_Dir_Notice;
 use WPMCP\Admin\New_Tools_Notice;
 use WPMCP\Admin\Pro_Banner;
+use WPMCP\Admin\Star_Prompt;
 use WPMCP\Admin\Ability_Grid_Page;
 use WPMCP\Admin\Memory_Page;
 use WPMCP\Admin\Redirect_Suggestion_Controller;
@@ -416,6 +417,12 @@ final class Plugin
     public const BRAND = 'wpmcp';
 
     /**
+     * The product name in page titles and H1s (issues #1127, #1128):
+     * "WP MCP: Abilities". The admin menu keeps BRAND.
+     */
+    public const PRODUCT_NAME = 'WP MCP';
+
+    /**
      * "<brand>: <screen>" for a page title or an H1. One translatable
      * pattern owns the separator so a locale can reorder the two parts or
      * use its own punctuation (French " : ", a full-width colon in CJK), and
@@ -427,7 +434,7 @@ final class Plugin
         return sprintf(
             /* translators: 1: product name (not translated), 2: admin screen name */
             __('%1$s: %2$s', 'wpmcp'),
-            self::BRAND,
+            self::PRODUCT_NAME,
             $screen
         );
     }
@@ -1018,6 +1025,10 @@ final class Plugin
             // installs on the Dashboard, the Plugins list and WP MCP screens
             // (docs/superpowers/specs/2026-11-01-pro-upgrade-banner.md).
             Pro_Banner::register();
+            // GitHub star prompt: once, on the History and Connection screens,
+            // after the 3rd agent write or the first rollback, never beside
+            // the Pro banner and never with a Pro licence.
+            Star_Prompt::register();
             // Compact tool-surface mode (issue #79): in compact mode the
             // adapter's advertised tools/list collapses to the meta-tools
             // plus connection basics. Exposure-only - registration and
