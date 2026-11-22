@@ -55,11 +55,7 @@ class ContentGuardInternalTypesTest extends \WP_UnitTestCase
      * specs, chat conversations). The public scan must not find them, and
      * the Pro half must, so this list stays exact.
      */
-    public const PRO_OWNED_TYPES = [
-        'wpmcp_block',
-        'wpmcp_chat_convo',
-        'wpmcp_widget',
-    ];
+    public const PRO_OWNED_TYPES = [];
 
     /** @var string[] types this test registered because nothing else had */
     private array $registered = [];

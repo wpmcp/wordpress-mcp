@@ -189,6 +189,18 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Easy Digital Downloads download post.',
         ],
+        'Tools/WidgetBuilder/Widget_Spec_Store.php'   => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new widget spec post.',
+        ],
+        'Tools/BlockBuilder/Block_Spec_Store.php'     => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new block spec post.',
+        ],
+        'Pro/Chat/Conversation_Store.php'             => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new chat conversation post.',
+        ],
     ];
 
     /**

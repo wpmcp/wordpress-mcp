@@ -80,6 +80,18 @@ class AnyStatusQueryGuardTest extends \WP_UnitTestCase
             'count'  => 1,
             'reason' => 'Rollback of an import: deletes the variations of the product the import created; nothing is listed.',
         ],
+        'Pro/Chat/Conversation_Store.php::purge_for_user'                  => [
+            'count'  => 1,
+            'reason' => 'Author-scoped to the user being deleted; runs on user deletion, lists nothing.',
+        ],
+        'Pro/Chat/Conversation_Store.php::find_by_client_id'               => [
+            'count'  => 1,
+            'reason' => 'Author-scoped to the caller\'s own conversations, and the hit is re-checked for ownership.',
+        ],
+        'Pro/Chat/Conversation_Store.php::list_for_user'                   => [
+            'count'  => 1,
+            'reason' => 'Author-scoped to the caller\'s own conversations, and every row is re-checked for ownership.',
+        ],
     ];
 
     /**
