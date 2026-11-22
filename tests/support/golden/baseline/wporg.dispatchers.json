@@ -2779,7 +2779,7 @@
     "is_available": true,
     "registers_only_when_available": true,
     "host_plugin": {
-      "name": "JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, FooGallery galleries",
+      "name": "JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, Custom Post Type UI and MB Custom Post Types post types, Better Search Replace and Search Regex search and replace, Popup Builder, Hustle and Depicter popups, GTM4WP, PixelYourSite, Meta Pixel for WordPress and Microsoft Clarity tracking IDs, Discount Rules for WooCommerce pricing rules, Smash Balloon Instagram Feed feeds, WP All Import and WP All Export jobs, FileBird media folders, Max Mega Menu settings and themes, WP Go Maps, WP Maps and WP Store Locator locations, FooGallery galleries, JetFormBuilder forms, Kadence Blocks forms, Jetpack Forms responses",
       "several": true
     },
     "operation_hosts": {
@@ -2943,6 +2943,10 @@
         "name": "PublishPress Checklists",
         "several": false
       },
+      "clarity-set-project-id": {
+        "name": "Microsoft Clarity",
+        "several": false
+      },
       "code-snippets-create-snippet": {
         "name": "Code Snippets",
         "several": false
@@ -2967,6 +2971,38 @@
         "name": "Code Snippets",
         "several": false
       },
+      "cpt-create-post-type": {
+        "name": "Custom Post Type UI, MB Custom Post Types",
+        "several": true
+      },
+      "cpt-create-taxonomy": {
+        "name": "Custom Post Type UI, MB Custom Post Types",
+        "several": true
+      },
+      "cpt-get-type": {
+        "name": "Custom Post Type UI, MB Custom Post Types",
+        "several": true
+      },
+      "cpt-list-types": {
+        "name": "Custom Post Type UI, MB Custom Post Types",
+        "several": true
+      },
+      "cpt-update-post-type": {
+        "name": "Custom Post Type UI, MB Custom Post Types",
+        "several": true
+      },
+      "cpt-update-taxonomy": {
+        "name": "Custom Post Type UI, MB Custom Post Types",
+        "several": true
+      },
+      "depicter-get-document": {
+        "name": "Depicter",
+        "several": false
+      },
+      "depicter-list-documents": {
+        "name": "Depicter",
+        "several": false
+      },
       "directorist-create-listing": {
         "name": "Directorist",
         "several": false
@@ -2989,6 +3025,30 @@
       },
       "directorist-update-listing": {
         "name": "Directorist",
+        "several": false
+      },
+      "discountrules-create-rule": {
+        "name": "Discount Rules for WooCommerce",
+        "several": false
+      },
+      "discountrules-disable-rule": {
+        "name": "Discount Rules for WooCommerce",
+        "several": false
+      },
+      "discountrules-enable-rule": {
+        "name": "Discount Rules for WooCommerce",
+        "several": false
+      },
+      "discountrules-get-rule": {
+        "name": "Discount Rules for WooCommerce",
+        "several": false
+      },
+      "discountrules-list-rules": {
+        "name": "Discount Rules for WooCommerce",
+        "several": false
+      },
+      "discountrules-update-rule": {
+        "name": "Discount Rules for WooCommerce",
         "several": false
       },
       "edd-create-discount": {
@@ -3034,6 +3094,10 @@
       "edd-update-download": {
         "name": "Easy Digital Downloads",
         "several": false
+      },
+      "emaillog-email-stats": {
+        "name": "WP Mail Logging, Check and Log Email, Email Log",
+        "several": true
       },
       "emaillog-get-email": {
         "name": "WP Mail Logging, Check and Log Email, Email Log",
@@ -3093,6 +3157,38 @@
       },
       "everestforms-update-entry-status": {
         "name": "Everest Forms",
+        "several": false
+      },
+      "filebird-assign-attachments": {
+        "name": "FileBird",
+        "several": false
+      },
+      "filebird-create-folder": {
+        "name": "FileBird",
+        "several": false
+      },
+      "filebird-delete-folder": {
+        "name": "FileBird",
+        "several": false
+      },
+      "filebird-get-attachment-folder": {
+        "name": "FileBird",
+        "several": false
+      },
+      "filebird-get-folder": {
+        "name": "FileBird",
+        "several": false
+      },
+      "filebird-list-folders": {
+        "name": "FileBird",
+        "several": false
+      },
+      "filebird-move-folder": {
+        "name": "FileBird",
+        "several": false
+      },
+      "filebird-rename-folder": {
+        "name": "FileBird",
         "several": false
       },
       "foogallery-add-images": {
@@ -3155,6 +3251,38 @@
         "name": "GeoDirectory",
         "several": false
       },
+      "gtm4wp-set-settings": {
+        "name": "GTM4WP",
+        "several": false
+      },
+      "hustle-get-module": {
+        "name": "Hustle",
+        "several": false
+      },
+      "hustle-list-modules": {
+        "name": "Hustle",
+        "several": false
+      },
+      "instagramfeed-clear-feed-cache": {
+        "name": "Smash Balloon Instagram Feed",
+        "several": false
+      },
+      "instagramfeed-get-feed": {
+        "name": "Smash Balloon Instagram Feed",
+        "several": false
+      },
+      "instagramfeed-list-feeds": {
+        "name": "Smash Balloon Instagram Feed",
+        "several": false
+      },
+      "instagramfeed-list-sources": {
+        "name": "Smash Balloon Instagram Feed",
+        "several": false
+      },
+      "instagramfeed-update-feed": {
+        "name": "Smash Balloon Instagram Feed",
+        "several": false
+      },
       "jetengine-get-fields": {
         "name": "JetEngine",
         "several": false
@@ -3165,6 +3293,54 @@
       },
       "jetengine-update-fields": {
         "name": "JetEngine",
+        "several": false
+      },
+      "jetformbuilder-delete-entry": {
+        "name": "JetFormBuilder",
+        "several": false
+      },
+      "jetformbuilder-get-entry": {
+        "name": "JetFormBuilder",
+        "several": false
+      },
+      "jetformbuilder-get-form": {
+        "name": "JetFormBuilder",
+        "several": false
+      },
+      "jetformbuilder-list-entries": {
+        "name": "JetFormBuilder",
+        "several": false
+      },
+      "jetformbuilder-list-fields": {
+        "name": "JetFormBuilder",
+        "several": false
+      },
+      "jetformbuilder-list-forms": {
+        "name": "JetFormBuilder",
+        "several": false
+      },
+      "jetformbuilder-update-entry-status": {
+        "name": "JetFormBuilder",
+        "several": false
+      },
+      "jetpackforms-delete-entry": {
+        "name": "Jetpack Forms",
+        "several": false
+      },
+      "jetpackforms-get-entry": {
+        "name": "Jetpack Forms",
+        "several": false
+      },
+      "jetpackforms-list-entries": {
+        "name": "Jetpack Forms",
+        "several": false
+      },
+      "jetpackforms-list-forms": {
+        "name": "Jetpack Forms",
+        "several": false
+      },
+      "jetpackforms-update-entry-status": {
+        "name": "Jetpack Forms",
         "several": false
       },
       "jobmanager-create-listing": {
@@ -3189,6 +3365,62 @@
       },
       "jobmanager-update-listing": {
         "name": "WP Job Manager",
+        "several": false
+      },
+      "kadenceforms-get-form": {
+        "name": "Kadence Blocks forms",
+        "several": false
+      },
+      "kadenceforms-list-fields": {
+        "name": "Kadence Blocks forms",
+        "several": false
+      },
+      "kadenceforms-list-forms": {
+        "name": "Kadence Blocks forms",
+        "several": false
+      },
+      "kadenceforms-list-notifications": {
+        "name": "Kadence Blocks forms",
+        "several": false
+      },
+      "kadenceforms-update-notification": {
+        "name": "Kadence Blocks forms",
+        "several": false
+      },
+      "megamenu-clear-css-cache": {
+        "name": "Max Mega Menu",
+        "several": false
+      },
+      "megamenu-get-item": {
+        "name": "Max Mega Menu",
+        "several": false
+      },
+      "megamenu-get-settings": {
+        "name": "Max Mega Menu",
+        "several": false
+      },
+      "megamenu-get-theme": {
+        "name": "Max Mega Menu",
+        "several": false
+      },
+      "megamenu-list-items": {
+        "name": "Max Mega Menu",
+        "several": false
+      },
+      "megamenu-update-item": {
+        "name": "Max Mega Menu",
+        "several": false
+      },
+      "megamenu-update-location": {
+        "name": "Max Mega Menu",
+        "several": false
+      },
+      "megamenu-update-settings": {
+        "name": "Max Mega Menu",
+        "several": false
+      },
+      "megamenu-update-theme": {
+        "name": "Max Mega Menu",
         "several": false
       },
       "optinmonster-disable-campaign": {
@@ -3225,6 +3457,26 @@
       },
       "pods-update-fields": {
         "name": "Pods",
+        "several": false
+      },
+      "popupbuilder-disable-popup": {
+        "name": "Popup Builder",
+        "several": false
+      },
+      "popupbuilder-enable-popup": {
+        "name": "Popup Builder",
+        "several": false
+      },
+      "popupbuilder-get-popup": {
+        "name": "Popup Builder",
+        "several": false
+      },
+      "popupbuilder-list-popups": {
+        "name": "Popup Builder",
+        "several": false
+      },
+      "popupbuilder-update-popup": {
+        "name": "Popup Builder",
         "several": false
       },
       "popupmaker-create-popup": {
@@ -3303,6 +3555,22 @@
         "name": "Restrict Content",
         "several": false
       },
+      "searchreplace-dry-run": {
+        "name": "Better Search Replace, Search Regex",
+        "several": true
+      },
+      "searchreplace-get-last-run": {
+        "name": "Better Search Replace, Search Regex",
+        "several": true
+      },
+      "searchreplace-list-tables": {
+        "name": "Better Search Replace, Search Regex",
+        "several": true
+      },
+      "searchreplace-run": {
+        "name": "Better Search Replace, Search Regex",
+        "several": true
+      },
       "simplepay-get-form": {
         "name": "WP Simple Pay",
         "several": false
@@ -3363,6 +3631,14 @@
         "name": "ThirstyAffiliates",
         "several": false
       },
+      "tracking-find-duplicates": {
+        "name": "GTM4WP, PixelYourSite, Meta Pixel for WordPress, Microsoft Clarity",
+        "several": true
+      },
+      "tracking-get-settings": {
+        "name": "GTM4WP, PixelYourSite, Meta Pixel for WordPress, Microsoft Clarity",
+        "several": true
+      },
       "translatepress-get-strings": {
         "name": "TranslatePress",
         "several": false
@@ -3399,6 +3675,30 @@
         "name": "Ultimate Member",
         "several": false
       },
+      "wpallexport-get-export": {
+        "name": "WP All Export",
+        "several": false
+      },
+      "wpallexport-list-exports": {
+        "name": "WP All Export",
+        "several": false
+      },
+      "wpallimport-get-import": {
+        "name": "WP All Import",
+        "several": false
+      },
+      "wpallimport-get-run": {
+        "name": "WP All Import",
+        "several": false
+      },
+      "wpallimport-list-imports": {
+        "name": "WP All Import",
+        "several": false
+      },
+      "wpallimport-list-runs": {
+        "name": "WP All Import",
+        "several": false
+      },
       "wpforo-get-topic": {
         "name": "wpForo",
         "several": false
@@ -3423,12 +3723,56 @@
         "name": "wpForo",
         "several": false
       },
+      "wpgomaps-delete-markers": {
+        "name": "WP Go Maps",
+        "several": false
+      },
+      "wpgomaps-list-maps": {
+        "name": "WP Go Maps",
+        "several": false
+      },
+      "wpgomaps-list-markers": {
+        "name": "WP Go Maps",
+        "several": false
+      },
+      "wpgomaps-save-markers": {
+        "name": "WP Go Maps",
+        "several": false
+      },
       "wpgraphql-get-schema": {
         "name": "WPGraphQL",
         "several": false
       },
       "wpgraphql-query": {
         "name": "WPGraphQL",
+        "several": false
+      },
+      "wpmaps-list-locations": {
+        "name": "WP Maps",
+        "several": false
+      },
+      "wpmaps-list-maps": {
+        "name": "WP Maps",
+        "several": false
+      },
+      "wpsl-delete-stores": {
+        "name": "WP Store Locator",
+        "several": false
+      },
+      "wpsl-get-settings": {
+        "name": "WP Store Locator",
+        "several": false
+      },
+      "wpsl-get-store": {
+        "name": "WP Store Locator",
+        "several": false
+      },
+      "wpsl-list-stores": {
+        "name": "WP Store Locator",
+        "several": false
+      },
+      "wpsl-save-stores": {
+        "name": "WP Store Locator",
         "several": false
       },
       "wsform-delete-entry": {
@@ -3498,6 +3842,7 @@
       "actionscheduler-list-actions",
       "actionscheduler-get-action",
       "emaillog-list-emails",
+      "emaillog-email-stats",
       "emaillog-get-email",
       "prettylinks-list-links",
       "prettylinks-get-link",
@@ -3508,6 +3853,21 @@
       "advancedads-list-ads",
       "advancedads-get-ad",
       "advancedads-list-placements",
+      "megamenu-get-settings",
+      "megamenu-get-theme",
+      "megamenu-list-items",
+      "megamenu-get-item",
+      "filebird-list-folders",
+      "filebird-get-folder",
+      "filebird-get-attachment-folder",
+      "discountrules-list-rules",
+      "discountrules-get-rule",
+      "popupbuilder-list-popups",
+      "popupbuilder-get-popup",
+      "hustle-list-modules",
+      "hustle-get-module",
+      "depicter-list-documents",
+      "depicter-get-document",
       "popupmaker-list-popups",
       "popupmaker-get-popup",
       "popupmaker-get-popup-triggers",
@@ -3516,14 +3876,47 @@
       "sitereviews-list-reviews",
       "sitereviews-get-review",
       "sitereviews-review-summary",
+      "instagramfeed-list-feeds",
+      "instagramfeed-get-feed",
+      "instagramfeed-list-sources",
       "simplepay-list-forms",
       "simplepay-get-form",
       "pms-list-plans",
       "pms-list-members",
       "wpgraphql-query",
       "wpgraphql-get-schema",
+      "wpgomaps-list-maps",
+      "wpgomaps-list-markers",
+      "wpsl-list-stores",
+      "wpsl-get-store",
+      "wpsl-get-settings",
+      "wpmaps-list-maps",
+      "wpmaps-list-locations",
+      "wpallimport-list-imports",
+      "wpallimport-get-import",
+      "wpallimport-list-runs",
+      "wpallimport-get-run",
+      "wpallexport-list-exports",
+      "wpallexport-get-export",
+      "tracking-get-settings",
+      "tracking-find-duplicates",
+      "searchreplace-list-tables",
+      "searchreplace-dry-run",
+      "searchreplace-get-last-run",
       "foogallery-list-galleries",
       "foogallery-get-gallery",
+      "jetformbuilder-list-forms",
+      "jetformbuilder-get-form",
+      "jetformbuilder-list-fields",
+      "jetformbuilder-list-entries",
+      "jetformbuilder-get-entry",
+      "kadenceforms-list-forms",
+      "kadenceforms-get-form",
+      "kadenceforms-list-fields",
+      "kadenceforms-list-notifications",
+      "jetpackforms-list-forms",
+      "jetpackforms-list-entries",
+      "jetpackforms-get-entry",
       "wpforo-list-forums",
       "wpforo-list-topics",
       "wpforo-get-topic",
@@ -3539,6 +3932,8 @@
       "um-list-forms",
       "um-list-member-directories",
       "um-get-member-directory",
+      "cpt-list-types",
+      "cpt-get-type",
       "publishpress-get-editorial-calendar",
       "checklists-list-requirements",
       "future-list-scheduled-changes",
@@ -3595,6 +3990,23 @@
       "advancedads-enable-ad",
       "advancedads-disable-ad",
       "advancedads-assign-placement",
+      "megamenu-update-location",
+      "megamenu-update-settings",
+      "megamenu-update-theme",
+      "megamenu-update-item",
+      "megamenu-clear-css-cache",
+      "filebird-create-folder",
+      "filebird-rename-folder",
+      "filebird-move-folder",
+      "filebird-assign-attachments",
+      "filebird-delete-folder",
+      "discountrules-create-rule",
+      "discountrules-update-rule",
+      "discountrules-enable-rule",
+      "discountrules-disable-rule",
+      "popupbuilder-update-popup",
+      "popupbuilder-enable-popup",
+      "popupbuilder-disable-popup",
       "popupmaker-create-popup",
       "popupmaker-update-popup",
       "popupmaker-set-popup-triggers",
@@ -3606,10 +4018,25 @@
       "sitereviews-unapprove-review",
       "sitereviews-trash-review",
       "sitereviews-reply-to-review",
+      "instagramfeed-update-feed",
+      "instagramfeed-clear-feed-cache",
+      "wpgomaps-save-markers",
+      "wpgomaps-delete-markers",
+      "wpsl-save-stores",
+      "wpsl-delete-stores",
+      "gtm4wp-set-settings",
+      "clarity-set-project-id",
+      "pixelyoursite-set-settings",
+      "searchreplace-run",
       "foogallery-create-gallery",
       "foogallery-add-images",
       "foogallery-remove-images",
       "foogallery-reorder-images",
+      "jetformbuilder-update-entry-status",
+      "jetformbuilder-delete-entry",
+      "kadenceforms-update-notification",
+      "jetpackforms-update-entry-status",
+      "jetpackforms-delete-entry",
       "wpforo-moderate-topic",
       "wpforo-move-topic",
       "asgaros-create-topic",
@@ -3619,6 +4046,10 @@
       "asgaros-delete-reply",
       "rcp-update-membership-level",
       "um-update-member-role",
+      "cpt-create-post-type",
+      "cpt-update-post-type",
+      "cpt-create-taxonomy",
+      "cpt-update-taxonomy",
       "publishpress-set-post-status",
       "future-schedule-post-change",
       "future-cancel-post-change",
@@ -4990,6 +5421,34 @@
             }
           },
           {
+            "name": "emaillog-email-stats",
+            "mode": "read",
+            "description": "Count logged emails sent and failed over a period (since and until, site time; default the last 7 days) and show the most recent failure in it (id, time, masked recipient and subject, error). source when several plugins are active. Personal data",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "wp-mail-logging",
+                    "check-email",
+                    "email-log"
+                  ]
+                },
+                "since": {
+                  "type": "string"
+                },
+                "until": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
             "name": "emaillog-get-email",
             "mode": "read",
             "description": "One logged email: recipients in full, subject, status, error, headers, attachment names. NO body unless body is truncated (1,000 characters) or full (20,000); a returned body is best-effort redacted (links with tokens, passwords, codes) and may still hold a secret. Credential headers blanked, IP never returned. source when several plugins are active. Personal data",
@@ -5864,6 +6323,1170 @@
             }
           },
           {
+            "name": "megamenu-get-settings",
+            "mode": "read",
+            "description": "Max Mega Menu global settings, each theme location (enabled, active, menu_id, theme and its settings) and the themes (id, title)",
+            "capability": "edit_theme_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            }
+          },
+          {
+            "name": "megamenu-get-theme",
+            "mode": "read",
+            "description": "Read one Max Mega Menu theme (colours, sizes, responsive_breakpoint, custom_css) merged over the defaults",
+            "capability": "edit_theme_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "theme": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                }
+              },
+              "required": [
+                "theme"
+              ]
+            }
+          },
+          {
+            "name": "megamenu-list-items",
+            "mode": "read",
+            "description": "List the items of the menu at a theme location (location) or of a menu (menu_id) with their mega menu type, icon and mobile flags",
+            "capability": "edit_theme_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "location": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "menu_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          },
+          {
+            "name": "megamenu-get-item",
+            "mode": "read",
+            "description": "Read one menu item's Max Mega Menu settings (type, columns, icon, hide on mobile) and the widgets in its panel",
+            "capability": "edit_theme_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "megamenu-update-location",
+            "mode": "write",
+            "description": "Change a theme location's Max Mega Menu settings (enabled, theme, event, effect, mobile_behaviour and the rest); only the keys given change. Rebuilds the CSS. Undo: rollback-operation",
+            "capability": "edit_theme_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "location": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "settings": {
+                  "type": "object",
+                  "minProperties": 1
+                }
+              },
+              "required": [
+                "location",
+                "settings"
+              ]
+            }
+          },
+          {
+            "name": "megamenu-update-settings",
+            "mode": "write",
+            "description": "Change Max Mega Menu global settings (css: fs, head or disabled). Rebuilds the CSS. Undo: rollback-operation",
+            "capability": "edit_theme_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "settings": {
+                  "type": "object",
+                  "minProperties": 1
+                }
+              },
+              "required": [
+                "settings"
+              ]
+            }
+          },
+          {
+            "name": "megamenu-update-theme",
+            "mode": "write",
+            "description": "Change a Max Mega Menu theme: settings keys from get-theme (custom_css needs unfiltered_html); refused when it does not compile. Rebuilds the CSS. Undo: rollback-operation",
+            "capability": "edit_theme_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "theme": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100
+                },
+                "settings": {
+                  "type": "object",
+                  "minProperties": 1
+                }
+              },
+              "required": [
+                "theme",
+                "settings"
+              ]
+            }
+          },
+          {
+            "name": "megamenu-update-item",
+            "mode": "write",
+            "description": "Change a menu item's Max Mega Menu settings: type (flyout, megamenu, grid; top level only), align, icon, icon_position, item_align, panel_columns, mega_menu_columns, submenu_columns and the hide_* flags. Undo: rollback-operation",
+            "capability": "edit_theme_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "settings": {
+                  "type": "object",
+                  "minProperties": 1
+                }
+              },
+              "required": [
+                "id",
+                "settings"
+              ]
+            }
+          },
+          {
+            "name": "megamenu-clear-css-cache",
+            "mode": "write",
+            "description": "Rebuild Max Mega Menu's generated CSS and report a compile failure. Not snapshotted: a rebuild destroys nothing",
+            "capability": "edit_theme_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            }
+          },
+          {
+            "name": "filebird-list-folders",
+            "mode": "read",
+            "description": "FileBird media folder tree of the current user's folders: id, name, parent, type (folder or collection), attachment_count and children, in FileBird's order, plus the Uncategorized count and owner_scope (per-user mode)",
+            "capability": "upload_files",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "filebird-get-folder",
+            "mode": "read",
+            "description": "One FileBird folder: name, parent, path, children and a page of its attachments (id, title, mime type) the caller may read. page and per_page (max 100)",
+            "capability": "upload_files",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "folder_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "folder_id"
+              ]
+            }
+          },
+          {
+            "name": "filebird-get-attachment-folder",
+            "mode": "read",
+            "description": "The FileBird folder (id, name, path) one attachment is in, or folder null when it is Uncategorized",
+            "capability": "upload_files",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "attachment_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "attachment_id"
+              ]
+            }
+          },
+          {
+            "name": "filebird-create-folder",
+            "mode": "write",
+            "description": "Create a FileBird media folder: name (sanitised as FileBird does), parent_id (0 or omitted: top level). A name its parent already holds is refused. Undo: rollback-operation removes it",
+            "capability": "upload_files",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 250
+                },
+                "parent_id": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "name"
+              ]
+            }
+          },
+          {
+            "name": "filebird-rename-folder",
+            "mode": "write",
+            "description": "Rename a FileBird folder. A name a sibling already holds is refused. Undo: rollback-operation",
+            "capability": "upload_files",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "folder_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 250
+                }
+              },
+              "required": [
+                "folder_id",
+                "name"
+              ]
+            }
+          },
+          {
+            "name": "filebird-move-folder",
+            "mode": "write",
+            "description": "Move a FileBird folder under parent_id (0: top level), last in its new parent's order. A move into itself or one of its sub-folders, or next to a folder of the same name, is refused. Undo: rollback-operation",
+            "capability": "upload_files",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "folder_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "parent_id": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "folder_id",
+                "parent_id"
+              ]
+            }
+          },
+          {
+            "name": "filebird-assign-attachments",
+            "mode": "write",
+            "description": "Put attachments into a FileBird folder (folder_id 0: Uncategorized), out of whatever folder of the current tree they were in. attachment_ids up to 200; each reports moved or already. Undo: rollback-operation restores the whole batch",
+            "capability": "upload_files",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "folder_id": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "attachment_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "minItems": 1,
+                  "maxItems": 200,
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "folder_id",
+                "attachment_ids"
+              ]
+            }
+          },
+          {
+            "name": "filebird-delete-folder",
+            "mode": "destructive",
+            "description": "Delete a FileBird folder and all its sub-folders. No attachment is deleted: the ones inside become Uncategorized. Needs confirm:true after a preview of the folders and how many attachments it affects. Undo: rollback-session restores the folders, their colours and every assignment",
+            "capability": "upload_files",
+            "enabled": false,
+            "requires_confirm": true,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "folder_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "folder_id"
+              ]
+            }
+          },
+          {
+            "name": "discountrules-list-rules",
+            "mode": "read",
+            "description": "List Discount Rules for WooCommerce rules by priority: id, title, discount_type, enabled, exclusive, dates (store time), usage, filter and condition types. status (enabled, disabled, deleted, any; default not deleted), discount_type, search, page_size (max 100), offset",
+            "capability": "manage_woocommerce",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "enabled",
+                    "disabled",
+                    "deleted",
+                    "any"
+                  ]
+                },
+                "discount_type": {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page_size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "name": "discountrules-get-rule",
+            "mode": "read",
+            "description": "Read one Discount Rules rule: filters, conditions, condition_relationship and its adjustment decoded",
+            "capability": "manage_woocommerce",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "rule_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "rule_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "discountrules-create-rule",
+            "mode": "write",
+            "description": "Create a Discount Rules rule, staged DISABLED (enable-rule makes it live): title, discount_type (wdr_simple_discount, wdr_cart_discount, wdr_bulk_discount), adjustment ({type, value} or bulk {ranges:[{from,to,type,value}]}), filters (default all products), conditions, dates (YYYY-MM-DD HH:MM store time), usage_limits. Over 100 percent off is refused. Undo: rollback-operation",
+            "capability": "manage_woocommerce",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "discount_type": {
+                  "type": "string",
+                  "enum": [
+                    "wdr_simple_discount",
+                    "wdr_cart_discount",
+                    "wdr_bulk_discount"
+                  ]
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                "adjustment": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "value": {
+                      "type": "number"
+                    },
+                    "label": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "cart_label": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "apply_as_cart_rule": {
+                      "type": "boolean"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "product_cumulative",
+                        "product",
+                        "variation"
+                      ]
+                    },
+                    "ranges": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 50,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "from": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "to": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "type": {
+                            "type": "string",
+                            "maxLength": 255
+                          },
+                          "value": {
+                            "type": "number"
+                          },
+                          "label": {
+                            "type": "string",
+                            "maxLength": 255
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "filters": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9_]{1,64}$"
+                      },
+                      "method": {
+                        "type": "string",
+                        "enum": [
+                          "in_list",
+                          "not_in_list"
+                        ]
+                      },
+                      "value": {
+                        "type": "array",
+                        "maxItems": 500,
+                        "items": {
+                          "type": [
+                            "integer",
+                            "string"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "conditions": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9_]{1,64}$"
+                      },
+                      "options": {
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "condition_relationship": {
+                  "type": "string",
+                  "enum": [
+                    "and",
+                    "or"
+                  ]
+                },
+                "exclusive": {
+                  "type": "boolean"
+                },
+                "date_from": {
+                  "type": "string",
+                  "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}( \\d{2}:\\d{2})?$"
+                },
+                "date_to": {
+                  "type": "string",
+                  "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}( \\d{2}:\\d{2})?$"
+                },
+                "usage_limits": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "title",
+                "discount_type",
+                "adjustment"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "discountrules-update-rule",
+            "mode": "write",
+            "description": "Change a Discount Rules rule; only the args given change. A live (enabled) rule needs confirm_live:true. Undo: rollback-operation",
+            "capability": "manage_woocommerce",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "rule_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "confirm_live": {
+                  "type": "boolean"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                "adjustment": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "value": {
+                      "type": "number"
+                    },
+                    "label": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "cart_label": {
+                      "type": "string",
+                      "maxLength": 255
+                    },
+                    "apply_as_cart_rule": {
+                      "type": "boolean"
+                    },
+                    "operator": {
+                      "type": "string",
+                      "enum": [
+                        "product_cumulative",
+                        "product",
+                        "variation"
+                      ]
+                    },
+                    "ranges": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 50,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "from": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "to": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "type": {
+                            "type": "string",
+                            "maxLength": 255
+                          },
+                          "value": {
+                            "type": "number"
+                          },
+                          "label": {
+                            "type": "string",
+                            "maxLength": 255
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "filters": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9_]{1,64}$"
+                      },
+                      "method": {
+                        "type": "string",
+                        "enum": [
+                          "in_list",
+                          "not_in_list"
+                        ]
+                      },
+                      "value": {
+                        "type": "array",
+                        "maxItems": 500,
+                        "items": {
+                          "type": [
+                            "integer",
+                            "string"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "conditions": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9_]{1,64}$"
+                      },
+                      "options": {
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "condition_relationship": {
+                  "type": "string",
+                  "enum": [
+                    "and",
+                    "or"
+                  ]
+                },
+                "exclusive": {
+                  "type": "boolean"
+                },
+                "date_from": {
+                  "type": "string",
+                  "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}( \\d{2}:\\d{2})?$"
+                },
+                "date_to": {
+                  "type": "string",
+                  "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}( \\d{2}:\\d{2})?$"
+                },
+                "usage_limits": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "rule_id"
+              ],
+              "minProperties": 2,
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "discountrules-enable-rule",
+            "mode": "write",
+            "description": "Make a Discount Rules rule live (enabled). A rule over 100 percent off is refused. Undo: rollback-operation",
+            "capability": "manage_woocommerce",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "rule_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "rule_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "discountrules-disable-rule",
+            "mode": "write",
+            "description": "Stop a Discount Rules rule (disabled); it is kept. Undo: rollback-operation",
+            "capability": "manage_woocommerce",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "rule_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "rule_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "popupbuilder-list-popups",
+            "mode": "read",
+            "description": "List Popup Builder popups: id, title, status, type, active, trigger and rule names, views. Filter by status, type, active, search. page, per_page (max 100)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "publish",
+                    "draft",
+                    "pending",
+                    "future",
+                    "private"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "maxLength": 50
+                },
+                "active": {
+                  "type": "boolean"
+                },
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "popupbuilder-get-popup",
+            "mode": "read",
+            "description": "Read one Popup Builder popup: content, display rules, triggers, settings, views, shortcode",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "popupbuilder-update-popup",
+            "mode": "write",
+            "description": "Change a Popup Builder popup: title, content, rules (replace the display rules: param, operator == or !=, post_ids for *_selected, term_ids for post_category and post_tags_ids, values for post_type and page_type). Undo: rollback-operation",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "content": {
+                  "type": "string",
+                  "maxLength": 200000
+                },
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "param": {
+                        "type": "string",
+                        "enum": [
+                          "everywhere",
+                          "post_all",
+                          "page_all",
+                          "post_tags",
+                          "post_selected",
+                          "page_selected",
+                          "post_category",
+                          "post_tags_ids",
+                          "post_type",
+                          "page_type"
+                        ]
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": [
+                          "==",
+                          "!="
+                        ]
+                      },
+                      "post_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "minItems": 1,
+                        "maxItems": 100
+                      },
+                      "term_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "minItems": 1,
+                        "maxItems": 100
+                      },
+                      "values": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "maxLength": 100
+                        },
+                        "minItems": 1,
+                        "maxItems": 50
+                      }
+                    },
+                    "required": [
+                      "param"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1,
+                  "maxItems": 20
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "minProperties": 2,
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "popupbuilder-enable-popup",
+            "mode": "write",
+            "description": "Turn a Popup Builder popup on (its own switch, not the post status). Undo: rollback-operation",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "popupbuilder-disable-popup",
+            "mode": "write",
+            "description": "Turn a Popup Builder popup off; it keeps its rules and post status. Undo: rollback-operation",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "hustle-list-modules",
+            "mode": "read",
+            "description": "List Hustle popups, slide-ins and embeds: id, name, type, mode, active, title, triggers, schedule dates, views, conversions. Filter by type, active, search. page, per_page (max 100)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "popup",
+                    "slidein",
+                    "embedded",
+                    "social_sharing"
+                  ]
+                },
+                "active": {
+                  "type": "boolean"
+                },
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "hustle-get-module",
+            "mode": "read",
+            "description": "Read one Hustle module: content (title, text, call to action), triggers, schedule, display conditions, views and conversions by kind",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "module_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "module_id"
+              ]
+            }
+          },
+          {
+            "name": "depicter-list-documents",
+            "mode": "read",
+            "description": "List Depicter sliders, popups and bars: id, name, type, status, sections, dates, views, impressions, clicks, submissions, shortcode. Filter by type, status, search. page, per_page (max 100)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "maxLength": 50
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "publish",
+                    "draft"
+                  ]
+                },
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "depicter-get-document",
+            "mode": "read",
+            "description": "Read one Depicter document: settings, display rules and counts (no builder content)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "document_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "document_id"
+              ]
+            }
+          },
+          {
             "name": "popupmaker-list-popups",
             "mode": "read",
             "description": "List Popup Maker popups: id, title (internal name), display_title, status, switched_on, enabled (published and switched on), theme_id, trigger_types. Filter by status, switched_on, search. page and per_page (max 100)",
@@ -6434,6 +8057,206 @@
             }
           },
           {
+            "name": "instagramfeed-list-feeds",
+            "mode": "read",
+            "description": "List Smash Balloon Instagram Feed feeds: id, name, status, shortcode, source usernames, embed count and when its posts were last cached. status publish, draft or any (default); page and page_size (max 50)",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "publish",
+                    "draft",
+                    "any"
+                  ]
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "page_size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 50
+                }
+              }
+            }
+          },
+          {
+            "name": "instagramfeed-get-feed",
+            "mode": "read",
+            "description": "One Instagram Feed feed: its settings (layout, columns, number of posts, header and buttons; token keys never returned), the posts and widgets it is embedded on, and its cache rows with age",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "feed_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "feed_id"
+              ]
+            }
+          },
+          {
+            "name": "instagramfeed-list-sources",
+            "mode": "read",
+            "description": "Connected Instagram accounts and their state: connected, expiring_soon, expired or error (with code and message), expiry, feeds using each. Tokens are never returned; reconnecting is an OAuth step at reconnect_url in wp-admin",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "instagramfeed-update-feed",
+            "mode": "write",
+            "description": "Change display settings of an Instagram Feed feed; only the keys given change. Clears the feed's rendered cache so it shows (and its fetched posts when num, nummobile, sortby or imageres change). Undo: rollback-operation",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "feed_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "settings": {
+                  "type": "object",
+                  "properties": {
+                    "cols": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10
+                    },
+                    "colstablet": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10
+                    },
+                    "colsmobile": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10
+                    },
+                    "num": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100
+                    },
+                    "nummobile": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100
+                    },
+                    "imagepadding": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "imageaspectratio": {
+                      "type": "string",
+                      "enum": [
+                        "1:1",
+                        "3:4",
+                        "4:5"
+                      ]
+                    },
+                    "sortby": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "random"
+                      ]
+                    },
+                    "imageres": {
+                      "type": "string",
+                      "enum": [
+                        "auto",
+                        "thumb",
+                        "medium",
+                        "full"
+                      ]
+                    },
+                    "showheader": {
+                      "type": "boolean"
+                    },
+                    "headersize": {
+                      "type": "string",
+                      "enum": [
+                        "small",
+                        "medium",
+                        "large"
+                      ]
+                    },
+                    "showbio": {
+                      "type": "boolean"
+                    },
+                    "showbutton": {
+                      "type": "boolean"
+                    },
+                    "buttontext": {
+                      "type": "string",
+                      "maxLength": 200
+                    },
+                    "showfollow": {
+                      "type": "boolean"
+                    },
+                    "followtext": {
+                      "type": "string",
+                      "maxLength": 200
+                    }
+                  },
+                  "additionalProperties": false,
+                  "minProperties": 1
+                }
+              },
+              "required": [
+                "feed_id",
+                "settings"
+              ]
+            }
+          },
+          {
+            "name": "instagramfeed-clear-feed-cache",
+            "mode": "write",
+            "description": "Clear an Instagram Feed feed's cache so the next page view fetches fresh posts from Instagram (include_posts false keeps the fetched posts and clears only the header and rendered data). Backups are kept. Undo: rollback-operation puts the cached data back",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "feed_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "include_posts": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "feed_id"
+              ]
+            }
+          },
+          {
             "name": "simplepay-list-forms",
             "mode": "read",
             "description": "List WP Simple Pay payment forms: id, title, post status, display type (stripe_checkout, embedded, overlay), payment mode (test or live), and the prices of that mode (label, amount in the smallest currency unit, currency, recurring interval). global_mode is the site-wide test or live setting. Filter by status (publish, draft, any). page, per_page (max 100)",
@@ -6584,6 +8407,807 @@
                 }
               }
             }
+          },
+          {
+            "name": "wpgomaps-list-maps",
+            "mode": "read",
+            "description": "List WP Go Maps maps: id, title, start lat/lng and zoom, size, marker count, settings, and the posts that embed each ([wpgmza] or its block)",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "wpgomaps-list-markers",
+            "mode": "read",
+            "description": "List WP Go Maps markers: id, map_id, title, address, lat, lng, category, approved, link. Filter by map_id, search (title or address); page, per_page (max 100)",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "map_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "wpgomaps-save-markers",
+            "mode": "write",
+            "description": "Create or change WP Go Maps markers in batch (max 50): a row with id changes that marker (only the fields given), one without needs map_id and an address or lat/lng. An address with no lat/lng is geocoded with the site's Google key. Answers per row. Undo: rollback-session",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "markers": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 50,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "map_id": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "title": {
+                        "type": "string",
+                        "maxLength": 700
+                      },
+                      "address": {
+                        "type": "string",
+                        "maxLength": 700
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 20000
+                      },
+                      "link": {
+                        "type": "string",
+                        "maxLength": 2083
+                      },
+                      "category": {
+                        "type": "string",
+                        "maxLength": 500
+                      },
+                      "approved": {
+                        "type": "boolean"
+                      },
+                      "lat": {
+                        "type": "number",
+                        "minimum": -90,
+                        "maximum": 90
+                      },
+                      "lng": {
+                        "type": "number",
+                        "minimum": -180,
+                        "maximum": 180
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "markers"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wpgomaps-delete-markers",
+            "mode": "write",
+            "description": "Delete WP Go Maps markers by id (max 50), each snapshotted first. Answers per row. Undo: rollback-session",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 50,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wpsl-list-stores",
+            "mode": "read",
+            "description": "List WP Store Locator stores by title: id, title, status, address, city, state, zip, country, lat, lng, url, categories; phone, fax and email masked. Filter by status, category (slug), search; page, per_page (max 100)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "publish",
+                    "draft",
+                    "pending",
+                    "private"
+                  ]
+                },
+                "category": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "wpsl-get-store",
+            "mode": "read",
+            "description": "Read one WP Store Locator store with its description; phone, fax and email in full at manage_options, masked otherwise",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "id"
+              ]
+            }
+          },
+          {
+            "name": "wpsl-get-settings",
+            "mode": "read",
+            "description": "Read WP Store Locator settings (api, map, search, appearance, markers) with every API key left out, and the posts that embed the locator ([wpsl] or its blocks)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "wpsl-save-stores",
+            "mode": "write",
+            "description": "Create or change WP Store Locator stores in batch (max 50): a row with id changes that store (only the fields given), one without needs title, address, city and country (status draft by default; publish needs publish_stores). An address with no lat/lng is geocoded through the plugin's own geocoder. Answers per row. Undo: rollback-session",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "stores": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 50,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "publish",
+                          "draft",
+                          "pending",
+                          "private"
+                        ]
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 100000
+                      },
+                      "categories": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        }
+                      },
+                      "lat": {
+                        "type": "number",
+                        "minimum": -90,
+                        "maximum": 90
+                      },
+                      "lng": {
+                        "type": "number",
+                        "minimum": -180,
+                        "maximum": 180
+                      },
+                      "address": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "address2": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "city": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "state": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "zip": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "country": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "phone": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "fax": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "email": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "url": {
+                        "type": "string",
+                        "maxLength": 255
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "stores"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wpsl-delete-stores",
+            "mode": "write",
+            "description": "Move WP Store Locator stores to the trash by id (max 50), each under a post snapshot. Answers per row. Undo: rollback-session",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 50,
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "required": [
+                "ids"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "wpmaps-list-maps",
+            "mode": "read",
+            "description": "List WP Maps maps: id, title, size, zoom, type, location ids, and the posts that embed each ([put_wpgm id=N])",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          {
+            "name": "wpmaps-list-locations",
+            "mode": "read",
+            "description": "List WP Maps locations: id, title, address, city, state, country, postal_code, lat, lng. Filter by map_id, search (title or address); page, per_page (max 100)",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "map_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "search": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "page": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "per_page": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              }
+            }
+          },
+          {
+            "name": "wpallimport-list-imports",
+            "mode": "read",
+            "description": "List WP All Import saved imports, most recent activity first: id, name, source_type (url, upload, file, ftp), source (credentials removed), feed_type, post_type, schedule, status, record counts and last_run (date, type, seconds, summary). page_size (default 20, max 100), offset. Read only",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "page_size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "name": "wpallimport-get-import",
+            "mode": "read",
+            "description": "One WP All Import import: source, FTP connection (host, port, path; has_username, has_password, has_private_key only), xpath, mapping (title, content, excerpt, slug, custom_fields, taxonomies; long templates cut to 2,000 characters), settings (unique_key, matching, create, update and delete missing rules), schedule and counts. Read only",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "import_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "import_id"
+              ]
+            }
+          },
+          {
+            "name": "wpallimport-list-runs",
+            "mode": "read",
+            "description": "Run history of one WP All Import import, newest first: id, date, type (manual, processing, trigger, continue, cli), seconds, summary. page_size, offset. Read only",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "import_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "page_size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "import_id"
+              ]
+            }
+          },
+          {
+            "name": "wpallimport-get-run",
+            "mode": "read",
+            "description": "One run of a WP All Import import (the latest unless run_id): its summary and the warnings and errors of its log (at most 50, emails and IPs masked, token links removed), with error and warning counts. Read only",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "import_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "run_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "import_id"
+              ]
+            }
+          },
+          {
+            "name": "wpallexport-list-exports",
+            "mode": "read",
+            "description": "List WP All Export saved exports, most recent activity first: id, name, post_types, format, file (name only), exported count, schedule, status. page_size (default 20, max 100), offset. Read only",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "page_size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "name": "wpallexport-get-export",
+            "mode": "read",
+            "description": "One WP All Export export: post types, format, fields (label, type, name, php:true when custom code is set; the code itself is never returned), settings (only new or modified records, has_custom_where), schedule with its notification email. Read only",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "export_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "export_id"
+              ]
+            }
+          },
+          {
+            "name": "tracking-get-settings",
+            "mode": "read",
+            "description": "Tracking IDs (GTM containers, pixels, GA, Clarity), enabled events, data layer settings and excluded roles per active tracking plugin; tokens masked. plugin narrows to one",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "plugin": {
+                  "type": "string",
+                  "enum": [
+                    "gtm4wp",
+                    "pixelyoursite",
+                    "meta-pixel",
+                    "clarity"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "tracking-find-duplicates",
+            "mode": "read",
+            "description": "Every tracking ID the plugins load plus those hard coded in the theme, and each ID loaded more than once",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            }
+          },
+          {
+            "name": "gtm4wp-set-settings",
+            "mode": "write",
+            "description": "Set GTM4WP container_ids (GTM-XXXX), excluded_roles, datalayer_name and toggles (event, integration and data layer switches tracking-get-settings lists). Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_tracking_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "container_ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 10,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 20
+                  }
+                },
+                "excluded_roles": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
+                },
+                "datalayer_name": {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                "toggles": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "clarity-set-project-id",
+            "mode": "write",
+            "description": "Point Microsoft Clarity at another project_id. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_tracking_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "project_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 32
+                }
+              },
+              "required": [
+                "project_id"
+              ]
+            }
+          },
+          {
+            "name": "pixelyoursite-set-settings",
+            "mode": "write",
+            "description": "Set PixelYourSite IDs for one network (facebook pixel, ga measurement or ads IDs, gtm containers), turn the network on or off (enabled) and switch named *_enabled events it stores (tracking-get-settings lists them). The conversion API token is left alone. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_tracking_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "network": {
+                  "type": "string",
+                  "enum": [
+                    "facebook",
+                    "ga",
+                    "gtm"
+                  ]
+                },
+                "ids": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 10,
+                  "items": {
+                    "type": "string",
+                    "maxLength": 40
+                  }
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "events": {
+                  "type": "object",
+                  "maxProperties": 100,
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "required": [
+                "network"
+              ],
+              "minProperties": 2,
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "searchreplace-list-tables",
+            "mode": "read",
+            "description": "Search and replace (Better Search Replace, Search Regex): this site's tables with estimated rows, primary key and whether a run may write them (writable:false with the reason), plus Search Regex saved presets and whether Better Search Replace has a last result",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            }
+          },
+          {
+            "name": "searchreplace-dry-run",
+            "mode": "read",
+            "description": "Dry run of a serialization-safe search and replace over the named tables (literal search, case_sensitive default true): rows and matches per table, up to 3 before and after samples (emails and IPs masked), rows it would skip and why, and the dry_run_token searchreplace-run needs (valid 30 minutes, same arguments). Writes nothing. Personal data",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "search": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                },
+                "replace": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "tables": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  }
+                },
+                "case_sensitive": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "search",
+                "replace",
+                "tables"
+              ]
+            }
+          },
+          {
+            "name": "searchreplace-get-last-run",
+            "mode": "read",
+            "description": "The last search and replace WP MCP ran (tables, rows changed, session_id for rollback-session) and Better Search Replace's own last result, when either exists",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            }
+          },
+          {
+            "name": "searchreplace-run",
+            "mode": "destructive",
+            "description": "Run a serialization-safe search and replace over the named tables. Needs the dry_run_token of a searchreplace-dry-run with the same arguments and confirm:true; refuses when the data now has more matching rows than the dry run. Never touches users, usermeta, WP MCP tables, salts, keys or active_plugins. Each row is snapshotted: rollback-session with the returned session_id undoes the run. Off unless wpmcp_enable_search_replace_write",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": true,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "search": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                },
+                "replace": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "tables": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 100,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  }
+                },
+                "case_sensitive": {
+                  "type": "boolean"
+                },
+                "dry_run_token": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              },
+              "required": [
+                "search",
+                "replace",
+                "tables",
+                "dry_run_token"
+              ]
+            },
+            "confirm_in_arguments": true
           },
           {
             "name": "foogallery-list-galleries",
@@ -6779,6 +9403,443 @@
                 "image_ids"
               ],
               "additionalProperties": false
+            }
+          },
+          {
+            "name": "jetformbuilder-list-forms",
+            "mode": "read",
+            "description": "List JetFormBuilder forms: id, title, status, shortcode, entries and unread counts. status filters (publish, draft, private, pending)",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "publish",
+                    "draft",
+                    "private",
+                    "pending"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "jetformbuilder-get-form",
+            "mode": "read",
+            "description": "Read one JetFormBuilder form: title, status, shortcode, counts and its fields in form order",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "form_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "form_id"
+              ]
+            }
+          },
+          {
+            "name": "jetformbuilder-list-fields",
+            "mode": "read",
+            "description": "List one JetFormBuilder form's fields in form order: name (the key its value is stored under), type, label, required, options",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "form_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "form_id"
+              ]
+            }
+          },
+          {
+            "name": "jetformbuilder-list-entries",
+            "mode": "read",
+            "description": "List a JetFormBuilder form's records newest first: id, status, viewed, date and every value MASKED (jetformbuilder-get-entry returns one in full). page_size (default 20, max 100) and offset. Personal data",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "form_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "page_size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "form_id"
+              ]
+            }
+          },
+          {
+            "name": "jetformbuilder-get-entry",
+            "mode": "read",
+            "description": "One JetFormBuilder record in full: status, viewed, date, user, every value with its field label, IP address, user agent and referrer. Does not mark it read. Personal data",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "entry_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "entry_id"
+              ]
+            }
+          },
+          {
+            "name": "jetformbuilder-update-entry-status",
+            "mode": "write",
+            "description": "Mark a JetFormBuilder record read or unread (viewed). Undo: rollback-operation",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "entry_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "viewed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "entry_id",
+                "viewed"
+              ]
+            }
+          },
+          {
+            "name": "jetformbuilder-delete-entry",
+            "mode": "destructive",
+            "description": "Permanently delete a JetFormBuilder record with its values, action results and errors. Refused when the record has a payment. Uploaded files stay on disk. Needs confirm:true. Undo: rollback-session reinserts every row",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": true,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "entry_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "entry_id"
+              ]
+            }
+          },
+          {
+            "name": "kadenceforms-list-forms",
+            "mode": "read",
+            "description": "List Kadence Blocks advanced forms: id, title, status, actions (email, autoEmail, redirect, ...). status filters (publish, draft, private, pending)",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "publish",
+                    "draft",
+                    "private",
+                    "pending"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "kadenceforms-get-form",
+            "mode": "read",
+            "description": "Read one Kadence Blocks advanced form: title, status, actions, fields, success and error messages, redirect",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "form_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "form_id"
+              ]
+            }
+          },
+          {
+            "name": "kadenceforms-list-fields",
+            "mode": "read",
+            "description": "List one Kadence Blocks advanced form's fields: name, label, type, required, options",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "form_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "form_id"
+              ]
+            }
+          },
+          {
+            "name": "kadenceforms-list-notifications",
+            "mode": "read",
+            "description": "List one Kadence Blocks advanced form's emails: email (to the site) and autoEmail (to the submitter), each with active, recipients, subject, sender, reply-to, cc, bcc and message",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "form_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "form_id"
+              ]
+            }
+          },
+          {
+            "name": "kadenceforms-update-notification",
+            "mode": "write",
+            "description": "Change a Kadence Blocks advanced form email: notification email or autoEmail; active turns it on or off; email_to, subject, from_email, from_name, reply_to, cc, bcc, message (addresses or {field} placeholders). Undo: rollback-operation",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "form_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "notification": {
+                  "type": "string",
+                  "enum": [
+                    "email",
+                    "autoEmail"
+                  ]
+                },
+                "active": {
+                  "type": "boolean"
+                },
+                "email_to": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "subject": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "from_email": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "from_name": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "reply_to": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "cc": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "bcc": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "message": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              },
+              "required": [
+                "form_id",
+                "notification"
+              ],
+              "minProperties": 3,
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "jetpackforms-list-forms",
+            "mode": "read",
+            "description": "List the Jetpack forms that have responses: id (the form or the page it is on), title, type, and inbox, spam, trash and unread counts",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            }
+          },
+          {
+            "name": "jetpackforms-list-entries",
+            "mode": "read",
+            "description": "List Jetpack Forms responses newest first: id, form_id, status, read, date and every value MASKED (jetpackforms-get-entry returns one in full). form_id filters, status inbox (default), spam or trash; page_size (max 100) and offset. Personal data",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "form_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "inbox",
+                    "spam",
+                    "trash"
+                  ]
+                },
+                "page_size": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          {
+            "name": "jetpackforms-get-entry",
+            "mode": "read",
+            "description": "One Jetpack Forms response in full: status, read, date, subject, every field (label, value, type), IP address, user agent and the page it came from. Personal data",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "entry_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "entry_id"
+              ]
+            }
+          },
+          {
+            "name": "jetpackforms-update-entry-status",
+            "mode": "write",
+            "description": "Move a Jetpack Forms response to inbox, spam or trash (status) and/or mark it read or unread (read). Undo: rollback-operation",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "entry_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "inbox",
+                    "spam",
+                    "trash"
+                  ]
+                },
+                "read": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "entry_id"
+              ],
+              "minProperties": 2
+            }
+          },
+          {
+            "name": "jetpackforms-delete-entry",
+            "mode": "destructive",
+            "description": "Permanently delete a Jetpack Forms response. Uploaded files stay. Needs confirm:true. Undo: rollback-operation brings it back at its id",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": true,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "entry_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "entry_id"
+              ]
             }
           },
           {
@@ -7433,6 +10494,367 @@
                 "user_id",
                 "role"
               ]
+            }
+          },
+          {
+            "name": "cpt-list-types",
+            "mode": "read",
+            "description": "List custom post types and taxonomies with the plugin that owns each (cptui, metabox, or code), active and registered flags. kind filters",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "post_type",
+                    "taxonomy"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "cpt-get-type",
+            "mode": "read",
+            "description": "One custom post type or taxonomy: owning plugin and its stored config",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "post_type",
+                    "taxonomy"
+                  ]
+                },
+                "slug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 32
+                }
+              },
+              "required": [
+                "kind",
+                "slug"
+              ]
+            }
+          },
+          {
+            "name": "cpt-create-post-type",
+            "mode": "write",
+            "description": "Create a post type in Custom Post Type UI (plugin cptui) or MB Custom Post Types (metabox). Undo: rollback-session",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "singular_label": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "rewrite_slug": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "public": {
+                  "type": "boolean"
+                },
+                "hierarchical": {
+                  "type": "boolean"
+                },
+                "has_archive": {
+                  "type": "boolean"
+                },
+                "show_in_rest": {
+                  "type": "boolean"
+                },
+                "exclude_from_search": {
+                  "type": "boolean"
+                },
+                "supports": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "title",
+                      "editor",
+                      "author",
+                      "thumbnail",
+                      "excerpt",
+                      "trackbacks",
+                      "custom-fields",
+                      "comments",
+                      "revisions",
+                      "page-attributes",
+                      "post-formats"
+                    ]
+                  }
+                },
+                "taxonomies": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  }
+                },
+                "menu_icon": {
+                  "type": "string",
+                  "pattern": "^dashicons-[a-z0-9-]+$",
+                  "maxLength": 60
+                },
+                "plugin": {
+                  "type": "string",
+                  "enum": [
+                    "cptui",
+                    "metabox"
+                  ]
+                }
+              },
+              "required": [
+                "slug"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "cpt-update-post-type",
+            "mode": "write",
+            "description": "Change a builder-owned post type in its plugin; unnamed settings kept, slug never renamed. Undo: rollback-operation",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "singular_label": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "rewrite_slug": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "public": {
+                  "type": "boolean"
+                },
+                "hierarchical": {
+                  "type": "boolean"
+                },
+                "has_archive": {
+                  "type": "boolean"
+                },
+                "show_in_rest": {
+                  "type": "boolean"
+                },
+                "exclude_from_search": {
+                  "type": "boolean"
+                },
+                "supports": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "title",
+                      "editor",
+                      "author",
+                      "thumbnail",
+                      "excerpt",
+                      "trackbacks",
+                      "custom-fields",
+                      "comments",
+                      "revisions",
+                      "page-attributes",
+                      "post-formats"
+                    ]
+                  }
+                },
+                "taxonomies": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  }
+                },
+                "menu_icon": {
+                  "type": "string",
+                  "pattern": "^dashicons-[a-z0-9-]+$",
+                  "maxLength": 60
+                }
+              },
+              "required": [
+                "slug"
+              ],
+              "additionalProperties": false,
+              "minProperties": 2
+            }
+          },
+          {
+            "name": "cpt-create-taxonomy",
+            "mode": "write",
+            "description": "Create a taxonomy in Custom Post Type UI (plugin cptui) or MB Custom Post Types (metabox). Undo: rollback-session",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "singular_label": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "rewrite_slug": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "public": {
+                  "type": "boolean"
+                },
+                "hierarchical": {
+                  "type": "boolean"
+                },
+                "show_in_rest": {
+                  "type": "boolean"
+                },
+                "show_admin_column": {
+                  "type": "boolean"
+                },
+                "post_types": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  }
+                },
+                "plugin": {
+                  "type": "string",
+                  "enum": [
+                    "cptui",
+                    "metabox"
+                  ]
+                }
+              },
+              "required": [
+                "slug"
+              ],
+              "additionalProperties": false
+            }
+          },
+          {
+            "name": "cpt-update-taxonomy",
+            "mode": "write",
+            "description": "Change a builder-owned taxonomy in its plugin; unnamed settings kept, slug never renamed. Undo: rollback-operation",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "singular_label": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "rewrite_slug": {
+                  "type": "string",
+                  "maxLength": 200
+                },
+                "public": {
+                  "type": "boolean"
+                },
+                "hierarchical": {
+                  "type": "boolean"
+                },
+                "show_in_rest": {
+                  "type": "boolean"
+                },
+                "show_admin_column": {
+                  "type": "boolean"
+                },
+                "post_types": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 32
+                  }
+                }
+              },
+              "required": [
+                "slug"
+              ],
+              "additionalProperties": false,
+              "minProperties": 2
             }
           },
           {
@@ -9847,6 +13269,15 @@
         "validate": "<closure>",
         "handler": "<closure>"
       },
+      "emaillog-email-stats": {
+        "mode": "read",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
       "emaillog-get-email": {
         "mode": "read",
         "capability": "manage_options",
@@ -10147,6 +13578,405 @@
         "input_schema": "<as listed>",
         "validate": "<closure>",
         "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "megamenu-get-settings": {
+        "capability": "edit_theme_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "megamenu-get-theme": {
+        "capability": "edit_theme_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "megamenu-list-items": {
+        "capability": "edit_theme_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "objects": {
+          "menu_id": {
+            "type": "term",
+            "access": "read"
+          }
+        },
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "megamenu-get-item": {
+        "capability": "edit_theme_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "megamenu-update-location": {
+        "capability": "edit_theme_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_megamenu_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "megamenu-update-settings": {
+        "capability": "edit_theme_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_megamenu_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "megamenu-update-theme": {
+        "capability": "edit_theme_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_megamenu_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "megamenu-update-item": {
+        "capability": "edit_theme_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_megamenu_write",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "megamenu-clear-css-cache": {
+        "capability": "edit_theme_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "filebird-list-folders": {
+        "capability": "upload_files",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "filebird-get-folder": {
+        "capability": "upload_files",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "filebird-get-attachment-folder": {
+        "capability": "upload_files",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "attachment_id": {
+            "type": "post",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "filebird-create-folder": {
+        "capability": "upload_files",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_filebird_write",
+        "mode": "write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "filebird-rename-folder": {
+        "capability": "upload_files",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_filebird_write",
+        "mode": "write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "filebird-move-folder": {
+        "capability": "upload_files",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_filebird_write",
+        "mode": "write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "filebird-assign-attachments": {
+        "capability": "upload_files",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_filebird_write",
+        "mode": "write",
+        "objects": {
+          "attachment_ids.*": "post",
+          "attachment_ids": "post"
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "filebird-delete-folder": {
+        "capability": "upload_files",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_filebird_write",
+        "mode": "destructive",
+        "self_snapshotting": true,
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "confirm_preview": "<closure>",
+        "handler": "<closure>"
+      },
+      "discountrules-list-rules": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "discountrules-get-rule": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "discountrules-create-rule": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_discount_rules_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "discountrules-update-rule": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_discount_rules_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "discountrules-enable-rule": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_discount_rules_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "discountrules-disable-rule": {
+        "capability": "manage_woocommerce",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_discount_rules_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "popupbuilder-list-popups": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "popupbuilder-get-popup": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "popupbuilder-update-popup": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_popup_builder_write",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          },
+          "rules.*.post_ids": {
+            "type": "post",
+            "access": "read"
+          },
+          "rules.*.term_ids": {
+            "type": "term",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "popupbuilder-enable-popup": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_popup_builder_write",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "popupbuilder-disable-popup": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_popup_builder_write",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "hustle-list-modules": {
+        "mode": "read",
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "hustle-get-module": {
+        "mode": "read",
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "depicter-list-documents": {
+        "mode": "read",
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "depicter-get-document": {
+        "mode": "read",
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
         "handler": "<closure>"
       },
       "popupmaker-list-popups": {
@@ -10459,6 +14289,55 @@
         "validate": "<closure>",
         "handler": "<closure>"
       },
+      "instagramfeed-list-feeds": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "instagramfeed-get-feed": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "instagramfeed-list-sources": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "instagramfeed-update-feed": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_instagram_feed_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "instagramfeed-clear-feed-cache": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_instagram_feed_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
       "simplepay-list-forms": {
         "mode": "read",
         "capability": "manage_options",
@@ -10514,6 +14393,275 @@
         "description": "<as listed>",
         "input_schema": "<as listed>",
         "requires": "<closure>",
+        "handler": "<closure>"
+      },
+      "wpgomaps-list-maps": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "wpgomaps-list-markers": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "wpgomaps-save-markers": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_maps_write",
+        "self_snapshotting": true,
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "wpgomaps-delete-markers": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_maps_write",
+        "self_snapshotting": true,
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "wpsl-list-stores": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "wpsl-get-store": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "wpsl-get-settings": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "wpsl-save-stores": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_maps_write",
+        "self_snapshotting": true,
+        "objects": {
+          "stores.*.id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "wpsl-delete-stores": {
+        "capability": "edit_posts",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_maps_write",
+        "self_snapshotting": true,
+        "objects": {
+          "ids": {
+            "type": "post",
+            "own_type": true,
+            "access": "delete"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "wpmaps-list-maps": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "wpmaps-list-locations": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "wpallimport-list-imports": {
+        "mode": "read",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "wpallimport-get-import": {
+        "mode": "read",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "wpallimport-list-runs": {
+        "mode": "read",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "wpallimport-get-run": {
+        "mode": "read",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "wpallexport-list-exports": {
+        "mode": "read",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "wpallexport-get-export": {
+        "mode": "read",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "tracking-get-settings": {
+        "mode": "read",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "tracking-find-duplicates": {
+        "mode": "read",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "gtm4wp-set-settings": {
+        "mode": "write",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_tracking_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "clarity-set-project-id": {
+        "mode": "write",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_tracking_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "pixelyoursite-set-settings": {
+        "mode": "write",
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_tracking_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "searchreplace-list-tables": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "searchreplace-dry-run": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "searchreplace-get-last-run": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "searchreplace-run": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "destructive",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_search_replace_write",
+        "self_snapshotting": true,
+        "confirm_in_arguments": true,
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "confirm_preview": "<closure>",
         "handler": "<closure>"
       },
       "foogallery-list-galleries": {
@@ -10627,6 +14775,227 @@
         "snapshot": "<closure>",
         "handler": "<closure>",
         "description": "<as listed>"
+      },
+      "jetformbuilder-list-forms": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "jetformbuilder-get-form": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "form_id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "jetformbuilder-list-fields": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "form_id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "jetformbuilder-list-entries": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "form_id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "jetformbuilder-get-entry": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "jetformbuilder-update-entry-status": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_jetformbuilder_write",
+        "mode": "write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "jetformbuilder-delete-entry": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_jetformbuilder_write",
+        "mode": "destructive",
+        "self_snapshotting": true,
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "confirm_preview": "<closure>",
+        "handler": "<closure>"
+      },
+      "kadenceforms-list-forms": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "kadenceforms-get-form": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "form_id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "kadenceforms-list-fields": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "form_id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "kadenceforms-list-notifications": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "form_id": {
+            "type": "post",
+            "own_type": true,
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "kadenceforms-update-notification": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "objects": {
+          "form_id": {
+            "type": "post",
+            "own_type": true,
+            "access": "write"
+          }
+        },
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_kadence_forms_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "jetpackforms-list-forms": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "jetpackforms-list-entries": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "objects": {
+          "form_id": {
+            "type": "post",
+            "access": "read"
+          }
+        },
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "jetpackforms-get-entry": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "jetpackforms-update-entry-status": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_jetpack_forms_write",
+        "mode": "write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "jetpackforms-delete-entry": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_jetpack_forms_write",
+        "mode": "destructive",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "confirm_preview": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
       },
       "wpforo-list-forums": {
         "capability": "manage_options",
@@ -10871,6 +15240,71 @@
         },
         "validate": "<closure>",
         "confirm_preview": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "cpt-list-types": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "handler": "<closure>"
+      },
+      "cpt-get-type": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "read",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "cpt-create-post-type": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_cpt_builder_write",
+        "self_snapshotting": true,
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "cpt-update-post-type": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_cpt_builder_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "cpt-create-taxonomy": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_cpt_builder_write",
+        "self_snapshotting": true,
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "cpt-update-taxonomy": {
+        "capability": "manage_options",
+        "requires": "<closure>",
+        "mode": "write",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_cpt_builder_write",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
         "snapshot": "<closure>",
         "handler": "<closure>"
       },
@@ -12408,7 +16842,7 @@
     "is_available": true,
     "registers_only_when_available": false,
     "host_plugin": {
-      "name": "the active theme (context, mods), site identity, permalinks, Redirection, Rank Math redirects and 404 log, backup, security, analytics, cache, mail status, site gates, fonts",
+      "name": "the active theme (context, mods), site identity, permalinks, Redirection, Rank Math redirects and 404 log, backup, security, analytics, cache, mail status, site gates, Redux options panels, fonts",
       "several": true
     },
     "operation_hosts": [],
@@ -12454,7 +16888,13 @@
       "list-relevanssi-top-searches",
       "get-fibosearch-settings",
       "list-fibosearch-top-searches",
+      "get-searchwp-settings",
+      "get-searchwp-index-status",
+      "list-searchwp-top-searches",
       "get-site-gate-status",
+      "list-redux-panels",
+      "get-redux-options",
+      "get-login-url",
       "get-consent-banner-status",
       "get-consent-settings",
       "list-consent-cookies",
@@ -12496,8 +16936,12 @@
       "rebuild-relevanssi-index",
       "update-relevanssi-settings",
       "update-fibosearch-settings",
+      "rebuild-searchwp-index",
+      "update-searchwp-engine",
       "enable-site-gate",
       "disable-site-gate",
+      "set-redux-option",
+      "set-login-url",
       "update-consent-banner-texts",
       "start-consent-cookie-scan",
       "create-redirection-redirect",
@@ -14083,6 +18527,105 @@
             }
           },
           {
+            "name": "get-searchwp-settings",
+            "mode": "read",
+            "description": "SearchWP engines: each engine's label, settings and sources with their attribute weights",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            }
+          },
+          {
+            "name": "get-searchwp-index-status",
+            "mode": "read",
+            "description": "SearchWP index status: entries queued, indexed and omitted, per source, and the index row count",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            }
+          },
+          {
+            "name": "list-searchwp-top-searches",
+            "mode": "read",
+            "description": "SearchWP top searches from its search log, aggregated per query (count, most results, last time), personal data masked; zero_hits:true for searches that found nothing",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "days": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 3650
+                },
+                "zero_hits": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          {
+            "name": "rebuild-searchwp-index",
+            "mode": "destructive",
+            "description": "Rebuild the SearchWP index with its own indexer (empties and rebuilds it in the background). Derived data: not snapshotted, not reversible",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": true,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            },
+            "confirm_in_arguments": true
+          },
+          {
+            "name": "update-searchwp-engine",
+            "mode": "write",
+            "description": "Set attribute weights (1 to 100) of one source of a SearchWP engine: engine, source (e.g. post.post), attributes {name: weight}, names as get-searchwp-settings reports them. Snapshotted; rollback-operation restores them. Disabled by default (wpmcp_enable_search_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "engine": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_-]{1,60}$"
+                },
+                "source": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_.-]{1,100}$"
+                },
+                "attributes": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "maxProperties": 50
+                }
+              },
+              "required": [
+                "engine",
+                "source",
+                "attributes"
+              ]
+            }
+          },
+          {
             "name": "get-site-gate-status",
             "mode": "read",
             "description": "Whether the public site is gated and by what: WP MCP maintenance mode, WordPress core .maintenance, and the SeedProd, WP Maintenance Mode, Under Construction, Maintenance and CMP plugins. Per gate: active, mode (coming soon or maintenance), the HTTP status and message visitors get, and who bypasses it (roles, counts, whether a bypass link or password is set; the secrets themselves are never returned). public_site_gated comes from a live request to the home page as an anonymous visitor, with the evidence in basis and probe",
@@ -14098,7 +18641,7 @@
           {
             "name": "enable-site-gate",
             "mode": "destructive",
-            "description": "Close the public site with SeedProd (coming_soon or maintenance mode) or Under Construction. Refuses when another gate is already active, when the plugin would also lock out you (your role is not bypassed) and for SeedProd without its page set up. Needs confirm:true; the preview says what visitors will get and who bypasses it. After the write it probes wp-login.php and the REST root and restores the settings itself if either answers 503. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_site_gate_write filter)",
+            "description": "Close the public site with SeedProd or CMP (mode coming_soon or maintenance), Under Construction, WP Maintenance Mode (LightStart) or Maintenance. Refuses when another gate is already active, when the plugin would also lock out you (your role is not bypassed) for SeedProd without its page set up, and for a countdown that already ended. Needs confirm:true; the preview says what visitors will get and who bypasses it. After the write it probes wp-login.php and the REST root and restores the settings itself if either answers 503. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_site_gate_write filter)",
             "capability": "manage_options",
             "enabled": false,
             "requires_confirm": true,
@@ -14111,7 +18654,10 @@
                   "enum": [
                     "auto",
                     "coming-soon",
-                    "under-construction-page"
+                    "under-construction-page",
+                    "wp-maintenance-mode",
+                    "maintenance",
+                    "cmp-coming-soon-maintenance"
                   ]
                 },
                 "mode": {
@@ -14127,7 +18673,7 @@
           {
             "name": "disable-site-gate",
             "mode": "write",
-            "description": "Open the public site again by turning off the SeedProd or Under Construction gate (auto picks the one that is active). Refuses when none is active. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_site_gate_write filter)",
+            "description": "Open the public site again by turning off the SeedProd, Under Construction, WP Maintenance Mode, Maintenance or CMP gate (auto picks the one that is active). Refuses when none is active. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_site_gate_write filter)",
             "capability": "manage_options",
             "enabled": false,
             "requires_confirm": false,
@@ -14140,8 +18686,123 @@
                   "enum": [
                     "auto",
                     "coming-soon",
-                    "under-construction-page"
+                    "under-construction-page",
+                    "wp-maintenance-mode",
+                    "maintenance",
+                    "cmp-coming-soon-maintenance"
                   ]
+                }
+              }
+            }
+          },
+          {
+            "name": "list-redux-panels",
+            "mode": "read",
+            "description": "List the Redux Framework options panels on this site: opt_name, title, where the values are stored (option, theme_mod, theme_mods, network, transient), section and field counts, and whether set-redux-option can write it",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            }
+          },
+          {
+            "name": "get-redux-options",
+            "mode": "read",
+            "description": "Read a Redux panel's fields: id, type, title, section, default, the stored value (an unsaved field reads as its default, is_default:true), the options of a choice field, and whether set-redux-option can write it. Licence keys, API keys, tokens and password fields are never read out. Narrow with section or fields (field ids)",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "opt_name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The panel's opt_name; needed when the site has more than one panel"
+                },
+                "section": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 200
+                }
+              }
+            }
+          },
+          {
+            "name": "set-redux-option",
+            "mode": "write",
+            "description": "Set ONE existing field of a Redux panel through Redux's own save (its validation, storage and compiler hooks, so generated CSS is rebuilt). The value is checked for the field's type first: color (hex or transparent), switch (true/false), select, radio, button set and image select (one of the field's options; a multi select takes a list), slider and spinner (a number in range), text, textarea and editor (a string). Unknown field ids, secret fields and other field types are refused. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_redux_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "opt_name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The panel's opt_name; needed when the site has more than one panel"
+                },
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "number",
+                    "integer",
+                    "boolean",
+                    "array"
+                  ]
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ]
+            }
+          },
+          {
+            "name": "get-login-url",
+            "mode": "read",
+            "description": "WPS Hide Login: the custom login slug and URL, and the slug and URL that wp-admin and wp-login.php send logged-out visitors to (wp-login.php is always blocked while the plugin is active). source says whether the slug is this site's own, the network default or the plugin default (login)",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": []
+            }
+          },
+          {
+            "name": "set-login-url",
+            "mode": "destructive",
+            "description": "WPS Hide Login: change the login slug and/or the redirect slug. Refuses a slug that collides with a post or page, a query var or a reserved path (the REST prefix included). Needs confirm:true; the preview gives the new login URL. Probes the new login URL and the REST root after the write and puts the old values back if either fails. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_login_url_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": true,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "login_slug": {
+                  "type": "string"
+                },
+                "redirect_slug": {
+                  "type": "string"
                 }
               }
             }
@@ -15543,6 +20204,52 @@
         "snapshot": "<closure>",
         "handler": "<closure>"
       },
+      "get-searchwp-settings": {
+        "mode": "read",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "handler": "<closure>"
+      },
+      "get-searchwp-index-status": {
+        "mode": "read",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "handler": "<closure>"
+      },
+      "list-searchwp-top-searches": {
+        "mode": "read",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "handler": "<closure>"
+      },
+      "rebuild-searchwp-index": {
+        "mode": "destructive",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "validate": "<closure>",
+        "confirm_preview": "<closure>",
+        "handler": "<closure>"
+      },
+      "update-searchwp-engine": {
+        "mode": "write",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_search_write",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
       "get-site-gate-status": {
         "mode": "read",
         "capability": "manage_options",
@@ -15570,6 +20277,56 @@
         "opt_in_filter": "wpmcp_enable_site_gate_write",
         "input_schema": "<as listed>",
         "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "list-redux-panels": {
+        "mode": "read",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "handler": "<closure>"
+      },
+      "get-redux-options": {
+        "mode": "read",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "set-redux-option": {
+        "mode": "write",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_redux_write",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "get-login-url": {
+        "mode": "read",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "handler": "<closure>"
+      },
+      "set-login-url": {
+        "mode": "destructive",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_login_url_write",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "validate": "<closure>",
+        "confirm_preview": "<closure>",
         "snapshot": "<closure>",
         "handler": "<closure>"
       },

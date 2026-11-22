@@ -30,6 +30,24 @@
     "shipped": true
   },
   {
+    "class": "WPMCP\\Integrations\\Max_Mega_Menu_Pack",
+    "method": "after_options_restored",
+    "hook": "wpmcp_rollback_options_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Max_Mega_Menu_Pack",
+    "method": "after_post_restored",
+    "hook": "wpmcp_rollback_post_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Redux_Pack",
+    "method": "after_options_restored",
+    "hook": "wpmcp_rollback_options_restored",
+    "shipped": true
+  },
+  {
     "class": "WPMCP\\Integrations\\Consent_Pack",
     "method": "after_rows_restored",
     "hook": "wpmcp_rollback_db_rows_restored",

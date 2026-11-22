@@ -2,7 +2,7 @@
   {
     "name": "wpmcp/block-suites-read",
     "tier": "pro",
-    "plugin": "Kadence Blocks, GenerateBlocks, Spectra, Otter Blocks, Blocksy Companion, Stackable, Ultimate Blocks",
+    "plugin": "Kadence Blocks, GenerateBlocks, Spectra, Otter Blocks, Blocksy Companion, Stackable, Ultimate Blocks, GreenShift, Essential Blocks, CoBlocks",
     "several": true,
     "operations": [],
     "unknown_operation": true
@@ -10,7 +10,7 @@
   {
     "name": "wpmcp/block-suites-write",
     "tier": "pro",
-    "plugin": "Kadence Blocks, GenerateBlocks, Spectra, Otter Blocks, Blocksy Companion, Stackable, Ultimate Blocks",
+    "plugin": "Kadence Blocks, GenerateBlocks, Spectra, Otter Blocks, Blocksy Companion, Stackable, Ultimate Blocks, GreenShift, Essential Blocks, CoBlocks",
     "several": true,
     "operations": [],
     "unknown_operation": true

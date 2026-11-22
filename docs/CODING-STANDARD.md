@@ -228,6 +228,27 @@ final class Acme_Forms_Ops implements Operation_Provider {}
 // Bad: new rows for Acme Forms in Opt_In_Settings, Plugin_Data_Integration and strip.php
 ```
 
+## 13. The golden baseline moves with the surface
+
+tests/golden/GoldenCaptureTest.php compares the plugin's surface (abilities,
+tools/list, dispatcher catalogs, opt-in groups, rollback refreshers, hooks and
+the admin menu, for the full, woocommerce and wporg flavors) with
+tests/support/golden/baseline/. A change that intends to alter that surface
+(a new or changed ability, operation, description, schema, hint, opt-in group
+or hook) regenerates the baseline in the same PR and commits the diff:
+
+```
+WPMCP_GOLDEN_REGENERATE=1 bash bin/test-local.sh -- --group golden tests/golden
+```
+
+Review that diff before committing: it shows only the intended changes. A
+change that does not intend to alter the surface runs the group without
+regenerating, and it stays green:
+
+```
+bash bin/test-local.sh -- --group golden tests/golden
+```
+
 ## How to add an integration
 
 An integration is a module: a directory under `src/Modules/<Id>/` with

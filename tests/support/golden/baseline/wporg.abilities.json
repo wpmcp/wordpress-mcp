@@ -2091,7 +2091,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Packages\\Manage_Updates->handle",
-    "description": "Update WordPress core or set plugin/theme auto-updates. type=core applies the offered core update (or pending DB upgrade); needs confirm:true and a full backup (trigger-backup type=full) under 1h old; refuses if expected_version differs from the offer. A core update cannot be snapshot-rolled-back; restore that backup to revert. type=plugin|theme + item + enabled sets auto-update (undoable)",
+    "description": "Update WordPress core or set plugin/theme auto-updates. type=core applies the offered core update (or pending DB upgrade); needs confirm:true and a full backup (trigger-backup type=full) under 1h old; refuses if expected_version differs from the offer. A core update cannot be snapshot-rolled-back; restore that backup to revert. type=plugin|theme + item + enabled sets auto-update (undoable). type=plugins|themes: action=plan lists pending updates; run (opt-in wpmcp_enable_safe_updates, confirm:true) snapshots each, updates, checks the site and auto-restores a broken one; status (run_id); restore (run_id, items)",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -2100,7 +2100,9 @@
           "enum": [
             "core",
             "plugin",
-            "theme"
+            "theme",
+            "plugins",
+            "themes"
           ]
         },
         "item": {
@@ -2116,6 +2118,24 @@
           "type": "boolean"
         },
         "session_id": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "plan",
+            "run",
+            "status",
+            "restore"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "run_id": {
           "type": "string"
         }
       },
@@ -5283,7 +5303,7 @@
     "group": "redirects",
     "method": "register_redirect_abilities",
     "handler": "WPMCP\\Tools\\Redirects\\List_Redirects->handle",
-    "description": "List this site's managed redirects (source path, resolved target, status code, enabled, hit count), plus pending suggestions raised when a published post was deleted or moved. Filter by enabled state or a search string. Read-only",
+    "description": "List this site's redirects (the active redirect plugin's, else WP MCP's own: source path, resolved target, status code, enabled, hit count), plus pending suggestions raised when a published post was deleted or moved. Filter by enabled state or a search string. Read-only",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -5298,6 +5318,10 @@
         },
         "offset": {
           "type": "integer"
+        },
+        "provider": {
+          "type": "string",
+          "description": "wpmcp, redirection or rankmath; default: the one active redirect plugin, else wpmcp"
         }
       }
     },
@@ -5318,7 +5342,7 @@
     "group": "redirects",
     "method": "register_redirect_abilities",
     "handler": "WPMCP\\Tools\\Redirects\\Create_Redirect->handle",
-    "description": "Create a managed redirect from a source path to a target URL or target_post_id (which survives slug changes). Chains are flattened to one hop and loops refused; the stored target is reported. Snapshotted; rollback-operation removes it",
+    "description": "Create a redirect (in the active redirect plugin, else WP MCP's own table) from a source path to a target URL or target_post_id (which survives slug changes). Chains are flattened to one hop and loops refused; the stored target is reported. Snapshotted; rollback-operation removes it",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -5345,6 +5369,10 @@
         },
         "notes": {
           "type": "string"
+        },
+        "provider": {
+          "type": "string",
+          "description": "wpmcp, redirection or rankmath; default: the one active redirect plugin, else wpmcp"
         },
         "session_id": {
           "type": "string"
@@ -5371,7 +5399,7 @@
     "group": "redirects",
     "method": "register_redirect_abilities",
     "handler": "WPMCP\\Tools\\Redirects\\Update_Redirect->handle",
-    "description": "Change one managed redirect: its source, target/target_post_id, status code, enabled state or notes. Only the fields you pass change. Retargeting re-runs chain flattening and loop detection. Snapshotted and reversible",
+    "description": "Change one redirect: its source, target/target_post_id, status code, enabled state or notes. Only the fields you pass change. Retargeting re-runs chain flattening and loop detection. Snapshotted and reversible",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -5402,6 +5430,10 @@
         "notes": {
           "type": "string"
         },
+        "provider": {
+          "type": "string",
+          "description": "wpmcp, redirection or rankmath; default: the one active redirect plugin, else wpmcp"
+        },
         "session_id": {
           "type": "string"
         }
@@ -5427,12 +5459,19 @@
     "group": "redirects",
     "method": "register_redirect_abilities",
     "handler": "WPMCP\\Tools\\Redirects\\Delete_Redirect->handle",
-    "description": "Delete one managed redirect. The whole row is snapshotted first, so rollback-operation brings the same redirect back; use update-redirect with enabled:false instead to stop it firing while keeping its hit history",
+    "description": "Delete one redirect. The whole row is snapshotted first, so rollback-operation brings the same redirect back; use update-redirect with enabled:false instead to stop it firing while keeping its hit history",
     "input_schema": {
       "type": "object",
       "properties": {
         "redirect_id": {
           "type": "integer"
+        },
+        "provider": {
+          "type": "string",
+          "description": "wpmcp, redirection or rankmath; default: the one active redirect plugin, else wpmcp"
+        },
+        "confirm": {
+          "type": "boolean"
         },
         "session_id": {
           "type": "string"
@@ -5665,7 +5704,7 @@
     "group": "diagnostics",
     "method": "register_diagnostics_abilities",
     "handler": "WPMCP\\Tools\\Diagnostics\\Get_Debug_Log->handle",
-    "description": "Bounded tail (max 200 lines / 64KB) of the debug log, by default WP_CONTENT_DIR/debug.log or the WP_DEBUG_LOG path. A path argument is confined to WP_CONTENT_DIR",
+    "description": "Bounded tail (max 200 lines / 64KB) of the debug log, by default WP_CONTENT_DIR/debug.log or the WP_DEBUG_LOG path. A path argument is confined to WP_CONTENT_DIR. source:access searches the access log, newest first (opt-in, IPs masked): filter {ip,path,status,method,agent,since,until,around_file,window minutes}, lines max 200, cursor; summary:true: top IPs, paths, wp-content PHP POSTs",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -5674,6 +5713,22 @@
         },
         "lines": {
           "type": "integer"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "debug",
+            "access"
+          ]
+        },
+        "filter": {
+          "type": "object"
+        },
+        "summary": {
+          "type": "boolean"
+        },
+        "cursor": {
+          "type": "string"
         }
       }
     },
@@ -9469,7 +9524,7 @@
     "group": "integration",
     "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Plugin_Data_Integration->handle_read",
-    "description": "Read op on JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, FooGallery galleries: operation + its args (list-operations lists each op's schema)",
+    "description": "Read op on JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, Custom Post Type UI and MB Custom Post Types post types, Better Search Replace and Search Regex search and replace, Popup Builder, Hustle and Depicter popups, GTM4WP, PixelYourSite, Meta Pixel for WordPress and Microsoft Clarity tracking IDs, Discount Rules for WooCommerce pricing rules, Smash Balloon Instagram Feed feeds, WP All Import and WP All Export jobs, FileBird media folders, Max Mega Menu settings and themes, WP Go Maps, WP Maps and WP Store Locator locations, FooGallery galleries, JetFormBuilder forms, Kadence Blocks forms, Jetpack Forms responses: operation + its args (list-operations lists each op's schema)",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -9501,7 +9556,7 @@
     "group": "integration",
     "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Plugin_Data_Integration->handle_write",
-    "description": "Write op on JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, FooGallery galleries: operation + args per its schema (list-operations on the read half). Snapshot-first if possible (undo: rollback-operation); destructive ops need confirm:true",
+    "description": "Write op on JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, Custom Post Type UI and MB Custom Post Types post types, Better Search Replace and Search Regex search and replace, Popup Builder, Hustle and Depicter popups, GTM4WP, PixelYourSite, Meta Pixel for WordPress and Microsoft Clarity tracking IDs, Discount Rules for WooCommerce pricing rules, Smash Balloon Instagram Feed feeds, WP All Import and WP All Export jobs, FileBird media folders, Max Mega Menu settings and themes, WP Go Maps, WP Maps and WP Store Locator locations, FooGallery galleries, JetFormBuilder forms, Kadence Blocks forms, Jetpack Forms responses: operation + args per its schema (list-operations on the read half). Snapshot-first if possible (undo: rollback-operation); destructive ops need confirm:true",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -9749,7 +9804,7 @@
     "group": "integration",
     "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Theme_Integration->handle_read",
-    "description": "Read op on the active theme (context, mods), site identity, permalinks, Redirection, Rank Math redirects and 404 log, backup, security, analytics, cache, mail status, site gates, fonts: operation + its args (list-operations lists each op's schema)",
+    "description": "Read op on the active theme (context, mods), site identity, permalinks, Redirection, Rank Math redirects and 404 log, backup, security, analytics, cache, mail status, site gates, Redux options panels, fonts: operation + its args (list-operations lists each op's schema)",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -9781,7 +9836,7 @@
     "group": "integration",
     "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Theme_Integration->handle_write",
-    "description": "Write op on the active theme (context, mods), site identity, permalinks, Redirection, Rank Math redirects and 404 log, backup, security, analytics, cache, mail status, site gates, fonts: operation + args per its schema (list-operations on the read half). Snapshot-first if possible (undo: rollback-operation); destructive ops need confirm:true",
+    "description": "Write op on the active theme (context, mods), site identity, permalinks, Redirection, Rank Math redirects and 404 log, backup, security, analytics, cache, mail status, site gates, Redux options panels, fonts: operation + args per its schema (list-operations on the read half). Snapshot-first if possible (undo: rollback-operation); destructive ops need confirm:true",
     "input_schema": {
       "type": "object",
       "properties": {
