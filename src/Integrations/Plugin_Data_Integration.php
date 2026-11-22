@@ -190,7 +190,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
     protected function summary(): string
     {
         return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores'
-            . ', Tutor LMS, LifterLMS and LearnDash courses, TablePress tables'
+            . ', Tutor LMS, LifterLMS, LearnDash and Sensei LMS courses, TablePress tables'
             . ', WP Offload Media status'
             . ', WPCode snippets'
             . ', FluentCRM and MailPoet'
