@@ -354,6 +354,7 @@ class Theme_Integration extends Integration_Dispatcher
             CartFlows_Pack::operations(),
             Core_Privacy_Pack::operations(),
             WPFunnels_Pack::operations(),
+            Seo_Extras_Pack::operations(),
             \WPMCP\Tools\ThemeBuilder\Dynamic\Dynamic_Template_Ops::operations()
         );
     }

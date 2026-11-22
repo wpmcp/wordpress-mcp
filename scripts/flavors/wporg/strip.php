@@ -1567,6 +1567,7 @@ $edits['src/Integrations/Theme_Integration.php'] = [
             . "            CartFlows_Pack::operations(),\n"
             . "            Core_Privacy_Pack::operations(),\n"
             . "            WPFunnels_Pack::operations(),\n"
+            . "            Seo_Extras_Pack::operations(),\n"
             . "            \\WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Dynamic_Template_Ops::operations()\n",
         "            Redirection_Pack::operations(),\n            Rank_Math_Redirects_Pack::operations()\n",
         1,
