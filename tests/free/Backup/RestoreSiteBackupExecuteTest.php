@@ -759,4 +759,38 @@ class RestoreSiteBackupExecuteTest extends \WP_UnitTestCase
         $this->assertFalse($out['compatible']);
         $this->assertStringContainsString('outside wp-content', implode(' ', $out['refusals']));
     }
+
+    /**
+     * Issue #1152: a backup job left running or queued in the store when a
+     * restore finishes (it came back with the restored database, or ran
+     * alongside it) would resume from a half-restored or replaced
+     * database. It is marked failed as interrupted, with a reason, and its
+     * step event is removed.
+     */
+    public function test_backup_jobs_left_running_or_queued_are_marked_interrupted_after_a_restore(): void
+    {
+        self::factory()->post->create();
+        $archive = $this->archive_of($this->posts_tables());
+        $running = Backup_Job_Store::create('database', 'database');
+        Backup_Job_Store::update((int) $running['id'], ['status' => 'running', 'build' => ['phase' => 'dump']]);
+        $queued = Backup_Job_Store::create('database', 'database');
+        $done   = Backup_Job_Store::create('database', 'database');
+        Backup_Job_Store::update((int) $done['id'], ['status' => 'completed']);
+        $this->assertSame('running', Backup_Job_Store::get((int) $running['id'])['status']);
+        wp_schedule_single_event(time() + 60, \WPMCP\Tools\Backup\Run_Backup_Job::HOOK, [(int) $running['id']]);
+
+        $out = $this->restore($archive);
+
+        $this->assertTrue($out['restored']);
+        foreach ([$running, $queued] as $job) {
+            $after = Backup_Job_Store::get((int) $job['id']);
+            $this->assertSame('failed', $after['status']);
+            $this->assertTrue($after['interrupted_by_restore']);
+            $this->assertStringContainsString('restore', (string) $after['error']);
+            $this->assertArrayNotHasKey('build', $after);
+            $this->assertFalse(wp_next_scheduled(\WPMCP\Tools\Backup\Run_Backup_Job::HOOK, [(int) $job['id']]));
+        }
+        $this->assertSame('completed', Backup_Job_Store::get((int) $done['id'])['status']);
+        $this->assertSame('completed', Backup_Job_Store::get((int) $out['safety_archive']['job_id'])['status']);
+    }
 }
