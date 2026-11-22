@@ -1493,7 +1493,7 @@ $edits['src/Tools/SEO/SEO_Adapter.php'] = [
     ["        'aioseo' => Aioseo_Store::class,\n", '', 1],
 ];
 
-// Three of the theme framework packs (issues #288, #1011) are the paid add-on's; their
+// Four of the theme framework packs (issues #288, #1011, #849) are the paid add-on's; their
 // spec files are removed by policy.php, so only the cases that build them
 // leave Theme_Framework_Pack.
 $edits['src/Integrations/Theme_Framework_Pack.php'] = [
@@ -1506,6 +1506,9 @@ $edits['src/Integrations/Theme_Framework_Pack.php'] = [
             . "        }\n"
             . "        if ('divi' === \$framework) {\n"
             . "            return Theme_Pack_Divi::spec();\n"
+            . "        }\n"
+            . "        if ('flatsome' === \$framework) {\n"
+            . "            return Theme_Pack_Flatsome::spec();\n"
             . "        }\n",
         '',
         1,

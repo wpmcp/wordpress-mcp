@@ -172,6 +172,7 @@ class Theme_Integration extends Integration_Dispatcher
         'hello-elementor',
         'hestia',
         'divi',
+        'flatsome',
     ];
 
     /** Bundled core theme slugs, reported as the 'core' framework. */

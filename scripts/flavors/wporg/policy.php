@@ -200,6 +200,8 @@ return [
         'src/Integrations/Theme_Pack_Blocksy.php',
         // The Divi theme options pack (issue #1011), paid-tier, stripped the same way.
         'src/Integrations/Theme_Pack_Divi.php',
+        // The Flatsome theme options pack (issue #849), paid-tier, stripped the same way.
+        'src/Integrations/Theme_Pack_Flatsome.php',
         // The premium theme add-on layout ops (issue #656), paid-tier.
         // strip.php takes out the merge in Theme_Framework_Pack and the
         // docblock lines that name them.

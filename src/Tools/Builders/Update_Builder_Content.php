@@ -129,6 +129,10 @@ if (! defined('ABSPATH')) {
  * and publish. Anything else is refused with editor_render_required (see
  * Visual_Composer_Content).
  *
+ * Flatsome pages and UX Blocks: the same two forms over UX Builder
+ * shortcodes, add with element {block: id} and save_template (see
+ * Flatsome_Page).
+ *
  * With `scope` 'design_system' the call edits one entry of the builder's
  * global design data instead of a post (issue #391): Bricks classes,
  * variables and palettes, Breakdance classes and palette colors, Oxygen 6
@@ -228,6 +232,10 @@ class Update_Builder_Content
 
         if ('visual-composer' === $builder) {
             return $this->update_visual_composer($post_id, $args);
+        }
+
+        if ('flatsome' === $builder) {
+            return Flatsome_Page::write($post_id, $args);
         }
 
         if ('breakdance' === $builder || 'oxygen' === $builder) {

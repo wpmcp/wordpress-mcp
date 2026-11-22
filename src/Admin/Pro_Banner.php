@@ -194,6 +194,8 @@ class Pro_Banner
                 return __('Thrive Architect detected: WP MCP Pro edits Thrive Architect pages, templates and global styles, with unlimited undo history.', 'wpmcp');
             case 'betheme':
                 return __('BeTheme detected: WP MCP Pro edits BeBuilder sections and items and adds from BeBuilder templates, with unlimited undo history.', 'wpmcp');
+            case 'flatsome':
+                return __('Flatsome detected: WP MCP Pro edits UX Builder pages, UX Blocks and theme options, with unlimited undo history.', 'wpmcp');
             case 'gutenberg':
                 return '';
             default:

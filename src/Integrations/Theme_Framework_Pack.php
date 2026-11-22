@@ -87,6 +87,9 @@ final class Theme_Framework_Pack
         if ('divi' === $framework) {
             return Theme_Pack_Divi::spec();
         }
+        if ('flatsome' === $framework) {
+            return Theme_Pack_Flatsome::spec();
+        }
         return self::free_spec($framework);
     }
 

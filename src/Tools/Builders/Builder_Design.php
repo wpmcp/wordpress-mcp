@@ -27,7 +27,7 @@ class Builder_Design
 {
     public const SCOPES = ['design_system', 'templates', 'catalog'];
 
-    public const BUILDERS = ['bricks', 'breakdance', 'oxygen', 'divi', 'wpbakery', 'avada', 'thrive', 'cornerstone', 'betheme', 'brizy', 'siteorigin', 'kirki', 'visual-composer', 'beaver-builder'];
+    public const BUILDERS = ['bricks', 'breakdance', 'oxygen', 'divi', 'wpbakery', 'avada', 'thrive', 'cornerstone', 'betheme', 'brizy', 'siteorigin', 'kirki', 'visual-composer', 'beaver-builder', 'flatsome'];
 
     /**
      * @param array<string,mixed> $args
@@ -106,6 +106,10 @@ class Builder_Design
 
         if ('beaver-builder' === $builder) {
             return Beaver_Builder_Page::read($scope, $element);
+        }
+
+        if ('flatsome' === $builder) {
+            return Flatsome_Design::read($scope, $element);
         }
 
         if ('divi' === $builder) {

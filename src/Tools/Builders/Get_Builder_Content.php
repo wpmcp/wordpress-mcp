@@ -121,6 +121,10 @@ class Get_Builder_Content
             return Visual_Composer_Content::read($post_id);
         }
 
+        if ('flatsome' === $builder) {
+            return Flatsome_Content::read($post_id);
+        }
+
         if ('breakdance' === $builder || 'oxygen' === $builder) {
             return Breakdance_Content::read($post_id, $builder);
         }
