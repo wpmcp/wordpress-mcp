@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WPMCP\Tools\Packages;
 
 use WPMCP\Governance\Governance_Audit_Log;
@@ -59,7 +61,11 @@ if (! defined('ABSPATH')) {
  * download a package; production uses core's upgraders and
  * Update_Health_Check.
  */
-class Safe_Package_Update
+/**
+ * @phpstan-type Package_Row array<string, mixed>
+ * @phpstan-type Run_Record array{run_id: string, type: string, status: string, started_at: int, user_id: int, packages: array<string, Package_Row>, finished_at?: int}
+ */
+final class Safe_Package_Update
 {
     public const OPT_IN_FILTER = 'wpmcp_enable_safe_updates';
 
@@ -89,22 +95,42 @@ class Safe_Package_Update
     /** @var callable(string, string): mixed */
     private $upgrader;
 
-    /** @var callable(string): array */
+    /** @var callable(string): array<string, mixed> */
     private $probe;
 
-    private ?Update_Health_Check $check;
+    private Update_Health_Check $check;
 
     private static ?int $clock = null;
 
     /**
      * @param callable(string, string): mixed|null $upgrader ($kind, $item) => true, or a WP_Error / false on failure.
-     * @param callable(string): array|null         $probe    $url => ['url', 'ok', 'status', 'reason'?].
+     * @param (callable(string): array<string, mixed>)|null $probe $url => ['url', 'ok', 'status', 'reason'?].
      */
     public function __construct(?callable $upgrader = null, ?callable $probe = null, ?Update_Health_Check $check = null)
     {
         $this->check    = $check ?? new Update_Health_Check();
         $this->upgrader = $upgrader ?? [ self::class, 'upgrade_package' ];
         $this->probe    = $probe ?? [ $this->check, 'probe' ];
+    }
+
+    /**
+     * The manage-updates input properties safe updates add (issue #843).
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public static function input_properties(): array
+    {
+        return [
+            'action' => [
+                'type' => 'string',
+                'enum' => [ 'plan', 'run', 'status', 'restore' ],
+            ],
+            'items'  => [
+                'type'  => 'array',
+                'items' => [ 'type' => 'string' ],
+            ],
+            'run_id' => [ 'type' => 'string' ],
+        ];
     }
 
     public static function is_enabled(): bool
@@ -125,10 +151,14 @@ class Safe_Package_Update
 
     public static function retention(): int
     {
-        return max(0, (int) apply_filters('wpmcp_safe_update_retention', self::DEFAULT_RETENTION));
+        return max(0, Package_Update_Values::int(apply_filters('wpmcp_safe_update_retention', self::DEFAULT_RETENTION), self::DEFAULT_RETENTION));
     }
 
-    /** @param string $type plugins or themes */
+    /**
+     * @param string               $type plugins or themes
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>
+     */
     public function handle(string $type, array $args): array
     {
         $kind = 'themes' === $type ? 'theme' : 'plugin';
@@ -144,7 +174,7 @@ class Safe_Package_Update
 
         self::prune();
 
-        $action = isset($args['action']) ? (string) $args['action'] : 'plan';
+        $action = Package_Update_Values::str($args['action'] ?? null, 'plan');
         switch ($action) {
             case 'plan':
                 return $this->plan($kind, $args);
@@ -159,6 +189,10 @@ class Safe_Package_Update
         throw new \InvalidArgumentException('action must be plan, run, status or restore.');
     }
 
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>
+     */
     private function plan(string $kind, array $args): array
     {
         $pending = self::pending($kind);
@@ -190,12 +224,16 @@ class Safe_Package_Update
             'enabled'           => self::is_enabled(),
             'enable_filter'     => self::OPT_IN_FILTER,
             'packages'          => $rows,
-            'checks'            => $this->check instanceof Update_Health_Check ? $this->check->urls() : [],
+            'checks'            => $this->check->urls(),
             'retention_seconds' => self::retention(),
             'max_per_run'       => self::MAX_PER_RUN,
         ];
     }
 
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>
+     */
     private function run(string $kind, array $args): array
     {
         self::assert_writes_allowed('Running safe updates', $args);
@@ -222,15 +260,15 @@ class Safe_Package_Update
         }
         self::save_run($run);
 
-        $session = (string) ($args['session_id'] ?? 'default');
+        $session = Package_Update_Values::str($args['session_id'] ?? null, 'default');
         foreach ($wanted as $item) {
             $package = $this->update_one($kind, $item, $pending[ $item ] ?? null, $session, $args, $run);
             $run['packages'][ $item ] = $package;
             self::save_run($run);
             Governance_Audit_Log::record_quietly(
                 self::ABILITY,
-                in_array($package['status'], [ 'updated' ], true),
-                sprintf('safe_update:%s:%s:%s', $kind, $item, $package['status'])
+                'updated' === ($package['status'] ?? null),
+                sprintf('safe_update:%s:%s:%s', $kind, $item, Package_Update_Values::str($package['status'] ?? null))
             );
         }
 
@@ -240,7 +278,7 @@ class Safe_Package_Update
 
         $out = self::view($run);
         if ([] !== $remaining) {
-            $out['remaining'] = array_values($remaining);
+            $out['remaining'] = $remaining;
         }
         return $out;
     }
@@ -249,6 +287,9 @@ class Safe_Package_Update
      * Snapshot, update, check and, on a failure, put back one package.
      *
      * @param array{name: string, version: ?string, new_version: ?string}|null $info
+     * @param array<string, mixed> $args
+     * @param Run_Record $run
+     * @return array<string, mixed>
      */
     private function update_one(string $kind, string $item, ?array $info, string $session, array $args, array &$run): array
     {
@@ -296,7 +337,7 @@ class Safe_Package_Update
         $baseline = [];
         foreach ($this->check_urls() as $url) {
             $result = ($this->probe)($url);
-            if (! empty($result['ok'])) {
+            if (Package_Update_Values::flag($result['ok'] ?? null)) {
                 $baseline[] = $url;
             }
         }
@@ -337,7 +378,7 @@ class Safe_Package_Update
                     foreach ($baseline as $url) {
                         $check    = ($this->probe)($url);
                         $checks[] = $check;
-                        $ok       = $ok && ! empty($check['ok']);
+                        $ok       = $ok && Package_Update_Values::flag($check['ok'] ?? null);
                     }
                     return $ok;
                 }
@@ -347,10 +388,10 @@ class Safe_Package_Update
             $restore = self::put_back($kind, $item, $dump, $tables, $options_before, $active);
             File_Backup::delete_backup_dir($operation_id);
             $step    = '' !== $upgrade_error ? 'update' : 'check';
-            $failed  = array_values(array_filter($checks, static fn (array $c): bool => empty($c['ok'])));
+            $failed  = array_values(array_filter($checks, static fn (array $c): bool => ! Package_Update_Values::flag($c['ok'] ?? null)));
             $why     = 'update' === $step
                 ? 'the update itself failed: ' . $upgrade_error
-                : 'after the update ' . implode('; ', array_map(static fn (array $c): string => $c['url'] . ' ' . ($c['reason'] ?? 'failed'), $failed));
+                : 'after the update ' . implode('; ', array_map(static fn (array $c): string => Package_Update_Values::str($c['url'] ?? null) . ' ' . Package_Update_Values::str($c['reason'] ?? null, 'failed'), $failed));
             return $package + [
                 'status'      => 'rolled_back',
                 'failed_step' => $step,
@@ -392,10 +433,14 @@ class Safe_Package_Update
         ];
     }
 
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>
+     */
     private function status(string $kind, array $args): array
     {
         $runs   = self::runs();
-        $run_id = isset($args['run_id']) ? (string) $args['run_id'] : '';
+        $run_id = Package_Update_Values::str($args['run_id'] ?? null);
 
         if ('' !== $run_id) {
             if (! isset($runs[ $run_id ])) {
@@ -406,18 +451,18 @@ class Safe_Package_Update
 
         $list = [];
         foreach (array_reverse($runs) as $run) {
-            if (($run['type'] ?? '') !== $kind . 's') {
+            if ($run['type'] !== $kind . 's') {
                 continue;
             }
             $counts = [];
-            foreach ((array) ($run['packages'] ?? []) as $package) {
-                $status            = (string) ($package['status'] ?? 'pending');
+            foreach ($run['packages'] as $package) {
+                $status            = Package_Update_Values::str($package['status'] ?? null, 'pending');
                 $counts[ $status ] = ($counts[ $status ] ?? 0) + 1;
             }
             $list[] = [
-                'run_id'     => (string) $run['run_id'],
-                'status'     => (string) $run['status'],
-                'started_at' => gmdate('c', (int) $run['started_at']),
+                'run_id'     => $run['run_id'],
+                'status'     => $run['status'],
+                'started_at' => gmdate('c', $run['started_at']),
                 'counts'     => $counts,
             ];
         }
@@ -425,18 +470,22 @@ class Safe_Package_Update
         return [ 'type' => $kind . 's', 'runs' => $list ];
     }
 
+    /**
+     * @param array<string, mixed> $args
+     * @return array<string, mixed>
+     */
     private function restore(string $kind, array $args): array
     {
         self::assert_writes_allowed('Restoring a safe update', $args);
 
         $runs   = self::runs();
-        $run_id = isset($args['run_id']) ? (string) $args['run_id'] : '';
+        $run_id = Package_Update_Values::str($args['run_id'] ?? null);
         if ('' === $run_id || ! isset($runs[ $run_id ])) {
             throw new \InvalidArgumentException('run_id of a safe update run is required (see action=status).');
         }
         $run = $runs[ $run_id ];
-        if (($run['type'] ?? '') !== $kind . 's') {
-            throw new \InvalidArgumentException(sprintf('Run %s updated %s, not %ss.', esc_html($run_id), esc_html((string) ($run['type'] ?? '')), esc_html($kind)));
+        if ($run['type'] !== $kind . 's') {
+            throw new \InvalidArgumentException(sprintf('Run %s updated %s, not %ss.', esc_html($run_id), esc_html($run['type']), esc_html($kind)));
         }
 
         $items = self::items($args);
@@ -445,64 +494,121 @@ class Safe_Package_Update
         }
 
         foreach ($items as $item) {
-            $package = $run['packages'][ $item ] ?? null;
-            if (null === $package) {
-                throw new \RuntimeException(sprintf('Run %s did not update %s.', esc_html($run_id), esc_html($item)));
-            }
-            if ('restored' === ($package['status'] ?? '')) {
-                throw new \RuntimeException(sprintf('%s was already restored.', esc_html($item)));
-            }
-            if ('updated' !== ($package['status'] ?? '') || empty($package['restorable'])) {
-                throw new \RuntimeException(sprintf('%s cannot be restored: %s', esc_html($item), 'updated' === ($package['status'] ?? '') ? 'its snapshot is no longer kept.' : 'it was not updated in this run.'));
-            }
-            if (! File_Backup::has_directory_backup((string) $package['operation_id'])) {
-                throw new \RuntimeException(sprintf('%s cannot be restored: the archive of its previous version is gone.', esc_html($item)));
-            }
+            self::assert_restorable($run_id, $item, $run['packages'][ $item ] ?? null);
         }
 
         foreach ($items as $item) {
-            $package      = $run['packages'][ $item ];
-            $operation_id = (string) $package['operation_id'];
-            $warnings     = [];
-
-            $files_back = Rollback_Service::restore_operation($operation_id);
-            $warnings   = array_merge($warnings, Rollback_Service::take_warnings());
-            if (! $files_back) {
-                $row        = Snapshot_Store::get_by_operation($operation_id);
-                $files_back = is_array($row) && null !== Snapshot_Store::rolled_back_at($row);
-            }
-            if (! $files_back) {
-                $run['packages'][ $item ]['warnings'] = $warnings;
-                self::save_run($run);
-                throw new \RuntimeException(sprintf('%s could not be restored: %s', esc_html($item), esc_html(implode(' ', $warnings))));
-            }
-
-            $dump = ! empty($package['tables_dump']) ? File_Backup::operation_dir($operation_id) . '/' . self::TABLES_DUMP : '';
-            $warnings = array_merge($warnings, self::restore_tables($kind, $item, $dump, (array) ($package['tables'] ?? [])));
-            if (is_array($package['options']['values'] ?? null)) {
-                self::put_options((array) $package['options']['values']);
-            } elseif (! empty($package['options']['names'])) {
-                $warnings[] = 'The options this update changed were too large to keep, so they were not put back.';
-            }
-            self::reactivate($kind, $item, (array) ($package['active'] ?? []));
-
-            $package['status']      = 'restored';
-            $package['restorable']  = false;
-            $package['restored_at'] = self::now();
-            $package['warnings']    = $warnings;
-            unset($package['options']['values']);
-            File_Backup::delete_backup_dir($operation_id);
-            $run['packages'][ $item ] = $package;
+            $run['packages'][ $item ] = $this->restore_one($kind, $item, $run['packages'][ $item ] ?? [], $run);
             self::save_run($run);
             Governance_Audit_Log::record_quietly(self::ABILITY, true, sprintf('safe_update:%s:%s:restored', $kind, $item));
         }
 
-        $view             = self::view($run);
-        $view['packages'] = array_values(array_filter($view['packages'], static fn (array $p): bool => in_array($p['item'], $items, true)));
+        $view     = self::view($run);
+        $packages = [];
+        foreach (Package_Update_Values::map($view['packages'] ?? null) as $row) {
+            $row = Package_Update_Values::map($row);
+            if (in_array(Package_Update_Values::str($row['item'] ?? null), $items, true)) {
+                $packages[] = $row;
+            }
+        }
+        $view['packages'] = $packages;
         return $view;
     }
 
+    /**
+     * Refuse a restore of $item before anything is put back.
+     *
+     * @param Package_Row|null $package
+     */
+    private static function assert_restorable(string $run_id, string $item, ?array $package): void
+    {
+        if (null === $package) {
+            throw new \RuntimeException(sprintf('Run %s did not update %s.', esc_html($run_id), esc_html($item)));
+        }
+        $status = Package_Update_Values::str($package['status'] ?? null);
+        if ('restored' === $status) {
+            throw new \RuntimeException(sprintf('%s was already restored.', esc_html($item)));
+        }
+        if ('updated' !== $status || ! Package_Update_Values::flag($package['restorable'] ?? null)) {
+            throw new \RuntimeException(sprintf('%s cannot be restored: %s', esc_html($item), 'updated' === $status ? 'its snapshot is no longer kept.' : 'it was not updated in this run.'));
+        }
+        if (! File_Backup::has_directory_backup(Package_Update_Values::str($package['operation_id'] ?? null))) {
+            throw new \RuntimeException(sprintf('%s cannot be restored: the archive of its previous version is gone.', esc_html($item)));
+        }
+    }
+
+    /**
+     * Put one updated package back: files, tables, options, active state.
+     *
+     * @param Package_Row $package
+     * @param Run_Record  $run
+     * @return Package_Row
+     */
+    private function restore_one(string $kind, string $item, array $package, array $run): array
+    {
+        $operation_id = Package_Update_Values::str($package['operation_id'] ?? null);
+        $warnings     = [];
+
+        $files_back = Rollback_Service::restore_operation($operation_id);
+        $warnings   = array_merge($warnings, Package_Update_Values::strings(Rollback_Service::take_warnings()));
+        if (! $files_back) {
+            $row        = Snapshot_Store::get_by_operation($operation_id);
+            $files_back = is_array($row) && null !== Snapshot_Store::rolled_back_at($row);
+        }
+        if (! $files_back) {
+            $run['packages'][ $item ] = $package + [ 'warnings' => $warnings ];
+            self::save_run($run);
+            throw new \RuntimeException(sprintf('%s could not be restored: %s', esc_html($item), esc_html(implode(' ', $warnings))));
+        }
+
+        $dump     = Package_Update_Values::flag($package['tables_dump'] ?? null) ? File_Backup::operation_dir($operation_id) . '/' . self::TABLES_DUMP : '';
+        $warnings = array_merge($warnings, self::restore_tables($kind, $item, $dump, Package_Update_Values::strings($package['tables'] ?? null)));
+        $options  = Package_Update_Values::map($package['options'] ?? null);
+        if (is_array($options['values'] ?? null)) {
+            self::put_options(self::option_changes($options['values']));
+        } elseif (Package_Update_Values::flag($options['names'] ?? null)) {
+            $warnings[] = 'The options this update changed were too large to keep, so they were not put back.';
+        }
+        self::reactivate($kind, $item, Package_Update_Values::map($package['active'] ?? null));
+
+        unset($options['values']);
+        File_Backup::delete_backup_dir($operation_id);
+
+        return array_merge($package, [
+            'status'      => 'restored',
+            'restorable'  => false,
+            'restored_at' => self::now(),
+            'warnings'    => $warnings,
+            'options'     => $options,
+        ]);
+    }
+
+    /**
+     * Kept option changes, read back from a stored run.
+     *
+     * @return array<string, array{existed: bool, raw?: string, autoload?: string}>
+     */
+    private static function option_changes(mixed $values): array
+    {
+        $out = [];
+        foreach (Package_Update_Values::map($values) as $name => $change) {
+            $change = Package_Update_Values::map($change);
+            $row    = [ 'existed' => Package_Update_Values::flag($change['existed'] ?? null) ];
+            if (isset($change['raw'])) {
+                $row['raw'] = Package_Update_Values::str($change['raw']);
+            }
+            if (isset($change['autoload'])) {
+                $row['autoload'] = Package_Update_Values::str($change['autoload']);
+            }
+            $out[ $name ] = $row;
+        }
+        return $out;
+    }
+
     /** Opt-in, confirm, and the host allowing file changes. */
+    /**
+     * @param array<string, mixed> $args
+     */
     private static function assert_writes_allowed(string $what, array $args): void
     {
         if (! self::is_enabled()) {
@@ -534,7 +640,7 @@ class Safe_Package_Update
         if (! class_exists('ZipArchive')) {
             return 'PHP\'s ZipArchive is missing, so the package folder cannot be archived.';
         }
-        $max = (int) apply_filters('wpmcp_safe_update_max_option_bytes', self::DEFAULT_MAX_OPTION_BYTES);
+        $max = Package_Update_Values::int(apply_filters('wpmcp_safe_update_max_option_bytes', self::DEFAULT_MAX_OPTION_BYTES), self::DEFAULT_MAX_OPTION_BYTES);
         if (self::options_bytes() > $max) {
             return 'the options table is too large to keep a copy of during the update.';
         }
@@ -569,7 +675,7 @@ class Safe_Package_Update
             }
         }
         if ([] !== $tables) {
-            $max = (int) apply_filters('wpmcp_safe_update_max_table_bytes', self::DEFAULT_MAX_TABLE_BYTES);
+            $max = Package_Update_Values::int(apply_filters('wpmcp_safe_update_max_table_bytes', self::DEFAULT_MAX_TABLE_BYTES), self::DEFAULT_MAX_TABLE_BYTES);
             if (self::tables_bytes($tables) > $max) {
                 return 'its own tables are too large to snapshot before the update.';
             }
@@ -597,8 +703,8 @@ class Safe_Package_Update
                     continue;
                 }
                 $out[ $file ] = [
-                    'name'        => (string) ($installed[ $file ]['Name'] ?? $file),
-                    'version'     => isset($installed[ $file ]['Version']) ? (string) $installed[ $file ]['Version'] : null,
+                    'name'        => Package_Update_Values::str($installed[ $file ]['Name'] ?? null, $file),
+                    'version'     => isset($installed[ $file ]['Version']) ? Package_Update_Values::str($installed[ $file ]['Version']) : null,
                     'new_version' => self::offered_version($data),
                 ];
             }
@@ -620,21 +726,34 @@ class Safe_Package_Update
         return $out;
     }
 
-    /** @param mixed $data */
-    private static function offered_version($data): ?string
+    /** */
+    private static function offered_version(mixed $data): ?string
     {
         $version = is_object($data) ? ($data->new_version ?? null) : (is_array($data) ? ($data['new_version'] ?? null) : null);
-        return null === $version ? null : (string) $version;
+        return null === $version ? null : Package_Update_Values::str($version);
     }
 
-    /** @return string[] */
+    /**
+     * @param array<string, mixed> $args
+     * @return list<string>
+     */
     private static function items(array $args): array
     {
         $items = $args['items'] ?? [];
         if (is_string($items)) {
             $items = [ $items ];
         }
-        return array_values(array_unique(array_filter(array_map('strval', (array) $items), static fn (string $i): bool => '' !== $i)));
+        return array_values(array_unique(array_filter(Package_Update_Values::strings($items), static fn (string $i): bool => '' !== $i)));
+    }
+
+    /** WordPress's database object, typed. */
+    private static function db(): \wpdb
+    {
+        $wpdb = $GLOBALS['wpdb'] ?? null;
+        if (! $wpdb instanceof \wpdb) {
+            throw new \RuntimeException('Safe updates need the WordPress database connection.');
+        }
+        return $wpdb;
     }
 
     /** The package's folder name: the plugin's directory or the theme's stylesheet. */
@@ -655,7 +774,7 @@ class Safe_Package_Update
         } else {
             $slug = $item;
             $root = get_theme_root();
-            if (untrailingslashit((string) get_theme_root($item)) !== untrailingslashit((string) $root)) {
+            if (untrailingslashit(get_theme_root($item)) !== untrailingslashit($root)) {
                 return null;
             }
         }
@@ -687,7 +806,7 @@ class Safe_Package_Update
         if ('plugin' === $kind) {
             wp_clean_plugins_cache(false);
             $plugins = get_plugins();
-            return isset($plugins[ $item ]['Version']) ? (string) $plugins[ $item ]['Version'] : null;
+            return isset($plugins[ $item ]['Version']) ? Package_Update_Values::str($plugins[ $item ]['Version']) : null;
         }
         wp_clean_themes_cache();
         $theme = wp_get_theme($item);
@@ -697,7 +816,7 @@ class Safe_Package_Update
     /** @return string[] */
     private function check_urls(): array
     {
-        return $this->check instanceof Update_Health_Check ? $this->check->urls() : [ home_url('/') ];
+        return $this->check->urls();
     }
 
     /**
@@ -708,18 +827,18 @@ class Safe_Package_Update
      */
     private static function owned_tables(string $kind, string $item): array
     {
-        global $wpdb;
+        $wpdb = self::db();
 
         $norm = trim((string) preg_replace('/[^a-z0-9]+/', '_', strtolower(self::slug($kind, $item))), '_');
         $out  = [];
         if (strlen($norm) >= 3) {
             $base = $wpdb->prefix . $norm;
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Enumerating a package's tables; no core API, and a cached list would miss a table the update created.
-            $found = (array) $wpdb->get_col($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($base) . '%'));
-            $core  = array_values((array) $wpdb->tables('all', true));
+            $found = $wpdb->get_col($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($base) . '%'));
+            $core  = array_values($wpdb->tables('all', true));
             foreach ($found as $table) {
                 $table = (string) $table;
-                $bare = (string) substr($table, strlen($wpdb->prefix));
+                $bare = substr($table, strlen($wpdb->prefix));
                 if (($table === $base || 0 === strpos($table, $base . '_')) && ! in_array($table, $core, true) && 0 !== strpos($bare, 'wpmcp_')) {
                     $out[] = $table;
                 }
@@ -727,7 +846,7 @@ class Safe_Package_Update
         }
 
         $out = (array) apply_filters('wpmcp_safe_update_owned_tables', $out, $kind, $item);
-        $out = array_values(array_unique(array_filter(array_map('strval', $out), static fn (string $t): bool => 0 === strpos($t, $wpdb->prefix))));
+        $out = array_values(array_unique(array_filter(Package_Update_Values::strings($out), static fn (string $t): bool => 0 === strpos($t, $wpdb->prefix))));
         sort($out);
         return $out;
     }
@@ -735,7 +854,7 @@ class Safe_Package_Update
     /** @param string[] $tables */
     private static function tables_bytes(array $tables): int
     {
-        global $wpdb;
+        $wpdb = self::db();
         if ([] === $tables) {
             return 0;
         }
@@ -745,6 +864,9 @@ class Safe_Package_Update
     }
 
     /** Dump $tables into the operation's backup directory; returns the dump path. */
+    /**
+     * @param string[] $tables
+     */
     private static function dump_tables(string $operation_id, array $tables): string
     {
         $path = File_Backup::operation_dir($operation_id) . '/' . self::TABLES_DUMP;
@@ -761,7 +883,7 @@ class Safe_Package_Update
      */
     private static function restore_tables(string $kind, string $item, string $dump, array $tables): array
     {
-        global $wpdb;
+        $wpdb = self::db();
         $warnings = [];
 
         if (! Package_Tables_Snapshot::available()) {
@@ -777,7 +899,7 @@ class Safe_Package_Update
 
         foreach (array_diff(self::owned_tables($kind, $item), $tables) as $created) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Drops a table named after the package that the rolled-back update created; the name comes from SHOW TABLES on this site's prefix and is bound with %i.
-            $wpdb->query($wpdb->prepare('DROP TABLE IF EXISTS %i', $created));
+            $wpdb->query((string) $wpdb->prepare('DROP TABLE IF EXISTS %i', $created));
         }
 
         return $warnings;
@@ -801,7 +923,7 @@ class Safe_Package_Update
     /** The WHERE clause for the options a snapshot keeps: no transients, no cron, none of WP MCP's own. */
     private static function options_where(): string
     {
-        global $wpdb;
+        $wpdb = self::db();
         return (string) $wpdb->prepare(
             'option_name NOT LIKE %s AND option_name NOT LIKE %s AND option_name NOT LIKE %s AND option_name <> %s',
             $wpdb->esc_like('_transient_') . '%',
@@ -813,7 +935,7 @@ class Safe_Package_Update
 
     private static function options_bytes(): int
     {
-        global $wpdb;
+        $wpdb = self::db();
         $where = self::options_where();
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where was built by prepare() in options_where(); the size must be live.
         return (int) $wpdb->get_var("SELECT COALESCE(SUM(LENGTH(option_value)), 0) FROM {$wpdb->options} WHERE {$where}");
@@ -826,13 +948,13 @@ class Safe_Package_Update
      */
     private static function capture_options(): array
     {
-        global $wpdb;
+        $wpdb = self::db();
         $where = self::options_where();
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where was built by prepare() in options_where(); a snapshot must read the live rows.
-        $rows = (array) $wpdb->get_results("SELECT option_name, option_value, autoload, MD5(option_value) AS h FROM {$wpdb->options} WHERE {$where}", ARRAY_A);
+        $rows = $wpdb->get_results("SELECT option_name, option_value, autoload, MD5(option_value) AS h FROM {$wpdb->options} WHERE {$where}", ARRAY_A);
         $out  = [];
         foreach ($rows as $row) {
-            $out[ (string) $row['option_name'] ] = [ (string) $row['option_value'], (string) $row['autoload'], (string) $row['h'] ];
+            $out[ Package_Update_Values::str($row['option_name'] ?? null) ] = [ Package_Update_Values::str($row['option_value'] ?? null), Package_Update_Values::str($row['autoload'] ?? null), Package_Update_Values::str($row['h'] ?? null) ];
         }
         return $out;
     }
@@ -840,13 +962,13 @@ class Safe_Package_Update
     /** @return array<string, string> name => hash of the kept options now */
     private static function option_hashes(): array
     {
-        global $wpdb;
+        $wpdb = self::db();
         $where = self::options_where();
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $where was built by prepare() in options_where(); the comparison must read the live rows.
-        $rows = (array) $wpdb->get_results("SELECT option_name, MD5(option_value) AS h FROM {$wpdb->options} WHERE {$where}", ARRAY_A);
+        $rows = $wpdb->get_results("SELECT option_name, MD5(option_value) AS h FROM {$wpdb->options} WHERE {$where}", ARRAY_A);
         $out  = [];
         foreach ($rows as $row) {
-            $out[ (string) $row['option_name'] ] = (string) $row['h'];
+            $out[ Package_Update_Values::str($row['option_name'] ?? null) ] = Package_Update_Values::str($row['h'] ?? null);
         }
         return $out;
     }
@@ -890,6 +1012,7 @@ class Safe_Package_Update
      * @param string[]                                              $tables
      * @param array<string, array{0: string, 1: string, 2: string}> $before
      * @return string[] warnings
+     * @param array<string, mixed> $active
      */
     private static function put_back(string $kind, string $item, string $dump, array $tables, array $before, array $active): array
     {
@@ -910,21 +1033,20 @@ class Safe_Package_Update
         self::put_options($changes);
         self::reactivate($kind, $item, $active);
 
-        return array_merge($warnings, Rollback_Service::take_warnings());
+        return array_merge($warnings, Package_Update_Values::strings(Rollback_Service::take_warnings()));
     }
 
     /** @param array<string, array{existed: bool, raw?: string, autoload?: string}> $changes */
     private static function put_options(array $changes): void
     {
         foreach ($changes as $name => $change) {
-            $name = (string) $name;
-            if (empty($change['existed'])) {
+            if (! $change['existed']) {
                 delete_option($name);
                 continue;
             }
-            $autoload = (string) ($change['autoload'] ?? '');
+            $autoload = $change['autoload'] ?? '';
             $flag     = in_array($autoload, [ 'yes', 'on', 'auto-on' ], true) ? true : (in_array($autoload, [ 'no', 'off', 'auto-off' ], true) ? false : null);
-            update_option($name, maybe_unserialize((string) ($change['raw'] ?? '')), $flag);
+            update_option($name, maybe_unserialize($change['raw'] ?? ''), $flag);
         }
     }
 
@@ -949,48 +1071,81 @@ class Safe_Package_Update
      * reactivates it silently afterwards; this does the same without
      * loading the new code into this request, so a version that fatals on
      * load breaks the site check, not the update call.
+     * @param array<string, mixed> $active
      */
     private static function reactivate(string $kind, string $item, array $active): void
     {
         if ('plugin' !== $kind) {
             return;
         }
-        if (! empty($active['site'])) {
+        if (Package_Update_Values::flag($active['site'] ?? null)) {
             Plugin_State::locked(static function () use ($item): void {
                 wp_cache_delete('alloptions', 'options');
                 $list = array_values(array_filter((array) get_option('active_plugins', []), 'is_string'));
-                if (! in_array($item, $list, true)) {
-                    $list[] = $item;
-                    sort($list);
-                    update_option('active_plugins', $list);
+                if (in_array($item, $list, true)) {
+                    return;
                 }
+
+                $list[] = $item;
+                sort($list);
+                update_option('active_plugins', $list);
             });
         }
-        if (! empty($active['network']) && is_multisite()) {
-            $network = (array) get_site_option('active_sitewide_plugins', []);
-            if (! isset($network[ $item ])) {
-                $network[ $item ] = time();
-                update_site_option('active_sitewide_plugins', $network);
-            }
+        if (! Package_Update_Values::flag($active['network'] ?? null) || ! is_multisite()) {
+            return;
         }
+
+        $network = (array) get_site_option('active_sitewide_plugins', []);
+        if (isset($network[ $item ])) {
+            return;
+        }
+
+        $network[ $item ] = time();
+        update_site_option('active_sitewide_plugins', $network);
     }
 
-    /** @return array<string, array> */
+    /**
+     * The stored runs, each read back into its record shape.
+     *
+     * @return array<string, Run_Record>
+     */
     private static function runs(): array
     {
-        $runs = get_option(self::RUNS_OPTION, []);
-        return is_array($runs) ? $runs : [];
+        $out = [];
+        foreach (Package_Update_Values::map(get_option(self::RUNS_OPTION, [])) as $run_id => $run) {
+            $run      = Package_Update_Values::map($run);
+            $packages = [];
+            foreach (Package_Update_Values::map($run['packages'] ?? null) as $item => $package) {
+                $packages[ $item ] = Package_Update_Values::map($package);
+            }
+            $record = [
+                'run_id'     => Package_Update_Values::str($run['run_id'] ?? null, $run_id),
+                'type'       => Package_Update_Values::str($run['type'] ?? null),
+                'status'     => Package_Update_Values::str($run['status'] ?? null),
+                'started_at' => Package_Update_Values::int($run['started_at'] ?? null),
+                'user_id'    => Package_Update_Values::int($run['user_id'] ?? null),
+                'packages'   => $packages,
+            ];
+            if (isset($run['finished_at'])) {
+                $record['finished_at'] = Package_Update_Values::int($run['finished_at']);
+            }
+            $out[ $run_id ] = $record;
+        }
+        return $out;
     }
 
+    /**
+     * @param Run_Record $run
+     */
     private static function save_run(array $run): void
     {
         $runs                   = self::runs();
         $runs[ $run['run_id'] ] = $run;
         while (count($runs) > self::MAX_RUNS_KEPT) {
-            $oldest = (string) array_key_first($runs);
-            foreach ((array) ($runs[ $oldest ]['packages'] ?? []) as $package) {
-                if (! empty($package['restorable']) && ! empty($package['operation_id'])) {
-                    File_Backup::delete_backup_dir((string) $package['operation_id']);
+            $oldest = array_key_first($runs);
+            foreach ($runs[ $oldest ]['packages'] as $package) {
+                if (Package_Update_Values::flag($package['restorable'] ?? null) && Package_Update_Values::flag($package['operation_id'] ?? null)) {
+                    File_Backup::delete_backup_dir(Package_Update_Values::str($package['operation_id']));
                 }
             }
             unset($runs[ $oldest ]);
@@ -1008,17 +1163,17 @@ class Safe_Package_Update
         $changed = false;
         $now     = self::now();
         foreach ($runs as $run_id => $run) {
-            foreach ((array) ($run['packages'] ?? []) as $item => $package) {
-                if (empty($package['restorable']) || (int) ($package['expires_at'] ?? 0) > $now) {
+            foreach ($run['packages'] as $item => $package) {
+                if (! Package_Update_Values::flag($package['restorable'] ?? null) || Package_Update_Values::int($package['expires_at'] ?? null) > $now) {
                     continue;
                 }
-                if (! empty($package['operation_id'])) {
-                    File_Backup::delete_backup_dir((string) $package['operation_id']);
+                $operation_id = Package_Update_Values::str($package['operation_id'] ?? null);
+                if ('' !== $operation_id) {
+                    File_Backup::delete_backup_dir($operation_id);
                 }
-                $package['restorable'] = false;
-                $package['expired']    = true;
-                unset($package['options']['values']);
-                $runs[ $run_id ]['packages'][ $item ] = $package;
+                $options = Package_Update_Values::map($package['options'] ?? null);
+                unset($options['values']);
+                $runs[ $run_id ]['packages'][ $item ] = array_merge($package, [ 'restorable' => false, 'expired' => true, 'options' => $options ]);
                 $changed = true;
             }
         }
@@ -1027,43 +1182,59 @@ class Safe_Package_Update
         }
     }
 
-    /** A run as the caller sees it: no option values, dates as ISO 8601. */
+    /**
+     * A run as the caller sees it: no option values, dates as ISO 8601.
+     *
+     * @param Run_Record $run
+     * @return array<string, mixed>
+     */
     private static function view(array $run): array
     {
         $packages = [];
-        foreach ((array) ($run['packages'] ?? []) as $package) {
-            $row = [
-                'item'   => (string) ($package['item'] ?? ''),
-                'status' => (string) ($package['status'] ?? 'pending'),
-            ];
-            foreach ([ 'from_version', 'to_version', 'operation_id', 'failed_step', 'message', 'checks', 'tables', 'warnings' ] as $key) {
-                if (isset($package[ $key ]) && [] !== $package[ $key ]) {
-                    $row[ $key ] = $package[ $key ];
-                }
-            }
-            if (isset($package['options']['names'])) {
-                $row['options_changed'] = $package['options']['names'];
-            }
-            if (in_array($row['status'], [ 'updated', 'restored' ], true)) {
-                $row['restorable'] = ! empty($package['restorable']);
-                if (! empty($package['restorable'])) {
-                    $row['snapshot_expires_at'] = gmdate('c', (int) $package['expires_at']);
-                }
-            }
-            $packages[] = $row;
+        foreach ($run['packages'] as $package) {
+            $packages[] = self::package_view($package);
         }
 
         $out = [
-            'run_id'     => (string) $run['run_id'],
-            'type'       => (string) $run['type'],
-            'status'     => (string) $run['status'],
-            'started_at' => gmdate('c', (int) $run['started_at']),
+            'run_id'     => $run['run_id'],
+            'type'       => $run['type'],
+            'status'     => $run['status'],
+            'started_at' => gmdate('c', $run['started_at']),
             'packages'   => $packages,
         ];
         if (isset($run['finished_at'])) {
-            $out['finished_at'] = gmdate('c', (int) $run['finished_at']);
+            $out['finished_at'] = gmdate('c', $run['finished_at']);
         }
         return $out;
+    }
+
+    /**
+     * @param Package_Row $package
+     * @return array<string, mixed>
+     */
+    private static function package_view(array $package): array
+    {
+        $row = [
+            'item'   => Package_Update_Values::str($package['item'] ?? null),
+            'status' => Package_Update_Values::str($package['status'] ?? null, 'pending'),
+        ];
+        foreach ([ 'from_version', 'to_version', 'operation_id', 'failed_step', 'message', 'checks', 'tables', 'warnings' ] as $key) {
+            if (isset($package[ $key ]) && [] !== $package[ $key ]) {
+                $row[ $key ] = $package[ $key ];
+            }
+        }
+        $options = Package_Update_Values::map($package['options'] ?? null);
+        if (isset($options['names'])) {
+            $row['options_changed'] = $options['names'];
+        }
+        if (! in_array($row['status'], [ 'updated', 'restored' ], true)) {
+            return $row;
+        }
+        $row['restorable'] = Package_Update_Values::flag($package['restorable'] ?? null);
+        if ($row['restorable']) {
+            $row['snapshot_expires_at'] = gmdate('c', Package_Update_Values::int($package['expires_at'] ?? null));
+        }
+        return $row;
     }
 
     /**
@@ -1073,7 +1244,7 @@ class Safe_Package_Update
      *
      * @return true|\WP_Error
      */
-    public static function upgrade_package(string $kind, string $item)
+    public static function upgrade_package(string $kind, string $item): bool|\WP_Error
     {
         require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
         require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -1092,6 +1263,7 @@ class Safe_Package_Update
             return true;
         }
         $messages = $skin->get_upgrade_messages();
-        return new \WP_Error('wpmcp_update_failed', (string) (end($messages) ?: 'the upgrader reported a failure'));
+        $last = end($messages);
+        return new \WP_Error('wpmcp_update_failed', is_string($last) && '' !== $last ? $last : 'the upgrader reported a failure');
     }
 }

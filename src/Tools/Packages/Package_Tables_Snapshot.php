@@ -60,10 +60,12 @@ final class Package_Tables_Snapshot
         (new Db_Dumper())->dump(
             static function (string $sql) use (&$buffer, $flush): void {
                 $buffer .= $sql;
-                if (strlen($buffer) >= 1048576) {
-                    $flush($buffer);
-                    $buffer = '';
+                if (strlen($buffer) < 1048576) {
+                    return;
                 }
+
+                $flush($buffer);
+                $buffer = '';
             },
             $tables
         );
@@ -87,7 +89,10 @@ final class Package_Tables_Snapshot
      */
     private static function import(string $path, array $tables): array
     {
-        global $wpdb;
+        $wpdb = $GLOBALS['wpdb'] ?? null;
+        if (! $wpdb instanceof \wpdb) {
+            return [ 'The package\'s tables could not be put back: no database connection.' ];
+        }
 
         try {
             $importer = new Sql_Importer($path, new Sql_Import_Policy($wpdb->prefix, $tables));

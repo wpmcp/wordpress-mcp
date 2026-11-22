@@ -49,13 +49,13 @@ class Manage_Updates
     /** @var callable(): void */
     private $db_upgrader;
 
-    private ?Safe_Package_Update $safe_update;
+    private Safe_Package_Update $safe_update;
 
     public function __construct(?callable $core_upgrader = null, ?callable $db_upgrader = null, ?Safe_Package_Update $safe_update = null)
     {
         $this->core_upgrader = $core_upgrader ?? [self::class, 'upgrade_core'];
         $this->db_upgrader   = $db_upgrader ?? [self::class, 'upgrade_database'];
-        $this->safe_update   = $safe_update;
+        $this->safe_update   = $safe_update ?? new Safe_Package_Update();
     }
 
     public function handle(array $args): array
@@ -69,11 +69,21 @@ class Manage_Updates
             return $this->auto_update($type, $args);
         }
         if ('plugins' === $type || 'themes' === $type) {
-            $this->safe_update ??= new Safe_Package_Update();
-            return $this->safe_update->handle($type, $args);
+            return $this->safe_update->handle($type, self::string_keys($args));
         }
 
         throw new \InvalidArgumentException('type must be core, plugin, theme, plugins or themes.');
+    }
+
+    /**
+     * The input with string keys, as Safe_Package_Update takes it.
+     *
+     * @param array<mixed> $args
+     * @return array<string, mixed>
+     */
+    private static function string_keys(array $args): array
+    {
+        return Package_Update_Values::map($args);
     }
 
     private function core(array $args): array

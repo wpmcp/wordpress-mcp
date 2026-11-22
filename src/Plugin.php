@@ -211,6 +211,7 @@ use WPMCP\Tools\Packages\Deactivate_Plugin;
 use WPMCP\Tools\Packages\Install_Plugin;
 use WPMCP\Tools\Packages\Update_Plugin;
 use WPMCP\Tools\Packages\Manage_Updates;
+use WPMCP\Tools\Packages\Safe_Package_Update;
 use WPMCP\Tools\Packages\Delete_Plugin;
 use WPMCP\Tools\Packages\List_Themes;
 use WPMCP\Tools\Packages\Switch_Theme;
@@ -2510,21 +2511,12 @@ final class Plugin
                         'type' => 'string',
                         'enum' => ['core', 'plugin', 'theme', 'plugins', 'themes'],
                     ],
-                    'action'           => [
-                        'type' => 'string',
-                        'enum' => ['plan', 'run', 'status', 'restore'],
-                    ],
-                    'items'            => [
-                        'type'  => 'array',
-                        'items' => [ 'type' => 'string' ],
-                    ],
-                    'run_id'           => [ 'type' => 'string' ],
                     'item'             => [ 'type' => 'string' ],
                     'enabled'          => [ 'type' => 'boolean' ],
                     'expected_version' => [ 'type' => 'string' ],
                     'confirm'          => [ 'type' => 'boolean' ],
                     'session_id'       => [ 'type' => 'string' ],
-                ],
+                ] + Safe_Package_Update::input_properties(),
                 'required'   => [ 'type' ],
             ],
             [$manage_updates, 'handle'],

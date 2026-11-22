@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WPMCP\Tools\Packages;
 
 if (! defined('ABSPATH')) {
@@ -20,7 +22,7 @@ if (! defined('ABSPATH')) {
  * filterable, and a filter must not turn the check into a request to
  * anywhere else.
  */
-class Update_Health_Check
+final class Update_Health_Check
 {
     /** Recent published posts added to the home page and wp-admin. */
     public const SAMPLE_POSTS = 2;
@@ -54,15 +56,15 @@ class Update_Health_Check
             'order'            => 'DESC',
             'fields'           => 'ids',
         ]);
-        foreach ((array) $posts as $post_id) {
-            $link = get_permalink((int) $post_id);
+        foreach ($posts as $post_id) {
+            $link = get_permalink($post_id);
             if (is_string($link) && '' !== $link) {
                 $urls[] = $link;
             }
         }
 
-        $urls = (array) apply_filters('wpmcp_safe_update_check_urls', $urls);
-        $urls = array_values(array_unique(array_filter(array_map('strval', $urls), [ $this, 'is_own_url' ])));
+        $filtered = apply_filters('wpmcp_safe_update_check_urls', $urls);
+        $urls     = array_values(array_unique(array_filter(Package_Update_Values::strings($filtered), [ $this, 'is_own_url' ])));
 
         return $urls;
     }
@@ -97,7 +99,7 @@ class Update_Health_Check
             return [ 'url' => $url, 'ok' => false, 'status' => $status, 'reason' => sprintf('HTTP %d', $status) ];
         }
 
-        $body = (string) wp_remote_retrieve_body($response);
+        $body = wp_remote_retrieve_body($response);
         foreach (self::FATAL_MARKERS as $marker) {
             if (false !== stripos($body, $marker)) {
                 return [ 'url' => $url, 'ok' => false, 'status' => $status, 'reason' => 'PHP fatal error on the page' ];
