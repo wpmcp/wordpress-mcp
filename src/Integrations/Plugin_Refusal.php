@@ -62,6 +62,7 @@ final class Plugin_Refusal
         'UpdraftPlus'      => [ 'file' => 'updraftplus/updraftplus.php', 'slug' => 'updraftplus' ],
         'BackWPup'         => [ 'file' => 'backwpup/backwpup.php', 'slug' => 'backwpup' ],
         'All-in-One WP Migration' => [ 'file' => 'all-in-one-wp-migration/all-in-one-wp-migration.php', 'slug' => 'all-in-one-wp-migration' ],
+        'GiveWP'           => [ 'file' => 'give/give.php', 'slug' => 'give' ],
         'Code Snippets'    => [ 'file' => 'code-snippets/code-snippets.php', 'slug' => 'code-snippets' ],
         'WPCode'           => [ 'file' => 'insert-headers-and-footers/ihaf.php', 'slug' => 'insert-headers-and-footers' ],
         'bbPress'          => [ 'file' => 'bbpress/bbpress.php', 'slug' => 'bbpress' ],

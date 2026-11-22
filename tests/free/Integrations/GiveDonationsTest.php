@@ -124,6 +124,38 @@ class GiveDonationsTest extends \WP_UnitTestCase
         parent::tearDown();
     }
 
+    /** Issue #1155: GiveWP off is refused by name, with the plugins link, on both halves. */
+    public function test_give_inactive_or_missing_is_refused_by_name(): void
+    {
+        unregister_post_type('give_forms');
+        $file = 'give/give.php';
+        $path = WP_PLUGIN_DIR . '/' . $file;
+        $this->assertFileDoesNotExist($path, 'fixture expects GiveWP not to be installed');
+
+        foreach ([ $this->read('list-donations'), $this->write('update-donation-status', [ 'donation_id' => 1, 'status' => 'refunded' ]) ] as $out) {
+            $this->assertSame('plugin_missing', $out['error']['code'] ?? null);
+            $this->assertStringContainsString('Install and activate GiveWP', $out['error']['message']);
+            $this->assertSame('give', $out['error']['data']['plugin'] ?? null);
+            $this->assertSame(admin_url('plugins.php'), $out['error']['data']['plugins_url'] ?? null);
+        }
+
+        wp_mkdir_p(dirname($path));
+        file_put_contents($path, "<?php\n");
+        try {
+            $read  = $this->read('list-donations');
+            $write = $this->write('update-donation-status', [ 'donation_id' => 1, 'status' => 'refunded' ]);
+        } finally {
+            unlink($path);
+            rmdir(dirname($path));
+        }
+        foreach ([ $read, $write ] as $out) {
+            $this->assertSame('plugin_inactive', $out['error']['code'] ?? null);
+            $this->assertStringContainsString('GiveWP is installed but not active', $out['error']['message']);
+            $this->assertSame($file, $out['error']['data']['required_plugin'] ?? null);
+            $this->assertSame(admin_url('plugins.php'), $out['error']['data']['plugins_url'] ?? null);
+        }
+    }
+
     // ------------------------------------------------------------------
     // Fixtures
     // ------------------------------------------------------------------

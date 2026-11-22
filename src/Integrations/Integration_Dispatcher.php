@@ -179,6 +179,18 @@ abstract class Integration_Dispatcher
     abstract protected function operations(): array;
 
     /**
+     * The host plugin's main file (for example give/give.php), for a pair
+     * with one host plugin (host_plugin() 'several' false). When set, a call
+     * while the plugin is not active is refused as plugin_inactive or
+     * plugin_missing with the plugins link (issue #1155); empty keeps the
+     * generic integration_unavailable answer.
+     */
+    protected function host_plugin_file(): string
+    {
+        return '';
+    }
+
+    /**
      * Whether the pair registers only while its host plugin is loaded. The
      * default keeps the #65 contract (register unconditionally so
      * list-operations can report available:false); an integration family can
@@ -546,6 +558,22 @@ abstract class Integration_Dispatcher
                         (array) ($requirement['data'] ?? []) + [ 'operation' => $op ]
                     );
                 }
+            }
+            // Issue #1155: a pair that names its host plugin answers
+            // plugin_inactive or plugin_missing with the plugins link, as
+            // the ops that name theirs do.
+            $host = $this->host_plugin();
+            $file = $this->host_plugin_file();
+            if ('' !== $file && empty($host['several'])) {
+                if (is_array($known)) {
+                    $denied = $this->capability_refusal($op, $known);
+                    if (null !== $denied) {
+                        return $denied;
+                    }
+                }
+                $refusal = Plugin_Refusal::make('plugin_missing', (string) $host['name'], $file);
+                $code    = 'inactive' === ($refusal['data']['state'] ?? '') ? 'plugin_inactive' : 'plugin_missing';
+                return $this->error($code, $refusal['message'], $refusal['data'] + [ 'operation' => $op ]);
             }
             return $this->error('integration_unavailable', sprintf(
                 'The %s integration is not available: its host plugin is not active on this site.',
