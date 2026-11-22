@@ -249,6 +249,15 @@ regenerating, and it stays green:
 bash bin/test-local.sh -- --group golden tests/golden
 ```
 
+This is enforced, not left to review: `bash bin/standard.sh --diff=<ref>`
+(and so the pre-push hook, which runs it even under WPMCP_SKIP_LOCAL_TESTS=1)
+runs the golden group whenever the change touches src/Plugin.php,
+src/Integrations, src/Modules, src/Tools or src/Governance (src/Modules
+stands for the generated build/registry). The gate fails when the capture
+differs from the baseline, and says whether the change left the baseline out
+or carries a stale one. The run is a targeted bin/test-local.sh run on the
+cached test install, so it takes no gate slot.
+
 ## How to add an integration
 
 An integration is a module: a directory under `src/Modules/<Id>/` with
