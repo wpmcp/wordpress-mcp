@@ -32,7 +32,9 @@
 # WPMCP_LIVE_AMELIA=1, Amelia Lite only
 # (bin/test-local.sh --live-amelia), or, with WPMCP_LIVE_FUNNELKIT=1,
 # WooCommerce and FunnelKit Funnel Builder only (bin/test-local.sh
-# --live-funnelkit), or, with WPMCP_LIVE_WC_SUBSCRIPTIONS=1, WooCommerce plus
+# --live-funnelkit), or, with WPMCP_LIVE_WOO_ADDONS=1, WooCommerce and its
+# free add-ons from wordpress.org only (bin/test-local.sh --live-woo-addons),
+# or, with WPMCP_LIVE_WC_SUBSCRIPTIONS=1, WooCommerce plus
 # a local copy of WooCommerce Subscriptions (WPMCP_WC_SUBSCRIPTIONS_SRC) only
 # (bin/test-local.sh --live-wc-subscriptions), or, with WPMCP_LIVE_DIVI=1, no
 # plugin and the Divi 5 theme copied from WPMCP_DIVI_SRC (bin/test-local.sh
@@ -344,6 +346,17 @@ if [ "${WPMCP_LIVE_FUNNELKIT:-}" = "1" ]; then
 	PLUGINS=(
 		"woocommerce:woocommerce.php"
 		"funnel-builder:funnel-builder.php"
+	)
+fi
+
+# The live WooCommerce add-ons job (issue #1096) runs the plugin-data ops of
+# the free WooCommerce add-ons through the real plugins beside WooCommerce.
+# Exclusive too: the stub-backed tests fake each add-on's presence.
+if [ "${WPMCP_LIVE_WOO_ADDONS:-}" = "1" ]; then
+	PLUGINS=(
+		"woocommerce:woocommerce.php"
+		"woo-variation-swatches:woo-variation-swatches.php"
+		"woo-product-feed-pro:woocommerce-sea.php"
 	)
 fi
 

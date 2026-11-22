@@ -438,6 +438,18 @@ tests_add_filter( 'muplugins_loaded', function () {
         wpmcp_maybe_require_plugin( 'funnel-builder/funnel-builder.php' );
     }
 
+    // The live WooCommerce add-ons job (issue #1096, WPMCP_LIVE_WOO_ADDONS=1)
+    // runs the add-ons' plugin-data ops through the real plugins, beside the
+    // WooCommerce loaded above.
+    if ( getenv( 'WPMCP_LIVE_WOO_ADDONS' ) ) {
+        // Product Feed PRO boots only when the active_plugins option names
+        // WooCommerce, as on a site; the harness activates nothing.
+        add_filter( 'option_active_plugins', 'wpmcp_test_woo_addons_active_plugins' );
+        add_filter( 'default_option_active_plugins', 'wpmcp_test_woo_addons_active_plugins' );
+        wpmcp_maybe_require_plugin( 'woo-variation-swatches/woo-variation-swatches.php' );
+        wpmcp_maybe_require_plugin( 'woo-product-feed-pro/woocommerce-sea.php' );
+    }
+
     // The live Amelia job (issue #499, WPMCP_LIVE_AMELIA=1) runs the Amelia
     // ops through the real Amelia Lite. Loaded only on request: the
     // stub-backed Amelia tests build its tables from a fixture and fake its
@@ -534,6 +546,13 @@ if ( ! function_exists( 'wpmcp_test_funnelkit_active_plugins' ) ) {
     /** The active_plugins option as the live FunnelKit job's site has it. */
     function wpmcp_test_funnelkit_active_plugins( $plugins ): array {
         return array_values( array_unique( array_merge( (array) $plugins, [ 'woocommerce/woocommerce.php', 'funnel-builder/funnel-builder.php' ] ) ) );
+    }
+}
+
+if ( ! function_exists( 'wpmcp_test_woo_addons_active_plugins' ) ) {
+    /** The active_plugins option as the live WooCommerce add-ons job's site has it. */
+    function wpmcp_test_woo_addons_active_plugins( $plugins ): array {
+        return array_values( array_unique( array_merge( (array) $plugins, [ 'woocommerce/woocommerce.php', 'woo-variation-swatches/woo-variation-swatches.php', 'woo-product-feed-pro/woocommerce-sea.php' ] ) ) );
     }
 }
 
@@ -856,6 +875,16 @@ tests_add_filter( 'init', function () {
 tests_add_filter( 'pre_http_request', function ( $pre, $args, $url ) {
     if ( false === $pre && 0 === strpos( (string) $url, 'https://my.elementor.com/api/' ) ) {
         return new WP_Error( 'http_request_failed', 'Elementor remote API is mocked as unreachable in the test suite.' );
+    }
+    return $pre;
+}, 10, 3 );
+
+// Product Feed Pro's activation fetches Google's product taxonomy from
+// adtribes.io (issue #1096 live leg); answer it as unreachable, which the
+// plugin handles by retrying later. No test depends on the taxonomy.
+tests_add_filter( 'pre_http_request', function ( $pre, $args, $url ) {
+    if ( false === $pre && 0 === strpos( (string) $url, 'https://adtribes.io/' ) ) {
+        return new WP_Error( 'http_request_failed', 'The AdTribes taxonomy feed is mocked as unreachable in the test suite.' );
     }
     return $pre;
 }, 10, 3 );

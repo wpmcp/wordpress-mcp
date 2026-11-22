@@ -251,6 +251,7 @@
 #   bin/test-local.sh --live-email-log only the live email log group
 #                                     (real WP Mail Logging, Check and Log Email and Email Log)
 #   bin/test-local.sh --live-funnelkit only the live FunnelKit group (real Funnel Builder + WooCommerce)
+#   bin/test-local.sh --live-woo-addons only the live WooCommerce add-ons group (real add-ons + WooCommerce)
 #   bin/test-local.sh --live-amelia   only the live Amelia group (real Amelia Lite)
 #   bin/test-local.sh --live-polylang only the live Polylang group (real Polylang and Elementor)
 #   bin/test-local.sh --live-breakdance only the live Breakdance group (needs WPMCP_BREAKDANCE_SRC)
@@ -486,6 +487,7 @@ only_live_action_scheduler=false
 only_live_site_gate=false
 only_live_email_log=false
 only_live_funnelkit=false
+only_live_woo_addons=false
 only_live_polylang=false
 only_live_breakdance=false
 only_live_avada=false
@@ -541,6 +543,7 @@ while [ $# -gt 0 ]; do
 		--live-site-gate) only_live_site_gate=true ;;
 		--live-email-log) only_live_email_log=true ;;
 		--live-funnelkit) only_live_funnelkit=true ;;
+		--live-woo-addons) only_live_woo_addons=true ;;
 		--live-polylang) only_live_polylang=true ;;
 		--live-breakdance) only_live_breakdance=true ;;
 		--live-avada) only_live_avada=true ;;
@@ -624,7 +627,7 @@ leg_rows() { grep -v -e '^#' -e '^[[:space:]]*$' "$ROOT/bin/legs.tsv"; }
 
 # The legs of this run, in order, one "<kind> [WordPress] [coverage]" each.
 LEGS=()
-if [ "$only_live_forms" = true ] || [ "$only_live_blocks" = true ] || [ "$only_live_buddypress" = true ] || [ "$only_live_wp_mail_smtp" = true ] || [ "$only_live_fluent_smtp" = true ] || [ "$only_live_post_smtp" = true ] || [ "$only_live_bbpress" = true ] || [ "$only_live_lms" = true ] || [ "$only_live_tablepress" = true ] || [ "$only_live_rank_math" = true ] || [ "$only_live_site_reviews" = true ] || [ "$only_live_code_snippets" = true ] || [ "$only_live_crm" = true ] || [ "$only_live_helpdesk" = true ] || [ "$only_live_activity_log" = true ] || [ "$only_live_site_gate" = true ] || [ "$only_live_email_log" = true ] || [ "$only_live_polylang" = true ] || [ "$only_live_funnelkit" = true ] || [ "$only_live_breakdance" = true ] || [ "$only_live_memberpress" = true ] || [ "$only_live_divi" = true ] || [ "$only_live_betheme" = true ] || [ "$only_live_wpbakery" = true ] || [ "$only_live_thrive" = true ] || [ "$only_live_cornerstone" = true ] || [ "$only_live_avada" = true ] || [ "$only_live_oxygen" = true ] || [ "$only_live_amelia" = true ] || [ "$only_live_wc_subscriptions" = true ] || [ "$only_live_elementor_pro" = true ] || [ "$only_live_jet_elements" = true ] || [ "$only_live_adapter" = true ] || [ "$only_live_theme_pro" = true ] || [ "$only_live_wc_bookings" = true ] || [ "$only_live_cache_settings" = true ] || [ "$only_live_ws_form" = true ] || [ "$only_live_links" = true ] || [ "$only_live_action_scheduler" = true ]; then
+if [ "$only_live_forms" = true ] || [ "$only_live_blocks" = true ] || [ "$only_live_buddypress" = true ] || [ "$only_live_wp_mail_smtp" = true ] || [ "$only_live_fluent_smtp" = true ] || [ "$only_live_post_smtp" = true ] || [ "$only_live_bbpress" = true ] || [ "$only_live_lms" = true ] || [ "$only_live_tablepress" = true ] || [ "$only_live_rank_math" = true ] || [ "$only_live_site_reviews" = true ] || [ "$only_live_code_snippets" = true ] || [ "$only_live_crm" = true ] || [ "$only_live_helpdesk" = true ] || [ "$only_live_activity_log" = true ] || [ "$only_live_site_gate" = true ] || [ "$only_live_email_log" = true ] || [ "$only_live_polylang" = true ] || [ "$only_live_funnelkit" = true ] || [ "$only_live_woo_addons" = true ] || [ "$only_live_breakdance" = true ] || [ "$only_live_memberpress" = true ] || [ "$only_live_divi" = true ] || [ "$only_live_betheme" = true ] || [ "$only_live_wpbakery" = true ] || [ "$only_live_thrive" = true ] || [ "$only_live_cornerstone" = true ] || [ "$only_live_avada" = true ] || [ "$only_live_oxygen" = true ] || [ "$only_live_amelia" = true ] || [ "$only_live_wc_subscriptions" = true ] || [ "$only_live_elementor_pro" = true ] || [ "$only_live_jet_elements" = true ] || [ "$only_live_adapter" = true ] || [ "$only_live_theme_pro" = true ] || [ "$only_live_wc_bookings" = true ] || [ "$only_live_cache_settings" = true ] || [ "$only_live_ws_form" = true ] || [ "$only_live_links" = true ] || [ "$only_live_action_scheduler" = true ]; then
 	[ "$only_live_forms" = false ] || LEGS+=("live-forms ${only_wp:-$default_wp}")
 	[ "$only_live_blocks" = false ] || LEGS+=("live-blocks ${only_wp:-$default_wp}")
 	[ "$only_live_buddypress" = false ] || LEGS+=("live-buddypress ${only_wp:-$default_wp}")
@@ -642,6 +645,7 @@ if [ "$only_live_forms" = true ] || [ "$only_live_blocks" = true ] || [ "$only_l
 	[ "$only_live_site_gate" = false ] || LEGS+=("live-site-gate ${only_wp:-$default_wp}")
 	[ "$only_live_email_log" = false ] || LEGS+=("live-email-log ${only_wp:-$default_wp}")
 	[ "$only_live_funnelkit" = false ] || LEGS+=("live-funnelkit ${only_wp:-$default_wp}")
+	[ "$only_live_woo_addons" = false ] || LEGS+=("live-woo-addons ${only_wp:-$default_wp}")
 	[ "$only_live_polylang" = false ] || LEGS+=("live-polylang ${only_wp:-$default_wp}")
 	[ "$only_live_breakdance" = false ] || LEGS+=("live-breakdance ${only_wp:-$default_wp}")
 	[ "$only_live_avada" = false ] || LEGS+=("live-avada ${only_wp:-$default_wp}")
@@ -948,6 +952,8 @@ install_flavor() {
 	[ "${WPMCP_LIVE_EMAIL_LOG:-}" = 1 ] && flavor="-email-log-live"
 	# And WPMCP_LIVE_FUNNELKIT=1 and Funnel Builder with WooCommerce.
 	[ "${WPMCP_LIVE_FUNNELKIT:-}" = 1 ] && flavor="-funnelkit-live"
+	# And WPMCP_LIVE_WOO_ADDONS=1 and the WooCommerce add-ons with WooCommerce.
+	[ "${WPMCP_LIVE_WOO_ADDONS:-}" = 1 ] && flavor="-woo-addons-live"
 	# And WPMCP_LIVE_AMELIA=1 and Amelia Lite.
 	[ "${WPMCP_LIVE_AMELIA:-}" = 1 ] && flavor="-amelia-live"
 	# And WPMCP_LIVE_BREAKDANCE=1 and the local Breakdance copy.
@@ -1913,6 +1919,23 @@ run_live_funnelkit() {
 	unset WPMCP_LIVE_FUNNELKIT
 }
 
+# The live WooCommerce add-ons group (issue #1096), the same way: its own
+# install with WooCommerce and the free add-ons from wordpress.org, its own
+# database, and --fail-on-skipped.
+run_live_woo_addons() {
+	local version=$1 dir core config
+	export WPMCP_LIVE_WOO_ADDONS=1
+	dir=$(install_wp "$version")
+	core=$(checkout_core "$dir")
+	RUN_CORES+=("$core")
+	config=$(db_config "$dir" "$version-woo-addons-live" "$core")
+	RUN_CONFIGS+=("$config")
+	say "PHPUnit live WooCommerce add-ons group on WordPress $version (real add-ons + WooCommerce)"
+	WP_TESTS_DIR="$dir/wordpress-tests-lib" WP_TESTS_CONFIG_FILE_PATH="$config" WP_CORE_DIR="$core/" \
+		run_phpunit --group woo-addons-live --fail-on-skipped
+	unset WPMCP_LIVE_WOO_ADDONS
+}
+
 # The live Amelia group (issue #499), the same way: its own install with the
 # real Amelia Lite, its own database, and --fail-on-skipped.
 run_live_amelia() {
@@ -2529,6 +2552,7 @@ run_leg_body() {
 		live-site-gate) run_live_site_gate "$wp" ;;
 		live-email-log) run_live_email_log "$wp" ;;
 		live-funnelkit) run_live_funnelkit "$wp" ;;
+		live-woo-addons) run_live_woo_addons "$wp" ;;
 		live-polylang) run_live_polylang "$wp" ;;
 		live-breakdance) run_live_breakdance "$wp" ;;
 		live-avada) run_live_avada "$wp" ;;

@@ -170,6 +170,10 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             // SearchWP's engines config, which the SearchWP ops change
             // (issue #993).
             'searchwp_engines',
+            // Cart Abandonment Recovery's abandoned and lost cart timing,
+            // which cartabandonment-update-timing changes (issue #1096).
+            'wcf_ca_cron_run_time',
+            'wcf_ca_cart_lost_time',
         ],
         'transient'      => [
             'scrape_key_*',
