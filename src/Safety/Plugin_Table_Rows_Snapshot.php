@@ -56,6 +56,47 @@ if (! defined('ABSPATH')) {
  * "links") are keyed by their own id. A create reserves its id before the
  * snapshot, so the restore removes the row the write inserted.
  *
+ * WP Go Maps markers (issue #907, the `wpgmza` table, kind wpgmza with the
+ * one suffix "markers") are keyed by their own id. Their latlng POINT column
+ * rides as lowercase hex of its stored bytes and goes back with UNHEX(), so
+ * the restore puts the geometry back byte for byte. A create reserves its id
+ * before the snapshot, so the restore removes the row the write inserted.
+ *
+ * FileBird media folders (issue #906) are two kinds, each with one fixed
+ * table: folders (`fbv`, the table {prefix}fbv itself, suffix "fbv") keyed
+ * by id, and folder assignments (`fbv_attachment`, the
+ * {prefix}fbv_attachment_folder table, suffix "attachment_folder") keyed by
+ * `attachment_id`, so a snapshot taken before a write covers every folder
+ * row of those attachments, the ones the write inserts included. The
+ * assignment table has no id column, so its rows are read in attachment
+ * order.
+ *
+ * Smash Balloon Instagram Feed (issue #902) keeps its feeds in
+ * `sbi_feeds` and their fetched and rendered data in `sbi_feed_caches`,
+ * both keyed by id (kind sbi, suffixes "feeds" and "feed_caches" only, so
+ * its `sbi_sources` table, which holds access tokens, can never be
+ * captured). After a restore the plugin's object cache entry for each
+ * restored feed is dropped, so the next page view reads the rows back.
+ *
+ * Discount Rules for WooCommerce rules (issue #901, the `wdr_rules` table,
+ * the one suffix "rules") are keyed by their own id the same way; restoring
+ * one takes manage_woocommerce, the plugin's own capability.
+ *
+ * Thrive Ultimatum (issue #828) keeps a campaign's timeline
+ * (`tve_ult_events`, kind tve_ult_events, suffix "events") and its display
+ * settings (`tve_ult_settings_campaign`, kind tve_ult_display, suffix
+ * "settings_campaign") in tables of its own, keyed here by the campaign they
+ * belong to (`campaign_id`), so a snapshot taken before a write covers the
+ * rows it inserts and the ones it deletes. Restoring takes manage_options.
+ *
+ * Thrive Leads (issue #825) keeps a lead group's display rules as one row of
+ * `tve_leads_group_options` (kind tve_leads_options, the one suffix
+ * "group_options"), keyed by the `group` column because Thrive Leads saves
+ * them by deleting the group's row and inserting a new one, and a form
+ * design as a row of `tve_leads_form_variations` (kind tve_leads_variations,
+ * the one suffix "form_variations"), keyed and ordered by its `key` column.
+ * Restoring either takes manage_options or Thrive Leads' own tve-use-tl.
+ *
  * Paid Memberships Pro (issue #667) keeps levels, memberships and discount
  * codes in tables of its own, each kind with its one suffix: levels
  * (`pmpro_membership_levels`) and discount codes (`pmpro_discount_codes`)
@@ -130,7 +171,7 @@ if (! defined('ABSPATH')) {
  * captured post for a Pods row, a MemberPress rule's rows or a LearnPress
  * course's sections, edit_post on the course a LearnPress section belongs to
  * for that section's items, manage_options
- * for a dictionary row, a Pretty Links link, a Restrict Content level, an EDD discount, a forum row, a booking or a wpDataTables or Ninja Tables row, and Wordfence's own admin capability (manage_options,
+ * for a dictionary row, a Pretty Links link or a WP Go Maps marker, a Restrict Content level, an EDD discount, a forum row, a booking, an Instagram Feed row or a wpDataTables or Ninja Tables row, upload_files for a FileBird row, and Wordfence's own admin capability (manage_options,
  * manage_network on a multisite network) for a Wordfence row, and Jetpack
  * CRM's admin_zerobs_customers (or manage_options) for a contact.
  */
@@ -145,6 +186,15 @@ final class Plugin_Table_Rows_Snapshot
         'mepr_rule_access' => 'mepr_rule_access_',
         'rank_math'        => 'rank_math_',
         'prli'             => 'prli_',
+        'wpgmza'           => 'wpgmza',
+        'fbv'              => '',
+        'fbv_attachment'   => 'fbv_',
+        'sbi'              => 'sbi_',
+        'wdr'              => 'wdr_',
+        'tve_ult_events'   => 'tve_ult_',
+        'tve_ult_display'  => 'tve_ult_',
+        'tve_leads_options'    => 'tve_leads_',
+        'tve_leads_variations' => 'tve_leads_',
         'bookly'           => 'bookly_',
         'ssa'              => 'ssa_',
         'bookingpress'     => 'bookingpress_',
@@ -182,6 +232,8 @@ final class Plugin_Table_Rows_Snapshot
     private const KEY_COLUMNS = [
         'mepr_rule_access' => 'rule_id',
         'wordfence_blocks' => 'IP',
+        'tve_ult_events'   => 'campaign_id',
+        'tve_ult_display'  => 'campaign_id',
         'bookingpress'     => 'bookingpress_appointment_booking_id',
         'pmpro_members'    => 'user_id',
         'wpdatatables_rows' => 'table_id',
@@ -193,6 +245,9 @@ final class Plugin_Table_Rows_Snapshot
         'wpforo_topic_posts'    => 'topicid',
         'wpforo_topic_postmeta' => 'topicid',
         'asgaros_topic_posts'   => 'parent_id',
+        'tve_leads_options'    => 'group',
+        'tve_leads_variations' => 'key',
+        'fbv_attachment'   => 'attachment_id',
     ];
 
     /** kind => the column its rows are read in order of, for a table with no `id` column. */
@@ -204,6 +259,8 @@ final class Plugin_Table_Rows_Snapshot
         'wpforo_topic'          => 'topicid',
         'wpforo_topic_posts'    => 'postid',
         'wpforo_topic_postmeta' => 'metaid',
+        'tve_leads_variations' => 'key',
+        'fbv_attachment'   => 'attachment_id',
     ];
 
     /** kind => the only suffixes it allows, for a kind with a fixed table. */
@@ -211,6 +268,15 @@ final class Plugin_Table_Rows_Snapshot
         'mepr_rule_access' => [ 'conditions' ],
         'rank_math'        => [ 'redirections' ],
         'prli'             => [ 'links' ],
+        'wpgmza'           => [ 'markers' ],
+        'fbv'              => [ 'fbv' ],
+        'fbv_attachment'   => [ 'attachment_folder' ],
+        'sbi'              => [ 'feeds', 'feed_caches' ],
+        'wdr'              => [ 'rules' ],
+        'tve_ult_events'   => [ 'events' ],
+        'tve_ult_display'  => [ 'settings_campaign' ],
+        'tve_leads_options'    => [ 'group_options' ],
+        'tve_leads_variations' => [ 'form_variations' ],
         'bookly'           => [ 'customer_appointments' ],
         'ssa'              => [ 'appointments' ],
         'bookingpress'     => [ 'appointment_bookings' ],
@@ -235,6 +301,11 @@ final class Plugin_Table_Rows_Snapshot
         'edd'              => [ 'adjustments' ],
     ];
 
+    /** kind => suffix => the unprefixed table, for a kind whose one table is not prefix plus suffix. */
+    private const FIXED_TABLES = [
+        'wpgmza' => [ 'markers' => 'wpgmza' ],
+    ];
+
     /**
      * kind => [companion table suffix (after the kind's own prefix) => the
      * column holding the parent id]. Companion rows are captured and
@@ -251,6 +322,7 @@ final class Plugin_Table_Rows_Snapshot
     /** kind => its binary columns, carried as lowercase hex in the snapshot and in the key. */
     private const BINARY_COLUMNS = [
         'wordfence_blocks' => [ 'IP' ],
+        'wpgmza'           => [ 'latlng' ],
     ];
 
     /** The column a kind's ids name. */
@@ -316,6 +388,9 @@ final class Plugin_Table_Rows_Snapshot
         if (isset(self::SUFFIXES[ $kind ]) && ! in_array($suffix, self::SUFFIXES[ $kind ], true)) {
             return null;
         }
+        if (isset(self::FIXED_TABLES[ $kind ])) {
+            return isset(self::FIXED_TABLES[ $kind ][ $suffix ]) ? $wpdb->prefix . self::FIXED_TABLES[ $kind ][ $suffix ] : null;
+        }
         return $wpdb->prefix . self::KINDS[ $kind ] . $suffix;
     }
 
@@ -328,6 +403,14 @@ final class Plugin_Table_Rows_Snapshot
         global $wpdb;
 
         if (! isset(self::KINDS[ $kind ])) {
+            return null;
+        }
+        foreach (self::FIXED_TABLES[ $kind ] ?? [] as $suffix => $name) {
+            if ($wpdb->prefix . $name === $table) {
+                return (string) $suffix;
+            }
+        }
+        if (isset(self::FIXED_TABLES[ $kind ])) {
             return null;
         }
         $prefix = $wpdb->prefix . self::KINDS[ $kind ];
@@ -563,6 +646,14 @@ final class Plugin_Table_Rows_Snapshot
         if ('rank_math' === $kind) {
             self::purge_rank_math_cache($ids);
         }
+        if ('fbv_attachment' === $kind) {
+            foreach ($ids as $id) {
+                clean_post_cache((int) $id);
+            }
+        }
+        if ('sbi' === $kind) {
+            self::drop_instagram_feed_cache((string) ($data['suffix'] ?? ''), (array) ($data['rows'] ?? []));
+        }
         if (isset(self::COMPANIONS[ $kind ])) {
             self::restore_companions($kind, $ids, (array) ($data['companions'] ?? []));
         }
@@ -588,6 +679,20 @@ final class Plugin_Table_Rows_Snapshot
             self::purge_edd_cache((string) $data['suffix'], $ids);
         }
         self::after_wordfence_restore($kind);
+    }
+
+    /**
+     * Drop Instagram Feed's object cache entry (sbi_feed_<feed>_1, the key
+     * its cache class reads first) for every feed whose rows were restored.
+     */
+    private static function drop_instagram_feed_cache(string $suffix, array $rows): void
+    {
+        foreach ($rows as $row) {
+            $feed = 'feeds' === $suffix ? (string) ($row['id'] ?? '') : (string) ($row['feed_id'] ?? '');
+            if ('' !== $feed) {
+                wp_cache_delete('sbi_feed_' . $feed . '_1');
+            }
+        }
     }
 
     /**
@@ -773,8 +878,8 @@ final class Plugin_Table_Rows_Snapshot
         }
 
         global $wpdb;
-        $in = implode(',', array_fill(0, count($ids), 'UNHEX(%s)'));
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- a snapshot must read the live rows of a third-party table; $in holds only UNHEX(%s) placeholders.
+        $in = implode(',', array_fill(0, count($ids), self::binary_key($kind) ? 'UNHEX(%s)' : '%d'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- a snapshot must read the live rows of a third-party table; $in holds only UNHEX(%s) or %d placeholders.
         $rows = (array) $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE %i IN ($in) ORDER BY id ASC", $table, self::key_column($kind), ...$ids), ARRAY_A);
 
         $out = [];
@@ -801,8 +906,8 @@ final class Plugin_Table_Rows_Snapshot
     {
         global $wpdb;
 
-        $in = implode(',', array_fill(0, count($ids), 'UNHEX(%s)'));
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- third-party table with no WP API; $in holds only UNHEX(%s) placeholders.
+        $in = implode(',', array_fill(0, count($ids), self::binary_key($kind) ? 'UNHEX(%s)' : '%d'));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- third-party table with no WP API; $in holds only UNHEX(%s) or %d placeholders.
         if (false === $wpdb->query($wpdb->prepare("DELETE FROM %i WHERE %i IN ($in)", $table, self::key_column($kind), ...$ids))) {
             throw new Mutation_Failed('Could not clear the rows being restored in ' . esc_html($table) . '.');
         }
@@ -887,6 +992,30 @@ final class Plugin_Table_Rows_Snapshot
             }
             return;
         }
+        if ('fbv' === $kind || 'fbv_attachment' === $kind) {
+            if (! current_user_can('upload_files')) {
+                throw new Mutation_Failed('Rollback refused: restoring FileBird media folders requires the upload_files capability.');
+            }
+            return;
+        }
+        if ('wdr' === $kind) {
+            if (! current_user_can('manage_woocommerce')) {
+                throw new Mutation_Failed('Rollback refused: restoring a Discount Rules rule requires the manage_woocommerce capability.');
+            }
+            return;
+        }
+        if ('tve_ult_events' === $kind || 'tve_ult_display' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring a Thrive Ultimatum campaign\'s ' . ('tve_ult_events' === $kind ? 'timeline' : 'display rules') . ' requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('tve_leads_options' === $kind || 'tve_leads_variations' === $kind) {
+            if (! current_user_can('manage_options') && ! current_user_can('tve-use-tl')) {
+                throw new Mutation_Failed('Rollback refused: restoring Thrive Leads settings requires the manage_options or tve-use-tl capability.');
+            }
+            return;
+        }
         if (str_starts_with($kind, 'pmpro_')) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring Paid Memberships Pro levels, memberships or discount codes requires the manage_options capability.');
@@ -908,6 +1037,18 @@ final class Plugin_Table_Rows_Snapshot
         if ('prli' === $kind) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring Pretty Links links requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('wpgmza' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring WP Go Maps markers requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('sbi' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring Instagram Feed feeds or caches requires the manage_options capability.');
             }
             return;
         }

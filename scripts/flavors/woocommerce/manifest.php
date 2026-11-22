@@ -637,6 +637,9 @@ return [
         // The playbook for raw SQL work: every tool it teaches beyond the
         // two schema readers is gone from this build.
         'src/Skills/library/wpmcp-safe-database-work',
+        // Salt rotation and core file repair are stripped from this build,
+        // so the security incident skill that walks through them goes too.
+        'src/Skills/library/wpmcp-security-incident',
         // The cloud announcements feed and the cloud client (decision D4).
         'src/Admin/Announcements.php',
         'src/Cloud',

@@ -864,6 +864,31 @@ $edits['src/Skills/library/wpmcp-governance/SKILL.md'] = [
     ],
 ];
 
+// The integrations router (issue #850) points at every area playbook and
+// is listed while a builder read tool is registered. The paid playbooks and
+// that tool are not in this build, so their lines go.
+$edits['src/Skills/library/integrations/SKILL.md'] = [
+    ["  - wpmcp/get-builder-content\n", '', 1],
+    [
+        "- Pages built with Elementor: `wpmcp-elementor-editing`.\n"
+            . "- Pages built with Bricks, Breakdance, Divi, Oxygen, WPBakery, Avada, Beaver Builder: `integrations/page-builders`.\n"
+            . "- Courses in Tutor LMS, LifterLMS or LearnDash: `integrations/lms`.\n"
+            . "- Contacts, lists and campaigns in FluentCRM or MailPoet: `integrations/crm`.\n"
+            . "- Whole-page translation, Weglot and GTranslate: `integrations/page-translation`.\n"
+            . "- TablePress tables: `integrations/tablepress`.\n"
+            . "- Amelia appointments and events: `integrations/bookings`.\n"
+            . "- MemberPress memberships and access rules: `integrations/memberpress`.\n"
+            . "- FunnelKit funnels and checkout steps: `integrations/funnels`.\n",
+        '',
+        1,
+    ],
+    [
+        "Map a plugin request (courses, contacts, translations, events, tables, bookings, memberships, funnels, builders) to its skill",
+        "Map a plugin request (translations, events, memberships) to its skill",
+        1,
+    ],
+];
+
 $edits['src/Skills/library/wpmcp-elementor-editing/SKILL.md'] = [
     [
         "The Elementor tools are pro tier and require Elementor to be active. If they\n",
@@ -1275,6 +1300,33 @@ $plugin_edits[] = [
     '',
     1,
 ];
+// Static HTML export (issue #854) is a paid module (policy.php
+// removed_paths), so its registration call, its trigger-backup type and the
+// inputs only it reads leave with it.
+$plugin_edits[] = [
+    "            // Static HTML export (issue #854, Pro): trigger-backup\n"
+        . "            // type=static, its WP-Cron executor and its download link.\n"
+        . "            \\WPMCP\\Tools\\Export\\Static_Site\\Static_Export::register();\n",
+    '',
+    1,
+];
+$plugin_edits[] = [
+    "; static: public pages as plain HTML with assets and relative links, as a zip (opt-in; plan:true lists URLs only; post_types or urls narrow it). every",
+    '. every',
+    1,
+];
+$plugin_edits[] = [
+    "'enum' => ['full', 'database', 'files', 'uploads', 'content', 'static'],",
+    "'enum' => ['full', 'database', 'files', 'uploads', 'content'],",
+    1,
+];
+$plugin_edits[] = [
+    "                    'plan'      => [ 'type' => 'boolean' ],\n"
+        . "                    'post_types' => [ 'type' => 'string' ],\n"
+        . "                    'urls'      => [ 'type' => 'array', 'items' => [ 'type' => 'string' ] ],\n",
+    '',
+    1,
+];
 $edits['src/Plugin.php'] = $plugin_edits;
 
 // The chat surface is add-on-only, so the directory build must not carry the
@@ -1491,17 +1543,24 @@ $edits['src/Integrations/Theme_Framework_Pack.php'] = [
 // file is removed by policy.php, so the line that merges their ops into the
 // theme pair, the docblock sentence describing them, and the rollback hook
 // that refreshes one suite's cache all leave with it. The dynamic template
+// ops (issue #290), the FunnelKit funnel reads (issue #356), the core
+// personal data request ops (issue #714) and the WPFunnels ops (issue #834)
+// leave through the same two edits: their files are removed by policy.php
+// too.
 // ops (issue #290), the FunnelKit funnel reads (issue #356), the CartFlows
-// ops (issue #662) and the core personal data request ops (issue #714) leave
-// through the same two edits: their files are removed by policy.php too.
+// ops (issue #662), the core personal data request ops (issue #714) and the
+// Thrive Theme Builder ops (issue #824) leave through the same two edits:
+// their files are removed by policy.php too.
 $edits['src/Integrations/Theme_Integration.php'] = [
     [
         "            Redirection_Pack::operations(),\n"
             . "            Rank_Math_Redirects_Pack::operations(),\n"
             . "            Elementor_Addon_Packs::operations(),\n"
             . "            FunnelKit_Pack::operations(),\n"
+            . "            Thrive_Theme_Pack::operations(),\n"
             . "            CartFlows_Pack::operations(),\n"
             . "            Core_Privacy_Pack::operations(),\n"
+            . "            WPFunnels_Pack::operations(),\n"
             . "            \\WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Dynamic_Template_Ops::operations()\n",
         "            Redirection_Pack::operations(),\n            Rank_Math_Redirects_Pack::operations()\n",
         1,
@@ -1516,12 +1575,17 @@ $edits['src/Integrations/Theme_Integration.php'] = [
             . "     * single, archive and search templates on the site parts store.\n"
             . "     * Issue #356 adds the paid-tier FunnelKit funnel reads (FunnelKit_Pack),\n"
             . "     * which answer funnelkit_inactive while FunnelKit is not loaded.\n"
+            . "     * Issue #824 adds the paid-tier Thrive Theme Builder template, section\n"
+            . "     * and theme settings ops (Thrive_Theme_Pack).\n"
             . "     * Issue #662 adds the paid-tier CartFlows flow, step and checkout\n"
             . "     * product ops (CartFlows_Pack), which answer cartflows_inactive while\n"
             . "     * CartFlows is not loaded.\n"
             . "     * Issue #714 adds the paid-tier WordPress core personal data request\n"
             . "     * ops (Core_Privacy_Pack): requests listed and read, export and erasure\n"
-            . "     * requests filed and marked complete, every write undoable.\n",
+            . "     * requests filed and marked complete, every write undoable.\n"
+            . "     * Issue #834 adds the paid-tier WPFunnels funnel, step and checkout\n"
+            . "     * product ops (WPFunnels_Pack), which answer plugin_missing or\n"
+            . "     * plugin_inactive while WPFunnels is not loaded.\n",
         "     * catalog only while that family is active.\n",
         1,
     ],
@@ -1540,6 +1604,113 @@ $edits['src/Plugin.php'][] = [
     1,
 ];
 $edits['src/Integrations/Plugin_Data_Integration.php'] = [
+    // The Easy Table of Contents ops (issue #904) are the paid add-on's,
+    // removed by policy.php. Their lines go first, so every edit below
+    // matches the file as it was before them.
+    [ "            || Easy_TOC_Pack::active()\n", '', 1 ],
+    [ "            . ', Easy Table of Contents settings'\n", '', 1 ],
+    [ "        \$groups[] = [ 'Easy Table of Contents', false, Easy_TOC_Pack::operations() ];\n", '', 1 ],
+    [ "            Easy_TOC_Pack::operations(),\n", '', 1 ],
+    // The email marketing ops (issue #900) are the paid add-on's, removed by
+    // policy.php. Their lines go first, so every edit below matches the file
+    // as it was before them.
+    [
+        " *  - Issue #900 adds the paid-tier email marketing ops\n"
+            . " *    (Email_Marketing_Pack): MailerLite, Klaviyo, Kit, Omnisend and\n"
+            . " *    ActiveCampaign connection, forms and list mapping read with keys never\n"
+            . " *    returned, and Klaviyo checkout signup and Kit default forms set (off\n"
+            . " *    until wpmcp_enable_email_marketing_write), snapshotted on each option.\n",
+        '',
+        1,
+    ],
+    [ "            || Email_Marketing_Pack::active()\n", '', 1 ],
+    [ "            . ', MailerLite, Klaviyo, Kit, Omnisend and ActiveCampaign settings'\n", '', 1 ],
+    [
+        "        foreach (Email_Marketing_Pack::groups() as [ \$label, \$ops ]) {\n"
+            . "            \$groups[] = [ \$label, false, \$ops ];\n"
+            . "        }\n",
+        '',
+        1,
+    ],
+    [ "            Email_Marketing_Pack::operations(),\n", '', 1 ],
+    // The GamiPress ops (issue #833) are the paid add-on's, removed by
+    // policy.php. Their lines go first, so every edit below matches the
+    // file as it was before them.
+    [
+        " *  - Issue #833 adds the paid-tier GamiPress ops (Gamipress_Pack): point,\n"
+            . " *    achievement and rank types, achievements, ranks and a user's points,\n"
+            . " *    earnings and rank, with points, achievement and rank writes through\n"
+            . " *    GamiPress (off until wpmcp_enable_gamipress_write), each under a\n"
+            . " *    'gamipress_user' snapshot of the user.\n",
+        '',
+        1,
+    ],
+    [ "            || Gamipress_Pack::active()\n", '', 1 ],
+    [ "            . ', GamiPress points, achievements and ranks'\n", '', 1 ],
+    [ "        \$groups[] = [ 'GamiPress', false, Gamipress_Pack::operations() ];\n", '', 1 ],
+    [ "            Gamipress_Pack::operations(),\n", '', 1 ],
+    // The Thrive Automator ops (issue #830) are the paid add-on's, removed by
+    // policy.php. Their lines go first, so every edit below matches the file
+    // as it was before them.
+    [
+        " *  - Issue #830 adds the paid-tier Thrive Automator ops\n"
+            . " *    (Thrive_Automator_Pack): automations listed and read with credentials\n"
+            . " *    redacted, the trigger and action catalog, and automations turned on\n"
+            . " *    (confirm:true) or off (off until wpmcp_enable_thrive_automator_write),\n"
+            . " *    each under a post snapshot.\n",
+        '',
+        1,
+    ],
+    [ "            || Thrive_Automator_Pack::active()\n", '', 1 ],
+    [ "            . ', Thrive Automator automations'\n", '', 1 ],
+    [ "        \$groups[] = [ 'Thrive Automator', false, Thrive_Automator_Pack::operations() ];\n", '', 1 ],
+    [ "            Thrive_Automator_Pack::operations(),\n", '', 1 ],
+    // The Thrive Ultimatum ops (issue #828) are the paid add-on's, removed
+    // by policy.php. Each of their lines is removed on its own and first, so
+    // every edit below matches the file as it was before them.
+    [
+        " *  - Issue #828 adds the paid-tier Thrive Ultimatum ops\n"
+            . " *    (Thrive_Ultimatum_Pack): countdown campaigns read, and created, given a\n"
+            . " *    schedule and display rules, paused and resumed (off until\n"
+            . " *    wpmcp_enable_thrive_ultimatum_write), each write undoable.\n",
+        '',
+        1,
+    ],
+    [ "            || Thrive_Ultimatum_Pack::active()\n", '', 1 ],
+    [ "            . ', Thrive Ultimatum campaigns'\n", '', 1 ],
+    [ "        \$groups[] = [ 'Thrive Ultimatum', false, Thrive_Ultimatum_Pack::operations() ];\n", '', 1 ],
+    [ "            Thrive_Ultimatum_Pack::operations(),\n", '', 1 ],
+    // The Thrive Optimize ops (issue #827) are the paid add-on's, removed
+    // by policy.php. Their lines go first, so every edit below matches the
+    // file as it was before them.
+    [
+        " *  - Issue #827 adds the paid-tier Thrive Optimize ops\n"
+            . " *    (Thrive_Optimize_Pack): A/B tests read with their variations' results,\n"
+            . " *    and traffic split changes and stopping a test (undoable) or picking a\n"
+            . " *    winner (not undoable, confirm:true), off until\n"
+            . " *    wpmcp_enable_thrive_optimize_write.\n",
+        '',
+        1,
+    ],
+    [ "            || Thrive_Optimize_Pack::active()\n", '', 1 ],
+    [ "            . ', Thrive Optimize A/B tests'\n", '', 1 ],
+    [ "        \$groups[] = [ 'Thrive Optimize', false, Thrive_Optimize_Pack::operations() ];\n", '', 1 ],
+    [ "            Thrive_Optimize_Pack::operations(),\n", '', 1 ],
+    // The Thrive Leads ops (issue #825) are the paid add-on's, removed by
+    // policy.php. Their lines go first, so every edit below matches the file
+    // as it was before them.
+    [
+        " *  - Issue #825 adds the paid-tier Thrive Leads ops (Thrive_Leads_Pack):\n"
+            . " *    lead groups, opt-in forms, shortcodes and conversion counts read, and\n"
+            . " *    form triggers and display, form switches and group display rules\n"
+            . " *    written (off until wpmcp_enable_thrive_leads_write), each undoable.\n",
+        '',
+        1,
+    ],
+    [ "            || Thrive_Leads_Pack::active()\n", '', 1 ],
+    [ "            . ', Thrive Leads forms'\n", '', 1 ],
+    [ "        \$groups[] = [ 'Thrive Leads', false, Thrive_Leads_Pack::operations() ];\n", '', 1 ],
+    [ "            Thrive_Leads_Pack::operations(),\n", '', 1 ],
     // The mailing list ops (issue #683) are the paid add-on's, removed by
     // policy.php. Their lines go first, so every edit below matches the
     // file as it was before them.
@@ -1712,6 +1883,20 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
     [ "            . ', WP Offload Media status'\n", '', 1 ],
     [ "        \$groups[] = [ 'WP Offload Media', false, Offload_Media_Pack::operations() ];\n", '', 1 ],
     [ "            Offload_Media_Pack::operations(),\n", '', 1 ],
+    // The Thrive Ovation ops (issue #829) are the paid add-on's too, removed
+    // by policy.php; one line each, so they match wherever they sit.
+    [
+        " *  - Issue #829 adds the paid-tier Thrive Ovation ops (Thrive_Ovation_Pack):\n"
+            . " *    testimonials listed with author names and emails masked, read one at a\n"
+            . " *    time, tags listed, and testimonials created, edited, set to a status and\n"
+            . " *    tagged (off until wpmcp_enable_thrive_ovation_write), each undoable.\n",
+        '',
+        1,
+    ],
+    [ "            || Thrive_Ovation_Pack::active()\n", '', 1 ],
+    [ "            . ', Thrive Ovation testimonials'\n", '', 1 ],
+    [ "        \$groups[] = [ 'Thrive Ovation', false, Thrive_Ovation_Pack::operations() ];\n", '', 1 ],
+    [ "            Thrive_Ovation_Pack::operations(),\n", '', 1 ],
     // The per-op plugin names of the paid packs (issue #815) go with them,
     // and so does their part of the summary; these lines go first, so the
     // pack edits below still match.
@@ -1738,11 +1923,11 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
         1,
     ],
     [
-        "            . ', FluentCRM and MailPoet'\n"
+        "            . ', FluentCRM and MailPoet, FunnelKit Automations'\n"
             . "            . ', Amelia bookings, Polylang and WPML translations, MemberPress memberships, Elementor Pro forms'\n"
             . "            . ', BetterDocs docs, Fluent Support and Awesome Support tickets'\n"
             . "            . ', Weglot and GTranslate language settings, Loco Translate .po strings';\n",
-        "            . ', FluentCRM and MailPoet';\n",
+        "            . ', FluentCRM and MailPoet, FunnelKit Automations';\n",
         1,
     ],
     // The translation settings ops (issue #690) are the paid add-on's too,
@@ -1902,9 +2087,9 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
         1,
     ],
     [
-        "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS courses, TablePress tables'\n"
-            . "            . ', FluentCRM and MailPoet';\n",
-        "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS courses, TablePress tables';\n",
+        "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS and Thrive Apprentice courses, TablePress tables'\n"
+            . "            . ', FluentCRM and MailPoet, FunnelKit Automations';\n",
+        "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS and Thrive Apprentice courses, TablePress tables';\n",
         1,
     ],
     [
@@ -1938,13 +2123,13 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
         1,
     ],
     [
-        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future'\n"
+        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, Custom Post Type UI and MB Custom Post Types post types, Better Search Replace and Search Regex search and replace, Popup Builder, Hustle and Depicter popups, GTM4WP, PixelYourSite, Meta Pixel for WordPress and Microsoft Clarity tracking IDs, Discount Rules for WooCommerce pricing rules, Smash Balloon Instagram Feed feeds, WP All Import and WP All Export jobs, FileBird media folders, Max Mega Menu settings and themes, WP Go Maps, WP Maps and WP Store Locator locations'\n"
             . "            . ', FooGallery galleries'\n"
             . "            . ', JetFormBuilder forms'\n"
             . "            . ', Kadence Blocks forms'\n"
             . "            . ', Jetpack Forms responses'\n"
-            . "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS courses, TablePress tables';\n",
-        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future'\n"
+            . "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS and Thrive Apprentice courses, TablePress tables';\n",
+        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, Custom Post Type UI and MB Custom Post Types post types, Better Search Replace and Search Regex search and replace, Popup Builder, Hustle and Depicter popups, GTM4WP, PixelYourSite, Meta Pixel for WordPress and Microsoft Clarity tracking IDs, Discount Rules for WooCommerce pricing rules, Smash Balloon Instagram Feed feeds, WP All Import and WP All Export jobs, FileBird media folders, Max Mega Menu settings and themes, WP Go Maps, WP Maps and WP Store Locator locations'\n"
             . "            . ', FooGallery galleries'\n"
             . "            . ', JetFormBuilder forms'\n"
             . "            . ', Kadence Blocks forms'\n"
@@ -1964,6 +2149,13 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
 // them into the theme pair and their rollback refresher leave with them.
 $edits['src/Integrations/Theme_Integration.php'][] = [
     "            Cache_Settings_Pack::operations(),\n",
+    '',
+    1,
+];
+$edits['src/Plugin.php'][] = [
+    "        // An undo of a Thrive Automator status change resets its scheduled\n"
+        . "        // trigger events, as the forward write did (#830).\n"
+        . "        [\\WPMCP\\Integrations\\Thrive_Automator_Pack::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],\n",
     '',
     1,
 ];

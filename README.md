@@ -24,6 +24,9 @@ WP MCP is a free, self-hosted WordPress MCP plugin for Claude, ChatGPT, Cursor a
 
 </div>
 
+**Thrive Theme Builder (Pro).** While Thrive Theme Builder is the active theme, the theme tools list and read its templates (what each renders, layout, header, footer and sections), its headers, footers and shared sections, and the theme settings (logo link, favicon, default featured image). Writes change a template's title, layout, header or footer, give a post or page a template of its own, edit a section's markup (pinned to the hash it was read with) and set those theme settings. Writes are off until the site enables theme writes, and every one is snapshotted so rollback undoes it.
+
+Because snapshots are taken at the WordPress data layer, rollback works the same for every builder in the table. Docs and Pro are at [wpmcp-pro.com](https://wpmcp-pro.com/).
 1. Download [wpmcp.zip](https://github.com/wpmcp/wordpress-mcp/releases/latest/download/wpmcp.zip).
 2. In wp-admin, go to **Plugins > Add New > Upload Plugin**, choose the zip, click **Install Now**, then **Activate**.
 3. Open **wpmcp > Connection**, create an application password, and paste the config it shows into your client (or use one of the blocks below).
