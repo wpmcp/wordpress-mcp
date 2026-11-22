@@ -2,7 +2,9 @@
 
 namespace WPMCP\MCP;
 
+use WPMCP\Api\V1\Value\Context;
 use WPMCP\Connect\Client_Config_Generator;
+use WPMCP\Kernel\Request_Context;
 use WP\MCP\Core\McpAdapter;
 use WP\MCP\Domain\Prompts\McpPrompt;
 use WP\MCP\Domain\Resources\McpResource;
@@ -84,9 +86,43 @@ class Server
 
     public static function boot(): void
     {
-        if (class_exists(McpAdapter::class)) {
+        if (class_exists(McpAdapter::class) && self::mounts_on_this_request()) {
             McpAdapter::instance();
         }
+    }
+
+    /**
+     * Route-scoped mounting (decision D8), behind WPMCP_ROUTE_SCOPED_MCP,
+     * off unless that constant is defined and true.
+     *
+     * The adapter's init on rest_api_init fires mcp_adapter_init, whose
+     * create_server() reads wp_get_abilities() and so registers every
+     * ability on every REST request (block editor, Store API, any other
+     * plugin's routes). With the flag on the adapter is instantiated only
+     * where it can be used: a request for this plugin's own route, and
+     * WP-CLI for the stdio transport. Anything else still gets the
+     * abilities lazily from the Abilities API when it asks for them.
+     *
+     * Without the flag, or when the kernel is absent from a build, nothing
+     * is read from the request and the adapter mounts as it always has.
+     */
+    private static function mounts_on_this_request(): bool
+    {
+        if (
+            ! defined('WPMCP_ROUTE_SCOPED_MCP')
+            || true !== (bool) constant('WPMCP_ROUTE_SCOPED_MCP')
+            || ! class_exists(Request_Context::class)
+        ) {
+            return true;
+        }
+
+        return self::mounts_in(Request_Context::from_globals());
+    }
+
+    /** Whether a route-scoped mount serves $context: the MCP route or WP-CLI. */
+    public static function mounts_in(Request_Context $context): bool
+    {
+        return in_array($context->context(), [ Context::Mcp, Context::Cli ], true);
     }
 
     /**
