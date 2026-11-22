@@ -15,6 +15,10 @@
 # changed against the merge base with <ref> (working tree and untracked files
 # included), keeping only findings on added or modified lines
 # (tools/standard/diff-filter.php). That line filter is the legacy baseline.
+# When the change touches the tool surface (src/Plugin.php, src/Integrations,
+# src/Modules, src/Tools, src/Governance), it also runs the golden group
+# (tests/golden, a targeted bin/test-local.sh run on the cached install) and
+# fails when the capture differs from tests/support/golden/baseline (rule 13).
 #
 # Toolchain: vendor/bin/phpstan when the root vendor has it, else the pinned
 # phar cached in ${WPMCP_STANDARD_CACHE:-~/.cache/wpmcp-standard} (sha256
@@ -119,6 +123,31 @@ else
 	fi
 	if git diff --name-only "$base" -- src/Modules pro/modules src/Api tools/registry | grep -q .; then
 		gate "registry check (every flavor)" php bin/build-registry.php --check --all-flavors --quiet
+	fi
+	# Rule 13: a change to the code the tool surface comes from must leave the
+	# golden capture equal to tests/support/golden/baseline, so a surface
+	# change carries its regenerated baseline. build/registry is generated
+	# (and ignored), so src/Modules stands for it.
+	surface=(src/Plugin.php src/Integrations src/Modules src/Tools src/Governance build/registry)
+	if { git diff --name-only "$base" -- "${surface[@]}"; git ls-files --others --exclude-standard -- "${surface[@]}"; } | grep -q .; then
+		golden_check() {
+			golden_log="$(mktemp "${TMPDIR:-/tmp}/wpmcp-standard-golden.XXXXXX")" || return 1
+			# The log goes on any exit, Ctrl-C included.
+			trap 'rm -f "${tmp:-}" "${golden_log:-}"' EXIT INT TERM
+			local rc=0
+			bash bin/test-local.sh -- --group golden tests/golden </dev/null >"$golden_log" 2>&1 || rc=1
+			[ "$rc" = 0 ] || grep -E -A20 '^[0-9]+\) ' "$golden_log" | head -60 >&2
+			rm -f "$golden_log"
+			[ "$rc" = 0 ] && return 0
+			if git diff --name-only "$base" -- tests/support/golden/baseline | grep -q .; then
+				say "golden: the capture still differs from the baseline this change updates; regenerate it again"
+			else
+				say "golden: this change alters the tool surface and does not update tests/support/golden/baseline"
+			fi
+			say "golden: WPMCP_GOLDEN_REGENERATE=1 bash bin/test-local.sh -- --group golden tests/golden, review the diff and commit it"
+			return 1
+		}
+		gate "golden baseline (rule 13)" golden_check
 	fi
 fi
 gate "central-list guard" php tools/standard/central-list-guard.php "$guard_ref"
