@@ -178,7 +178,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:773",
+          "closure@src/Plugin.php:788",
           1
         ]
       ],
@@ -750,6 +750,20 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_edd_write": [
         [
           -9223372036854775808,
@@ -765,6 +779,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -813,7 +834,35 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -827,7 +876,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -855,6 +925,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -876,7 +953,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -939,6 +1030,13 @@
           1
         ]
       ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ultimate_member_write": [
         [
           -9223372036854775808,
@@ -967,6 +1065,13 @@
           1
         ]
       ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
       "wpmcp_rollback_db_rows_restored": [
         [
           10,
@@ -991,6 +1096,16 @@
           10,
           "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
         ]
       ],
       "wpmcp_rollback_post_refusal": [
@@ -1009,6 +1124,11 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
           2
         ],
         [
@@ -1255,7 +1375,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:773",
+          "closure@src/Plugin.php:788",
           1
         ]
       ],
@@ -1827,6 +1947,20 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_edd_write": [
         [
           -9223372036854775808,
@@ -1842,6 +1976,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1890,7 +2031,35 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1904,7 +2073,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1932,6 +2122,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -1953,7 +2150,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -2016,6 +2227,13 @@
           1
         ]
       ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ultimate_member_write": [
         [
           -9223372036854775808,
@@ -2044,6 +2262,13 @@
           1
         ]
       ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
       "wpmcp_rollback_db_rows_restored": [
         [
           10,
@@ -2068,6 +2293,16 @@
           10,
           "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
         ]
       ],
       "wpmcp_rollback_post_refusal": [
@@ -2086,6 +2321,11 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
           2
         ],
         [
@@ -2332,7 +2572,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:773",
+          "closure@src/Plugin.php:788",
           1
         ]
       ],
@@ -2904,6 +3144,20 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_edd_write": [
         [
           -9223372036854775808,
@@ -2919,6 +3173,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -2967,7 +3228,35 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -2981,7 +3270,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3009,6 +3319,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -3030,7 +3347,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3093,6 +3424,13 @@
           1
         ]
       ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ultimate_member_write": [
         [
           -9223372036854775808,
@@ -3121,6 +3459,13 @@
           1
         ]
       ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
       "wpmcp_rollback_db_rows_restored": [
         [
           10,
@@ -3145,6 +3490,16 @@
           10,
           "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
         ]
       ],
       "wpmcp_rollback_post_refusal": [
@@ -3163,6 +3518,11 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
           2
         ],
         [
@@ -3409,7 +3769,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:773",
+          "closure@src/Plugin.php:788",
           1
         ]
       ],
@@ -3981,6 +4341,20 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_edd_write": [
         [
           -9223372036854775808,
@@ -3996,6 +4370,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4044,7 +4425,35 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4058,7 +4467,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4086,6 +4516,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -4107,7 +4544,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4170,6 +4621,13 @@
           1
         ]
       ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ultimate_member_write": [
         [
           -9223372036854775808,
@@ -4198,6 +4656,13 @@
           1
         ]
       ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
       "wpmcp_rollback_db_rows_restored": [
         [
           10,
@@ -4222,6 +4687,16 @@
           10,
           "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
         ]
       ],
       "wpmcp_rollback_post_refusal": [
@@ -4240,6 +4715,11 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
           2
         ],
         [
@@ -4486,7 +4966,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:773",
+          "closure@src/Plugin.php:788",
           1
         ]
       ],
@@ -5058,6 +5538,20 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_edd_write": [
         [
           -9223372036854775808,
@@ -5073,6 +5567,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5121,7 +5622,35 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5135,7 +5664,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5163,6 +5713,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -5184,7 +5741,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5247,6 +5818,13 @@
           1
         ]
       ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ultimate_member_write": [
         [
           -9223372036854775808,
@@ -5275,6 +5853,13 @@
           1
         ]
       ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
       "wpmcp_rollback_db_rows_restored": [
         [
           10,
@@ -5299,6 +5884,16 @@
           10,
           "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
         ]
       ],
       "wpmcp_rollback_post_refusal": [
@@ -5317,6 +5912,11 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
           2
         ],
         [
@@ -5563,7 +6163,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:773",
+          "closure@src/Plugin.php:788",
           1
         ]
       ],
@@ -6135,6 +6735,20 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_edd_write": [
         [
           -9223372036854775808,
@@ -6150,6 +6764,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6198,7 +6819,35 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6212,7 +6861,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6240,6 +6910,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -6261,7 +6938,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6324,6 +7015,13 @@
           1
         ]
       ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ultimate_member_write": [
         [
           -9223372036854775808,
@@ -6352,6 +7050,13 @@
           1
         ]
       ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
       "wpmcp_rollback_db_rows_restored": [
         [
           10,
@@ -6376,6 +7081,16 @@
           10,
           "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
           2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
         ]
       ],
       "wpmcp_rollback_post_refusal": [
@@ -6394,6 +7109,11 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
           2
         ],
         [

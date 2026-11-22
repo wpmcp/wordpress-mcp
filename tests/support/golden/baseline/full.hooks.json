@@ -219,6 +219,13 @@
           1
         ]
       ],
+      "admin_post_wpmcp_static_download": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
       "before_delete_post": [
         [
           10,
@@ -404,7 +411,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1060",
+          "closure@src/Plugin.php:1081",
           1
         ]
       ],
@@ -554,7 +561,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:917",
+          "closure@src/Plugin.php:938",
           1
         ]
       ],
@@ -1007,6 +1014,13 @@
           1
         ]
       ],
+      "wpmcp_backup_job_view": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::view",
+          1
+        ]
+      ],
       "wpmcp_bearer_token_accepted": [
         [
           10,
@@ -1131,6 +1145,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_crm_send": [
         [
           -9223372036854775808,
@@ -1139,6 +1160,13 @@
         ]
       ],
       "wpmcp_enable_data_tables_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1159,6 +1187,13 @@
           1
         ]
       ],
+      "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_events_manager_write": [
         [
           -9223372036854775808,
@@ -1167,6 +1202,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1188,6 +1230,20 @@
         ]
       ],
       "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_funnelkit_automations_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_gamipress_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1222,6 +1278,13 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
         [
           -9223372036854775808,
@@ -1229,7 +1292,28 @@
           1
         ]
       ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetpack_crm_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1257,7 +1341,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1313,6 +1418,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -1334,7 +1446,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1411,6 +1537,62 @@
           1
         ]
       ],
+      "wpmcp_enable_thrive_apprentice_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_automator_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_leads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_optimize_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ovation_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ultimatum_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_toc_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_translation_settings_write": [
         [
           -9223372036854775808,
@@ -1439,6 +1621,13 @@
           1
         ]
       ],
+      "wpmcp_enable_wpfunnels_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ws_form_write": [
         [
           -9223372036854775808,
@@ -1450,6 +1639,13 @@
         [
           10,
           "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
           1
         ]
       ],
@@ -1502,6 +1698,16 @@
         ],
         [
           10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
           2
         ]
@@ -1537,6 +1743,16 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Thrive_Automator_Pack::after_post_restored",
           2
         ],
         [
@@ -1602,7 +1818,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:713",
+          "closure@src/Plugin.php:725",
           1
         ]
       ],
@@ -1610,6 +1826,13 @@
         [
           10,
           "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_static_export": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Run_Static_Export->handle",
           1
         ]
       ],
@@ -1638,6 +1861,13 @@
         [
           10,
           "WPMCP\\Tools\\Media\\Optimize_Uploads::optimize_added",
+          3
+        ]
+      ],
+      "wpmcp_trigger_backup_kind": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::trigger",
           3
         ]
       ],
@@ -1911,6 +2141,13 @@
           1
         ]
       ],
+      "admin_post_wpmcp_static_download": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
       "before_delete_post": [
         [
           10,
@@ -2106,7 +2343,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1060",
+          "closure@src/Plugin.php:1081",
           1
         ],
         [
@@ -2271,7 +2508,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:917",
+          "closure@src/Plugin.php:938",
           1
         ]
       ],
@@ -2724,6 +2961,13 @@
           1
         ]
       ],
+      "wpmcp_backup_job_view": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::view",
+          1
+        ]
+      ],
       "wpmcp_bearer_token_accepted": [
         [
           10,
@@ -2848,6 +3092,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_crm_send": [
         [
           -9223372036854775808,
@@ -2856,6 +3107,13 @@
         ]
       ],
       "wpmcp_enable_data_tables_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -2876,6 +3134,13 @@
           1
         ]
       ],
+      "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_events_manager_write": [
         [
           -9223372036854775808,
@@ -2884,6 +3149,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -2905,6 +3177,20 @@
         ]
       ],
       "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_funnelkit_automations_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_gamipress_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -2939,6 +3225,13 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
         [
           -9223372036854775808,
@@ -2946,7 +3239,28 @@
           1
         ]
       ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetpack_crm_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -2974,7 +3288,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3030,6 +3365,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -3051,7 +3393,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3128,6 +3484,62 @@
           1
         ]
       ],
+      "wpmcp_enable_thrive_apprentice_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_automator_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_leads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_optimize_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ovation_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ultimatum_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_toc_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_translation_settings_write": [
         [
           -9223372036854775808,
@@ -3156,6 +3568,13 @@
           1
         ]
       ],
+      "wpmcp_enable_wpfunnels_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ws_form_write": [
         [
           -9223372036854775808,
@@ -3167,6 +3586,13 @@
         [
           10,
           "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
           1
         ]
       ],
@@ -3219,6 +3645,16 @@
         ],
         [
           10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
           2
         ]
@@ -3254,6 +3690,16 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Thrive_Automator_Pack::after_post_restored",
           2
         ],
         [
@@ -3319,7 +3765,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:713",
+          "closure@src/Plugin.php:725",
           1
         ]
       ],
@@ -3327,6 +3773,13 @@
         [
           10,
           "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_static_export": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Run_Static_Export->handle",
           1
         ]
       ],
@@ -3355,6 +3808,13 @@
         [
           10,
           "WPMCP\\Tools\\Media\\Optimize_Uploads::optimize_added",
+          3
+        ]
+      ],
+      "wpmcp_trigger_backup_kind": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::trigger",
           3
         ]
       ],
@@ -3623,6 +4083,13 @@
           1
         ]
       ],
+      "admin_post_wpmcp_static_download": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
       "before_delete_post": [
         [
           10,
@@ -3825,7 +4292,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1060",
+          "closure@src/Plugin.php:1081",
           1
         ]
       ],
@@ -3980,7 +4447,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:917",
+          "closure@src/Plugin.php:938",
           1
         ]
       ],
@@ -4433,6 +4900,13 @@
           1
         ]
       ],
+      "wpmcp_backup_job_view": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::view",
+          1
+        ]
+      ],
       "wpmcp_bearer_token_accepted": [
         [
           10,
@@ -4557,6 +5031,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_crm_send": [
         [
           -9223372036854775808,
@@ -4565,6 +5046,13 @@
         ]
       ],
       "wpmcp_enable_data_tables_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4585,6 +5073,13 @@
           1
         ]
       ],
+      "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_events_manager_write": [
         [
           -9223372036854775808,
@@ -4593,6 +5088,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4614,6 +5116,20 @@
         ]
       ],
       "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_funnelkit_automations_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_gamipress_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4648,6 +5164,13 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
         [
           -9223372036854775808,
@@ -4655,7 +5178,28 @@
           1
         ]
       ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetpack_crm_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4683,7 +5227,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4739,6 +5304,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -4760,7 +5332,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4837,6 +5423,62 @@
           1
         ]
       ],
+      "wpmcp_enable_thrive_apprentice_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_automator_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_leads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_optimize_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ovation_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ultimatum_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_toc_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_translation_settings_write": [
         [
           -9223372036854775808,
@@ -4865,6 +5507,13 @@
           1
         ]
       ],
+      "wpmcp_enable_wpfunnels_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ws_form_write": [
         [
           -9223372036854775808,
@@ -4876,6 +5525,13 @@
         [
           10,
           "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
           1
         ]
       ],
@@ -4928,6 +5584,16 @@
         ],
         [
           10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
           2
         ]
@@ -4963,6 +5629,16 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Thrive_Automator_Pack::after_post_restored",
           2
         ],
         [
@@ -5028,7 +5704,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:713",
+          "closure@src/Plugin.php:725",
           1
         ]
       ],
@@ -5036,6 +5712,13 @@
         [
           10,
           "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_static_export": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Run_Static_Export->handle",
           1
         ]
       ],
@@ -5064,6 +5747,13 @@
         [
           10,
           "WPMCP\\Tools\\Media\\Optimize_Uploads::optimize_added",
+          3
+        ]
+      ],
+      "wpmcp_trigger_backup_kind": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::trigger",
           3
         ]
       ],
@@ -5318,6 +6008,13 @@
           1
         ]
       ],
+      "admin_post_wpmcp_static_download": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
       "before_delete_post": [
         [
           10,
@@ -5510,7 +6207,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1060",
+          "closure@src/Plugin.php:1081",
           1
         ]
       ],
@@ -5660,7 +6357,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:917",
+          "closure@src/Plugin.php:938",
           1
         ]
       ],
@@ -6113,6 +6810,13 @@
           1
         ]
       ],
+      "wpmcp_backup_job_view": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::view",
+          1
+        ]
+      ],
       "wpmcp_bearer_token_accepted": [
         [
           10,
@@ -6237,6 +6941,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_crm_send": [
         [
           -9223372036854775808,
@@ -6245,6 +6956,13 @@
         ]
       ],
       "wpmcp_enable_data_tables_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6265,6 +6983,13 @@
           1
         ]
       ],
+      "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_events_manager_write": [
         [
           -9223372036854775808,
@@ -6273,6 +6998,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6294,6 +7026,20 @@
         ]
       ],
       "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_funnelkit_automations_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_gamipress_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6328,6 +7074,13 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
         [
           -9223372036854775808,
@@ -6335,7 +7088,28 @@
           1
         ]
       ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetpack_crm_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6363,7 +7137,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6419,6 +7214,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -6440,7 +7242,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6517,6 +7333,62 @@
           1
         ]
       ],
+      "wpmcp_enable_thrive_apprentice_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_automator_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_leads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_optimize_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ovation_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ultimatum_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_toc_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_translation_settings_write": [
         [
           -9223372036854775808,
@@ -6545,6 +7417,13 @@
           1
         ]
       ],
+      "wpmcp_enable_wpfunnels_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ws_form_write": [
         [
           -9223372036854775808,
@@ -6556,6 +7435,13 @@
         [
           10,
           "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
           1
         ]
       ],
@@ -6608,6 +7494,16 @@
         ],
         [
           10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
           2
         ]
@@ -6643,6 +7539,16 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Thrive_Automator_Pack::after_post_restored",
           2
         ],
         [
@@ -6708,7 +7614,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:713",
+          "closure@src/Plugin.php:725",
           1
         ]
       ],
@@ -6716,6 +7622,13 @@
         [
           10,
           "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_static_export": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Run_Static_Export->handle",
           1
         ]
       ],
@@ -6744,6 +7657,13 @@
         [
           10,
           "WPMCP\\Tools\\Media\\Optimize_Uploads::optimize_added",
+          3
+        ]
+      ],
+      "wpmcp_trigger_backup_kind": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::trigger",
           3
         ]
       ],
@@ -6998,6 +7918,13 @@
           1
         ]
       ],
+      "admin_post_wpmcp_static_download": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
       "before_delete_post": [
         [
           10,
@@ -7190,7 +8117,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1060",
+          "closure@src/Plugin.php:1081",
           1
         ]
       ],
@@ -7340,7 +8267,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:917",
+          "closure@src/Plugin.php:938",
           1
         ]
       ],
@@ -7793,6 +8720,13 @@
           1
         ]
       ],
+      "wpmcp_backup_job_view": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::view",
+          1
+        ]
+      ],
       "wpmcp_bearer_token_accepted": [
         [
           10,
@@ -7917,6 +8851,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_crm_send": [
         [
           -9223372036854775808,
@@ -7925,6 +8866,13 @@
         ]
       ],
       "wpmcp_enable_data_tables_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -7945,6 +8893,13 @@
           1
         ]
       ],
+      "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_events_manager_write": [
         [
           -9223372036854775808,
@@ -7953,6 +8908,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -7974,6 +8936,20 @@
         ]
       ],
       "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_funnelkit_automations_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_gamipress_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -8008,6 +8984,13 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
         [
           -9223372036854775808,
@@ -8015,7 +8998,28 @@
           1
         ]
       ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetpack_crm_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -8043,7 +9047,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -8099,6 +9124,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -8120,7 +9152,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -8197,6 +9243,62 @@
           1
         ]
       ],
+      "wpmcp_enable_thrive_apprentice_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_automator_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_leads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_optimize_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ovation_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ultimatum_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_toc_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_translation_settings_write": [
         [
           -9223372036854775808,
@@ -8225,6 +9327,13 @@
           1
         ]
       ],
+      "wpmcp_enable_wpfunnels_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ws_form_write": [
         [
           -9223372036854775808,
@@ -8236,6 +9345,13 @@
         [
           10,
           "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
           1
         ]
       ],
@@ -8288,6 +9404,16 @@
         ],
         [
           10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
           2
         ]
@@ -8323,6 +9449,16 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Thrive_Automator_Pack::after_post_restored",
           2
         ],
         [
@@ -8388,7 +9524,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:713",
+          "closure@src/Plugin.php:725",
           1
         ]
       ],
@@ -8396,6 +9532,13 @@
         [
           10,
           "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_static_export": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Run_Static_Export->handle",
           1
         ]
       ],
@@ -8424,6 +9567,13 @@
         [
           10,
           "WPMCP\\Tools\\Media\\Optimize_Uploads::optimize_added",
+          3
+        ]
+      ],
+      "wpmcp_trigger_backup_kind": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::trigger",
           3
         ]
       ],
@@ -8678,6 +9828,13 @@
           1
         ]
       ],
+      "admin_post_wpmcp_static_download": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
       "before_delete_post": [
         [
           10,
@@ -8870,7 +10027,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1060",
+          "closure@src/Plugin.php:1081",
           1
         ]
       ],
@@ -9020,7 +10177,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:917",
+          "closure@src/Plugin.php:938",
           1
         ]
       ],
@@ -9473,6 +10630,13 @@
           1
         ]
       ],
+      "wpmcp_backup_job_view": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::view",
+          1
+        ]
+      ],
       "wpmcp_bearer_token_accepted": [
         [
           10,
@@ -9597,6 +10761,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cpt_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_crm_send": [
         [
           -9223372036854775808,
@@ -9605,6 +10776,13 @@
         ]
       ],
       "wpmcp_enable_data_tables_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9625,6 +10803,13 @@
           1
         ]
       ],
+      "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_events_manager_write": [
         [
           -9223372036854775808,
@@ -9633,6 +10818,13 @@
         ]
       ],
       "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_filebird_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9654,6 +10846,20 @@
         ]
       ],
       "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_funnelkit_automations_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_gamipress_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9688,6 +10894,13 @@
           1
         ]
       ],
+      "wpmcp_enable_instagram_feed_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetengine_write": [
         [
           -9223372036854775808,
@@ -9695,7 +10908,28 @@
           1
         ]
       ],
+      "wpmcp_enable_jetformbuilder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_jetpack_crm_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetpack_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_kadence_forms_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9723,7 +10957,28 @@
           1
         ]
       ],
+      "wpmcp_enable_login_url_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_maps_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_megamenu_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9779,6 +11034,13 @@
           1
         ]
       ],
+      "wpmcp_enable_popup_builder_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_popup_maker_write": [
         [
           -9223372036854775808,
@@ -9800,7 +11062,21 @@
           1
         ]
       ],
+      "wpmcp_enable_redux_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_replace_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9877,6 +11153,62 @@
           1
         ]
       ],
+      "wpmcp_enable_thrive_apprentice_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_automator_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_leads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_optimize_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ovation_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thrive_ultimatum_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_toc_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tracking_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_translation_settings_write": [
         [
           -9223372036854775808,
@@ -9905,6 +11237,13 @@
           1
         ]
       ],
+      "wpmcp_enable_wpfunnels_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_ws_form_write": [
         [
           -9223372036854775808,
@@ -9916,6 +11255,13 @@
         [
           10,
           "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_redirect_providers": [
+        [
+          10,
+          "WPMCP\\Integrations\\Redirect_Providers::register",
           1
         ]
       ],
@@ -9968,6 +11314,16 @@
         ],
         [
           10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Redux_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
           2
         ]
@@ -10003,6 +11359,16 @@
         [
           10,
           "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Max_Mega_Menu_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Thrive_Automator_Pack::after_post_restored",
           2
         ],
         [
@@ -10068,7 +11434,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:713",
+          "closure@src/Plugin.php:725",
           1
         ]
       ],
@@ -10076,6 +11442,13 @@
         [
           10,
           "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_static_export": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Run_Static_Export->handle",
           1
         ]
       ],
@@ -10104,6 +11477,13 @@
         [
           10,
           "WPMCP\\Tools\\Media\\Optimize_Uploads::optimize_added",
+          3
+        ]
+      ],
+      "wpmcp_trigger_backup_kind": [
+        [
+          10,
+          "WPMCP\\Tools\\Export\\Static_Site\\Static_Export::trigger",
           3
         ]
       ],

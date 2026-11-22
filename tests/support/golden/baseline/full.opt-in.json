@@ -8,6 +8,14 @@
       "owner": "src/Integrations/MemberPress_Pack.php",
       "destructive": false
     },
+    "wpmcp_enable_gamipress_write": {
+      "owner": "src/Integrations/Gamipress_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_thrive_optimize_write": {
+      "owner": "src/Integrations/Thrive_Optimize_Pack.php",
+      "destructive": true
+    },
     "wpmcp_enable_forms_write": {
       "owner": "src/Integrations/Forms_Integration.php",
       "destructive": false
@@ -72,6 +80,14 @@
       "owner": "src/Integrations/Site_Gate_Pack.php",
       "destructive": true
     },
+    "wpmcp_enable_redux_write": {
+      "owner": "src/Integrations/Redux_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_login_url_write": {
+      "owner": "src/Integrations/Login_Url_Pack.php",
+      "destructive": true
+    },
     "wpmcp_enable_consent_write": {
       "owner": "src/Integrations/Consent_Pack.php",
       "destructive": true
@@ -84,6 +100,10 @@
       "owner": "src/Integrations/CRM_Adapter.php",
       "destructive": true
     },
+    "wpmcp_enable_funnelkit_automations_write": {
+      "owner": "src/Integrations/CRM_FunnelKit.php",
+      "destructive": false
+    },
     "wpmcp_enable_helpdesk_write": {
       "owner": "src/Integrations/Helpdesk_Adapter.php",
       "destructive": true
@@ -94,6 +114,10 @@
     },
     "wpmcp_enable_learndash_learner_write": {
       "owner": "src/Integrations/LMS_LearnDash.php",
+      "destructive": false
+    },
+    "wpmcp_enable_thrive_apprentice_write": {
+      "owner": "src/Integrations/LMS_Thrive_Apprentice.php",
       "destructive": false
     },
     "wpmcp_enable_smtp_write": {
@@ -108,12 +132,20 @@
       "owner": "src/Integrations/Pretty_Links_Pack.php",
       "destructive": false
     },
+    "wpmcp_enable_instagram_feed_write": {
+      "owner": "src/Integrations/Instagram_Feed_Pack.php",
+      "destructive": false
+    },
     "wpmcp_enable_thirstyaffiliates_write": {
       "owner": "src/Integrations/Thirsty_Affiliates_Pack.php",
       "destructive": false
     },
     "wpmcp_enable_site_reviews_write": {
       "owner": "src/Integrations/Site_Reviews_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_thrive_ovation_write": {
+      "owner": "src/Integrations/Thrive_Ovation_Pack.php",
       "destructive": false
     },
     "wpmcp_enable_publishpress_write": {
@@ -152,6 +184,10 @@
       "owner": "src/Integrations/Translation_Settings_Pack.php",
       "destructive": false
     },
+    "wpmcp_enable_toc_write": {
+      "owner": "src/Integrations/Easy_TOC_Pack.php",
+      "destructive": false
+    },
     "wpmcp_enable_surecart_write": {
       "owner": "src/Integrations/SureCart_Pack.php",
       "destructive": false
@@ -166,6 +202,34 @@
     },
     "wpmcp_enable_advanced_ads_write": {
       "owner": "src/Integrations/Advanced_Ads_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_maps_write": {
+      "owner": "src/Integrations/Maps_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_megamenu_write": {
+      "owner": "src/Integrations/Max_Mega_Menu_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_discount_rules_write": {
+      "owner": "src/Integrations/Discount_Rules_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_popup_builder_write": {
+      "owner": "src/Integrations/Popup_Builder_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_wpfunnels_write": {
+      "owner": "src/Integrations/WPFunnels_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_thrive_automator_write": {
+      "owner": "src/Integrations/Thrive_Automator_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_thrive_leads_write": {
+      "owner": "src/Integrations/Thrive_Leads_Pack.php",
       "destructive": false
     },
     "wpmcp_enable_listings_write": {
@@ -208,6 +272,22 @@
       "owner": "src/Integrations/FooGallery_Pack.php",
       "destructive": false
     },
+    "wpmcp_enable_filebird_write": {
+      "owner": "src/Integrations/FileBird_Pack.php",
+      "destructive": true
+    },
+    "wpmcp_enable_jetformbuilder_write": {
+      "owner": "src/Integrations/JetFormBuilder_Operations.php",
+      "destructive": true
+    },
+    "wpmcp_enable_kadence_forms_write": {
+      "owner": "src/Integrations/Kadence_Forms_Operations.php",
+      "destructive": false
+    },
+    "wpmcp_enable_jetpack_forms_write": {
+      "owner": "src/Integrations/Jetpack_Forms_Operations.php",
+      "destructive": true
+    },
     "wpmcp_enable_newsletter_write": {
       "owner": "src/Integrations/Mailing_List_Newsletter.php",
       "destructive": false
@@ -228,6 +308,26 @@
       "owner": "src/Integrations/Search_Plugin_Support.php",
       "destructive": false
     },
+    "wpmcp_enable_email_marketing_write": {
+      "owner": "src/Integrations/Email_Marketing_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_tracking_write": {
+      "owner": "src/Integrations/Tracking_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_search_replace_write": {
+      "owner": "src/Integrations/Search_Replace_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_thrive_ultimatum_write": {
+      "owner": "src/Integrations/Thrive_Ultimatum_Pack.php",
+      "destructive": false
+    },
+    "wpmcp_enable_cpt_builder_write": {
+      "owner": "src/Integrations/Cpt_Builder_Pack.php",
+      "destructive": false
+    },
     "wpmcp_enable_hardening_write": {
       "owner": "src/Integrations/Hardening_Pack.php",
       "destructive": false
@@ -244,6 +344,8 @@
   "labels": {
     "wpmcp_woo_op_enabled": "WooCommerce: destructive operations (delete, cancel, refund)",
     "wpmcp_enable_memberpress_write": "MemberPress: writes",
+    "wpmcp_enable_gamipress_write": "GamiPress: points, achievement and rank writes",
+    "wpmcp_enable_thrive_optimize_write": "Thrive Optimize: traffic splits, stopping tests and picking winners",
     "wpmcp_enable_forms_write": "Form plugins: writes",
     "wpmcp_enable_ws_form_write": "WS Form: writes",
     "wpmcp_enable_everest_forms_write": "Everest Forms: writes",
@@ -259,17 +361,23 @@
     "wpmcp_enable_font_library_write": "Font Library: install and delete fonts",
     "wpmcp_enable_cache_settings_write": "Cache plugin settings: writes",
     "wpmcp_enable_site_gate_write": "Maintenance and coming soon mode",
+    "wpmcp_enable_redux_write": "Redux Framework: options panel writes",
+    "wpmcp_enable_login_url_write": "WPS Hide Login: change the login URL",
     "wpmcp_enable_consent_write": "Cookie consent banners: banner text writes and a Complianz scan restart",
     "wpmcp_enable_action_scheduler_write": "Action Scheduler: run and cancel actions",
     "wpmcp_enable_crm_send": "CRM: send email",
+    "wpmcp_enable_funnelkit_automations_write": "FunnelKit Automations: contact tags and lists, automation status",
     "wpmcp_enable_helpdesk_write": "Helpdesk: ticket writes",
     "wpmcp_enable_booking_write": "Bookly, Simply Schedule Appointments, BookingPress and LatePoint: cancel bookings",
     "wpmcp_enable_learndash_learner_write": "LearnDash: learner enrolment and progress",
+    "wpmcp_enable_thrive_apprentice_write": "Thrive Apprentice: course and lesson writes",
     "wpmcp_enable_smtp_write": "SMTP plugins: send a test email",
     "wpmcp_enable_backup_plugin_run": "Backup plugins (UpdraftPlus, BackWPup): start a backup",
     "wpmcp_enable_pretty_links_write": "Pretty Links: writes",
+    "wpmcp_enable_instagram_feed_write": "Instagram Feed: feed settings and cache clears",
     "wpmcp_enable_thirstyaffiliates_write": "ThirstyAffiliates: writes",
     "wpmcp_enable_site_reviews_write": "Site Reviews: writes",
+    "wpmcp_enable_thrive_ovation_write": "Thrive Ovation: testimonial writes",
     "wpmcp_enable_publishpress_write": "PublishPress Planner and Future: status changes and scheduled changes",
     "wpmcp_enable_wpforo_write": "wpForo: close, open and move topics",
     "wpmcp_enable_asgaros_write": "Asgaros Forum: post, moderate, move and delete",
@@ -280,10 +388,18 @@
     "wpmcp_enable_ultimate_member_write": "Ultimate Member: member role changes",
     "wpmcp_enable_edd_write": "Easy Digital Downloads: download and discount writes",
     "wpmcp_enable_translation_settings_write": "GTranslate: language settings writes",
+    "wpmcp_enable_toc_write": "Easy Table of Contents: settings and per-post flags",
     "wpmcp_enable_surecart_write": "SureCart: product edits and coupon creates",
     "wpmcp_enable_string_translation_write": "Polylang: theme and plugin string translations",
     "wpmcp_enable_cartflows_write": "CartFlows: flow, step and checkout product writes",
     "wpmcp_enable_advanced_ads_write": "Advanced Ads: writes",
+    "wpmcp_enable_maps_write": "WP Go Maps and WP Store Locator: marker and store writes",
+    "wpmcp_enable_megamenu_write": "Max Mega Menu: writes",
+    "wpmcp_enable_discount_rules_write": "Discount Rules for WooCommerce: pricing rule writes",
+    "wpmcp_enable_popup_builder_write": "Popup Builder: writes",
+    "wpmcp_enable_wpfunnels_write": "WPFunnels: funnel and checkout product writes",
+    "wpmcp_enable_thrive_automator_write": "Thrive Automator: turn automations on and off",
+    "wpmcp_enable_thrive_leads_write": "Thrive Leads: form and display rule writes",
     "wpmcp_enable_listings_write": "WP Job Manager, GeoDirectory and Directorist: listing writes",
     "wpmcp_enable_jetpack_crm_write": "Jetpack CRM: contact writes",
     "wpmcp_enable_popup_maker_write": "Popup Maker: writes",
@@ -294,11 +410,20 @@
     "wpmcp_enable_image_optimizer_write": "Image optimization plugins: optimize an image",
     "wpmcp_enable_data_tables_write": "wpDataTables and Ninja Tables: cell and row writes",
     "wpmcp_enable_foogallery_write": "FooGallery: writes",
+    "wpmcp_enable_filebird_write": "FileBird: folder writes",
+    "wpmcp_enable_jetformbuilder_write": "JetFormBuilder: entry read state and delete",
+    "wpmcp_enable_kadence_forms_write": "Kadence Blocks forms: email notification changes",
+    "wpmcp_enable_jetpack_forms_write": "Jetpack Forms: response status, read state and delete",
     "wpmcp_enable_newsletter_write": "Newsletter: contact writes",
     "wpmcp_enable_wpcode_write": "WPCode: snippet and global script writes",
     "wpmcp_enable_loco_write": "Loco Translate: .po string edits and .mo compiles",
     "wpmcp_enable_give_write": "GiveWP: donation form and donation status writes",
     "wpmcp_enable_search_write": "Search plugins (Relevanssi, FiboSearch): settings writes",
+    "wpmcp_enable_email_marketing_write": "Klaviyo and Kit: signup and form settings writes",
+    "wpmcp_enable_tracking_write": "Tracking plugins (GTM4WP, Microsoft Clarity): ID and event settings writes",
+    "wpmcp_enable_search_replace_write": "Search and replace (Better Search Replace, Search Regex): run a database search and replace",
+    "wpmcp_enable_thrive_ultimatum_write": "Thrive Ultimatum: campaign writes",
+    "wpmcp_enable_cpt_builder_write": "Custom Post Type UI and MB Custom Post Types: post type and taxonomy writes",
     "wpmcp_enable_hardening_write": "Security hardening settings: writes",
     "wpmcp_enable_checkout_field_editor_write": "Checkout Field Editor: checkout field writes",
     "wpmcp_enable_pmpro_write": "Paid Memberships Pro: level, member and discount code writes"
@@ -306,6 +431,8 @@
   "shipped": [
     "wpmcp_woo_op_enabled",
     "wpmcp_enable_memberpress_write",
+    "wpmcp_enable_gamipress_write",
+    "wpmcp_enable_thrive_optimize_write",
     "wpmcp_enable_forms_write",
     "wpmcp_enable_ws_form_write",
     "wpmcp_enable_everest_forms_write",
@@ -322,17 +449,23 @@
     "wpmcp_enable_font_library_write",
     "wpmcp_enable_cache_settings_write",
     "wpmcp_enable_site_gate_write",
+    "wpmcp_enable_redux_write",
+    "wpmcp_enable_login_url_write",
     "wpmcp_enable_consent_write",
     "wpmcp_enable_action_scheduler_write",
     "wpmcp_enable_crm_send",
+    "wpmcp_enable_funnelkit_automations_write",
     "wpmcp_enable_helpdesk_write",
     "wpmcp_enable_booking_write",
     "wpmcp_enable_learndash_learner_write",
+    "wpmcp_enable_thrive_apprentice_write",
     "wpmcp_enable_smtp_write",
     "wpmcp_enable_backup_plugin_run",
     "wpmcp_enable_pretty_links_write",
+    "wpmcp_enable_instagram_feed_write",
     "wpmcp_enable_thirstyaffiliates_write",
     "wpmcp_enable_site_reviews_write",
+    "wpmcp_enable_thrive_ovation_write",
     "wpmcp_enable_publishpress_write",
     "wpmcp_enable_wpforo_write",
     "wpmcp_enable_asgaros_write",
@@ -342,10 +475,18 @@
     "wpmcp_enable_ultimate_member_write",
     "wpmcp_enable_edd_write",
     "wpmcp_enable_translation_settings_write",
+    "wpmcp_enable_toc_write",
     "wpmcp_enable_surecart_write",
     "wpmcp_enable_string_translation_write",
     "wpmcp_enable_cartflows_write",
     "wpmcp_enable_advanced_ads_write",
+    "wpmcp_enable_maps_write",
+    "wpmcp_enable_megamenu_write",
+    "wpmcp_enable_discount_rules_write",
+    "wpmcp_enable_popup_builder_write",
+    "wpmcp_enable_wpfunnels_write",
+    "wpmcp_enable_thrive_automator_write",
+    "wpmcp_enable_thrive_leads_write",
     "wpmcp_enable_listings_write",
     "wpmcp_enable_jetpack_crm_write",
     "wpmcp_enable_popup_maker_write",
@@ -356,11 +497,20 @@
     "wpmcp_enable_image_optimizer_write",
     "wpmcp_enable_data_tables_write",
     "wpmcp_enable_foogallery_write",
+    "wpmcp_enable_filebird_write",
+    "wpmcp_enable_jetformbuilder_write",
+    "wpmcp_enable_kadence_forms_write",
+    "wpmcp_enable_jetpack_forms_write",
     "wpmcp_enable_newsletter_write",
     "wpmcp_enable_wpcode_write",
     "wpmcp_enable_loco_write",
     "wpmcp_enable_give_write",
     "wpmcp_enable_search_write",
+    "wpmcp_enable_email_marketing_write",
+    "wpmcp_enable_tracking_write",
+    "wpmcp_enable_search_replace_write",
+    "wpmcp_enable_thrive_ultimatum_write",
+    "wpmcp_enable_cpt_builder_write",
     "wpmcp_enable_hardening_write",
     "wpmcp_enable_checkout_field_editor_write",
     "wpmcp_enable_pmpro_write"
