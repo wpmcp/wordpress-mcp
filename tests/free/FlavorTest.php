@@ -282,7 +282,13 @@ class FlavorTest extends \WP_UnitTestCase
 
         try {
             $needed = [];
+            // Registrations the narrowing deletes (issue #1140) never reach
+            // the zip, so their pruned handlers are not a divergence.
+            $removed = array_keys((require $root . '/scripts/flavors/woocommerce/narrowed.php')['abilities']);
             foreach ($this->registered_names('woocommerce') as $name) {
+                if (in_array($name, $removed, true)) {
+                    continue;
+                }
                 $ability = $this->ability_by_name('woocommerce', $name);
                 // The strip removes every pro-tier registration along with
                 // its files, so only free-tier tools ship in this zip.
@@ -339,10 +345,10 @@ class FlavorTest extends \WP_UnitTestCase
     private function stripped_woo_src(): string
     {
         $root  = dirname(__DIR__, 2);
-        $stage = rtrim(sys_get_temp_dir(), '/') . '/wpmcp-woo-prune-' . uniqid('', true) . '/wpmcp-for-woocommerce';
+        $stage = rtrim(sys_get_temp_dir(), '/') . '/wpmcp-woo-prune-' . uniqid('', true) . '/safe-mcp-for-woocommerce';
         $this->assertTrue(mkdir($stage, 0777, true), 'could not create the staging directory');
         $this->copy_tree($root . '/src', $stage . '/src');
-        foreach (['wpmcp-for-woocommerce.php', 'readme.txt'] as $rendered) {
+        foreach (['safe-mcp-for-woocommerce.php', 'readme.txt'] as $rendered) {
             file_put_contents(
                 $stage . '/' . $rendered,
                 str_replace('{{VERSION}}', '0.0.0', (string) file_get_contents($root . '/scripts/flavors/woocommerce/' . $rendered))
@@ -451,5 +457,31 @@ class FlavorTest extends \WP_UnitTestCase
         }
 
         $this->fail('ability not registered: ' . $name);
+    }
+
+    /**
+     * Issue #1142: boot() runs on every request in every flavor, and the
+     * WooCommerce build ships no src/Integrations. A bare static call or
+     * `new` on an Integrations class in boot() fataled every request on
+     * that build, so each one must sit inside a class_exists() guard on the
+     * same class.
+     */
+    public function test_boot_names_no_integrations_class_without_a_class_exists_guard(): void
+    {
+        $src = (string) file_get_contents(dirname(__DIR__, 2) . '/src/Plugin.php');
+        $this->assertSame(1, preg_match('/public function boot\(\): void\s*\{(.*?)\n    \}\n/s', $src, $m), 'boot() not found in src/Plugin.php');
+        $body = $m[1];
+
+        preg_match_all('/(?:new\s+|(?<![\w\\\\]))\\\\?WPMCP\\\\Integrations\\\\(\w+)(?=::\w+\(|\s*\()/', $body, $uses, PREG_OFFSET_CAPTURE);
+        $unguarded = [];
+        foreach ($uses[1] as [$class, $offset]) {
+            $before = substr($body, max(0, $offset - 200), 200);
+            $guard  = 'class_exists(\\WPMCP\\Integrations\\' . $class . '::class)';
+            if (false === strpos($before, $guard)) {
+                $unguarded[] = $class;
+            }
+        }
+
+        $this->assertSame([], $unguarded, 'boot() calls Integrations classes the WooCommerce build does not ship, without a class_exists() guard.');
     }
 }
