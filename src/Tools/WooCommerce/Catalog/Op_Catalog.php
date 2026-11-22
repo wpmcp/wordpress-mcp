@@ -85,6 +85,9 @@ if (! defined('ABSPATH')) {
  *  - ['type' => 'wc_gateway', 'param' => P]: the one option a gateway write
  *    changes (its settings option, or the gateway order option for an
  *    order change), restorable only with manage_woocommerce;
+ *  - ['type' => 'option', 'option' => NAME]: one plugin's whole settings
+ *    option (FunnelKit Cart's fkcart_settings, issue #832), restorable
+ *    only with manage_woocommerce;
  *  - ['type' => 'term', 'param' => P] or ['type' => 'term', 'create' => true]:
  *    one term of the row's taxonomy, keyed by (taxonomy, slug) with its meta
  *    and object assignments, so an update, a delete or a create (whose slug
@@ -93,11 +96,16 @@ if (! defined('ABSPATH')) {
  * no prior state to capture, the same exemption create-post and
  * create-product carry, and the response names the op that undoes it.
  *
+ *  - ['type' => 'wc_tax_rate', 'param' => P]: one tax rate row with its
+ *    postcode and city rows, restored at its own id even after a delete;
+ *    ['type' => 'wc_tax_rate_create', 'create' => true]: Tax_Ops records
+ *    the creation row once the rate exists, and rollback deletes it while
+ *    it is unchanged (Safety\Wc_Tax_Rate_Creation_Snapshot, issue #657).
+ *
  * Deliberately NOT in the catalog yet (each needs a snapshot type that does
  * not exist today, and a write with no honest undo does not belong on this
- * surface): order deletes, customer deletion (the user snapshot cannot
- * resurrect a deleted user), and tax rate writes through this catalog (the
- * dedicated tax rate tools carry their own snapshot type).
+ * surface): order deletes and customer deletion (the user snapshot cannot
+ * resurrect a deleted user).
  *
  * The wc/v3 /batch endpoints are deliberately not rows either: woo-write
  * implements batching itself, one guarded and snapshotted op per item, so a
@@ -130,6 +138,9 @@ class Op_Catalog
     /** The plugin the memberships.* rows need (PR #573), an Op_Guard::PLUGINS key. */
     private const PLUGIN_MEMBERSHIPS = 'woocommerce-memberships';
 
+    /** The plugin the cart.* rows need (issue #832), an Op_Guard::PLUGINS key. */
+    private const PLUGIN_FKCART = 'cart-for-woocommerce';
+
     /** The gateway plugins gateways.health reads (issue #661), an Op_Guard::PLUGINS key. */
     private const PLUGIN_GATEWAYS = 'payment-gateway-plugins';
 
@@ -149,9 +160,12 @@ class Op_Catalog
      * 'taxonomy' (the op is unavailable unless it is registered, and a term
      * snapshot targets it), 'plugin' (an Op_Guard::PLUGINS key: the op is
      * left out of woo-ops and refused unless that plugin is active) and
+     * 'opt_in' (a write that stays off until the site enables it through
+     * the wpmcp_woo_op_enabled filter, like a destructive op) and
      * 'handler' (the op runs in-process, through Brand_Ops or, for an
      * order_*, shipping_*, webhook_*, review_*, report_*, gateway_*,
-     * status_*, subscription_*, booking_* or membership_* handler, the matching *_Ops class,
+     * status_*, subscription_*, booking_*, membership_* or tax_* handler, the matching *_Ops class
+     * (fkcart_* runs through Cart_Ops),
      * instead of dispatching its route; status_run_tool only validates, and
      * its route is dispatched).
      * Keep op names domain.kebab-case and route templates rooted at /wc/v3.
@@ -222,6 +236,12 @@ class Op_Catalog
         // may edit customers (a shop manager, say) promote one to
         // administrator.
         'customers.create'    => [ 'POST', '/wc/v3/customers', 'customers', self::CAP_ADD_CUSTOMERS, 'Create a customer account (email required; billing and shipping optional)', 'write', null, [ 'undo_op' => null, 'forbidden_meta' => self::PRIVILEGE_META ] ],
+        // A customer's downloads (issue #657). download_url carries the
+        // order key and the billing email, order_key is a capability token
+        // for the order and file names the protected file's real location,
+        // so all three are redacted: the product, file name, order id,
+        // remaining downloads and expiry stay readable.
+        'customers.downloads' => [ 'GET', '/wc/v3/customers/{customer_id}/downloads', 'customers', self::CAP_CUSTOMERS, 'Downloadable files one customer may download: product, file name, order id, downloads remaining, access expiry (links and order key redacted)', 'read', null, [ 'redact' => [ 'download_url', 'order_key', 'file' ] ] ],
         'customers.update'    => [ 'PUT', '/wc/v3/customers/{id}', 'customers', self::CAP_EDIT_CUSTOMERS, 'Update a customer\'s name, email, billing and shipping profile. Password changes are refused: they could not be rolled back', 'write', [ 'type' => 'user', 'param' => 'id' ], [ 'forbidden_params' => [ 'password' ], 'forbidden_meta' => self::PRIVILEGE_META ] ],
 
         // Brands (issue #293): WooCommerce's product_brand taxonomy. Brand
@@ -278,6 +298,18 @@ class Op_Catalog
         'reports.orders'      => [ 'GET', '/wc/v3/reports/orders/totals', 'reports', self::CAP_STORE, 'Order counts by status for a period', 'read', null, [ 'handler' => 'report_orders' ] ],
         'reports.customers'   => [ 'GET', '/wc/v3/reports/customers/totals', 'reports', self::CAP_STORE, 'Customer counts for a period: buying, registered, guest, repeat, new accounts', 'read', null, [ 'handler' => 'report_customers' ] ],
         'reports.coupons'     => [ 'GET', '/wc/v3/reports/coupons/totals', 'reports', self::CAP_STORE, 'Coupon use for a period: codes used, orders with coupons, discount per code', 'read', null, [ 'handler' => 'report_coupons' ] ],
+        // Catalog totals (issue #657), straight from the wc/v3 totals
+        // endpoints: counts only, no period.
+        'reports.products'    => [ 'GET', '/wc/v3/reports/products/totals', 'reports', self::CAP_STORE, 'Product counts by product type' ],
+        'reports.reviews'     => [ 'GET', '/wc/v3/reports/reviews/totals', 'reports', self::CAP_STORE, 'Product review counts by star rating' ],
+
+        // Store reference data (issue #657): countries with their states,
+        // continents, currencies and the store's own currency. Read only.
+        'data.countries'        => [ 'GET', '/wc/v3/data/countries', 'data', self::CAP_STORE, 'Every country WooCommerce knows, with its states' ],
+        'data.country'          => [ 'GET', '/wc/v3/data/countries/{location}', 'data', self::CAP_STORE, 'One country (location: a two-letter code) with its states' ],
+        'data.continents'       => [ 'GET', '/wc/v3/data/continents', 'data', self::CAP_STORE, 'Continents with their countries and states' ],
+        'data.currencies'       => [ 'GET', '/wc/v3/data/currencies', 'data', self::CAP_STORE, 'Every currency WooCommerce knows: code, name, symbol' ],
+        'data.currency-current' => [ 'GET', '/wc/v3/data/currencies/current', 'data', self::CAP_STORE, 'The store currency: code, name, symbol' ],
 
         // Payment gateways (issue #292), in-process through WooCommerce's
         // gateway registry (Gateway_Ops). Secret-like fields are masked in
@@ -303,6 +335,14 @@ class Op_Catalog
         // Taxes.
         'taxes.rates'         => [ 'GET', '/wc/v3/taxes', 'taxes', self::CAP_STORE, 'Tax rates, filterable by class' ],
         'taxes.classes'       => [ 'GET', '/wc/v3/taxes/classes', 'taxes', self::CAP_STORE, 'Defined tax classes' ],
+        // One rate, and rate writes (issue #657), so taxes batch through
+        // woo-write like every other domain. Each write to an existing rate
+        // snapshots its row, postcodes and cities; a create records a
+        // creation row whose rollback deletes the rate while it is unchanged.
+        'taxes.rate'          => [ 'GET', '/wc/v3/taxes/{id}', 'taxes', self::CAP_STORE, 'One tax rate with its postcodes and cities' ],
+        'taxes.create'        => [ 'POST', '/wc/v3/taxes', 'taxes', self::CAP_STORE, 'Create a tax rate: country, state, postcodes, cities, rate, name, priority, compound, shipping, order, class. Rollback deletes it', 'write', [ 'type' => 'wc_tax_rate_create', 'create' => true ], [ 'handler' => 'tax_create' ] ],
+        'taxes.update'        => [ 'PUT', '/wc/v3/taxes/{id}', 'taxes', self::CAP_STORE, 'Change any field of a tax rate; postcodes and cities replace the current lists', 'write', [ 'type' => 'wc_tax_rate', 'param' => 'id' ] ],
+        'taxes.delete'        => [ 'DELETE', '/wc/v3/taxes/{id}', 'taxes', self::CAP_STORE, 'Delete a tax rate; rollback restores it at its own id', 'destructive', [ 'type' => 'wc_tax_rate', 'param' => 'id' ], [ 'defaults' => [ 'force' => true ] ] ],
 
         // Webhooks. The signing secret is redacted from the body: it
         // authenticates deliveries to a third party and has no use in a
@@ -371,6 +411,16 @@ class Op_Catalog
         'memberships.extend'                => [ 'PUT', '/wc/v3/memberships/members/{id}', 'memberships', self::CAP_STORE, 'Move a membership\'s end_date later ("YYYY-MM-DD" or "YYYY-MM-DD HH:MM:SS" UTC, null for no end); expiry and reminders are rescheduled', 'write', [ 'type' => 'wc_user_membership', 'param' => 'id' ], [ 'handler' => 'membership_extend', 'plugin' => self::PLUGIN_MEMBERSHIPS ] ],
         'memberships.cancel'                => [ 'PUT', '/wc/v3/memberships/members/{id}', 'memberships', self::CAP_STORE, 'Cancel a membership through Memberships: access ends now, the member may be emailed and a tied subscription may react, so it is not recoverable (rollback restores the membership)', 'destructive', [ 'type' => 'wc_user_membership', 'param' => 'id' ], [ 'handler' => 'membership_cancel', 'plugin' => self::PLUGIN_MEMBERSHIPS, 'recoverable' => false ] ],
 
+        // FunnelKit Cart for WooCommerce (issue #832): the sliding cart's
+        // settings (one option, read over the plugin's defaults) and the
+        // product upsells and cross-sells its drawer shows. Writes stay off
+        // until the site opts in, because they change the storefront.
+        'cart.settings'                     => [ 'GET', '/wc/v3/fkcart/settings', 'cart', self::CAP_STORE, 'FunnelKit Cart settings over its defaults, grouped: drawer, coupon, upsells, rewards (free shipping bar and reward rows), special_addon, menu, style; enabled, pro_active and the keys the site customized', 'read', null, [ 'handler' => 'fkcart_settings', 'plugin' => self::PLUGIN_FKCART ] ],
+        'cart.upsells'                      => [ 'GET', '/wc/v3/fkcart/upsells', 'cart', self::CAP_STORE, 'Products with the upsells and cross-sells the cart drawer offers for them (all:true lists every product), plus enable_upsells, upsell_type and upsell_max_count; search, page, per_page (max 50)', 'read', null, [ 'handler' => 'fkcart_upsells', 'plugin' => self::PLUGIN_FKCART ] ],
+        'cart.update-settings'              => [ 'PUT', '/wc/v3/fkcart/settings', 'cart', self::CAP_STORE, 'Change FunnelKit Cart settings: settings {key: value} with keys from cart.settings (enable_cart, cart_heading, upsell_type, reward rows...); other keys are kept. Opt-in', 'write', [ 'type' => 'option', 'option' => 'fkcart_settings' ], [ 'handler' => 'fkcart_update_settings', 'plugin' => self::PLUGIN_FKCART, 'opt_in' => true ] ],
+        'cart.add-upsell'                   => [ 'PUT', '/wc/v3/products/{product_id}/fkcart-upsells', 'cart', self::CAP_STORE, 'Add product_ids to a product\'s upsells (type upsells, the default) or cross_sells, which the cart drawer offers. Opt-in', 'write', [ 'type' => 'post', 'param' => 'product_id' ], [ 'handler' => 'fkcart_add_upsell', 'plugin' => self::PLUGIN_FKCART, 'opt_in' => true ] ],
+        'cart.remove-upsell'                => [ 'PUT', '/wc/v3/products/{product_id}/fkcart-upsells', 'cart', self::CAP_STORE, 'Remove product_ids from a product\'s upsells or cross_sells (type). Opt-in', 'write', [ 'type' => 'post', 'param' => 'product_id' ], [ 'handler' => 'fkcart_remove_upsell', 'plugin' => self::PLUGIN_FKCART, 'opt_in' => true ] ],
+
         // Settings.
         'settings.groups'     => [ 'GET', '/wc/v3/settings', 'settings', self::CAP_STORE, 'Store settings groups (general, products, tax, shipping, ...)' ],
         'settings.options'    => [ 'GET', '/wc/v3/settings/{group_id}', 'settings', self::CAP_STORE, 'All options in one settings group with current values' ],
@@ -428,6 +478,7 @@ class Op_Catalog
         'coupons.update'     => [ 'id' => 'post' ],
         'coupons.delete'     => [ 'id' => 'post' ],
         'customers.get'      => [ 'id' => 'user' ],
+        'customers.downloads' => [ 'customer_id' => 'user' ],
         'customers.update'   => [ 'id' => 'user' ],
         'brands.get'         => [ 'id' => 'term' ],
         'brands.update'      => [ 'id' => 'term' ],
@@ -473,10 +524,20 @@ class Op_Catalog
             'plan_id' => [ 'type' => 'post', 'access' => 'read' ],
             'user_id' => [ 'type' => 'user', 'access' => 'read' ],
         ],
+        // The cart's upsells live on the product (issue #832): the product
+        // written, and the products it starts or stops offering.
+        'cart.add-upsell'                   => [
+            'product_id'    => 'post',
+            'product_ids.*' => [ 'type' => 'post', 'access' => 'read' ],
+        ],
+        'cart.remove-upsell'                => [
+            'product_id'    => 'post',
+            'product_ids.*' => [ 'type' => 'post', 'access' => 'read' ],
+        ],
     ];
 
     /**
-     * @return array<string, array{method: string, route: string, domain: string, capability: string, summary: string, path_params: string[], mode: string, snapshot: ?array, recoverable: bool, forbidden_params: string[], defaults: array<string, mixed>, undo_op: ?string, redact: string[], forbidden_meta: ?string, guard_variations: bool, taxonomy: ?string, handler: ?string, plugin: ?string, objects: array<string, array{type: string, access: string, own_type: bool, capability: string}>}>
+     * @return array<string, array{method: string, route: string, domain: string, capability: string, summary: string, path_params: string[], mode: string, snapshot: ?array, recoverable: bool, forbidden_params: string[], defaults: array<string, mixed>, undo_op: ?string, redact: string[], forbidden_meta: ?string, guard_variations: bool, taxonomy: ?string, handler: ?string, plugin: ?string, opt_in: bool, objects: array<string, array{type: string, access: string, own_type: bool, capability: string}>}>
      */
     public static function ops(): array
     {
@@ -509,6 +570,7 @@ class Op_Catalog
                 'taxonomy'         => $extra['taxonomy'] ?? null,
                 'handler'          => $extra['handler'] ?? null,
                 'plugin'           => $extra['plugin'] ?? null,
+                'opt_in'           => (bool) ($extra['opt_in'] ?? false),
                 'objects'          => self::objects_of($name, $mode, $capability),
             ];
         }
@@ -595,7 +657,7 @@ class Op_Catalog
     }
 
     /**
-     * @return array{method: string, route: string, domain: string, capability: string, summary: string, path_params: string[], mode: string, snapshot: ?array, recoverable: bool, forbidden_params: string[], defaults: array<string, mixed>, undo_op: ?string, redact: string[], forbidden_meta: ?string, guard_variations: bool, taxonomy: ?string, handler: ?string, plugin: ?string, objects: array<string, array{type: string, access: string, own_type: bool, capability: string}>}
+     * @return array{method: string, route: string, domain: string, capability: string, summary: string, path_params: string[], mode: string, snapshot: ?array, recoverable: bool, forbidden_params: string[], defaults: array<string, mixed>, undo_op: ?string, redact: string[], forbidden_meta: ?string, guard_variations: bool, taxonomy: ?string, handler: ?string, plugin: ?string, opt_in: bool, objects: array<string, array{type: string, access: string, own_type: bool, capability: string}>}
      */
     public static function get(string $op): array
     {
