@@ -309,7 +309,7 @@ final class Opt_In_Settings
         $root = defined('WPMCP_DIR') ? (string) WPMCP_DIR : dirname(__DIR__, 2) . '/';
         return self::$shipped = array_filter(
             self::all_groups(),
-            static fn (array $group): bool => is_file($root . $group['owner'])
+            static fn (array $group): bool => is_file($root . $group['owner']) || is_file($root . 'pro/' . $group['owner']) // central-list-ok: owners that moved to pro/ (the Pro split)
         );
     }
 

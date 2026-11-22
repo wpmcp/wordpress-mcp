@@ -116,6 +116,23 @@ fi
 # Unlike the directory cut, this flavor drops src/Cloud and
 # Admin\Announcements (issue #1140, decision D4): the announcements feed was
 # the cloud client's only caller here, so both leave together.
+# The Pro leak gate (scripts/lib/pro-leak-gate.sh), before the strip and
+# again on the zip: nothing listed in pro-manifest.txt at its public
+# location, no pro/, no premium marker.
+# shellcheck source=scripts/lib/pro-leak-gate.sh
+. "$ROOT/scripts/lib/pro-leak-gate.sh"
+MANIFEST="$(pro_manifest_file "$ROOT")"
+if [ "$CHECK_ONLY" = 1 ]; then LEAK_STRICT=0; else LEAK_STRICT=1; fi
+set +e
+pro_manifest_ready "$MANIFEST" "$LEAK_STRICT"
+manifest_status=$?
+set -e
+case "$manifest_status" in
+  0) assert_stage_no_pro_paths "$STAGE" "$MANIFEST" || { echo "ERROR: the $SLUG stage carries Pro-only paths" >&2; exit 1; } ;;
+  1) ;;
+  *) exit 1 ;;
+esac
+
 php "$ROOT/scripts/flavors/wporg/strip.php" "$STAGE" "$ROOT/scripts/flavors/woocommerce/manifest.php"
 
 # The compiled module registry for this flavor, shipped as build/registry
@@ -332,6 +349,9 @@ case "$zip_status" in
   1) echo "ERROR: an execution file is inside $ZIP" >&2; exit 1 ;;
   *) echo "ERROR: could not list $ZIP to check it for execution files" >&2; exit 1 ;;
 esac
+
+# The Pro leak gate over the zip listing.
+assert_no_pro_paths "$ZIP" "$SLUG" "$MANIFEST" || { echo "ERROR: $ZIP carries Pro-only paths" >&2; exit 1; }
 
 echo "built $ZIP"
 unzip -l "$ZIP" | tail -2

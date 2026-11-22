@@ -22,7 +22,7 @@ class ImpactSrcScannersTest extends TestCase
         chdir($root);
         try {
             $tests = [];
-            foreach ([ 'tests/free', 'tests/pro' ] as $dir) {
+            foreach (array_filter([ 'tests/free', 'tests/pro', 'pro/tests' ], 'is_dir') as $dir) {
                 $it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS));
                 foreach ($it as $f) {
                     if (str_ends_with($f->getFilename(), 'Test.php')) {
@@ -35,7 +35,12 @@ class ImpactSrcScannersTest extends TestCase
             chdir((string) $cwd);
         }
 
+        $present = array_map(static fn (string $p): string => basename($p, '.php'), $tests);
         foreach ([ 'OptInSettingsTest', 'OptInRequiredCatalogTest', 'DataRegistryGuardTest', 'DirectPostWriteGuardTest', 'CronHookRegistryTest', 'Php81CompatibilityTest' ] as $name) {
+            // A guard of the private Pro suite is absent from a tree without pro/.
+            if (! in_array($name, $present, true) && ! is_dir($root . '/pro/tests') && \WPMCP\Tests\Support\Edition_Tree::is_split()) {
+                continue;
+            }
             $this->assertContains($name, $found, $name . ' scans src/ and must run on every PR');
         }
         $this->assertNotContains('ImpactSrcScannersTest', $found, 'a test that only names src/ in prose is not a scanner');

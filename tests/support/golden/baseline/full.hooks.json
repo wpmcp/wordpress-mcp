@@ -323,7 +323,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:213",
+          "closure@src/Freemius/Bootstrap.php:237",
           1
         ]
       ],
@@ -416,7 +416,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1092",
+          "closure@src/Plugin.php:984",
           1
         ]
       ],
@@ -566,7 +566,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:949",
+          "closure@pro/src/Pro/Plugin_Slots.php:2749",
           1
         ]
       ],
@@ -1049,6 +1049,13 @@
         [
           10,
           "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_edition_slots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:27",
           1
         ]
       ],
@@ -1724,10 +1731,24 @@
           1
         ]
       ],
+      "wpmcp_page_composers": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:49",
+          1
+        ]
+      ],
       "wpmcp_redirect_providers": [
         [
           10,
           "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
+      "wpmcp_registry_roots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:36",
           1
         ]
       ],
@@ -1915,7 +1936,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:736",
+          "closure@pro/src/Pro/Plugin_Slots.php:2558",
           1
         ]
       ],
@@ -1945,6 +1966,13 @@
           10,
           "\\WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Binding_Resolver::filter_rendered",
           2
+        ]
+      ],
+      "wpmcp_skill_sources": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:58",
+          1
         ]
       ],
       "wpmcp_snapshot_prune_held": [
@@ -2342,7 +2370,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:213",
+          "closure@src/Freemius/Bootstrap.php:237",
           1
         ]
       ],
@@ -2445,7 +2473,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1092",
+          "closure@src/Plugin.php:984",
           1
         ],
         [
@@ -2610,7 +2638,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:949",
+          "closure@pro/src/Pro/Plugin_Slots.php:2749",
           1
         ]
       ],
@@ -3093,6 +3121,13 @@
         [
           10,
           "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_edition_slots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:27",
           1
         ]
       ],
@@ -3768,10 +3803,24 @@
           1
         ]
       ],
+      "wpmcp_page_composers": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:49",
+          1
+        ]
+      ],
       "wpmcp_redirect_providers": [
         [
           10,
           "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
+      "wpmcp_registry_roots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:36",
           1
         ]
       ],
@@ -3959,7 +4008,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:736",
+          "closure@pro/src/Pro/Plugin_Slots.php:2558",
           1
         ]
       ],
@@ -3989,6 +4038,13 @@
           10,
           "\\WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Binding_Resolver::filter_rendered",
           2
+        ]
+      ],
+      "wpmcp_skill_sources": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:58",
+          1
         ]
       ],
       "wpmcp_snapshot_prune_held": [
@@ -4388,7 +4444,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:213",
+          "closure@src/Freemius/Bootstrap.php:237",
           1
         ]
       ],
@@ -4491,7 +4547,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1092",
+          "closure@src/Plugin.php:984",
           1
         ]
       ],
@@ -4646,7 +4702,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:949",
+          "closure@pro/src/Pro/Plugin_Slots.php:2749",
           1
         ]
       ],
@@ -5129,6 +5185,13 @@
         [
           10,
           "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_edition_slots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:27",
           1
         ]
       ],
@@ -5804,10 +5867,24 @@
           1
         ]
       ],
+      "wpmcp_page_composers": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:49",
+          1
+        ]
+      ],
       "wpmcp_redirect_providers": [
         [
           10,
           "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
+      "wpmcp_registry_roots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:36",
           1
         ]
       ],
@@ -5995,7 +6072,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:736",
+          "closure@pro/src/Pro/Plugin_Slots.php:2558",
           1
         ]
       ],
@@ -6025,6 +6102,13 @@
           10,
           "\\WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Binding_Resolver::filter_rendered",
           2
+        ]
+      ],
+      "wpmcp_skill_sources": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:58",
+          1
         ]
       ],
       "wpmcp_snapshot_prune_held": [
@@ -6410,7 +6494,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:213",
+          "closure@src/Freemius/Bootstrap.php:237",
           1
         ]
       ],
@@ -6503,7 +6587,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1092",
+          "closure@src/Plugin.php:984",
           1
         ]
       ],
@@ -6653,7 +6737,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:949",
+          "closure@pro/src/Pro/Plugin_Slots.php:2749",
           1
         ]
       ],
@@ -7136,6 +7220,13 @@
         [
           10,
           "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_edition_slots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:27",
           1
         ]
       ],
@@ -7811,10 +7902,24 @@
           1
         ]
       ],
+      "wpmcp_page_composers": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:49",
+          1
+        ]
+      ],
       "wpmcp_redirect_providers": [
         [
           10,
           "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
+      "wpmcp_registry_roots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:36",
           1
         ]
       ],
@@ -8002,7 +8107,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:736",
+          "closure@pro/src/Pro/Plugin_Slots.php:2558",
           1
         ]
       ],
@@ -8032,6 +8137,13 @@
           10,
           "\\WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Binding_Resolver::filter_rendered",
           2
+        ]
+      ],
+      "wpmcp_skill_sources": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:58",
+          1
         ]
       ],
       "wpmcp_snapshot_prune_held": [
@@ -8417,7 +8529,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:213",
+          "closure@src/Freemius/Bootstrap.php:237",
           1
         ]
       ],
@@ -8510,7 +8622,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1092",
+          "closure@src/Plugin.php:984",
           1
         ]
       ],
@@ -8660,7 +8772,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:949",
+          "closure@pro/src/Pro/Plugin_Slots.php:2749",
           1
         ]
       ],
@@ -9143,6 +9255,13 @@
         [
           10,
           "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_edition_slots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:27",
           1
         ]
       ],
@@ -9818,10 +9937,24 @@
           1
         ]
       ],
+      "wpmcp_page_composers": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:49",
+          1
+        ]
+      ],
       "wpmcp_redirect_providers": [
         [
           10,
           "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
+      "wpmcp_registry_roots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:36",
           1
         ]
       ],
@@ -10009,7 +10142,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:736",
+          "closure@pro/src/Pro/Plugin_Slots.php:2558",
           1
         ]
       ],
@@ -10039,6 +10172,13 @@
           10,
           "\\WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Binding_Resolver::filter_rendered",
           2
+        ]
+      ],
+      "wpmcp_skill_sources": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:58",
+          1
         ]
       ],
       "wpmcp_snapshot_prune_held": [
@@ -10424,7 +10564,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:213",
+          "closure@src/Freemius/Bootstrap.php:237",
           1
         ]
       ],
@@ -10517,7 +10657,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:1092",
+          "closure@src/Plugin.php:984",
           1
         ]
       ],
@@ -10667,7 +10807,7 @@
         ],
         [
           10,
-          "closure@src/Plugin.php:949",
+          "closure@pro/src/Pro/Plugin_Slots.php:2749",
           1
         ]
       ],
@@ -11150,6 +11290,13 @@
         [
           10,
           "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_edition_slots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:27",
           1
         ]
       ],
@@ -11825,10 +11972,24 @@
           1
         ]
       ],
+      "wpmcp_page_composers": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:49",
+          1
+        ]
+      ],
       "wpmcp_redirect_providers": [
         [
           10,
           "WPMCP\\Integrations\\Redirect_Providers::register",
+          1
+        ]
+      ],
+      "wpmcp_registry_roots": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:36",
           1
         ]
       ],
@@ -12016,7 +12177,7 @@
       "wpmcp_run_optimize_media_job": [
         [
           10,
-          "closure@src/Plugin.php:736",
+          "closure@pro/src/Pro/Plugin_Slots.php:2558",
           1
         ]
       ],
@@ -12046,6 +12207,13 @@
           10,
           "\\WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Binding_Resolver::filter_rendered",
           2
+        ]
+      ],
+      "wpmcp_skill_sources": [
+        [
+          10,
+          "closure@pro/src/Pro/bootstrap.php:58",
+          1
         ]
       ],
       "wpmcp_snapshot_prune_held": [

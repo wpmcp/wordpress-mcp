@@ -2,6 +2,8 @@
 
 namespace WPMCP\Tests\Free\Platform;
 
+use WPMCP\Tests\Support\Edition_Tree;
+
 /**
  * Drift guard for the registered-ability surface (issue #55).
  *
@@ -16,6 +18,12 @@ namespace WPMCP\Tests\Free\Platform;
  * manifest - `composer manifest:regenerate` - and committing the diff, which
  * makes the change visible in review instead of invisible in registration
  * code.
+ *
+ * The committed manifest always describes the whole surface (free and Pro).
+ * A tree without the Pro code (the free build) registers only the free part,
+ * so the registration asserts compare against Edition_Tree::ability_manifest(),
+ * which is the full manifest when the Pro code is present and its free part
+ * otherwise. Regeneration needs the Pro code for the same reason.
  */
 class AbilityManifestTest extends \WP_UnitTestCase
 {
@@ -25,6 +33,13 @@ class AbilityManifestTest extends \WP_UnitTestCase
     {
         parent::set_up_before_class();
         if (getenv('WPMCP_REGENERATE_MANIFEST')) {
+            if (! Edition_Tree::has_pro_code()) {
+                // A free tree registers only the free part; writing it would
+                // drop every Pro entry from the committed manifest.
+                throw new \RuntimeException(
+                    'The ability manifest describes the whole surface; regenerate it from a tree with the Pro code (unsplit, or split with pro/ checked out).'
+                );
+            }
             self::write_manifest();
         }
     }
@@ -39,6 +54,18 @@ class AbilityManifestTest extends \WP_UnitTestCase
             );
         }
         return require self::MANIFEST_PATH;
+    }
+
+    /**
+     * The part of the manifest this tree registers: all of it with the Pro
+     * code, the free part without.
+     *
+     * @return array{total:int,free:int,pro:int,abilities:array<string,string>}
+     */
+    private static function edition_manifest(): array
+    {
+        self::load_manifest();
+        return Edition_Tree::ability_manifest();
     }
 
     public function test_manifest_is_well_formed_and_internally_consistent(): void
@@ -95,7 +122,10 @@ class AbilityManifestTest extends \WP_UnitTestCase
             ksort($expected);
         }
 
-        if (\WPMCP\Tools\Elementor\Atomic_Element::registration_supported()) {
+        // Atomic_Element ships with the Pro code. Without it the four names
+        // are Pro and already absent from the edition manifest.
+        $atomic = 'WPMCP\\Tools\\Elementor\\Atomic_Element';
+        if (! class_exists($atomic) || $atomic::registration_supported()) {
             return $expected;
         }
 
@@ -116,7 +146,7 @@ class AbilityManifestTest extends \WP_UnitTestCase
 
     public function test_registered_abilities_match_manifest_names_and_tiers(): void
     {
-        $manifest = self::load_manifest();
+        $manifest = self::edition_manifest();
 
         $this->assertSame(
             self::without_conditional_abilities($manifest['abilities']),
@@ -128,7 +158,7 @@ class AbilityManifestTest extends \WP_UnitTestCase
 
     public function test_total_free_and_pro_counts_match_manifest(): void
     {
-        $manifest = self::load_manifest();
+        $manifest = self::edition_manifest();
         $expected = self::without_conditional_abilities($manifest['abilities']);
         $network  = is_multisite() ? count(RegisteredAbilities::NETWORK_ONLY) : 0;
         $missing  = count($manifest['abilities']) + $network - count($expected);

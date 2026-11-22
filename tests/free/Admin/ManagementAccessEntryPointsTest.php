@@ -8,6 +8,7 @@ use WPMCP\Connect\Exposure;
 use WPMCP\Memory\Memory_Store;
 use WPMCP\Plugin;
 use WPMCP\Pro\Gate;
+use WPMCP\Tests\Support\Edition_Tree;
 
 /**
  * Issue #479: every WP MCP management entry point goes through the one
@@ -279,7 +280,14 @@ class ManagementAccessEntryPointsTest extends \WP_UnitTestCase
             }
         }
 
-        $this->assertGreaterThan(0, $checked, 'Expected the WP MCP admin REST routes (chat) to be registered.');
+        // The admin REST routes are the chat ones, which ship with the Pro
+        // code. The free build may register none; every route it does
+        // register was still checked above.
+        if (Edition_Tree::has_pro_code()) {
+            $this->assertGreaterThan(0, $checked, 'Expected the WP MCP admin REST routes (chat) to be registered.');
+        } else {
+            $this->assertArrayNotHasKey('/wpmcp/v1/chat/message', $wp_rest_server->get_routes(), 'The free build registers no chat routes.');
+        }
     }
 
     public function test_every_wpmcp_options_page_group_needs_the_management_capability(): void

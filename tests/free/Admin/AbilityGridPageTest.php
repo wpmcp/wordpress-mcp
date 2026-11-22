@@ -9,6 +9,7 @@ use WPMCP\MCP\Registrar;
 use WPMCP\Plugin;
 use WPMCP\Pro\Gate;
 use WPMCP\Tests\Free\Platform\RegisteredAbilities;
+use WPMCP\Tests\Support\Edition_Tree;
 
 require_once __DIR__ . '/../../support/forms-adapters.php';
 
@@ -269,6 +270,8 @@ class AbilityGridPageTest extends \WP_UnitTestCase
 
     public function test_pro_rows_appear_with_a_license_without_lock_state(): void
     {
+        // The row named here is a Pro ability; the free build has none to list.
+        Edition_Tree::require_pro($this);
         Gate::set_pro_for_tests(true);
 
         $row = $this->row('wpmcp/analyze-seo');
@@ -438,6 +441,8 @@ class AbilityGridPageTest extends \WP_UnitTestCase
 
     public function test_dangerous_pro_rows_carry_the_same_warning_once_licensed(): void
     {
+        // Both rows are Pro abilities; the free build has none to list.
+        Edition_Tree::require_pro($this);
         Gate::set_pro_for_tests(true);
 
         $this->assertDangerousRows([

@@ -167,9 +167,14 @@ class WporgStripTest extends \WP_UnitTestCase
         $stage = self::stripped_stage();
 
         $this->assertNotContains('wpmcp/install-package-from-zip', self::registered_in_cut());
+        // The full build keeps them: at src/ before the Pro split, in pro/
+        // after it (the free tree has no Pro code to compare with).
+        $full = \WPMCP\Tests\Support\Edition_Tree::all_sources();
         foreach (['Install_Package_From_Zip', 'Package_Archive', 'Package_Rejected'] as $class) {
             $this->assertFileDoesNotExist($stage . '/src/Tools/Packages/' . $class . '.php');
-            $this->assertFileExists(self::repo_root() . '/src/Tools/Packages/' . $class . '.php');
+            if (\WPMCP\Tests\Support\Edition_Tree::has_pro_code()) {
+                $this->assertArrayHasKey('src/Tools/Packages/' . $class . '.php', $full);
+            }
         }
         $this->assertStringNotContainsString(
             'Install_Package_From_Zip',
@@ -188,6 +193,7 @@ class WporgStripTest extends \WP_UnitTestCase
      */
     public function test_the_full_build_still_registers_the_ability_as_pro(): void
     {
+        \WPMCP\Tests\Support\Edition_Tree::require_pro($this);
         $registrar = new Registrar();
         Plugin::instance()->register_abilities_into($registrar);
 
@@ -198,7 +204,7 @@ class WporgStripTest extends \WP_UnitTestCase
 
         $this->assertArrayHasKey('wpmcp/insert-stock-image', $declared);
         $this->assertSame('pro', $declared['wpmcp/insert-stock-image']);
-        $this->assertFileExists(self::repo_root() . '/src/Tools/Media/Stock/Insert_Stock_Image.php');
+        $this->assertArrayHasKey('src/Tools/Media/Stock/Insert_Stock_Image.php', \WPMCP\Tests\Support\Edition_Tree::all_sources());
     }
 
     /** @return string[] ability names registered in the stripped cut. */

@@ -36,7 +36,8 @@ class SkillLibraryTest extends \WP_UnitTestCase
         $this->assertSame([], Skill_Library::invalid(), 'No bundled SKILL.md may fail validation.');
 
         foreach ($skills as $skill) {
-            $this->assertSame('bundled', $skill['source']);
+            // The Pro skills ship in pro/ and register as their own source.
+            $this->assertContains($skill['source'], ['bundled', 'pro']);
             $this->assertNotSame('', $skill['name']);
             $this->assertNotSame('', $skill['description']);
             $this->assertMatchesRegularExpression('/^\d+\.\d+(\.\d+)?$/', $skill['version']);
@@ -52,7 +53,6 @@ class SkillLibraryTest extends \WP_UnitTestCase
             [
                 'wpmcp-safe-writes',
                 'wpmcp-governance',
-                'wpmcp-elementor-editing',
                 'wpmcp-woocommerce-catalog',
                 'wpmcp-safe-database-work',
             ] as $expected

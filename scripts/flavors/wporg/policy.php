@@ -59,8 +59,6 @@ return [
         // free announcements feed in src/Admin/Announcements.php fetches
         // through Cloud_Client. The paid part is the ability wrappers below,
         // not the seam.
-        'src/Tools/Cloud',
-        'src/Tools/Analysis',
         // Note: src/Tools/Builders is not removed by path any more. The same
         // reasoning as src/Cloud applies to it since issue #83:
         // Builder_Detector and Bricks_Content are plain postmeta readers with
@@ -73,86 +71,53 @@ return [
         // The shared base of the two builders' portable bundle kinds (issue
         // #297). The free bundle tools and the snippet kind stay; with both
         // builders gone this base has nothing left to extend it.
-        'src/Tools/Portable/Spec_Bundle_Kind.php',
         // Execution. The guards stay (Governance\Opt_In_Gates references
         // them); the runners, the executor and their ability wrappers do not.
-        'src/Tools/Cli/Run_Wp_Cli.php',
-        'src/Tools/Cli/Wp_Cli_Executor.php',
         // Async wp-cli (issue #84) is the same execution surface on a cron
         // hook, so it leaves with the synchronous tool. Run_Cli_Job defaults
         // its executor to Wp_Cli_Executor::class, which the line above
         // deletes, so leaving it behind would ship a hook that fatals when it
         // fires.
-        'src/Tools/Cli/Dispatch_Cli_Job.php',
-        'src/Tools/Cli/Get_Cli_Job.php',
-        'src/Tools/Cli/List_Cli_Jobs.php',
-        'src/Tools/Cli/Cancel_Cli_Job.php',
-        'src/Tools/Cli/Cli_Job_Store.php',
-        'src/Tools/Cli/Run_Cli_Job.php',
         // The guard CHAIN is composed only by the runners above; Wp_Cli_Guard
         // itself stays because Governance\Opt_In_Gates references it.
-        'src/Tools/Cli/Wp_Cli_Guard_Chain.php',
-        'src/Tools/Code/Run_Php_Snippet.php',
-        'src/Tools/Code/Php_Snippet_Runner.php',
         // Activation of a stored snippet (issue #85) is the exec gate's own
         // ability and is pro. The free store CRUD stays: it persists and reads
         // PHP source and nothing in this build can execute it.
-        'src/Tools/Code/Activate_Php_Snippet.php',
         // The only curl_setopt() in the tree. Page_Audit checks class_exists()
         // and falls back to wp_safe_remote_get() on its own.
         'src/Tools/Performance/Curl_Dns_Pin.php',
         // Paid ability whose handler lives inside an otherwise free directory.
-        'src/Tools/Media/Stock/Insert_Stock_Image.php',
         // Static HTML export (issue #854): a paid module reached only
         // through trigger-backup's wpmcp_trigger_backup_kind filter.
         'src/Tools/Export/Static_Site',
         // Same shape: image compression and WebP/AVIF copies (issue #380).
-        'src/Tools/Media/Optimize_Media.php',
         // Its background runs, tool-upload optimization and front-end
         // WebP/AVIF delivery (issue #432).
-        'src/Tools/Media/Optimize_Media_Job.php',
-        'src/Tools/Media/Optimize_Uploads.php',
-        'src/Tools/Media/Modern_Image_Delivery.php',
         // Installing a plugin or theme from an uploaded ZIP (issue #282).
         // Guideline 8 forbids installing plugins or themes from anywhere but
         // WordPress.org, and the directory installers in src/Tools/Packages
         // stay defensible only because they accept nothing but a directory
         // slug. The ability is pro, so its registration leaves with the paid
         // tier; the handler and its archive validator leave here.
-        'src/Tools/Packages/Install_Package_From_Zip.php',
-        'src/Tools/Packages/Package_Archive.php',
-        'src/Tools/Packages/Package_Rejected.php',
         // Cloud settings sync (issue #135). The engine behind the paid
         // cloud-sync-settings / cloud-apply-settings wrappers, and its apply()
         // path is the Pro\Gate entitlement itself. Only src/Tools/Cloud
         // reaches it, so once the wrappers are gone it goes too.
-        'src/Cloud/Settings_Sync.php',
         // Same shape for the SEO group (issue #67): the post-meta surface
         // stays free, so the directory cannot go whole, but generation, the
         // extended social vocabulary and term-level SEO are paid. The helpers
         // (Schema_Generator, Social_Meta, Term_SEO) have no caller once the
         // handlers are gone, so they go with them.
-        'src/Tools/SEO/Generate_Schema_Markup.php',
-        'src/Tools/SEO/Schema_Generator.php',
-        'src/Tools/SEO/Generate_Meta_Tags.php',
-        'src/Tools/SEO/Get_Social_Meta.php',
-        'src/Tools/SEO/Set_Social_Image.php',
-        'src/Tools/SEO/Social_Meta.php',
-        'src/Tools/SEO/Get_Term_SEO_Meta.php',
-        'src/Tools/SEO/Update_Term_SEO_Meta.php',
-        'src/Tools/SEO/Term_SEO.php',
         // All in One SEO support (issue #294) is the paid add-on's; strip.php
         // takes its one registration line out of SEO_Adapter.
         'src/Tools/SEO/Aioseo_Store.php',
         // The builder dialect of build-page is not in this build (issue #162);
         // its composer goes with it. Build_Page's references to it are edited
         // out in the exact-string pass.
-        'src/Tools/Compose/Elementor_Composer.php',
         // The bundled Elementor playbook. Every ability in its `requires:` list
         // is pro-tier and therefore not in this build, so the document would
         // ship as a free skill instructing an agent to call tools that do not
         // exist. A skill the reader cannot follow is worse than no skill.
-        'src/Skills/library/wpmcp-elementor-editing',
         // The paid-tier integration playbooks (issue #850). Each describes
         // operations this build does not register, so they leave whole like
         // the Elementor one; the router's lines naming them go in strip.php.
@@ -168,25 +133,17 @@ return [
         // from register_brand_kit_abilities, which this build deletes, and the
         // kit library itself is data rather than a free feature, so the
         // directory goes whole rather than being swept.
-        'src/Tools/Brand',
         // Agent project memory (issue #131). Only the three PRO ability
         // wrappers go. src/Memory and src/Admin/Memory_Page.php stay:
         // publishing a guardrail and having the server enforce it in
         // Registrar::is_permitted() is free on every tier, and a safety rule
         // that stopped applying in this build would be worse than not
         // shipping it.
-        'src/Tools/Memory',
         // The forms adapter pack (issue #66). The five adapters sit beside
         // the free ones (Contact Form 7, Forminator, MetForm, SureForms) and
         // the shared dispatcher in src/Integrations, so they leave file by
         // file; strip.php removes register_forms_pack_abilities(), the only
         // place that constructs them.
-        'src/Integrations/WPForms_Integration.php',
-        'src/Integrations/Gravity_Forms_Integration.php',
-        'src/Integrations/Formidable_Integration.php',
-        'src/Integrations/Ninja_Forms_Integration.php',
-        'src/Integrations/Fluent_Forms_Integration.php',
-        'src/Tools/WooCommerce/Catalog',
         // The ACF batch write (issue #291): the op definition and its handler.
         // strip.php takes out the one line in ACF_Integration that merges it.
         'src/Integrations/ACF_Batch_Update.php',
@@ -454,9 +411,7 @@ return [
         // The block suite packs (issue #287): the pro block-suites pair and
         // its helpers. strip.php removes register_block_suite_abilities(),
         // its call site, and the rollback hook wiring in boot().
-        'src/Integrations/Block_Suites_Integration.php',
         'src/Integrations/Block_Suite.php',
-        'src/Integrations/Block_Suite_Styles.php',
         'src/Integrations/Block_Suite_Patterns.php',
         // Its Pattern Directory source (issue #364), and with it the only
         // path that reaches api.wordpress.org/patterns.
@@ -465,9 +420,7 @@ return [
         // reaches websitedemos.net.
         'src/Integrations/Block_Suite_Spectra_Library.php',
         // Otter Blocks settings and page styles (issue #647).
-        'src/Integrations/Block_Suite_Otter.php',
         // Its Kadence Blocks and Spectra settings and page CSS ops (issue #648).
-        'src/Integrations/Block_Suite_Settings.php',
         // Stored custom CSS/JS (issue #63). The whole group is pro, so the
         // two handlers, the sanitizer, the store and the front-end renderer
         // all go. Named file by file rather than by directory because
@@ -475,8 +428,6 @@ return [
         // guards do: Governance\Opt_In_Gates reports the JS opt-in gate's
         // state on every build, and a build that could not answer "is JS
         // injection enabled here" would be reporting a gate it cannot see.
-        'src/Tools/CustomCode/Add_Scoped_Css.php',
-        'src/Tools/CustomCode/Add_Custom_Js.php',
         'src/Tools/CustomCode/Css_Sanitizer.php',
         'src/Tools/CustomCode/Custom_Code_Store.php',
         'src/Tools/CustomCode/Custom_Code_Renderer.php',

@@ -5,6 +5,7 @@ namespace WPMCP\Tests\Free\Platform;
 use WPMCP\MCP\Ability;
 use WPMCP\Tests\Free\Content\Hidden_Post_Type_Names;
 use WPMCP\Tests\Free\Content\Hidden_Post_Types;
+use WPMCP\Tests\Support\Edition_Tree;
 use WPMCP\Tools\Content\Content_Guard;
 
 /**
@@ -135,9 +136,16 @@ class PostTargetGuardRegistryTest extends \WP_UnitTestCase implements Hidden_Pos
         }
 
         // The content, revision, block, builder, SEO and meta tools alone are
-        // well over a hundred; a much smaller walk means the enumeration broke.
-        $this->assertGreaterThan(80, count($walked), 'Too few abilities walked: ' . implode(', ', $walked));
+        // well over a hundred on the full surface; the free build, without
+        // the Pro builder, SEO and analysis tools, walks about 61. A much
+        // smaller walk than its tree's floor means the enumeration broke.
+        $min = Edition_Tree::has_pro_code() ? 80 : 50;
+        $this->assertGreaterThan($min, count($walked), 'Too few abilities walked: ' . implode(', ', $walked));
+        $registered = Edition_Tree::ability_manifest()['abilities'];
         foreach (['wpmcp/get-post', 'wpmcp/list-posts', 'wpmcp/search-content', 'wpmcp/count-content', 'wpmcp/export-content', 'wpmcp/get-revision', 'wpmcp/diff-revisions', 'wpmcp/restore-revision', 'wpmcp/extract-content', 'wpmcp/get-post-meta'] as $name) {
+            if (! isset($registered[ $name ])) {
+                continue; // A Pro ability (extract-content), absent from the free build.
+            }
             $this->assertContains($name, $walked);
         }
         $this->assertSame([], $failures);

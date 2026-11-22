@@ -38,6 +38,12 @@
 #
 # Up to 1.2.0 the headline wpmcp.zip was the directory cut and the banner
 # build was published as wpmcp-pro-<v>.zip; that name is retired.
+#
+# The premium zip (scripts/build-release.sh --premium) now writes
+# dist/wpmcp-pro-<v>.zip. It carries the private Pro code and is never a
+# GitHub asset: stage refuses a premium row or a wpmcp-pro prefix, runs the
+# Pro leak gate (scripts/lib/pro-leak-gate.sh) over every zip it stages, and
+# verify fails a release that carries any wpmcp-pro asset.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -45,6 +51,9 @@ REPO="${WPMCP_GITHUB_REPO:-wpmcp/wordpress-mcp}"
 DIST="$ROOT/dist"
 # shellcheck source=scripts/lib/release-flavors.sh
 . "$ROOT/scripts/lib/release-flavors.sh"
+# shellcheck source=scripts/lib/pro-leak-gate.sh
+. "$ROOT/scripts/lib/pro-leak-gate.sh"
+MANIFEST="$(pro_manifest_file "$ROOT")"
 
 die() { echo "release-assets: ERROR: $*" >&2; exit 1; }
 
@@ -62,12 +71,23 @@ asset_names() {
 
 stage() {
 	local v=$1 prefix main kind stable text zip
+	pro_manifest_ready "$MANIFEST" 1 || die "the Pro leak gate needs $MANIFEST"
 	while IFS='|' read -r prefix main kind stable text; do
+		case "$prefix" in
+			wpmcp-pro|wpmcp-pro-*) die "release_asset_table lists $prefix; the premium zip is never a GitHub asset" ;;
+		esac
 		zip="$DIST/$prefix-$v.zip"
 		[ -s "$zip" ] || die "missing $zip; run the builds first (scripts/build-release.sh, build-woo-release.sh, build-wporg-release.sh)"
 		case "$kind" in
-			self-hosted) assert_self_hosted_zip "$zip" "$main" "$v" || die "$zip failed the self-hosted check" ;;
-			wporg) assert_wporg_zip "$zip" "$main" "$v" || die "$zip failed the wp.org check" ;;
+			self-hosted)
+				assert_self_hosted_zip "$zip" "$main" "$v" || die "$zip failed the self-hosted check"
+				assert_free_zip "$zip" "${main%%/*}" "$MANIFEST" || die "$zip failed the Pro leak gate; only the free build is a GitHub asset"
+				;;
+			wporg)
+				assert_wporg_zip "$zip" "$main" "$v" || die "$zip failed the wp.org check"
+				assert_no_pro_paths "$zip" "${main%%/*}" "$MANIFEST" || die "$zip failed the Pro leak gate"
+				;;
+			premium) die "release_asset_table lists a premium row ($prefix); the premium zip is never a GitHub asset" ;;
 			*) die "unknown kind '$kind' for $prefix in release_asset_table" ;;
 		esac
 		if [ "$stable" != - ]; then
@@ -105,6 +125,9 @@ verify() {
 		[ -n "$(size_of "$name")" ] || missing="$missing $name"
 	done < <(asset_names "$v")
 	[ -z "$missing" ] || die "release $tag is missing:$missing"
+	local premium_assets
+	premium_assets=$(jq -r '.assets[].name | select(startswith("wpmcp-pro"))' <<<"$json")
+	[ -z "$premium_assets" ] || die "release $tag carries premium assets; delete them now: $premium_assets"
 	while IFS='|' read -r prefix main kind stable text; do
 		[ "$stable" != - ] || continue
 		sa=$(size_of "$stable")

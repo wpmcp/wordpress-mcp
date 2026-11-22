@@ -133,25 +133,11 @@ $removed_paths = $policy['removed_paths'];
 
 /** Whole method declarations deleted from Plugin.php: every one is pro-only. */
 const REMOVED_METHODS = [
-    'register_builder_abilities',
-    'register_analysis_abilities',
-    'register_cli_abilities',
-    'register_php_exec_abilities',
-    'register_widget_builder_abilities',
-    'register_block_builder_abilities',
-    'register_cloud_abilities',
-    'register_elementor_pro_abilities',
-    'register_elementor_structural_abilities',
-    'register_brand_kit_abilities',
-    'register_memory_abilities',
     // The forms adapter pack (issue #66). Its five adapter files leave by
     // path (policy.php removed_paths) and its one call site is edited out of
     // register_integration_abilities() below.
-    'register_forms_pack_abilities',
     // The block suite packs (issue #287). Files leave by path; the call
     // site and the boot() rollback hook are edited out below.
-    'register_block_suite_abilities',
-    'register_custom_code_abilities',
     // Not an ability registration: the front-end output wiring for the same
     // group. Its own method in Plugin.php precisely so this build can take it
     // out by name, rather than leaving wp_head/wp_footer/deleted_post hooks
@@ -164,24 +150,18 @@ const REMOVED_METHODS = [
     // Same shape for image optimization (issue #432): the cron executor,
     // upload hook and front-end delivery of a paid feature whose classes
     // leave by path (policy.php). Its call site is edited out below.
-    'register_image_optimization_runtime_hooks',
     // Called only from register_cli_abilities(), which leaves above. Without
     // this it survives as a private method with no caller, and its four
     // `new *_Cli_Job()` instantiations hold the whole async wp-cli package
     // out of the unreferenced-file sweep.
-    'register_cli_job_abilities',
     // Same shape: its only caller is register_elementor_pro_abilities().
-    'register_global_class_write_abilities',
     // Same shape: its only caller is register_elementor_pro_abilities().
-    'register_global_variable_abilities',
     // Atomic (v4) Elementor writes (issue #62) are pro-tier; the method is
     // private and reached only from register_elementor_abilities(), whose
     // call site is edited out below.
-    'register_atomic_elementor_abilities',
     // The paid half of the SEO group (issue #67). Private and reached only
     // from register_seo_abilities(), whose call site is edited out below;
     // the free post-meta registrations stay in that method.
-    'register_seo_pro_abilities',
     // Not pro, but not for this build either: the directory delivers language
     // packs just in time, and I18n_Rule flags load_plugin_textdomain() as
     // unnecessary there. The off-directory builds keep it (issue #184).
@@ -340,7 +320,7 @@ $edits['src/Tools/Compose/Build_Page.php'][] = [
 $edits['src/Tools/Compose/Build_Page.php'][] = [
     <<<'SRC'
         if ('elementor' === $spec['dialect']) {
-            $composed = Elementor_Composer::compose($spec['content']);
+            $composed = self::compose_dialect('elementor', $spec['content']);
             $content  = '';
         } else {
             $composed = Block_Composer::compose($spec['content']);
@@ -424,7 +404,7 @@ SRC . "\n\n",
 $edits['src/Tools/Compose/Build_Page.php'][] = [
     <<<'SRC'
         if ('elementor' === $spec['dialect']) {
-            $composed = Elementor_Composer::compose($spec['content']);
+            $composed = self::compose_dialect('elementor', $spec['content']);
             $markup   = 0;
         } else {
             $composed = Block_Composer::compose($spec['content']);
@@ -870,7 +850,7 @@ $edits['src/Skills/library/wpmcp-governance/SKILL.md'] = [
 $edits['src/Skills/library/integrations/SKILL.md'] = [
     ["  - wpmcp/get-builder-content\n", '', 1],
     [
-        "- Pages built with Elementor: `wpmcp-elementor-editing`.\n"
+        "- Pages built with Elementor: `integrations/page-builders`.\n"
             . "- Pages built with Bricks, Breakdance, Divi, Oxygen, WPBakery, Avada, Beaver Builder: `integrations/page-builders`.\n"
             . "- Courses in Tutor LMS, LifterLMS or LearnDash: `integrations/lms`.\n"
             . "- Contacts, lists and campaigns in FluentCRM or MailPoet: `integrations/crm`.\n"
@@ -889,13 +869,6 @@ $edits['src/Skills/library/integrations/SKILL.md'] = [
     ],
 ];
 
-$edits['src/Skills/library/wpmcp-elementor-editing/SKILL.md'] = [
-    [
-        "The Elementor tools are pro tier and require Elementor to be active. If they\n",
-        "The Elementor tools require Elementor to be active. If they\n",
-        1,
-    ],
-];
 
 // ------------------------------------------------------- theme-builder cap
 // Guideline 5's quota clause again, and the same answer as snapshot retention
@@ -982,23 +955,9 @@ $edits['src/Tools/ThemeBuilder/Condition_Schema.php'] = [
 // ------------------------------------------------------------- Plugin.php
 $plugin_edits = [
     // Ability-group wiring for the groups that are not in this build.
-    ["            'builder'        => fn () => \$this->register_builder_abilities(\$registrar),\n", '', 1],
-    ["            'analysis'       => fn () => \$this->register_analysis_abilities(\$registrar),\n", '', 1],
-    ["            'cli'            => fn () => \$this->register_cli_abilities(\$registrar),\n", '', 1],
-    ["            'php_exec'       => fn () => \$this->register_php_exec_abilities(\$registrar),\n", '', 1],
-    ["            'widget_builder' => fn () => \$this->register_widget_builder_abilities(\$registrar),\n", '', 1],
-    ["            'block_builder'  => fn () => \$this->register_block_builder_abilities(\$registrar),\n", '', 1],
-    ["            'cloud'          => fn () => \$this->register_cloud_abilities(\$registrar),\n", '', 1],
-    ["            'memory'         => fn () => \$this->register_memory_abilities(\$registrar),\n", '', 1],
-    ["            'custom_code'    => fn () => \$this->register_custom_code_abilities(\$registrar),\n", '', 1],
     // The two pro suites chained off the free Elementor group.
-    ["\n        \$this->register_elementor_pro_abilities(\$registrar);\n", "\n", 1],
-    ["\n        \$this->register_atomic_elementor_abilities(\$registrar);\n", "\n", 1],
-    ["\n        \$this->register_elementor_structural_abilities(\$registrar);\n", "\n", 1],
     // The forms adapter pack chained off the free integration group.
-    ["\n        \$this->register_forms_pack_abilities(\$registrar);\n", "\n", 1],
     // The block suite packs chained off the same group (issue #287).
-    ["\n        \$this->register_block_suite_abilities(\$registrar);\n", "\n", 1],
     // Their rollback refresher entry: the class it names is not in this build.
     [
         "        // A block suite write dropped the suite's cached per-post CSS; its\n"
@@ -1020,7 +979,6 @@ $plugin_edits = [
         1,
     ],
     // The paid SEO registrations chained off the free SEO group (issue #67).
-    ["\n        \$this->register_seo_pro_abilities(\$registrar);\n", "\n", 1],
 ];
 // Runtime hook wiring for the two builder suites, which are not in this
 // build. These are string callables, so nothing but removing them stops them
@@ -1076,23 +1034,14 @@ $plugin_edits[] = [
 
 // The call site of the image optimization wiring (issue #432).
 // remove_method() above takes the method itself.
-$plugin_edits[] = [
-    "        // Image optimization runs, tool-upload optimization and modern\n"
-        . "        // format delivery (issue #432), gated on the media group.\n"
-        . "        \$this->register_image_optimization_runtime_hooks();\n",
-    '',
-    1,
-];
 
 // The handler for the one pro ability registered inline rather than in a
 // group method. Its registration goes with remove_pro_abilities(); this is
 // the local it was assigned to.
-$plugin_edits[] = ["        \$insert_stock_image  = new Insert_Stock_Image();\n", '', 1];
 
 // Same shape for install-package-from-zip (issue #282): a pro ability
 // registered inline among the free package tools. remove_pro_abilities()
 // takes the registration; this is the local its handler was assigned to.
-$plugin_edits[] = ["\n        \$install_package_from_zip = new Install_Package_From_Zip();\n", '', 1];
 
 // The self-hosted translation loader goes with its method (REMOVED_METHODS):
 // the directory serves language packs, so the languages/ directory the header
@@ -1183,58 +1132,19 @@ $plugin_edits[] = [
 // whole, so the imports, the two runtime hooks and the submenu that name
 // those classes have to go with it or this build would name classes it does
 // not ship and fatal on init, rest_api_init and admin_menu.
-$plugin_edits[] = [
-    "use WPMCP\\Pro\\Chat\\Chat_Page;\n"
-        . "use WPMCP\\Pro\\Chat\\Chat_Rest_Controller;\n"
-        . "use WPMCP\\Pro\\Chat\\Conversation_Store;\n"
-        . "use WPMCP\\Pro\\Gate;\n",
-    '',
-    1,
-];
-$plugin_edits[] = [
-    "            // In-admin AI chat (issue #73, PRO). The conversation CPT and the\n"
-        . "            // purge that destroys conversations with their owner register\n"
-        . "            // unconditionally, for the same reason the memory CPT above does:\n"
-        . "            // a safety rule must not stop applying because a license lapsed.\n"
-        . "            // If the type were unregistered on a lapsed install, the existing\n"
-        . "            // conversations would become orphan rows that no deletion path\n"
-        . "            // still claims. Only the routes and the screen are tier-gated.\n"
-        . "            add_action('init', [Conversation_Store::class, 'register_post_type'], 5);\n"
-        . "            Conversation_Store::register_user_deletion_hooks();\n"
-        . "            // The route hook resolves the tier inside the callback and\n"
-        . "            // self-no-ops, so no object is constructed at plugin load. That\n"
-        . "            // matters here: the controller's Key_Vault needs aes-256-gcm, and\n"
-        . "            // building it eagerly would turn an unsupported host into a\n"
-        . "            // site-wide fatal instead of one unavailable feature.\n"
-        . "            add_action('rest_api_init', static function (): void {\n"
-        . "                if (! Gate::is_pro()) {\n"
-        . "                    return;\n"
-        . "                }\n"
-        . "                (new Chat_Rest_Controller())->register_routes();\n"
-        . "            });\n",
-    "            // The in-admin AI chat is part of the off-directory add-on, so\n"
-        . "            // this build has no chat hooks to wire.\n",
-    1,
-];
-$plugin_edits[] = [
-    "        // In-admin AI chat (issue #73): the chat drives the same governed\n"
-        . "        // ability surface as external MCP clients under the admin's own\n"
-        . "        // identity, so viewing the screen needs the management capability.\n"
-        . "        // The entry appears only where the feature can actually run: no dead\n"
-        . "        // menu item and no locked screen on installs without it.\n"
-        . "        if (Gate::is_pro()) {\n"
-        . "            add_submenu_page(\n"
-        . "                'wpmcp',\n"
-        . "                self::page_title(__('Chat', 'wpmcp')),\n"
-        . "                __('Chat', 'wpmcp'),\n"
-        . "                Management_Access::CAPABILITY,\n"
-        . "                Chat_Page::SLUG,\n"
-        . "                [new Chat_Page(), 'render']\n"
-        . "            );\n"
-        . "        }\n\n",
-    '',
-    1,
-];
+$plugin_edits[] = ['            // In-admin AI chat (issue #73, PRO). The conversation CPT and the
+            // purge that destroys conversations with their owner register
+            // unconditionally, for the same reason the memory CPT above does:
+            // a safety rule must not stop applying because a license lapsed.
+            // If the type were unregistered on a lapsed install, the existing
+            // conversations would become orphan rows that no deletion path
+            // still claims. Only the routes and the screen are tier-gated.
+            add_action(\'init\', [Conversation_Store::class, \'register_post_type\'], 5);
+            Conversation_Store::register_user_deletion_hooks();
+            $this->edition()->run(\'boot_chat\', $this->edition_context(null));
+', '            // The in-admin AI chat is part of the off-directory add-on, so
+            // this build has no chat hooks to wire.
+', 1];
 // The PHP snippet store (issue #85) ships here; ACTIVATING a stored snippet
 // does not. Agent-facing ability descriptions and the readme must not point
 // at an ability this zip lacks, so those strings are rewritten. Docblocks may
@@ -1244,21 +1154,6 @@ $plugin_edits[] = [
 // stays and is not a no-op: a site that ran the full plugin and then swapped
 // to this build can still carry an active snippet in wp_options, and
 // revoking it must never require reinstalling the paid surface.
-$plugin_edits[] = [
-    "     * free tier: it stores and reads PHP source and never executes any of\n"
-        . "     * it. Deactivation lives here too, deliberately ungated, so an\n"
-        . "     * activated snippet can always be revoked. ACTIVATION is the pro,\n"
-        . "     * exec-gated half and is registered in\n"
-        . "     * register_php_exec_abilities() instead, next to run-php-snippet whose\n"
-        . "     * gate chain it shares.\n",
-    "     * free tier: it stores and reads PHP source, and NOTHING IN THIS BUILD\n"
-        . "     * CAN EXECUTE ANY OF IT. There is no activation ability here and no\n"
-        . "     * snippet runner, so 'inactive' is the only status this build can\n"
-        . "     * write. Deactivation stays anyway: a site that carried an active\n"
-        . "     * snippet from another build must be able to clear the flag without\n"
-        . "     * installing anything.\n",
-    1,
-];
 $plugin_edits[] = [
     "Activation is separate and gated. Snapshot-first, reversible per snippet',",
     "This build never executes or activates a stored snippet. Snapshot-first, reversible per snippet',",
@@ -2406,13 +2301,6 @@ $edits['src/Plugin.php'][] = [
 // or enumerates withheld paid abilities is a guideline-9 finding on its own.
 // assert-free-tier.php re-derives all of this from the staged tree.
 
-$edits['src/Tools/Compose/Elementor_Composer.php'] = [
-    [
-        " * Builder-dialect composition (PRO): turn a validated build-page node tree\n",
-        " * Builder-dialect composition: turn a validated build-page node tree\n",
-        1,
-    ],
-];
 
 // The payload edit above removes 'pro_active' from the response, so the
 // docblock must stop documenting a field this build never returns.
@@ -2432,44 +2320,10 @@ $edits['src/Plugin.php'][] = [
     '',
     1,
 ];
-$edits['src/Plugin.php'][] = [
-    "     * Every one of these is PRO at manage_options, domain 'cli', exactly\n"
-        . "     * matching run-wp-cli: dispatching a command asynchronously is the same\n"
-        . "     * capability as running it synchronously, so it must not be reachable\n"
-        . "     * at a lower tier or a weaker capability than the synchronous tool.\n"
-        . "     * dispatch-cli-job is 'create' (it creates a job record),\n"
-        . "     * cancel-cli-job is 'update' (it transitions one), and get-cli-job /\n"
-        . "     * list-cli-jobs are 'read'.\n     *\n",
-    '',
-    1,
-];
-$edits['src/Plugin.php'][] = [
-    "     * WooCommerce including get-sales-report (a reporting tool directly\n"
-        . "     * analogous to analytics summaries) are all free-tier. 'pro' tier here is\n"
-        . "     * reserved for a different kind of feature: deep content scoring/analysis\n"
-        . "     * (analyze-seo, analyze-accessibility, check-contrast, extract-content,\n"
-        . "     * see register_analysis_abilities()) and deep Elementor element-tree\n"
-        . "     * editing. Analytics summary/top-pages/GSC-summary/GSC-queries are the\n",
-    "     * WooCommerce including get-sales-report (a reporting tool directly\n"
-        . "     * analogous to analytics summaries) are free, as is everything else in\n"
-        . "     * this build. Analytics summary/top-pages/GSC-summary/GSC-queries are the\n",
-    1,
-];
 
 // The async wp-cli package leaves by path, so its cron wiring has to leave
 // too: Run_Cli_Job::HOOK is a compile-time class constant reference, which
 // fatals at load, not at hook time.
-$edits['src/Plugin.php'][] = [
-    "            // The WP-Cron executor for dispatch-cli-job's scheduled events\n"
-        . "            // (issue #84). It re-runs the FULL wp-cli guard chain before\n"
-        . "            // executing anything, so hooking it here does not by itself let\n"
-        . "            // any queued command run: a job queued while the opt-in gate was\n"
-        . "            // open still fails closed once that gate is shut. See\n"
-        . "            // Run_Cli_Job's docblock.\n"
-        . "            add_action(Run_Cli_Job::HOOK, [new Run_Cli_Job(), 'handle']);\n",
-    '',
-    1,
-];
 
 // ------------------------------------------------- runtime text and dead code
 // The handshake is not a comment: memory_block() is appended to the

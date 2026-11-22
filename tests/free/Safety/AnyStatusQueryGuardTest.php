@@ -2,6 +2,8 @@
 
 namespace WPMCP\Tests\Free\Safety;
 
+use WPMCP\Tests\Support\Edition_Tree;
+
 /**
  * Issue #465 guard: WP_Query applies no read permission to post_status
  * 'any' (nor to an explicit status), so a listing built on it shows other
@@ -16,6 +18,11 @@ namespace WPMCP\Tests\Free\Safety;
  *    'any';
  * and fails on any that is neither inside a Readable_Posts::query() or
  * Readable_Posts::get_posts() call nor listed below with its reason.
+ *
+ * This half scans the public sources (Edition_Tree::public_sources()), so it
+ * runs the same in every tree. The Pro sources, and the allowlist entries
+ * of Pro files, are in tests/pro/Safety/AnyStatusQueryGuardProTest, which
+ * reuses scan() and scan_sources() from here.
  */
 class AnyStatusQueryGuardTest extends \WP_UnitTestCase
 {
@@ -23,7 +30,8 @@ class AnyStatusQueryGuardTest extends \WP_UnitTestCase
     private const HELPERS = [ 'Readable_Posts::query', 'Readable_Posts::get_posts' ];
 
     /**
-     * File (relative to src/) :: enclosing function => [count, reason].
+     * File (relative to src/) :: enclosing function => [count, reason], for
+     * public files only; Pro files are listed in the Pro half.
      *
      * @var array<string, array{count: int, reason: string}>
      */
@@ -60,10 +68,6 @@ class AnyStatusQueryGuardTest extends \WP_UnitTestCase
             'count'  => 1,
             'reason' => 'Entry rows are listed only by list-entries at the forms entry capability (manage_options); list-forms reads only the count.',
         ],
-        'Tools/WooCommerce/Catalog/Woo_Write.php::variations_at_risk'      => [
-            'count'  => 1,
-            'reason' => 'Existence check before a product write: answers whether any variation exists, no row leaves.',
-        ],
         'Tools/Sync/Change_Set_Applier.php::find_attachment_by_file'       => [
             'count'  => 1,
             'reason' => 'apply-change-set runs at manage_options; maps an incoming attachment to the existing row by file.',
@@ -89,11 +93,6 @@ class AnyStatusQueryGuardTest extends \WP_UnitTestCase
             'reason' => 'Author-scoped to the caller\'s own conversations, and every row is re-checked for ownership.',
         ],
     ];
-
-    private static function src(): string
-    {
-        return dirname(__DIR__, 3) . '/src';
-    }
 
     /**
      * Unfiltered any-status queries in one PHP source, by enclosing named
@@ -234,23 +233,27 @@ class AnyStatusQueryGuardTest extends \WP_UnitTestCase
         return $found;
     }
 
-    /** @return array<string, int> "file::function" => count, for all of src/ */
-    private static function scan_src(): array
+    /**
+     * @param array<string, string> $sources src/... path => absolute path (Edition_Tree)
+     * @return array<string, int> "file::function" => count, file relative to src/
+     */
+    public static function scan_sources(array $sources): array
     {
-        $root  = self::src();
         $found = [];
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS));
-        foreach ($files as $file) {
-            if ('php' !== $file->getExtension()) {
-                continue;
-            }
-            $relative = str_replace('\\', '/', substr($file->getPathname(), strlen($root) + 1));
-            foreach (self::scan((string) file_get_contents($file->getPathname())) as $function => $count) {
+        foreach ($sources as $public => $absolute) {
+            $relative = substr($public, strlen('src/'));
+            foreach (self::scan((string) file_get_contents($absolute)) as $function => $count) {
                 $found[ $relative . '::' . $function ] = $count;
             }
         }
         ksort($found);
         return $found;
+    }
+
+    /** @return array<string, int> "file::function" => count, for the public sources */
+    private static function scan_src(): array
+    {
+        return self::scan_sources(Edition_Tree::public_sources());
     }
 
     public function test_the_scan_catches_an_unfiltered_any_status_query(): void
@@ -320,5 +323,16 @@ PHP;
             }
         }
         $this->assertSame([], $stale, 'Keep ALLOWED exact, so a removed query does not leave room for a new one.');
+    }
+
+    public function test_the_allowlist_names_only_public_files(): void
+    {
+        $pro = [];
+        foreach (array_keys(self::ALLOWED) as $site) {
+            if (Edition_Tree::is_pro_path('src/' . strstr($site, '::', true))) {
+                $pro[] = 'src/' . $site;
+            }
+        }
+        $this->assertSame([], $pro, 'Allowlist entries of Pro files belong in tests/pro/Safety/AnyStatusQueryGuardProTest.');
     }
 }

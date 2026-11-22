@@ -34,6 +34,8 @@ final class Plugin_Source
         // gets run by hand.
         '.claude',
         'tests',
+        // The private Pro suite (the pro/ submodule) never ships either.
+        'pro/tests',
         'tools',
         'bin',
         'docs',

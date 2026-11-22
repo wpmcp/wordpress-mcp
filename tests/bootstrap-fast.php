@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 require_once dirname( __DIR__ ) . '/vendor/yoast/phpunit-polyfills/phpunitpolyfills-autoload.php';
+require_once __DIR__ . '/support/edition-tree.php';
 
 // build/registry first, so the suite never runs on a missing or stale module
 // registry (a worktree whose vendor/ was copied has none):

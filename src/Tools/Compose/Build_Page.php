@@ -74,7 +74,7 @@ class Build_Page
         $this->preflight($spec);
 
         if ('elementor' === $spec['dialect']) {
-            $composed = Elementor_Composer::compose($spec['content']);
+            $composed = self::compose_dialect('elementor', $spec['content']);
             $content  = '';
         } else {
             $composed = Block_Composer::compose($spec['content']);
@@ -273,6 +273,29 @@ class Build_Page
     }
 
     /**
+     * Compose with the composer for a dialect other than gutenberg. Pro
+     * registers the elementor one (wpmcp_page_composers); without it the
+     * dialect refuses.
+     *
+     * @return array<string, mixed>
+     */
+    private static function compose_dialect(string $dialect, mixed $content): array
+    {
+        $composer = Page_Composers::from_hooks()->for_dialect($dialect);
+        if (null === $composer) {
+            throw new \RuntimeException(sprintf('The %s dialect of build-page is not available in this build of WP MCP. The Gutenberg dialect is free and always available: pass dialect "gutenberg" to build the page with blocks instead.', $dialect)); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- returned to the caller as a tool error, never echoed.
+        }
+        $sections = [];
+        foreach (is_array($content) ? $content : [] as $section) {
+            if (is_array($section)) {
+                $sections[] = $section;
+            }
+        }
+
+        return $composer->compose($sections);
+    }
+
+    /**
      * dry_run: validate, inspect, and compose, then write nothing.
      *
      * The spec has already been through Page_Spec (structure) by the time we
@@ -289,7 +312,7 @@ class Build_Page
         $problems = $this->inspect($spec);
 
         if ('elementor' === $spec['dialect']) {
-            $composed = Elementor_Composer::compose($spec['content']);
+            $composed = self::compose_dialect('elementor', $spec['content']);
             $markup   = 0;
         } else {
             $composed = Block_Composer::compose($spec['content']);

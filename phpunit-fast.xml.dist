@@ -16,8 +16,6 @@
     <testsuite name="fast">
       <file>tests/free/Auth/PkceTest.php</file>
       <file>tests/free/Auth/ProtectedResourceMetadataTest.php</file>
-      <file>tests/free/Cli/WpCliExecutorKillTest.php</file>
-      <file>tests/free/Code/PhpSnippetRunnerTest.php</file>
       <file>tests/free/Code/PhpSnippetValidatorTest.php</file>
       <file>tests/free/Code/ValidatePhpSnippetTest.php</file>
       <file>tests/free/Compliance/CliTest.php</file>
@@ -59,11 +57,6 @@
       <file>tests/free/Security/SecurityScannerScanTest.php</file>
       <file>tests/free/Security/SecurityScannerTest.php</file>
       <file>tests/free/Security/SoftwareAuditTest.php</file>
-      <file>tests/pro/Analysis/A11yAnalyzerTest.php</file>
-      <file>tests/pro/Analysis/ColorContrastTest.php</file>
-      <file>tests/pro/Analysis/ContrastSuggesterTest.php</file>
-      <file>tests/pro/Analysis/SeoAnalyzerTest.php</file>
-      <file>tests/pro/Integrations/TablePressStubsTest.php</file>
     </testsuite>
     <testsuite name="heavy">
       <file>tests/free/Compliance/FlavorBuildBlockersTest.php</file>

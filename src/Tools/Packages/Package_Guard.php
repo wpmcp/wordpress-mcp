@@ -19,6 +19,8 @@ class Package_Guard
     /** Plugin file paths (relative to the plugins dir) that may never be deactivated or deleted. */
     private const PROTECTED_PLUGINS = [
         'wpmcp/wpmcp.php',
+        // The licensed build installs to its own folder (the licensing SDK slug).
+        'wpmcp-pro/wpmcp.php',
         'elementor/elementor.php',
         'elementor-pro/elementor-pro.php',
     ];

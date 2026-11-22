@@ -13,8 +13,9 @@ requires_any:
 Every builder stores a page in its own format (JSON trees, shortcodes, HTML).
 The rule is the same as for Elementor: never regenerate a whole page. Read
 the tree, change one element by its path, and leave everything you did not
-model untouched. For Elementor use the `wpmcp-elementor-editing` skill; for
-the block editor, `wpmcp-block-editing`.
+model untouched. For Elementor, check list-skills for an Elementor editing
+skill and follow it when this site has one; for the block editor,
+`wpmcp-block-editing`.
 
 ## Orient first
 

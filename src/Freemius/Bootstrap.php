@@ -52,9 +52,10 @@ class Bootstrap
             'slug'                => 'wpmcp',
             'type'                => 'plugin',
             'public_key'          => WPMCP_FS_PUBLIC_KEY,
-            'is_premium'          => false,
+            'is_premium'          => self::is_premium_build(),
             'has_premium_version' => true,
             'premium_slug'        => 'wpmcp-pro',
+            'premium_suffix'      => 'Pro',
             'has_addons'          => false,
             'has_paid_plans'      => true,
             // wp.org guideline 7: consent must be an explicit, default-off
@@ -98,6 +99,29 @@ class Bootstrap
                 'override_exact' => true,
             ],
         ];
+    }
+
+    /**
+     * Whether this copy is the premium zip: wpmcp.php defines
+     * WPMCP_PREMIUM_BUILD from the .wpmcp-pro marker that only that zip
+     * carries.
+     */
+    public static function is_premium_build(): bool
+    {
+        $defined = defined('WPMCP_PREMIUM_BUILD');
+
+        return self::premium_flag($defined, $defined ? constant('WPMCP_PREMIUM_BUILD') : null);
+    }
+
+    /**
+     * True only for a defined constant whose value is exactly true.
+     *
+     * @param bool  $defined Whether WPMCP_PREMIUM_BUILD is defined.
+     * @param mixed $value   Its value, or null when it is not.
+     */
+    public static function premium_flag(bool $defined, mixed $value): bool
+    {
+        return $defined && true === $value;
     }
 
     /**

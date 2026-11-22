@@ -34,7 +34,7 @@ that matches the request with `wpmcp/get-skill`:
 - Translated content with TranslatePress, Polylang or WPML: `integrations/translation`.
 - Events in The Events Calendar or Modern Events Calendar: `integrations/events`.
 - Paid Memberships Pro levels, Paid Member Subscriptions plans: `integrations/memberships`.
-- Pages built with Elementor: `wpmcp-elementor-editing`.
+- Pages built with Elementor: `integrations/page-builders`.
 - Pages built with Bricks, Breakdance, Divi, Oxygen, WPBakery, Avada, Beaver Builder: `integrations/page-builders`.
 - Courses in Tutor LMS, LifterLMS or LearnDash: `integrations/lms`.
 - Contacts, lists and campaigns in FluentCRM or MailPoet: `integrations/crm`.

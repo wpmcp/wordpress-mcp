@@ -82,8 +82,15 @@ class SeoDataDisclosureTest extends \WP_UnitTestCase
     public function test_the_feature_is_removed_from_the_builds_whose_readmes_omit_it(): void
     {
         $policy = require $this->repository() . '/scripts/flavors/wporg/policy.php';
-        $this->assertContains('src/Tools/Analysis', $policy['removed_paths']);
-        $this->assertFileExists($this->repository() . '/src/Tools/Analysis/SeoData/Dataforseo_Provider.php');
+        if (\WPMCP\Tests\Support\Edition_Tree::is_split()) {
+            // The Pro split moved the feature to pro/: the public tree, which
+            // the directory builds are cut from, no longer carries it.
+            $this->assertTrue(\WPMCP\Tests\Support\Edition_Tree::is_pro_path('src/Tools/Analysis/SeoData/Dataforseo_Provider.php'));
+            $this->assertFileDoesNotExist($this->repository() . '/src/Tools/Analysis/SeoData/Dataforseo_Provider.php');
+        } else {
+            $this->assertContains('src/Tools/Analysis', $policy['removed_paths']);
+            $this->assertFileExists($this->repository() . '/src/Tools/Analysis/SeoData/Dataforseo_Provider.php');
+        }
 
         foreach (self::STRIPPED_READMES as $relative) {
             $contents = $this->readme($relative);

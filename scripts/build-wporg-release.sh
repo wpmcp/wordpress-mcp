@@ -65,6 +65,24 @@ find "$ROOT/languages" -maxdepth 1 \( -name '*.po' -o -name '*.mo' -o -name '*.l
 sed "s/{{VERSION}}/$VERSION/g" "$FLAVOR/$SLUG.php" > "$STAGE/$SLUG.php"
 sed "s/{{VERSION}}/$VERSION/g" "$FLAVOR/readme.txt" > "$STAGE/readme.txt"
 
+# The Pro leak gate (scripts/lib/pro-leak-gate.sh): nothing listed in
+# pro-manifest.txt may be staged at its public location, and the stage never
+# carries pro/ or the premium marker. Checked before the strip, so a Pro path
+# the strip happens to remove still fails, and again on the zip below.
+# shellcheck source=scripts/lib/pro-leak-gate.sh
+. "$ROOT/scripts/lib/pro-leak-gate.sh"
+MANIFEST="$(pro_manifest_file "$ROOT")"
+if [ "$CHECK_ONLY" = 1 ]; then LEAK_STRICT=0; else LEAK_STRICT=1; fi
+set +e
+pro_manifest_ready "$MANIFEST" "$LEAK_STRICT"
+manifest_status=$?
+set -e
+case "$manifest_status" in
+  0) assert_stage_no_pro_paths "$STAGE" "$MANIFEST" || { echo "ERROR: the $SLUG stage carries Pro-only paths" >&2; exit 1; } ;;
+  1) ;;
+  *) exit 1 ;;
+esac
+
 php "$FLAVOR/strip.php" "$STAGE"
 
 # The compiled module registry for this flavor, shipped as build/registry
@@ -467,6 +485,10 @@ case "$zip_status" in
   1) fail "an execution file is inside $ZIP" ;;
   *) fail "could not list $ZIP to check it for execution files" ;;
 esac
+
+# 6c. The Pro leak gate over the zip listing: no manifest path, no pro/, no
+#     premium marker.
+assert_no_pro_paths "$ZIP" "$SLUG" "$MANIFEST" || fail "$ZIP carries Pro-only paths"
 
 # 7. The compliance engine, in the profile that models the directory, run
 #    against the extracted zip rather than the checkout. This is the check

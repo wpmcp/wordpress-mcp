@@ -27,6 +27,7 @@ if ( null !== $wpmcp_registry_error ) {
 require $_tests_dir . '/includes/functions.php';
 
 require __DIR__ . '/support/plugins.php';
+require_once __DIR__ . '/support/edition-tree.php';
 require __DIR__ . '/support/network-guard.php';
 require __DIR__ . '/support/abilities-init.php';
 require __DIR__ . '/support/users.php';
