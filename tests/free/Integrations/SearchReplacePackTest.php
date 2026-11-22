@@ -141,8 +141,14 @@ class SearchReplacePackTest extends \WP_UnitTestCase
 
         $this->assertTrue($tables[ $wpdb->posts ]['writable']);
         $this->assertSame([ 'ID' ], $tables[ $wpdb->posts ]['primary_key']);
-        $this->assertFalse($tables[ $wpdb->users ]['writable']);
-        $this->assertFalse($tables[ $wpdb->usermeta ]['writable']);
+        if (is_multisite()) {
+            // The users tables are network tables, outside this site's prefix list.
+            $this->assertArrayNotHasKey($wpdb->users, $tables);
+            $this->assertArrayNotHasKey($wpdb->usermeta, $tables);
+        } else {
+            $this->assertFalse($tables[ $wpdb->users ]['writable']);
+            $this->assertFalse($tables[ $wpdb->usermeta ]['writable']);
+        }
         $this->assertFalse($tables[ Snapshot_Store::table_name() ]['writable']);
 
         $this->assertSame('Domain move', $out['profiles'][0]['name']);
@@ -188,8 +194,10 @@ class SearchReplacePackTest extends \WP_UnitTestCase
         global $wpdb;
         $this->assertSame('empty_search', $this->code($this->read('searchreplace-dry-run', [ 'search' => '  ', 'replace' => 'x', 'tables' => [ $wpdb->posts ] ])));
         $this->assertSame('nothing_to_replace', $this->code($this->read('searchreplace-dry-run', [ 'search' => 'a', 'replace' => 'a', 'tables' => [ $wpdb->posts ] ])));
-        $this->assertSame('table_refused', $this->code($this->read('searchreplace-dry-run', $this->args([ 'users' ]))));
-        $this->assertSame('table_refused', $this->code($this->read('searchreplace-dry-run', $this->args([ 'usermeta' ]))));
+        // On a network the users tables are not this site's tables at all.
+        $users_code = is_multisite() ? 'unknown_table' : 'table_refused';
+        $this->assertSame($users_code, $this->code($this->read('searchreplace-dry-run', $this->args([ 'users' ]))));
+        $this->assertSame($users_code, $this->code($this->read('searchreplace-dry-run', $this->args([ 'usermeta' ]))));
         $this->assertSame('table_refused', $this->code($this->read('searchreplace-dry-run', [ 'search' => 'a', 'replace' => 'b', 'tables' => [ Snapshot_Store::table_name() ] ])));
         $this->assertSame('unknown_table', $this->code($this->read('searchreplace-dry-run', [ 'search' => 'a', 'replace' => 'b', 'tables' => [ 'no_such_table_sr' ] ])));
     }

@@ -3369,6 +3369,7 @@ final class Plugin
             'gateway',
             'delete',
             null,
+            true,
             true
         ));
     }
@@ -5371,6 +5372,8 @@ final class Plugin
             'export',
             'read',
             // Not read-only (issue #420): each call writes a new export file.
+            false,
+            false,
             false
         ));
         $registrar->register(new Ability(
@@ -5576,6 +5579,7 @@ final class Plugin
             'backup',
             'update',
             false,
+            true,
             true
         ));
     }
@@ -5830,6 +5834,7 @@ final class Plugin
             'sync',
             'update',
             false,
+            true,
             true
         ));
     }
@@ -6337,6 +6342,8 @@ final class Plugin
             'read',
             // Not read-only (issue #420): mail_test + confirm sends a test email.
             // Still operation 'read', so scoped read identities keep Site Health.
+            false,
+            false,
             false
         ));
     }
@@ -9409,6 +9416,8 @@ final class Plugin
             'seo',
             'read',
             // Not read-only (issue #420): background:true stores a scan and schedules cron.
+            false,
+            false,
             false
         ));
     }
