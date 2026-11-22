@@ -50,6 +50,7 @@ class PackObjectCapabilityRegistryTest extends \WP_UnitTestCase
         'plugin-data:code-snippets-update-snippet:id' => 'a Code Snippets snippet row in its own table, behind manage_options (Code Snippets\' own capability)',
         'plugin-data:code-snippets-activate-snippet:id' => 'a Code Snippets snippet row in its own table, behind manage_options (Code Snippets\' own capability)',
         'plugin-data:code-snippets-deactivate-snippet:id' => 'a Code Snippets snippet row in its own table, behind manage_options (Code Snippets\' own capability)',
+        'plugin-data:code-snippets-trash-snippet:id' => 'a Code Snippets snippet row in its own table, behind manage_options (Code Snippets\' own capability)',
         'theme:get-consent-settings:banner_id' => 'a Complianz or CookieYes banner row in the plugin\'s own table, behind manage_options (both plugins\' banner screens take it)',
         'theme:update-consent-banner-texts:banner_id' => 'a Complianz or CookieYes banner row in the plugin\'s own table, behind manage_options (both plugins\' banner screens take it)',
         'theme:get-privacy-request:request_id' => 'a core personal data request (a user_request post, never a content post), behind manage_options plus export_others_personal_data or erase_others_personal_data for its type',

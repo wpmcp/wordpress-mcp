@@ -269,6 +269,18 @@ namespace Code_Snippets {
             return get_snippet($id);
         }
 
+        /** Like Code Snippets 3.8+: active -1, refused for a locked snippet. */
+        function trash_snippet(int $id, ?bool $network = null): bool
+        {
+            global $wpdb;
+            if (is_snippet_locked($id)) {
+                return false;
+            }
+            $wpdb->update(code_snippets()->db->get_table_name(), [ 'active' => '-1' ], [ 'id' => $id ], [ '%d' ]);
+            clean_snippets_cache(code_snippets()->db->get_table_name());
+            return true;
+        }
+
         function delete_snippet(int $id, ?bool $network = null): bool
         {
             global $wpdb;
