@@ -130,9 +130,12 @@ class Sql_Importer
      *
      * @param callable(array, array): void|null $after Called after each
      *        successful statement with the statement and its classification.
-     * @return array{executed: int, failure: ?array}
+     * @param callable(array, array): bool|null $before Called before each
+     *        statement runs; false stops the import there with aborted:true
+     *        and nothing more is executed (issue #1124).
+     * @return array{executed: int, failure: ?array, aborted?: bool}
      */
-    public function import(?string $placeholder = null, ?callable $after = null): array
+    public function import(?string $placeholder = null, ?callable $after = null, ?callable $before = null): array
     {
         global $wpdb;
 
@@ -149,6 +152,14 @@ class Sql_Importer
                     return [
                         'executed' => $executed,
                         'failure'  => self::failure($statement, null, $e->getMessage()),
+                    ];
+                }
+
+                if (null !== $before && false === $before($statement, $class)) {
+                    return [
+                        'executed' => $executed,
+                        'failure'  => self::failure($statement, $class, 'The import was stopped before this statement.'),
+                        'aborted'  => true,
                     ];
                 }
 

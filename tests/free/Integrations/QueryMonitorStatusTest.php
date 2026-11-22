@@ -268,6 +268,26 @@ class QueryMonitorStatusTest extends \WP_UnitTestCase
         $this->assertStringStartsWith('https://api.example.net/v1/check?', $out['http']['requests'][0]['url']);
     }
 
+    /**
+     * Issue #1157: a long statement (a large serialized option value) made
+     * the masking regex hit PCRE's JIT stack limit, and its null result came
+     * back as "sql": "". It is listed masked and cut, never empty, never raw.
+     */
+    public function test_a_query_longer_than_the_pcre_limit_is_listed_masked(): void
+    {
+        $value = serialize(array_fill(0, 3000, 'LONGSECRET-' . str_repeat('x', 20))); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- fixture.
+        $sql   = "UPDATE `wp_options` SET `option_value` = '" . addslashes($value) . "' WHERE `option_name` = 'rcp_settings'";
+        $this->assertGreaterThan(90000, strlen($sql));
+        $this->collector_data['db_queries']['rows'][] = [ 'sql' => $sql, 'ltime' => 0.9, 'stack' => [ 'update_option()' ], 'result' => 1 ];
+
+        $slowest = $this->profile()['database']['slowest'];
+        $row     = $slowest[0];
+        $this->assertSame(0.9, $row['time_seconds']);
+        $this->assertStringStartsWith('UPDATE `wp_options` SET `option_value` = \'', $row['sql']);
+        $this->assertStringNotContainsString('LONGSECRET', (string) wp_json_encode($slowest));
+        $this->assertLessThanOrEqual(1003, strlen($row['sql']));
+    }
+
     public function test_limit_caps_the_slowest_queries(): void
     {
         $out = $this->profile([ 'limit' => 1 ]);

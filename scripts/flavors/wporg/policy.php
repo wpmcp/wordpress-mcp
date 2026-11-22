@@ -223,6 +223,8 @@ return [
         'src/Integrations/LMS_Tutor.php',
         'src/Integrations/LMS_LifterLMS.php',
         'src/Integrations/LMS_LearnDash.php',
+        'src/Integrations/LMS_LearnPress.php',
+        'src/Integrations/LMS_Sensei.php',
         // TablePress tables (issue #481), paid-tier. strip.php takes out the
         // lines in Plugin_Data_Integration that merge the ops, count the pack
         // towards availability and name it, and its hooks in Plugin.
@@ -316,6 +318,22 @@ return [
         'src/Integrations/Mailing_List_Newsletter.php',
         'src/Integrations/Mailing_List_Groundhogg.php',
         'src/Integrations/Mailing_List_Remote.php',
+        // Jetpack CRM contacts and forms and HubSpot forms (issue #684),
+        // paid-tier. strip.php takes out the lines in Plugin_Data_Integration
+        // that merge the ops and count the packs towards availability. The
+        // jpcrm kind of Plugin_Table_Rows_Snapshot stays: it acts on Jetpack
+        // CRM's own table and names no paid class.
+        'src/Integrations/Jetpack_Crm_Pack.php',
+        'src/Integrations/HubSpot_Pack.php',
+        // Appointment booking plugins (issue #679), paid-tier. strip.php
+        // takes out the lines in Plugin_Data_Integration that merge the ops
+        // and count the pack towards availability.
+        'src/Integrations/Booking_Pack.php',
+        'src/Integrations/Booking_Adapter.php',
+        'src/Integrations/Booking_Bookly.php',
+        'src/Integrations/Booking_Simply_Schedule.php',
+        'src/Integrations/Booking_BookingPress.php',
+        'src/Integrations/Booking_LatePoint.php',
         // WPCode snippets and global scripts (issue #697), paid-tier.
         // strip.php takes out the lines in Plugin_Data_Integration that merge
         // the ops and count the pack towards availability, and its rollback
