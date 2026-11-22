@@ -557,6 +557,39 @@ return [
             ["use WPMCP\\Tools\\Backup\\Restore_Site_Backup;\n", '', 1],
             ["        \$restore = Restore_Site_Backup::is_running();\n", "        \$restore = false;\n", 1],
         ],
+        // Safe package updates (issue #843) keep the folder archive and the
+        // options; the package-tables replay goes with the SQL importer
+        // (issue #1147), so this build says the tables are not covered.
+        'src/Tools/Packages/Package_Tables_Snapshot.php' => [
+            ["use WPMCP\\Tools\\Backup\\Sql_Import_Policy;\n", '', 1],
+            ["use WPMCP\\Tools\\Backup\\Sql_Importer;\n", '', 1],
+            ["    public static function available(): bool\n    {\n        return true;\n    }\n", "    public static function available(): bool\n    {\n        return false;\n    }\n", 1],
+            ["        return self::import(\$path, \$tables);\n", "        unset(\$path, \$tables);\n\n        return [ self::unavailable_reason() ];\n", 1],
+            [
+                "    /**\n"
+                    . "     * @param string[] \$tables\n"
+                    . "     * @return string[] warnings\n"
+                    . "     */\n"
+                    . "    private static function import(string \$path, array \$tables): array\n"
+                    . "    {\n"
+                    . "        \$wpdb = \$GLOBALS['wpdb'] ?? null;\n"
+                    . "        if (! \$wpdb instanceof \\wpdb) {\n"
+                    . "            return [ 'The package\\'s tables could not be put back: no database connection.' ];\n"
+                    . "        }\n"
+                    . "\n"
+                    . "        try {\n"
+                    . "            \$importer = new Sql_Importer(\$path, new Sql_Import_Policy(\$wpdb->prefix, \$tables));\n"
+                    . "            \$scan     = \$importer->scan();\n"
+                    . "            \$result   = \$importer->import(\$scan['placeholder']);\n"
+                    . "            return null === \$result['failure'] ? [] : [ 'Some of the package\\'s table rows could not be put back.' ];\n"
+                    . "        } catch (\\Throwable \$e) {\n"
+                    . "            return [ 'The package\\'s tables could not be put back: ' . \$e->getMessage() ];\n"
+                    . "        }\n"
+                    . "    }\n",
+                '',
+                1,
+            ],
+        ],
         // The core update's undo advice named restore-site-backup; the
         // archive it insists on is still taken and its job id still returned.
         'src/Tools/Packages/Manage_Updates.php' => [

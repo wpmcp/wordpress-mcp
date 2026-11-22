@@ -211,6 +211,7 @@ use WPMCP\Tools\Packages\Deactivate_Plugin;
 use WPMCP\Tools\Packages\Install_Plugin;
 use WPMCP\Tools\Packages\Update_Plugin;
 use WPMCP\Tools\Packages\Manage_Updates;
+use WPMCP\Tools\Packages\Safe_Package_Update;
 use WPMCP\Tools\Packages\Delete_Plugin;
 use WPMCP\Tools\Packages\List_Themes;
 use WPMCP\Tools\Packages\Switch_Theme;
@@ -2502,20 +2503,20 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/manage-updates',
             'free',
-            'Update WordPress core or set plugin/theme auto-updates. type=core applies the offered core update (or pending DB upgrade); needs confirm:true and a full backup (trigger-backup type=full) under 1h old; refuses if expected_version differs from the offer. A core update cannot be snapshot-rolled-back; restore that backup to revert. type=plugin|theme + item + enabled sets auto-update (undoable)',
+            'Update WordPress core or set plugin/theme auto-updates. type=core applies the offered core update (or pending DB upgrade); needs confirm:true and a full backup (trigger-backup type=full) under 1h old; refuses if expected_version differs from the offer. A core update cannot be snapshot-rolled-back; restore that backup to revert. type=plugin|theme + item + enabled sets auto-update (undoable). type=plugins|themes: action=plan lists pending updates; run (opt-in wpmcp_enable_safe_updates, confirm:true) snapshots each, updates, checks the site and auto-restores a broken one; status (run_id); restore (run_id, items)',
             [
                 'type'       => 'object',
                 'properties' => [
                     'type'             => [
                         'type' => 'string',
-                        'enum' => ['core', 'plugin', 'theme'],
+                        'enum' => ['core', 'plugin', 'theme', 'plugins', 'themes'],
                     ],
                     'item'             => [ 'type' => 'string' ],
                     'enabled'          => [ 'type' => 'boolean' ],
                     'expected_version' => [ 'type' => 'string' ],
                     'confirm'          => [ 'type' => 'boolean' ],
                     'session_id'       => [ 'type' => 'string' ],
-                ],
+                ] + Safe_Package_Update::input_properties(),
                 'required'   => [ 'type' ],
             ],
             [$manage_updates, 'handle'],
