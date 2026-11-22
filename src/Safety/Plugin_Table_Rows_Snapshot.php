@@ -85,11 +85,18 @@ if (! defined('ABSPATH')) {
  * course it touched is rebuilt through LearnPress's own course model, as its
  * curriculum editor does after a change.
  *
+ * Easy Digital Downloads discounts (issue #664, the `edd_adjustments` table,
+ * the one suffix "adjustments") are keyed by their own id; a create
+ * reserves its id the same way. EDD reads the table through BerlinDB, which
+ * caches rows and query results in the object cache, so after a restore the
+ * cached lookups of the table are retired (purge_edd_cache()), the way
+ * BerlinDB's own writes do.
+ *
  * Restoring takes the capability the write itself needs: edit_post on each
  * captured post for a Pods row, a MemberPress rule's rows or a LearnPress
  * course's sections, edit_post on the course a LearnPress section belongs to
  * for that section's items, manage_options
- * for a dictionary row, a Pretty Links link or a Restrict Content level, and Wordfence's own admin capability (manage_options,
+ * for a dictionary row, a Pretty Links link, a Restrict Content level or an EDD discount, and Wordfence's own admin capability (manage_options,
  * manage_network on a multisite network) for a Wordfence row.
  */
 final class Plugin_Table_Rows_Snapshot
@@ -109,6 +116,7 @@ final class Plugin_Table_Rows_Snapshot
         'rcp_levels'       => 'restrict_content_',
         'learnpress_sections'      => 'learnpress_',
         'learnpress_section_items' => 'learnpress_',
+        'edd'              => 'edd_',
     ];
 
     /**
@@ -146,6 +154,7 @@ final class Plugin_Table_Rows_Snapshot
         'rcp_levels'       => [ 'pro' ],
         'learnpress_sections'      => [ 'sections' ],
         'learnpress_section_items' => [ 'section_items' ],
+        'edd'              => [ 'adjustments' ],
     ];
 
     /**
@@ -481,6 +490,9 @@ final class Plugin_Table_Rows_Snapshot
         if ('learnpress_section_items' === $kind) {
             self::refresh_learnpress_courses(self::learnpress_courses_of($ids));
         }
+        if ('edd' === $kind) {
+            self::purge_edd_cache((string) $data['suffix'], $ids);
+        }
         self::after_wordfence_restore($kind);
     }
 
@@ -497,6 +509,32 @@ final class Plugin_Table_Rows_Snapshot
             wp_cache_delete((int) $id, 'rcp-membership_levels');
         }
         wp_cache_set('last_changed', microtime(), 'rcp-membership_levels');
+    }
+
+    /**
+     * Retire Easy Digital Downloads' cached lookups for rows of one of its
+     * tables, as BerlinDB does after its own writes: the rows cached by id
+     * (group edd-<suffix>) are dropped, and the last_changed stamp of the
+     * table's query cache and of each by-column lookup group
+     * (edd-<suffix>-by-<column>) is rotated, so every cached result is
+     * rebuilt on the next read.
+     *
+     * @param array<int, int|string> $ids
+     */
+    public static function purge_edd_cache(string $suffix, array $ids): void
+    {
+        $table = self::table('edd', $suffix);
+        if (null === $table) {
+            return;
+        }
+        $group = 'edd-' . $suffix;
+        foreach ($ids as $id) {
+            wp_cache_delete((int) $id, $group);
+        }
+        wp_cache_set('last_changed', microtime(), $group);
+        foreach (self::columns($table) as $column) {
+            wp_cache_set('last_changed', microtime(), $group . '-by-' . $column);
+        }
     }
 
     /**
@@ -629,30 +667,27 @@ final class Plugin_Table_Rows_Snapshot
         $live   = self::columns($table);
         $binary = self::BINARY_COLUMNS[ $kind ];
         foreach ($rows as $row) {
-            $columns = [];
-            $values  = [];
-            $names   = [];
-            $args    = [];
+            $values = [];
+            $names  = [];
+            $args   = [];
             foreach ((array) $row as $column => $value) {
                 $column = (string) $column;
                 if (! in_array($column, $live, true)) {
                     throw new Mutation_Failed('Could not restore a row of ' . esc_html($table) . ': its column ' . esc_html($column) . ' is gone.');
                 }
-                $columns[] = '%i';
-                $names[]   = $column;
-                if (null === $value) {
-                    $values[] = 'NULL';
-                    continue;
+                $names[] = $column;
+                // Each value is one of three literals: NULL, %s, or UNHEX(%s)
+                // for a binary column.
+                $values[] = (null === $value ? 'NULL' : (in_array($column, $binary, true) ? 'UNHEX(%s)' : '%s'));
+                if (null !== $value) {
+                    $args[] = (string) $value;
                 }
-                $values[] = in_array($column, $binary, true) ? 'UNHEX(%s)' : '%s';
-                $args[]   = (string) $value;
             }
-            if ([] === $columns) {
+            if ([] === $names) {
                 continue;
             }
-            $sql = 'INSERT INTO %i (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ')';
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- third-party table with no WP API; $sql holds only %i, %s, UNHEX(%s) and NULL.
-            if (false === $wpdb->query($wpdb->prepare($sql, $table, ...$names, ...$args))) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- third-party table with no WP API; one %i per column, and $values holds only %s, UNHEX(%s) and NULL.
+            if (false === $wpdb->query($wpdb->prepare('INSERT INTO %i (' . implode(', ', array_fill(0, count($names), '%i')) . ') VALUES (' . implode(', ', $values) . ')', $table, ...$names, ...$args))) {
                 throw new Mutation_Failed('Could not restore a row of ' . esc_html($table) . ': ' . esc_html($wpdb->last_error));
             }
         }
@@ -735,6 +770,12 @@ final class Plugin_Table_Rows_Snapshot
                 throw new Mutation_Failed('Rollback refused: restoring the items of a LearnPress section that is gone requires the manage_options capability.');
             }
             $ids = array_values(array_filter($ids));
+        }
+        if ('edd' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring Easy Digital Downloads discounts requires the manage_options capability.');
+            }
+            return;
         }
         foreach ($ids as $id) {
             if (current_user_can('edit_post', $id)) {
