@@ -34,7 +34,7 @@ The difference: **every supported write takes a snapshot first.** If the agent g
 * Elementor: widgets, templates, theme builder, popups, global styles, custom widget building
 * Bricks and Divi structural editing
 * WooCommerce, ACF, Meta Box, JetEngine, Pods, TranslatePress, Yoast, Rank Math, SEOPress, The SEO Framework, SureRank, Slim SEO, Redirection; with Pro, All in One SEO
-* Forms: Contact Form 7 (forms, fields, notifications, and Flamingo-stored entries), Forminator, SureForms, MetForm, WS Form (forms, fields, actions and notifications, submissions listed with values masked and read one at a time, undoable status changes and deletes off until the site turns them on); with Pro, the forms adapter pack for Gravity Forms, WPForms, Formidable, Ninja Forms and Fluent Forms
+* Forms: Contact Form 7 (forms, fields, notifications, and Flamingo-stored entries), Forminator, SureForms, MetForm, WS Form (forms, fields, actions and notifications, submissions listed with values masked and read one at a time, undoable status changes and deletes off until the site turns them on), Everest Forms (forms, fields and notifications, entries listed masked and read one at a time, undoable spam, star and read changes and deletes off until the site turns them on); with Pro, the forms adapter pack for Gravity Forms, WPForms, Formidable, Ninja Forms and Fluent Forms
 * Events, donations, memberships (read)
 * GiveWP: donations, donors and campaigns listed with donor names and emails masked and read one at a time in full, a donation summary by status and currency, donation form title, status, amount and goal edits (undoable) and donation status changes (asks for confirmation, totals and emails not undoable); both writes are off until the site turns them on
 * BuddyPress and BuddyBoss Platform: groups (with their linked forums), group members, activity moderation and extended profile fields; BuddyBoss forums through the bbPress tools
@@ -49,13 +49,17 @@ The difference: **every supported write takes a snapshot first.** If the agent g
 * Image optimization: Smush, ShortPixel, EWWW Image Optimizer and Imagify status (compression level, WebP and AVIF, images optimized and pending, cached quota, API keys never returned), and one image optimized through the plugin itself, undoable (off until the site turns it on)
 * WPGraphQL (read): run GraphQL queries as the signed-in user, with mutations refused and emails, phones and IPs masked, and summarise the schema
 * WP Mail SMTP: the active mailer and from identity with credentials never returned, the Pro email log, a test send to your own address, and an undoable from name and address change
+* Cookie consent banners for Complianz, CookieYes and Cookie Notice: banner status, consent settings with keys never returned, the cookies a scan found, undoable banner text changes shown before and after, and a Complianz scan restart (off until the site turns them on)
 * With Pro, FunnelKit funnels and their steps, with linked pages, products and step counts, and changes to funnels, steps and checkout products through FunnelKit itself (free Funnel Builder), each one undoable; with Funnel Builder Pro, checkout order bumps too: list, create, rename, switch on or off, set products with quantity and discount, and delete
 * With Pro, CartFlows flows and their steps with checkout products (read), and flows created, steps added, reordered and switched on or off, and checkout products set, each one undoable and off until the site turns them on
-* With Pro, Tutor LMS, LifterLMS and LearnDash: courses, sections, lessons and quizzes (read and undoable writes) and enrollments (read); LearnDash also lists a learner's courses with progress and can enroll, unenroll or reset progress (off until the site turns them on), each undoable
+* With Pro, Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS: courses, sections (Sensei LMS modules, read only), lessons and quizzes (read and undoable writes) and enrollments (read); LearnDash also lists a learner's courses with progress and can enroll, unenroll or reset progress (off until the site turns them on), each undoable
 * With Pro, MemberPress: memberships and access rules (read and undoable writes, off until the site turns them on), members and transactions (read)
 * With Pro, BetterDocs: knowledge base docs and categories (read, and undoable doc creates and edits)
+* With Pro, Newsletter, Groundhogg, MC4WP and Brevo: setup, lists and forms (read), contacts for Newsletter and Groundhogg (read, emails masked in lists), and undoable Newsletter contact writes (create, update, unsubscribe, add to and remove from lists), off until the site turns them on
 * With Pro, WP Offload Media (read): the storage provider, bucket and offload switches with credentials never returned, how many attachments are offloaded, and per attachment whether it is in the bucket, its object key and the URL the site serves
+* With Pro, Jetpack CRM: contacts (read, names, emails and phones masked in lists) and forms (read), and undoable contact creates and edits through Jetpack CRM itself, off until the site turns them on; HubSpot: the connected account and every HubSpot form placed on the site (read, tokens never returned)
 * With Pro, Fluent Support and Awesome Support: tickets and their threads (read, customer emails masked in lists), and undoable replies, notes and status changes, off until the site turns them on
+* With Pro, Bookly, Simply Schedule Appointments, BookingPress and LatePoint: services, staff and bookings (read, customers masked in lists and shown in full one booking at a time), and undoable cancellations that send no email, off until the site turns them on
 * With Pro, WPCode: snippets and the global header and footer scripts read, and undoable snippet creates (always inactive), edits, activation and deactivation and global script changes, off until the site turns them on; PHP activation needs PHP execution enabled and HTML, CSS and JS activation needs custom code injection enabled
 * With Pro, SureCart: products, orders, customers (masked) and coupons read, and undoable product edits and coupon creates (off until the site turns them on)
 * With Pro, Weglot and GTranslate: languages and URL exclusions read (Weglot API keys never returned), and undoable GTranslate language list changes (off until the site turns them on)
@@ -271,6 +275,7 @@ New:
 * bbPress topic tags on get-topic and list-topics, with a tag filter (#882).
 * Kadence element expiry settings in the layout operations (#892).
 * MemberPress update-rule adds or removes one access condition, and create-membership fills in the same defaults as wp-admin (#822).
+* wpForo and Asgaros Forum: forums, topics and replies, with the bbPress operation names. wpForo topics can be closed, opened and moved; Asgaros Forum topics and replies can be posted, moderated, moved and deleted. Writes are off until the site turns them on, and each can be undone (#671).
 
 = 0.9.1 =
 This update tightens privacy and credential handling across many integrations and adds a dozen new ones.

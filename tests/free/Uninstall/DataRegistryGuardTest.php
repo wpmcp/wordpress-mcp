@@ -101,6 +101,9 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             // GTranslate's settings, whose language lists the
             // gtranslate-set-languages op changes (issue #690).
             'GTranslate',
+            // Cookie Notice's settings, whose banner texts the
+            // update-consent-banner-texts op changes (issue #686).
+            'cookie_notice_options',
             // WPCode's global header, body and footer scripts, replaced by
             // the wpcode-set-header-footer op (issue #697).
             'ihaf_insert_header',
