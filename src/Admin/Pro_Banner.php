@@ -257,7 +257,7 @@ class Pro_Banner
             <p class="wpmcp-pro-banner__eyebrow"><?php esc_html_e('WP MCP Pro', 'wpmcp'); ?></p>
             <h2><?php esc_html_e('Pro keeps every snapshot, and builds Elementor pages too.', 'wpmcp'); ?></h2>
             <ul>
-                <li><?php esc_html_e('Unlimited snapshot history and session restore', 'wpmcp'); ?></li>
+                <li><?php esc_html_e('Unlimited snapshot history while your licence is active', 'wpmcp'); ?></li>
                 <li><?php esc_html_e('Deep Elementor editing and page building', 'wpmcp'); ?></li>
                 <li><?php esc_html_e('Custom widget and block builders, forms adapter pack', 'wpmcp'); ?></li>
                 <li><?php esc_html_e('WP MCP Cloud sync and priority support', 'wpmcp'); ?></li>
