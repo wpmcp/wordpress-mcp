@@ -2838,6 +2838,8 @@ final class Plugin
                     'max_files'       => [ 'type' => 'integer' ],
                     'max_seconds'     => [ 'type' => 'integer' ],
                     'vulnerabilities' => [ 'type' => 'boolean' ],
+                    // Issue #1151: scan_meta.compromise.next_cursor of a truncated compromise scan.
+                    'cursor'          => [ 'type' => 'string' ],
                 ],
             ],
             [$scan_security, 'handle'],
