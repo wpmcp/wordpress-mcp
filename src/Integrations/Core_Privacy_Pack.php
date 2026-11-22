@@ -122,7 +122,7 @@ final class Core_Privacy_Pack
                 'mode'                 => 'destructive',
                 'self_snapshotting'    => true,
                 'confirm_in_arguments' => true,
-                'description'          => 'File a personal data erasure request for an email address, as Tools > Erase Personal Data does. It erases nothing itself: an administrator runs the erasure from that screen once the request is confirmed. Needs confirm:true in the call\'s own arguments; the refusal shows the email, the matching user and the registered erasers first. send_email:true mails the confirmation link and leaves it pending; without it the request is filed as confirmed. Undo: rollback-session trashes the request. Disabled by default (wpmcp_enable_core_privacy_write filter)',
+                'description'          => 'File a personal data erasure request for an email address, as Tools > Erase Personal Data does. It erases nothing itself: an administrator runs the erasure from that screen once the request is confirmed. Needs the top-level confirm:true parameter of theme-write, next to operation and args (not inside args); the refusal shows the email, the matching user and the registered erasers first. send_email:true mails the confirmation link and leaves it pending; without it the request is filed as confirmed. Undo: rollback-session trashes the request. Disabled by default (wpmcp_enable_core_privacy_write filter)',
                 'input_schema'         => $create,
                 'validate'             => static fn (array $args): ?array => self::create_refusal('erasure', (string) $args['email']),
                 'confirm_preview'      => static fn (array $args): array => self::erasure_preview($args),
