@@ -782,6 +782,8 @@ class Snapshot
             'data'        => [
                 'comment' => $comment ?: null,
                 'meta'    => get_comment_meta($comment_id),
+                // Direct replies, relinked if the comment is resurrected (issue #1200).
+                'replies' => Comment_Replies::capture($comment_id),
             ],
         ];
     }
