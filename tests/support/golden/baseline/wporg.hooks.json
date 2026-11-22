@@ -1,0 +1,6483 @@
+{
+  "frontend": {
+    "added": {
+      "activate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Activator::activate",
+          1
+        ]
+      ],
+      "add_meta_boxes": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->add_meta_box",
+          1
+        ]
+      ],
+      "added_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "admin_bar_menu": [
+        [
+          100,
+          "WPMCP\\Connect\\Exposure::admin_bar",
+          1
+        ]
+      ],
+      "admin_init": [
+        [
+          10,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Handshake_Settings_Page::register_setting",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Skills_Settings_Page::register_setting",
+          1
+        ]
+      ],
+      "admin_menu": [
+        [
+          10,
+          "WPMCP\\Plugin->register_admin_menu",
+          1
+        ]
+      ],
+      "admin_notices": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements->render_notices",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Snapshot_Retention_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Backup_Dir_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\New_Tools_Notice::render",
+          1
+        ]
+      ],
+      "admin_post_nopriv_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page::require_login",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_ack_snapshot_retention": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_announcement": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_new_tools": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_download_bundle": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_export_request_log": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page->handle",
+          1
+        ]
+      ],
+      "deactivate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Deactivator::deactivate",
+          1
+        ]
+      ],
+      "deleted_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_delete",
+          2
+        ]
+      ],
+      "determine_current_user": [
+        [
+          20,
+          "WPMCP\\Auth\\Bearer_Auth::resolve",
+          1
+        ]
+      ],
+      "init": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::apply_error_display",
+          1
+        ],
+        [
+          5,
+          "WPMCP\\Memory\\Memory_Store::ensure_post_type",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Cloud\\Cloud_Credentials::maybe_migrate_on_boot",
+          1
+        ],
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Template_Store::ensure_post_type",
+          1
+        ],
+        [
+          20,
+          "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
+          1
+        ],
+        [
+          20,
+          "closure@src/Plugin.php:773",
+          1
+        ]
+      ],
+      "map_meta_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_map_meta_cap",
+          4
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_caps",
+          2
+        ]
+      ],
+      "mcp_adapter_create_default_server": [
+        [
+          10,
+          "__return_false",
+          1
+        ]
+      ],
+      "mcp_adapter_init": [
+        [
+          10,
+          "WPMCP\\MCP\\Server::create_server",
+          1
+        ]
+      ],
+      "mcp_adapter_initialize_response": [
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Instructions->filter_initialize",
+          3
+        ]
+      ],
+      "mcp_adapter_tool_call_result": [
+        [
+          99,
+          "WPMCP\\MCP\\Structured_Result->filter_result",
+          1
+        ]
+      ],
+      "mcp_adapter_tools_list": [
+        [
+          10,
+          "WPMCP\\MCP\\Tool_Exposure->filter_tools_list",
+          2
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Output_Schemas->filter_tools_list",
+          3
+        ]
+      ],
+      "network_admin_menu": [
+        [
+          10,
+          "WPMCP\\Admin\\Opt_In_Settings_Page::register_network_menu",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_handshake": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_skills": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "parse_request": [
+        [
+          1,
+          "WPMCP\\Auth\\Endpoints::maybe_serve_well_known",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Gateway\\Gateway_Guard::enforce_dispatched_route",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\MCP\\Discovery_Endpoints::maybe_serve",
+          1
+        ]
+      ],
+      "plugins_loaded": [
+        [
+          20,
+          "WPMCP\\MCP\\Server::boot",
+          1
+        ]
+      ],
+      "request": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_query_vars",
+          1
+        ]
+      ],
+      "rest_api_init": [
+        [
+          1,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Endpoints->register",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Media\\Upload_Grant::register_routes",
+          1
+        ]
+      ],
+      "rest_dispatch_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Modern_Http_Bridge::dispatch",
+          4
+        ]
+      ],
+      "rest_post_dispatch": [
+        [
+          10,
+          "WPMCP\\Auth\\Bearer_Auth::add_challenge_header",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Timing::add_header",
+          3
+        ],
+        [
+          11,
+          "WPMCP\\Auth\\App_Passwords_Status::explain_unauthorized",
+          3
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ]
+      ],
+      "rest_pre_dispatch": [
+        [
+          1,
+          "WPMCP\\Identity\\Ip_Allowlist::filter_pre_dispatch",
+          3
+        ],
+        [
+          5,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_rest_users",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_dispatch",
+          3
+        ]
+      ],
+      "rest_pre_serve_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_serve",
+          4
+        ]
+      ],
+      "rest_request_after_callbacks": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Call_Source::leave_rest",
+          3
+        ]
+      ],
+      "rest_request_before_callbacks": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Call_Source::enter_rest",
+          3
+        ]
+      ],
+      "robots_txt": [
+        [
+          100,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_robots",
+          2
+        ]
+      ],
+      "save_post": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_save_post",
+          2
+        ]
+      ],
+      "save_post_wpmcp_memory": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->save_meta_box",
+          1
+        ]
+      ],
+      "template_redirect": [
+        [
+          0,
+          "closure@src/Tools/SEO/Crawler_Files.php:71",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Tools\\Redirects\\Redirect_Handler->maybe_redirect",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Maintenance\\Maintenance_Guard->enforce",
+          1
+        ]
+      ],
+      "the_generator": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_generator",
+          1
+        ]
+      ],
+      "transition_post_status": [
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_transition",
+          3
+        ]
+      ],
+      "trashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          1
+        ]
+      ],
+      "untrashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_untrashed_post",
+          1
+        ]
+      ],
+      "updated_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "user_has_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_user_has_cap",
+          4
+        ]
+      ],
+      "woocommerce_delete_shipping_zone": [
+        [
+          10,
+          "\\WPMCP\\Safety\\Wc_Shipping_Zone_Snapshot::forget_creation",
+          1
+        ]
+      ],
+      "wp": [
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Render\\Adapters::boot",
+          1
+        ]
+      ],
+      "wp_abilities_api_categories_init": [
+        [
+          10,
+          "WPMCP\\Plugin->register_ability_category",
+          1
+        ]
+      ],
+      "wp_abilities_api_init": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_start",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Plugin->register_abilities",
+          1
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_end",
+          1
+        ]
+      ],
+      "wp_ability_execute_result": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::execute_result",
+          2
+        ]
+      ],
+      "wp_ability_invoked": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Registrar::note_invoked",
+          1
+        ]
+      ],
+      "wp_ability_permission_result": [
+        [
+          9223372036854775806,
+          "WPMCP\\MCP\\Registrar::permission_result",
+          2
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::permission_result",
+          2
+        ]
+      ],
+      "wp_ability_validate_input": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_input",
+          3
+        ]
+      ],
+      "wp_ability_validate_output": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_output",
+          3
+        ]
+      ],
+      "wp_after_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_redirect_suggestion": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_restore": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_undo_session": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_before_execute_ability": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Site_Wide_Governance::before_execute",
+          1
+        ]
+      ],
+      "wp_delete_nav_menu": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_deleted",
+          1
+        ]
+      ],
+      "wp_headers": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_headers",
+          1
+        ]
+      ],
+      "wp_initialize_site": [
+        [
+          20,
+          "WPMCP\\Site_Tables::initialize_site",
+          1
+        ]
+      ],
+      "wp_insert_post_data": [
+        [
+          99,
+          "WPMCP\\Tools\\Content\\Post_Stage::keep_stage_unpublished",
+          2
+        ]
+      ],
+      "wp_pre_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::pre_execute",
+          4
+        ]
+      ],
+      "wp_privacy_personal_data_erasers": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::erasers",
+          1
+        ]
+      ],
+      "wp_privacy_personal_data_exporters": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::exporters",
+          1
+        ]
+      ],
+      "wp_robots": [
+        [
+          10,
+          "WPMCP\\Tools\\Content\\Post_Stage::noindex_stage",
+          1
+        ]
+      ],
+      "wp_sitemaps_add_provider": [
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_sitemap_provider",
+          2
+        ]
+      ],
+      "wp_sitemaps_post_types": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_post_types",
+          1
+        ]
+      ],
+      "wp_sitemaps_posts_query_args": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_posts_query",
+          1
+        ]
+      ],
+      "wp_sitemaps_taxonomies": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_taxonomies",
+          1
+        ]
+      ],
+      "wp_update_nav_menu": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wp_update_nav_menu_item": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wpmcp_ability_enabled": [
+        [
+          10,
+          "WPMCP\\Connect\\Exposure::filter_ability_enabled",
+          1
+        ]
+      ],
+      "wpmcp_bearer_token_accepted": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_bearer_token_accepted",
+          2
+        ]
+      ],
+      "wpmcp_cloud_credentials_changed": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements::flush",
+          1
+        ]
+      ],
+      "wpmcp_current_identity": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_current_identity",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_enable_acf_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_action_scheduler_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_advanced_ads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_asgaros_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_backup_plugin_run": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_consent_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_patterns_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_site_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_edd_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_events_manager_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_font_library_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_foogallery_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_give_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hardening_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_image_optimizer_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_listings_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_metabox_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_optinmonster_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pods_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_popup_maker_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_publishpress_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_seo_redirect_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_gate_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smtp_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_theme_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thirstyaffiliates_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_wpforo_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ws_form_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_oauth_gc": [
+        [
+          10,
+          "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_rollback_db_rows_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_hold_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::hold_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_options_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_refusal": [
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Patterns_Pack::restore_refusal",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\PublishPress_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Modern_Events_Calendar_Writes::after_post_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_release_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::release_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_translation_group": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::restore_translation_group",
+          2
+        ]
+      ],
+      "wpmcp_run_backup_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Backup_Job->handle_scheduled",
+          1
+        ]
+      ],
+      "wpmcp_run_backup_schedule": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Backup_Schedule::run",
+          1
+        ]
+      ],
+      "wpmcp_run_broken_link_scan": [
+        [
+          10,
+          "WPMCP\\Tools\\Redirects\\Run_Broken_Link_Scan->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_restore_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "xmlrpc_enabled": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_enabled",
+          1
+        ]
+      ],
+      "xmlrpc_methods": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_methods",
+          1
+        ]
+      ]
+    },
+    "removed": {}
+  },
+  "admin": {
+    "added": {
+      "activate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Activator::activate",
+          1
+        ]
+      ],
+      "add_meta_boxes": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->add_meta_box",
+          1
+        ]
+      ],
+      "added_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "admin_bar_menu": [
+        [
+          100,
+          "WPMCP\\Connect\\Exposure::admin_bar",
+          1
+        ]
+      ],
+      "admin_init": [
+        [
+          10,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Handshake_Settings_Page::register_setting",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Skills_Settings_Page::register_setting",
+          1
+        ]
+      ],
+      "admin_menu": [
+        [
+          10,
+          "WPMCP\\Plugin->register_admin_menu",
+          1
+        ]
+      ],
+      "admin_notices": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements->render_notices",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Snapshot_Retention_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Backup_Dir_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\New_Tools_Notice::render",
+          1
+        ]
+      ],
+      "admin_post_nopriv_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page::require_login",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_ack_snapshot_retention": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_announcement": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_new_tools": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_download_bundle": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_export_request_log": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page->handle",
+          1
+        ]
+      ],
+      "deactivate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Deactivator::deactivate",
+          1
+        ]
+      ],
+      "deleted_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_delete",
+          2
+        ]
+      ],
+      "determine_current_user": [
+        [
+          20,
+          "WPMCP\\Auth\\Bearer_Auth::resolve",
+          1
+        ]
+      ],
+      "init": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::apply_error_display",
+          1
+        ],
+        [
+          5,
+          "WPMCP\\Memory\\Memory_Store::ensure_post_type",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Cloud\\Cloud_Credentials::maybe_migrate_on_boot",
+          1
+        ],
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Template_Store::ensure_post_type",
+          1
+        ],
+        [
+          20,
+          "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
+          1
+        ],
+        [
+          20,
+          "closure@src/Plugin.php:773",
+          1
+        ]
+      ],
+      "map_meta_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_map_meta_cap",
+          4
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_caps",
+          2
+        ]
+      ],
+      "mcp_adapter_create_default_server": [
+        [
+          10,
+          "__return_false",
+          1
+        ]
+      ],
+      "mcp_adapter_init": [
+        [
+          10,
+          "WPMCP\\MCP\\Server::create_server",
+          1
+        ]
+      ],
+      "mcp_adapter_initialize_response": [
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Instructions->filter_initialize",
+          3
+        ]
+      ],
+      "mcp_adapter_tool_call_result": [
+        [
+          99,
+          "WPMCP\\MCP\\Structured_Result->filter_result",
+          1
+        ]
+      ],
+      "mcp_adapter_tools_list": [
+        [
+          10,
+          "WPMCP\\MCP\\Tool_Exposure->filter_tools_list",
+          2
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Output_Schemas->filter_tools_list",
+          3
+        ]
+      ],
+      "network_admin_menu": [
+        [
+          10,
+          "WPMCP\\Admin\\Opt_In_Settings_Page::register_network_menu",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_handshake": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_skills": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "parse_request": [
+        [
+          1,
+          "WPMCP\\Auth\\Endpoints::maybe_serve_well_known",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Gateway\\Gateway_Guard::enforce_dispatched_route",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\MCP\\Discovery_Endpoints::maybe_serve",
+          1
+        ]
+      ],
+      "plugins_loaded": [
+        [
+          20,
+          "WPMCP\\MCP\\Server::boot",
+          1
+        ]
+      ],
+      "request": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_query_vars",
+          1
+        ]
+      ],
+      "rest_api_init": [
+        [
+          1,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Endpoints->register",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Media\\Upload_Grant::register_routes",
+          1
+        ]
+      ],
+      "rest_dispatch_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Modern_Http_Bridge::dispatch",
+          4
+        ]
+      ],
+      "rest_post_dispatch": [
+        [
+          10,
+          "WPMCP\\Auth\\Bearer_Auth::add_challenge_header",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Timing::add_header",
+          3
+        ],
+        [
+          11,
+          "WPMCP\\Auth\\App_Passwords_Status::explain_unauthorized",
+          3
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ]
+      ],
+      "rest_pre_dispatch": [
+        [
+          1,
+          "WPMCP\\Identity\\Ip_Allowlist::filter_pre_dispatch",
+          3
+        ],
+        [
+          5,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_rest_users",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_dispatch",
+          3
+        ]
+      ],
+      "rest_pre_serve_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_serve",
+          4
+        ]
+      ],
+      "rest_request_after_callbacks": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Call_Source::leave_rest",
+          3
+        ]
+      ],
+      "rest_request_before_callbacks": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Call_Source::enter_rest",
+          3
+        ]
+      ],
+      "robots_txt": [
+        [
+          100,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_robots",
+          2
+        ]
+      ],
+      "save_post": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_save_post",
+          2
+        ]
+      ],
+      "save_post_wpmcp_memory": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->save_meta_box",
+          1
+        ]
+      ],
+      "template_redirect": [
+        [
+          0,
+          "closure@src/Tools/SEO/Crawler_Files.php:71",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Tools\\Redirects\\Redirect_Handler->maybe_redirect",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Maintenance\\Maintenance_Guard->enforce",
+          1
+        ]
+      ],
+      "the_generator": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_generator",
+          1
+        ]
+      ],
+      "transition_post_status": [
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_transition",
+          3
+        ]
+      ],
+      "trashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          1
+        ]
+      ],
+      "untrashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_untrashed_post",
+          1
+        ]
+      ],
+      "updated_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "user_has_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_user_has_cap",
+          4
+        ]
+      ],
+      "woocommerce_delete_shipping_zone": [
+        [
+          10,
+          "\\WPMCP\\Safety\\Wc_Shipping_Zone_Snapshot::forget_creation",
+          1
+        ]
+      ],
+      "wp": [
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Render\\Adapters::boot",
+          1
+        ]
+      ],
+      "wp_abilities_api_categories_init": [
+        [
+          10,
+          "WPMCP\\Plugin->register_ability_category",
+          1
+        ]
+      ],
+      "wp_abilities_api_init": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_start",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Plugin->register_abilities",
+          1
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_end",
+          1
+        ]
+      ],
+      "wp_ability_execute_result": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::execute_result",
+          2
+        ]
+      ],
+      "wp_ability_invoked": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Registrar::note_invoked",
+          1
+        ]
+      ],
+      "wp_ability_permission_result": [
+        [
+          9223372036854775806,
+          "WPMCP\\MCP\\Registrar::permission_result",
+          2
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::permission_result",
+          2
+        ]
+      ],
+      "wp_ability_validate_input": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_input",
+          3
+        ]
+      ],
+      "wp_ability_validate_output": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_output",
+          3
+        ]
+      ],
+      "wp_after_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_redirect_suggestion": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_restore": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_undo_session": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_before_execute_ability": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Site_Wide_Governance::before_execute",
+          1
+        ]
+      ],
+      "wp_delete_nav_menu": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_deleted",
+          1
+        ]
+      ],
+      "wp_headers": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_headers",
+          1
+        ]
+      ],
+      "wp_initialize_site": [
+        [
+          20,
+          "WPMCP\\Site_Tables::initialize_site",
+          1
+        ]
+      ],
+      "wp_insert_post_data": [
+        [
+          99,
+          "WPMCP\\Tools\\Content\\Post_Stage::keep_stage_unpublished",
+          2
+        ]
+      ],
+      "wp_pre_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::pre_execute",
+          4
+        ]
+      ],
+      "wp_privacy_personal_data_erasers": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::erasers",
+          1
+        ]
+      ],
+      "wp_privacy_personal_data_exporters": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::exporters",
+          1
+        ]
+      ],
+      "wp_robots": [
+        [
+          10,
+          "WPMCP\\Tools\\Content\\Post_Stage::noindex_stage",
+          1
+        ]
+      ],
+      "wp_sitemaps_add_provider": [
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_sitemap_provider",
+          2
+        ]
+      ],
+      "wp_sitemaps_post_types": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_post_types",
+          1
+        ]
+      ],
+      "wp_sitemaps_posts_query_args": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_posts_query",
+          1
+        ]
+      ],
+      "wp_sitemaps_taxonomies": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_taxonomies",
+          1
+        ]
+      ],
+      "wp_update_nav_menu": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wp_update_nav_menu_item": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wpmcp_ability_enabled": [
+        [
+          10,
+          "WPMCP\\Connect\\Exposure::filter_ability_enabled",
+          1
+        ]
+      ],
+      "wpmcp_bearer_token_accepted": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_bearer_token_accepted",
+          2
+        ]
+      ],
+      "wpmcp_cloud_credentials_changed": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements::flush",
+          1
+        ]
+      ],
+      "wpmcp_current_identity": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_current_identity",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_enable_acf_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_action_scheduler_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_advanced_ads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_asgaros_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_backup_plugin_run": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_consent_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_patterns_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_site_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_edd_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_events_manager_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_font_library_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_foogallery_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_give_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hardening_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_image_optimizer_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_listings_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_metabox_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_optinmonster_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pods_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_popup_maker_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_publishpress_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_seo_redirect_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_gate_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smtp_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_theme_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thirstyaffiliates_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_wpforo_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ws_form_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_oauth_gc": [
+        [
+          10,
+          "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_rollback_db_rows_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_hold_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::hold_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_options_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_refusal": [
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Patterns_Pack::restore_refusal",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\PublishPress_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Modern_Events_Calendar_Writes::after_post_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_release_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::release_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_translation_group": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::restore_translation_group",
+          2
+        ]
+      ],
+      "wpmcp_run_backup_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Backup_Job->handle_scheduled",
+          1
+        ]
+      ],
+      "wpmcp_run_backup_schedule": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Backup_Schedule::run",
+          1
+        ]
+      ],
+      "wpmcp_run_broken_link_scan": [
+        [
+          10,
+          "WPMCP\\Tools\\Redirects\\Run_Broken_Link_Scan->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_restore_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "xmlrpc_enabled": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_enabled",
+          1
+        ]
+      ],
+      "xmlrpc_methods": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_methods",
+          1
+        ]
+      ]
+    },
+    "removed": {}
+  },
+  "ajax": {
+    "added": {
+      "activate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Activator::activate",
+          1
+        ]
+      ],
+      "add_meta_boxes": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->add_meta_box",
+          1
+        ]
+      ],
+      "added_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "admin_bar_menu": [
+        [
+          100,
+          "WPMCP\\Connect\\Exposure::admin_bar",
+          1
+        ]
+      ],
+      "admin_init": [
+        [
+          10,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Handshake_Settings_Page::register_setting",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Skills_Settings_Page::register_setting",
+          1
+        ]
+      ],
+      "admin_menu": [
+        [
+          10,
+          "WPMCP\\Plugin->register_admin_menu",
+          1
+        ]
+      ],
+      "admin_notices": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements->render_notices",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Snapshot_Retention_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Backup_Dir_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\New_Tools_Notice::render",
+          1
+        ]
+      ],
+      "admin_post_nopriv_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page::require_login",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_ack_snapshot_retention": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_announcement": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_new_tools": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_download_bundle": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_export_request_log": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page->handle",
+          1
+        ]
+      ],
+      "deactivate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Deactivator::deactivate",
+          1
+        ]
+      ],
+      "deleted_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_delete",
+          2
+        ]
+      ],
+      "determine_current_user": [
+        [
+          20,
+          "WPMCP\\Auth\\Bearer_Auth::resolve",
+          1
+        ]
+      ],
+      "init": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::apply_error_display",
+          1
+        ],
+        [
+          5,
+          "WPMCP\\Memory\\Memory_Store::ensure_post_type",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Cloud\\Cloud_Credentials::maybe_migrate_on_boot",
+          1
+        ],
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Template_Store::ensure_post_type",
+          1
+        ],
+        [
+          20,
+          "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
+          1
+        ],
+        [
+          20,
+          "closure@src/Plugin.php:773",
+          1
+        ]
+      ],
+      "map_meta_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_map_meta_cap",
+          4
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_caps",
+          2
+        ]
+      ],
+      "mcp_adapter_create_default_server": [
+        [
+          10,
+          "__return_false",
+          1
+        ]
+      ],
+      "mcp_adapter_init": [
+        [
+          10,
+          "WPMCP\\MCP\\Server::create_server",
+          1
+        ]
+      ],
+      "mcp_adapter_initialize_response": [
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Instructions->filter_initialize",
+          3
+        ]
+      ],
+      "mcp_adapter_tool_call_result": [
+        [
+          99,
+          "WPMCP\\MCP\\Structured_Result->filter_result",
+          1
+        ]
+      ],
+      "mcp_adapter_tools_list": [
+        [
+          10,
+          "WPMCP\\MCP\\Tool_Exposure->filter_tools_list",
+          2
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Output_Schemas->filter_tools_list",
+          3
+        ]
+      ],
+      "network_admin_menu": [
+        [
+          10,
+          "WPMCP\\Admin\\Opt_In_Settings_Page::register_network_menu",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_handshake": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_skills": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "parse_request": [
+        [
+          1,
+          "WPMCP\\Auth\\Endpoints::maybe_serve_well_known",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Gateway\\Gateway_Guard::enforce_dispatched_route",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\MCP\\Discovery_Endpoints::maybe_serve",
+          1
+        ]
+      ],
+      "plugins_loaded": [
+        [
+          20,
+          "WPMCP\\MCP\\Server::boot",
+          1
+        ]
+      ],
+      "request": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_query_vars",
+          1
+        ]
+      ],
+      "rest_api_init": [
+        [
+          1,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Endpoints->register",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Media\\Upload_Grant::register_routes",
+          1
+        ]
+      ],
+      "rest_dispatch_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Modern_Http_Bridge::dispatch",
+          4
+        ]
+      ],
+      "rest_post_dispatch": [
+        [
+          10,
+          "WPMCP\\Auth\\Bearer_Auth::add_challenge_header",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Timing::add_header",
+          3
+        ],
+        [
+          11,
+          "WPMCP\\Auth\\App_Passwords_Status::explain_unauthorized",
+          3
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ]
+      ],
+      "rest_pre_dispatch": [
+        [
+          1,
+          "WPMCP\\Identity\\Ip_Allowlist::filter_pre_dispatch",
+          3
+        ],
+        [
+          5,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_rest_users",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_dispatch",
+          3
+        ]
+      ],
+      "rest_pre_serve_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_serve",
+          4
+        ]
+      ],
+      "rest_request_after_callbacks": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Call_Source::leave_rest",
+          3
+        ]
+      ],
+      "rest_request_before_callbacks": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Call_Source::enter_rest",
+          3
+        ]
+      ],
+      "robots_txt": [
+        [
+          100,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_robots",
+          2
+        ]
+      ],
+      "save_post": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_save_post",
+          2
+        ]
+      ],
+      "save_post_wpmcp_memory": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->save_meta_box",
+          1
+        ]
+      ],
+      "template_redirect": [
+        [
+          0,
+          "closure@src/Tools/SEO/Crawler_Files.php:71",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Tools\\Redirects\\Redirect_Handler->maybe_redirect",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Maintenance\\Maintenance_Guard->enforce",
+          1
+        ]
+      ],
+      "the_generator": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_generator",
+          1
+        ]
+      ],
+      "transition_post_status": [
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_transition",
+          3
+        ]
+      ],
+      "trashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          1
+        ]
+      ],
+      "untrashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_untrashed_post",
+          1
+        ]
+      ],
+      "updated_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "user_has_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_user_has_cap",
+          4
+        ]
+      ],
+      "woocommerce_delete_shipping_zone": [
+        [
+          10,
+          "\\WPMCP\\Safety\\Wc_Shipping_Zone_Snapshot::forget_creation",
+          1
+        ]
+      ],
+      "wp": [
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Render\\Adapters::boot",
+          1
+        ]
+      ],
+      "wp_abilities_api_categories_init": [
+        [
+          10,
+          "WPMCP\\Plugin->register_ability_category",
+          1
+        ]
+      ],
+      "wp_abilities_api_init": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_start",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Plugin->register_abilities",
+          1
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_end",
+          1
+        ]
+      ],
+      "wp_ability_execute_result": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::execute_result",
+          2
+        ]
+      ],
+      "wp_ability_invoked": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Registrar::note_invoked",
+          1
+        ]
+      ],
+      "wp_ability_permission_result": [
+        [
+          9223372036854775806,
+          "WPMCP\\MCP\\Registrar::permission_result",
+          2
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::permission_result",
+          2
+        ]
+      ],
+      "wp_ability_validate_input": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_input",
+          3
+        ]
+      ],
+      "wp_ability_validate_output": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_output",
+          3
+        ]
+      ],
+      "wp_after_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_redirect_suggestion": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_restore": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_undo_session": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_before_execute_ability": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Site_Wide_Governance::before_execute",
+          1
+        ]
+      ],
+      "wp_delete_nav_menu": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_deleted",
+          1
+        ]
+      ],
+      "wp_headers": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_headers",
+          1
+        ]
+      ],
+      "wp_initialize_site": [
+        [
+          20,
+          "WPMCP\\Site_Tables::initialize_site",
+          1
+        ]
+      ],
+      "wp_insert_post_data": [
+        [
+          99,
+          "WPMCP\\Tools\\Content\\Post_Stage::keep_stage_unpublished",
+          2
+        ]
+      ],
+      "wp_pre_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::pre_execute",
+          4
+        ]
+      ],
+      "wp_privacy_personal_data_erasers": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::erasers",
+          1
+        ]
+      ],
+      "wp_privacy_personal_data_exporters": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::exporters",
+          1
+        ]
+      ],
+      "wp_robots": [
+        [
+          10,
+          "WPMCP\\Tools\\Content\\Post_Stage::noindex_stage",
+          1
+        ]
+      ],
+      "wp_sitemaps_add_provider": [
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_sitemap_provider",
+          2
+        ]
+      ],
+      "wp_sitemaps_post_types": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_post_types",
+          1
+        ]
+      ],
+      "wp_sitemaps_posts_query_args": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_posts_query",
+          1
+        ]
+      ],
+      "wp_sitemaps_taxonomies": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_taxonomies",
+          1
+        ]
+      ],
+      "wp_update_nav_menu": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wp_update_nav_menu_item": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wpmcp_ability_enabled": [
+        [
+          10,
+          "WPMCP\\Connect\\Exposure::filter_ability_enabled",
+          1
+        ]
+      ],
+      "wpmcp_bearer_token_accepted": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_bearer_token_accepted",
+          2
+        ]
+      ],
+      "wpmcp_cloud_credentials_changed": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements::flush",
+          1
+        ]
+      ],
+      "wpmcp_current_identity": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_current_identity",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_enable_acf_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_action_scheduler_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_advanced_ads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_asgaros_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_backup_plugin_run": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_consent_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_patterns_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_site_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_edd_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_events_manager_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_font_library_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_foogallery_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_give_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hardening_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_image_optimizer_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_listings_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_metabox_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_optinmonster_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pods_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_popup_maker_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_publishpress_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_seo_redirect_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_gate_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smtp_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_theme_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thirstyaffiliates_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_wpforo_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ws_form_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_oauth_gc": [
+        [
+          10,
+          "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_rollback_db_rows_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_hold_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::hold_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_options_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_refusal": [
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Patterns_Pack::restore_refusal",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\PublishPress_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Modern_Events_Calendar_Writes::after_post_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_release_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::release_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_translation_group": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::restore_translation_group",
+          2
+        ]
+      ],
+      "wpmcp_run_backup_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Backup_Job->handle_scheduled",
+          1
+        ]
+      ],
+      "wpmcp_run_backup_schedule": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Backup_Schedule::run",
+          1
+        ]
+      ],
+      "wpmcp_run_broken_link_scan": [
+        [
+          10,
+          "WPMCP\\Tools\\Redirects\\Run_Broken_Link_Scan->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_restore_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "xmlrpc_enabled": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_enabled",
+          1
+        ]
+      ],
+      "xmlrpc_methods": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_methods",
+          1
+        ]
+      ]
+    },
+    "removed": {}
+  },
+  "cron": {
+    "added": {
+      "activate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Activator::activate",
+          1
+        ]
+      ],
+      "add_meta_boxes": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->add_meta_box",
+          1
+        ]
+      ],
+      "added_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "admin_bar_menu": [
+        [
+          100,
+          "WPMCP\\Connect\\Exposure::admin_bar",
+          1
+        ]
+      ],
+      "admin_init": [
+        [
+          10,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Handshake_Settings_Page::register_setting",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Skills_Settings_Page::register_setting",
+          1
+        ]
+      ],
+      "admin_menu": [
+        [
+          10,
+          "WPMCP\\Plugin->register_admin_menu",
+          1
+        ]
+      ],
+      "admin_notices": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements->render_notices",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Snapshot_Retention_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Backup_Dir_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\New_Tools_Notice::render",
+          1
+        ]
+      ],
+      "admin_post_nopriv_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page::require_login",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_ack_snapshot_retention": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_announcement": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_new_tools": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_download_bundle": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_export_request_log": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page->handle",
+          1
+        ]
+      ],
+      "deactivate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Deactivator::deactivate",
+          1
+        ]
+      ],
+      "deleted_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_delete",
+          2
+        ]
+      ],
+      "determine_current_user": [
+        [
+          20,
+          "WPMCP\\Auth\\Bearer_Auth::resolve",
+          1
+        ]
+      ],
+      "init": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::apply_error_display",
+          1
+        ],
+        [
+          5,
+          "WPMCP\\Memory\\Memory_Store::ensure_post_type",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Cloud\\Cloud_Credentials::maybe_migrate_on_boot",
+          1
+        ],
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Template_Store::ensure_post_type",
+          1
+        ],
+        [
+          20,
+          "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
+          1
+        ],
+        [
+          20,
+          "closure@src/Plugin.php:773",
+          1
+        ]
+      ],
+      "map_meta_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_map_meta_cap",
+          4
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_caps",
+          2
+        ]
+      ],
+      "mcp_adapter_create_default_server": [
+        [
+          10,
+          "__return_false",
+          1
+        ]
+      ],
+      "mcp_adapter_init": [
+        [
+          10,
+          "WPMCP\\MCP\\Server::create_server",
+          1
+        ]
+      ],
+      "mcp_adapter_initialize_response": [
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Instructions->filter_initialize",
+          3
+        ]
+      ],
+      "mcp_adapter_tool_call_result": [
+        [
+          99,
+          "WPMCP\\MCP\\Structured_Result->filter_result",
+          1
+        ]
+      ],
+      "mcp_adapter_tools_list": [
+        [
+          10,
+          "WPMCP\\MCP\\Tool_Exposure->filter_tools_list",
+          2
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Output_Schemas->filter_tools_list",
+          3
+        ]
+      ],
+      "network_admin_menu": [
+        [
+          10,
+          "WPMCP\\Admin\\Opt_In_Settings_Page::register_network_menu",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_handshake": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_skills": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "parse_request": [
+        [
+          1,
+          "WPMCP\\Auth\\Endpoints::maybe_serve_well_known",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Gateway\\Gateway_Guard::enforce_dispatched_route",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\MCP\\Discovery_Endpoints::maybe_serve",
+          1
+        ]
+      ],
+      "plugins_loaded": [
+        [
+          20,
+          "WPMCP\\MCP\\Server::boot",
+          1
+        ]
+      ],
+      "request": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_query_vars",
+          1
+        ]
+      ],
+      "rest_api_init": [
+        [
+          1,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Endpoints->register",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Media\\Upload_Grant::register_routes",
+          1
+        ]
+      ],
+      "rest_dispatch_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Modern_Http_Bridge::dispatch",
+          4
+        ]
+      ],
+      "rest_post_dispatch": [
+        [
+          10,
+          "WPMCP\\Auth\\Bearer_Auth::add_challenge_header",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Timing::add_header",
+          3
+        ],
+        [
+          11,
+          "WPMCP\\Auth\\App_Passwords_Status::explain_unauthorized",
+          3
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ]
+      ],
+      "rest_pre_dispatch": [
+        [
+          1,
+          "WPMCP\\Identity\\Ip_Allowlist::filter_pre_dispatch",
+          3
+        ],
+        [
+          5,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_rest_users",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_dispatch",
+          3
+        ]
+      ],
+      "rest_pre_serve_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_serve",
+          4
+        ]
+      ],
+      "rest_request_after_callbacks": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Call_Source::leave_rest",
+          3
+        ]
+      ],
+      "rest_request_before_callbacks": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Call_Source::enter_rest",
+          3
+        ]
+      ],
+      "robots_txt": [
+        [
+          100,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_robots",
+          2
+        ]
+      ],
+      "save_post": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_save_post",
+          2
+        ]
+      ],
+      "save_post_wpmcp_memory": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->save_meta_box",
+          1
+        ]
+      ],
+      "template_redirect": [
+        [
+          0,
+          "closure@src/Tools/SEO/Crawler_Files.php:71",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Tools\\Redirects\\Redirect_Handler->maybe_redirect",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Maintenance\\Maintenance_Guard->enforce",
+          1
+        ]
+      ],
+      "the_generator": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_generator",
+          1
+        ]
+      ],
+      "transition_post_status": [
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_transition",
+          3
+        ]
+      ],
+      "trashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          1
+        ]
+      ],
+      "untrashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_untrashed_post",
+          1
+        ]
+      ],
+      "updated_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "user_has_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_user_has_cap",
+          4
+        ]
+      ],
+      "woocommerce_delete_shipping_zone": [
+        [
+          10,
+          "\\WPMCP\\Safety\\Wc_Shipping_Zone_Snapshot::forget_creation",
+          1
+        ]
+      ],
+      "wp": [
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Render\\Adapters::boot",
+          1
+        ]
+      ],
+      "wp_abilities_api_categories_init": [
+        [
+          10,
+          "WPMCP\\Plugin->register_ability_category",
+          1
+        ]
+      ],
+      "wp_abilities_api_init": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_start",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Plugin->register_abilities",
+          1
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_end",
+          1
+        ]
+      ],
+      "wp_ability_execute_result": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::execute_result",
+          2
+        ]
+      ],
+      "wp_ability_invoked": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Registrar::note_invoked",
+          1
+        ]
+      ],
+      "wp_ability_permission_result": [
+        [
+          9223372036854775806,
+          "WPMCP\\MCP\\Registrar::permission_result",
+          2
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::permission_result",
+          2
+        ]
+      ],
+      "wp_ability_validate_input": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_input",
+          3
+        ]
+      ],
+      "wp_ability_validate_output": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_output",
+          3
+        ]
+      ],
+      "wp_after_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_redirect_suggestion": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_restore": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_undo_session": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_before_execute_ability": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Site_Wide_Governance::before_execute",
+          1
+        ]
+      ],
+      "wp_delete_nav_menu": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_deleted",
+          1
+        ]
+      ],
+      "wp_headers": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_headers",
+          1
+        ]
+      ],
+      "wp_initialize_site": [
+        [
+          20,
+          "WPMCP\\Site_Tables::initialize_site",
+          1
+        ]
+      ],
+      "wp_insert_post_data": [
+        [
+          99,
+          "WPMCP\\Tools\\Content\\Post_Stage::keep_stage_unpublished",
+          2
+        ]
+      ],
+      "wp_pre_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::pre_execute",
+          4
+        ]
+      ],
+      "wp_privacy_personal_data_erasers": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::erasers",
+          1
+        ]
+      ],
+      "wp_privacy_personal_data_exporters": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::exporters",
+          1
+        ]
+      ],
+      "wp_robots": [
+        [
+          10,
+          "WPMCP\\Tools\\Content\\Post_Stage::noindex_stage",
+          1
+        ]
+      ],
+      "wp_sitemaps_add_provider": [
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_sitemap_provider",
+          2
+        ]
+      ],
+      "wp_sitemaps_post_types": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_post_types",
+          1
+        ]
+      ],
+      "wp_sitemaps_posts_query_args": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_posts_query",
+          1
+        ]
+      ],
+      "wp_sitemaps_taxonomies": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_taxonomies",
+          1
+        ]
+      ],
+      "wp_update_nav_menu": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wp_update_nav_menu_item": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wpmcp_ability_enabled": [
+        [
+          10,
+          "WPMCP\\Connect\\Exposure::filter_ability_enabled",
+          1
+        ]
+      ],
+      "wpmcp_bearer_token_accepted": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_bearer_token_accepted",
+          2
+        ]
+      ],
+      "wpmcp_cloud_credentials_changed": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements::flush",
+          1
+        ]
+      ],
+      "wpmcp_current_identity": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_current_identity",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_enable_acf_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_action_scheduler_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_advanced_ads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_asgaros_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_backup_plugin_run": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_consent_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_patterns_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_site_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_edd_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_events_manager_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_font_library_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_foogallery_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_give_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hardening_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_image_optimizer_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_listings_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_metabox_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_optinmonster_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pods_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_popup_maker_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_publishpress_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_seo_redirect_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_gate_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smtp_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_theme_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thirstyaffiliates_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_wpforo_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ws_form_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_oauth_gc": [
+        [
+          10,
+          "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_rollback_db_rows_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_hold_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::hold_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_options_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_refusal": [
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Patterns_Pack::restore_refusal",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\PublishPress_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Modern_Events_Calendar_Writes::after_post_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_release_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::release_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_translation_group": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::restore_translation_group",
+          2
+        ]
+      ],
+      "wpmcp_run_backup_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Backup_Job->handle_scheduled",
+          1
+        ]
+      ],
+      "wpmcp_run_backup_schedule": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Backup_Schedule::run",
+          1
+        ]
+      ],
+      "wpmcp_run_broken_link_scan": [
+        [
+          10,
+          "WPMCP\\Tools\\Redirects\\Run_Broken_Link_Scan->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_restore_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "xmlrpc_enabled": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_enabled",
+          1
+        ]
+      ],
+      "xmlrpc_methods": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_methods",
+          1
+        ]
+      ]
+    },
+    "removed": {}
+  },
+  "rest": {
+    "added": {
+      "activate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Activator::activate",
+          1
+        ]
+      ],
+      "add_meta_boxes": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->add_meta_box",
+          1
+        ]
+      ],
+      "added_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "admin_bar_menu": [
+        [
+          100,
+          "WPMCP\\Connect\\Exposure::admin_bar",
+          1
+        ]
+      ],
+      "admin_init": [
+        [
+          10,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Handshake_Settings_Page::register_setting",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Skills_Settings_Page::register_setting",
+          1
+        ]
+      ],
+      "admin_menu": [
+        [
+          10,
+          "WPMCP\\Plugin->register_admin_menu",
+          1
+        ]
+      ],
+      "admin_notices": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements->render_notices",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Snapshot_Retention_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Backup_Dir_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\New_Tools_Notice::render",
+          1
+        ]
+      ],
+      "admin_post_nopriv_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page::require_login",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_ack_snapshot_retention": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_announcement": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_new_tools": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_download_bundle": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_export_request_log": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page->handle",
+          1
+        ]
+      ],
+      "deactivate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Deactivator::deactivate",
+          1
+        ]
+      ],
+      "deleted_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_delete",
+          2
+        ]
+      ],
+      "determine_current_user": [
+        [
+          20,
+          "WPMCP\\Auth\\Bearer_Auth::resolve",
+          1
+        ]
+      ],
+      "init": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::apply_error_display",
+          1
+        ],
+        [
+          5,
+          "WPMCP\\Memory\\Memory_Store::ensure_post_type",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Cloud\\Cloud_Credentials::maybe_migrate_on_boot",
+          1
+        ],
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Template_Store::ensure_post_type",
+          1
+        ],
+        [
+          20,
+          "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
+          1
+        ],
+        [
+          20,
+          "closure@src/Plugin.php:773",
+          1
+        ]
+      ],
+      "map_meta_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_map_meta_cap",
+          4
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_caps",
+          2
+        ]
+      ],
+      "mcp_adapter_create_default_server": [
+        [
+          10,
+          "__return_false",
+          1
+        ]
+      ],
+      "mcp_adapter_init": [
+        [
+          10,
+          "WPMCP\\MCP\\Server::create_server",
+          1
+        ]
+      ],
+      "mcp_adapter_initialize_response": [
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Instructions->filter_initialize",
+          3
+        ]
+      ],
+      "mcp_adapter_tool_call_result": [
+        [
+          99,
+          "WPMCP\\MCP\\Structured_Result->filter_result",
+          1
+        ]
+      ],
+      "mcp_adapter_tools_list": [
+        [
+          10,
+          "WPMCP\\MCP\\Tool_Exposure->filter_tools_list",
+          2
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Output_Schemas->filter_tools_list",
+          3
+        ]
+      ],
+      "network_admin_menu": [
+        [
+          10,
+          "WPMCP\\Admin\\Opt_In_Settings_Page::register_network_menu",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_handshake": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_skills": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "parse_request": [
+        [
+          1,
+          "WPMCP\\Auth\\Endpoints::maybe_serve_well_known",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Gateway\\Gateway_Guard::enforce_dispatched_route",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\MCP\\Discovery_Endpoints::maybe_serve",
+          1
+        ]
+      ],
+      "plugins_loaded": [
+        [
+          20,
+          "WPMCP\\MCP\\Server::boot",
+          1
+        ]
+      ],
+      "request": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_query_vars",
+          1
+        ]
+      ],
+      "rest_api_init": [
+        [
+          1,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Endpoints->register",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Media\\Upload_Grant::register_routes",
+          1
+        ]
+      ],
+      "rest_dispatch_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Modern_Http_Bridge::dispatch",
+          4
+        ]
+      ],
+      "rest_post_dispatch": [
+        [
+          10,
+          "WPMCP\\Auth\\Bearer_Auth::add_challenge_header",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Timing::add_header",
+          3
+        ],
+        [
+          11,
+          "WPMCP\\Auth\\App_Passwords_Status::explain_unauthorized",
+          3
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ]
+      ],
+      "rest_pre_dispatch": [
+        [
+          1,
+          "WPMCP\\Identity\\Ip_Allowlist::filter_pre_dispatch",
+          3
+        ],
+        [
+          5,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_rest_users",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_dispatch",
+          3
+        ]
+      ],
+      "rest_pre_serve_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_serve",
+          4
+        ]
+      ],
+      "rest_request_after_callbacks": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Call_Source::leave_rest",
+          3
+        ]
+      ],
+      "rest_request_before_callbacks": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Call_Source::enter_rest",
+          3
+        ]
+      ],
+      "robots_txt": [
+        [
+          100,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_robots",
+          2
+        ]
+      ],
+      "save_post": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_save_post",
+          2
+        ]
+      ],
+      "save_post_wpmcp_memory": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->save_meta_box",
+          1
+        ]
+      ],
+      "template_redirect": [
+        [
+          0,
+          "closure@src/Tools/SEO/Crawler_Files.php:71",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Tools\\Redirects\\Redirect_Handler->maybe_redirect",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Maintenance\\Maintenance_Guard->enforce",
+          1
+        ]
+      ],
+      "the_generator": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_generator",
+          1
+        ]
+      ],
+      "transition_post_status": [
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_transition",
+          3
+        ]
+      ],
+      "trashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          1
+        ]
+      ],
+      "untrashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_untrashed_post",
+          1
+        ]
+      ],
+      "updated_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "user_has_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_user_has_cap",
+          4
+        ]
+      ],
+      "woocommerce_delete_shipping_zone": [
+        [
+          10,
+          "\\WPMCP\\Safety\\Wc_Shipping_Zone_Snapshot::forget_creation",
+          1
+        ]
+      ],
+      "wp": [
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Render\\Adapters::boot",
+          1
+        ]
+      ],
+      "wp_abilities_api_categories_init": [
+        [
+          10,
+          "WPMCP\\Plugin->register_ability_category",
+          1
+        ]
+      ],
+      "wp_abilities_api_init": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_start",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Plugin->register_abilities",
+          1
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_end",
+          1
+        ]
+      ],
+      "wp_ability_execute_result": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::execute_result",
+          2
+        ]
+      ],
+      "wp_ability_invoked": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Registrar::note_invoked",
+          1
+        ]
+      ],
+      "wp_ability_permission_result": [
+        [
+          9223372036854775806,
+          "WPMCP\\MCP\\Registrar::permission_result",
+          2
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::permission_result",
+          2
+        ]
+      ],
+      "wp_ability_validate_input": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_input",
+          3
+        ]
+      ],
+      "wp_ability_validate_output": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_output",
+          3
+        ]
+      ],
+      "wp_after_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_redirect_suggestion": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_restore": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_undo_session": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_before_execute_ability": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Site_Wide_Governance::before_execute",
+          1
+        ]
+      ],
+      "wp_delete_nav_menu": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_deleted",
+          1
+        ]
+      ],
+      "wp_headers": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_headers",
+          1
+        ]
+      ],
+      "wp_initialize_site": [
+        [
+          20,
+          "WPMCP\\Site_Tables::initialize_site",
+          1
+        ]
+      ],
+      "wp_insert_post_data": [
+        [
+          99,
+          "WPMCP\\Tools\\Content\\Post_Stage::keep_stage_unpublished",
+          2
+        ]
+      ],
+      "wp_pre_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::pre_execute",
+          4
+        ]
+      ],
+      "wp_privacy_personal_data_erasers": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::erasers",
+          1
+        ]
+      ],
+      "wp_privacy_personal_data_exporters": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::exporters",
+          1
+        ]
+      ],
+      "wp_robots": [
+        [
+          10,
+          "WPMCP\\Tools\\Content\\Post_Stage::noindex_stage",
+          1
+        ]
+      ],
+      "wp_sitemaps_add_provider": [
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_sitemap_provider",
+          2
+        ]
+      ],
+      "wp_sitemaps_post_types": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_post_types",
+          1
+        ]
+      ],
+      "wp_sitemaps_posts_query_args": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_posts_query",
+          1
+        ]
+      ],
+      "wp_sitemaps_taxonomies": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_taxonomies",
+          1
+        ]
+      ],
+      "wp_update_nav_menu": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wp_update_nav_menu_item": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wpmcp_ability_enabled": [
+        [
+          10,
+          "WPMCP\\Connect\\Exposure::filter_ability_enabled",
+          1
+        ]
+      ],
+      "wpmcp_bearer_token_accepted": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_bearer_token_accepted",
+          2
+        ]
+      ],
+      "wpmcp_cloud_credentials_changed": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements::flush",
+          1
+        ]
+      ],
+      "wpmcp_current_identity": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_current_identity",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_enable_acf_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_action_scheduler_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_advanced_ads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_asgaros_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_backup_plugin_run": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_consent_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_patterns_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_site_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_edd_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_events_manager_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_font_library_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_foogallery_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_give_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hardening_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_image_optimizer_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_listings_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_metabox_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_optinmonster_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pods_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_popup_maker_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_publishpress_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_seo_redirect_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_gate_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smtp_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_theme_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thirstyaffiliates_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_wpforo_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ws_form_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_oauth_gc": [
+        [
+          10,
+          "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_rollback_db_rows_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_hold_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::hold_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_options_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_refusal": [
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Patterns_Pack::restore_refusal",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\PublishPress_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Modern_Events_Calendar_Writes::after_post_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_release_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::release_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_translation_group": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::restore_translation_group",
+          2
+        ]
+      ],
+      "wpmcp_run_backup_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Backup_Job->handle_scheduled",
+          1
+        ]
+      ],
+      "wpmcp_run_backup_schedule": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Backup_Schedule::run",
+          1
+        ]
+      ],
+      "wpmcp_run_broken_link_scan": [
+        [
+          10,
+          "WPMCP\\Tools\\Redirects\\Run_Broken_Link_Scan->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_restore_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "xmlrpc_enabled": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_enabled",
+          1
+        ]
+      ],
+      "xmlrpc_methods": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_methods",
+          1
+        ]
+      ]
+    },
+    "removed": {}
+  },
+  "cli": {
+    "added": {
+      "activate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Activator::activate",
+          1
+        ]
+      ],
+      "add_meta_boxes": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->add_meta_box",
+          1
+        ]
+      ],
+      "added_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "admin_bar_menu": [
+        [
+          100,
+          "WPMCP\\Connect\\Exposure::admin_bar",
+          1
+        ]
+      ],
+      "admin_init": [
+        [
+          10,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Handshake_Settings_Page::register_setting",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Skills_Settings_Page::register_setting",
+          1
+        ]
+      ],
+      "admin_menu": [
+        [
+          10,
+          "WPMCP\\Plugin->register_admin_menu",
+          1
+        ]
+      ],
+      "admin_notices": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements->render_notices",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Snapshot_Retention_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Backup_Dir_Notice::render",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\New_Tools_Notice::render",
+          1
+        ]
+      ],
+      "admin_post_nopriv_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page::require_login",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_ack_snapshot_retention": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_announcement": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_dismiss_new_tools": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_download_bundle": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_export_request_log": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "admin_post_wpmcp_oauth_authorize": [
+        [
+          10,
+          "WPMCP\\Admin\\OAuth_Consent_Page->handle",
+          1
+        ]
+      ],
+      "deactivate_<plugin>/wpmcp.php": [
+        [
+          10,
+          "WPMCP\\Deactivator::deactivate",
+          1
+        ]
+      ],
+      "deleted_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_delete",
+          2
+        ]
+      ],
+      "determine_current_user": [
+        [
+          20,
+          "WPMCP\\Auth\\Bearer_Auth::resolve",
+          1
+        ]
+      ],
+      "init": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::apply_error_display",
+          1
+        ],
+        [
+          5,
+          "WPMCP\\Memory\\Memory_Store::ensure_post_type",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Cloud\\Cloud_Credentials::maybe_migrate_on_boot",
+          1
+        ],
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Template_Store::ensure_post_type",
+          1
+        ],
+        [
+          20,
+          "WPMCP\\Tools\\Filesystem\\Legacy_Backup_Migration::maybe_run",
+          1
+        ],
+        [
+          20,
+          "closure@src/Plugin.php:773",
+          1
+        ]
+      ],
+      "map_meta_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_map_meta_cap",
+          4
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_caps",
+          2
+        ]
+      ],
+      "mcp_adapter_create_default_server": [
+        [
+          10,
+          "__return_false",
+          1
+        ]
+      ],
+      "mcp_adapter_init": [
+        [
+          10,
+          "WPMCP\\MCP\\Server::create_server",
+          1
+        ]
+      ],
+      "mcp_adapter_initialize_response": [
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Instructions->filter_initialize",
+          3
+        ]
+      ],
+      "mcp_adapter_tool_call_result": [
+        [
+          99,
+          "WPMCP\\MCP\\Structured_Result->filter_result",
+          1
+        ]
+      ],
+      "mcp_adapter_tools_list": [
+        [
+          10,
+          "WPMCP\\MCP\\Tool_Exposure->filter_tools_list",
+          2
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Output_Schemas->filter_tools_list",
+          3
+        ]
+      ],
+      "network_admin_menu": [
+        [
+          10,
+          "WPMCP\\Admin\\Opt_In_Settings_Page::register_network_menu",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_handshake": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "option_page_capability_wpmcp_skills": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::capability",
+          1
+        ]
+      ],
+      "parse_request": [
+        [
+          1,
+          "WPMCP\\Auth\\Endpoints::maybe_serve_well_known",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Gateway\\Gateway_Guard::enforce_dispatched_route",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\MCP\\Discovery_Endpoints::maybe_serve",
+          1
+        ]
+      ],
+      "plugins_loaded": [
+        [
+          20,
+          "WPMCP\\MCP\\Server::boot",
+          1
+        ]
+      ],
+      "request": [
+        [
+          1,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_query_vars",
+          1
+        ]
+      ],
+      "rest_api_init": [
+        [
+          1,
+          "WPMCP\\Site_Tables::maybe_install",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Endpoints->register",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Tools\\Media\\Upload_Grant::register_routes",
+          1
+        ]
+      ],
+      "rest_dispatch_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Modern_Http_Bridge::dispatch",
+          4
+        ]
+      ],
+      "rest_post_dispatch": [
+        [
+          10,
+          "WPMCP\\Auth\\Bearer_Auth::add_challenge_header",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Handshake_Timing::add_header",
+          3
+        ],
+        [
+          11,
+          "WPMCP\\Auth\\App_Passwords_Status::explain_unauthorized",
+          3
+        ],
+        [
+          20,
+          "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ]
+      ],
+      "rest_pre_dispatch": [
+        [
+          1,
+          "WPMCP\\Identity\\Ip_Allowlist::filter_pre_dispatch",
+          3
+        ],
+        [
+          5,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_rest_users",
+          3
+        ],
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_dispatch",
+          3
+        ]
+      ],
+      "rest_pre_serve_request": [
+        [
+          10,
+          "WPMCP\\MCP\\Transport_Guard->filter_pre_serve",
+          4
+        ]
+      ],
+      "rest_request_after_callbacks": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Call_Source::leave_rest",
+          3
+        ]
+      ],
+      "rest_request_before_callbacks": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Call_Source::enter_rest",
+          3
+        ]
+      ],
+      "robots_txt": [
+        [
+          100,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_robots",
+          2
+        ]
+      ],
+      "save_post": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_save_post",
+          2
+        ]
+      ],
+      "save_post_wpmcp_memory": [
+        [
+          10,
+          "WPMCP\\Admin\\Memory_Page->save_meta_box",
+          1
+        ]
+      ],
+      "template_redirect": [
+        [
+          0,
+          "closure@src/Tools/SEO/Crawler_Files.php:71",
+          1
+        ],
+        [
+          1,
+          "WPMCP\\Tools\\Redirects\\Redirect_Handler->maybe_redirect",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Maintenance\\Maintenance_Guard->enforce",
+          1
+        ]
+      ],
+      "the_generator": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_generator",
+          1
+        ]
+      ],
+      "transition_post_status": [
+        [
+          10,
+          "WPMCP\\Memory\\Memory_Store::flush_rules_cache_on_transition",
+          3
+        ]
+      ],
+      "trashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_deleted_post",
+          1
+        ]
+      ],
+      "untrashed_post": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_untrashed_post",
+          1
+        ]
+      ],
+      "updated_post_meta": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_post_meta_changed",
+          4
+        ]
+      ],
+      "user_has_cap": [
+        [
+          10,
+          "WPMCP\\Admin\\Management_Access::filter_user_has_cap",
+          4
+        ]
+      ],
+      "woocommerce_delete_shipping_zone": [
+        [
+          10,
+          "\\WPMCP\\Safety\\Wc_Shipping_Zone_Snapshot::forget_creation",
+          1
+        ]
+      ],
+      "wp": [
+        [
+          10,
+          "\\WPMCP\\Tools\\ThemeBuilder\\Render\\Adapters::boot",
+          1
+        ]
+      ],
+      "wp_abilities_api_categories_init": [
+        [
+          10,
+          "WPMCP\\Plugin->register_ability_category",
+          1
+        ]
+      ],
+      "wp_abilities_api_init": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_start",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Plugin->register_abilities",
+          1
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\MCP\\Handshake_Timing::abilities_end",
+          1
+        ]
+      ],
+      "wp_ability_execute_result": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::execute_result",
+          2
+        ]
+      ],
+      "wp_ability_invoked": [
+        [
+          -9223372036854775808,
+          "WPMCP\\MCP\\Registrar::note_invoked",
+          1
+        ]
+      ],
+      "wp_ability_permission_result": [
+        [
+          9223372036854775806,
+          "WPMCP\\MCP\\Registrar::permission_result",
+          2
+        ],
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::permission_result",
+          2
+        ]
+      ],
+      "wp_ability_validate_input": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_input",
+          3
+        ]
+      ],
+      "wp_ability_validate_output": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::validate_output",
+          3
+        ]
+      ],
+      "wp_after_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_redirect_suggestion": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_restore": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_undo_session": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_before_execute_ability": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Site_Wide_Governance::before_execute",
+          1
+        ]
+      ],
+      "wp_delete_nav_menu": [
+        [
+          10,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_deleted",
+          1
+        ]
+      ],
+      "wp_headers": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_headers",
+          1
+        ]
+      ],
+      "wp_initialize_site": [
+        [
+          20,
+          "WPMCP\\Site_Tables::initialize_site",
+          1
+        ]
+      ],
+      "wp_insert_post_data": [
+        [
+          99,
+          "WPMCP\\Tools\\Content\\Post_Stage::keep_stage_unpublished",
+          2
+        ]
+      ],
+      "wp_pre_execute_ability": [
+        [
+          9223372036854775807,
+          "WPMCP\\Governance\\Site_Wide_Governance::pre_execute",
+          4
+        ]
+      ],
+      "wp_privacy_personal_data_erasers": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::erasers",
+          1
+        ]
+      ],
+      "wp_privacy_personal_data_exporters": [
+        [
+          1000,
+          "WPMCP\\Privacy\\Personal_Data::exporters",
+          1
+        ]
+      ],
+      "wp_robots": [
+        [
+          10,
+          "WPMCP\\Tools\\Content\\Post_Stage::noindex_stage",
+          1
+        ]
+      ],
+      "wp_sitemaps_add_provider": [
+        [
+          10,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_sitemap_provider",
+          2
+        ]
+      ],
+      "wp_sitemaps_post_types": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_post_types",
+          1
+        ]
+      ],
+      "wp_sitemaps_posts_query_args": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_posts_query",
+          1
+        ]
+      ],
+      "wp_sitemaps_taxonomies": [
+        [
+          10,
+          "WPMCP\\Tools\\SEO\\Crawler_Files::filter_sitemap_taxonomies",
+          1
+        ]
+      ],
+      "wp_update_nav_menu": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wp_update_nav_menu_item": [
+        [
+          20,
+          "WPMCP\\Tools\\Search\\Index_Hooks->on_menu_updated",
+          1
+        ]
+      ],
+      "wpmcp_ability_enabled": [
+        [
+          10,
+          "WPMCP\\Connect\\Exposure::filter_ability_enabled",
+          1
+        ]
+      ],
+      "wpmcp_bearer_token_accepted": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_bearer_token_accepted",
+          2
+        ]
+      ],
+      "wpmcp_cloud_credentials_changed": [
+        [
+          10,
+          "WPMCP\\Admin\\Announcements::flush",
+          1
+        ]
+      ],
+      "wpmcp_current_identity": [
+        [
+          10,
+          "WPMCP\\Gateway\\Gateway_Guard::filter_current_identity",
+          1
+        ],
+        [
+          10,
+          "WPMCP\\Auth\\Client_Access::filter_current_identity",
+          1
+        ]
+      ],
+      "wpmcp_enable_acf_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_action_scheduler_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_advanced_ads_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_asgaros_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_backup_plugin_run": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_consent_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_patterns_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_core_site_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_edd_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_events_manager_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_everest_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_font_library_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_foogallery_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_forms_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_give_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hardening_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_image_optimizer_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_jetengine_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_listings_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_mec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_metabox_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_optinmonster_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pods_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_popup_maker_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_publishpress_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_restrict_content_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_search_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_seo_redirect_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_gate_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smtp_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_tec_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_theme_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_thirstyaffiliates_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_wpforo_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_ws_form_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_oauth_gc": [
+        [
+          10,
+          "WPMCP\\Auth\\Oauth_Gc::run",
+          1
+        ]
+      ],
+      "wpmcp_rollback_db_rows_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Consent_Pack::after_rows_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_hold_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::hold_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_options_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Site_Pack::after_options_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_refusal": [
+        [
+          10,
+          "WPMCP\\Integrations\\Core_Patterns_Pack::restore_refusal",
+          2
+        ]
+      ],
+      "wpmcp_rollback_post_restored": [
+        [
+          10,
+          "WPMCP\\Integrations\\PublishPress_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Listings_Pack::after_post_restored",
+          2
+        ],
+        [
+          10,
+          "WPMCP\\Integrations\\Modern_Events_Calendar_Writes::after_post_restored",
+          2
+        ]
+      ],
+      "wpmcp_rollback_release_translation_sync": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::release_sync",
+          2
+        ]
+      ],
+      "wpmcp_rollback_translation_group": [
+        [
+          10,
+          "WPMCP\\Tools\\I18n\\I18n_Adapter::restore_translation_group",
+          2
+        ]
+      ],
+      "wpmcp_run_backup_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Backup_Job->handle_scheduled",
+          1
+        ]
+      ],
+      "wpmcp_run_backup_schedule": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Backup_Schedule::run",
+          1
+        ]
+      ],
+      "wpmcp_run_broken_link_scan": [
+        [
+          10,
+          "WPMCP\\Tools\\Redirects\\Run_Broken_Link_Scan->handle",
+          1
+        ]
+      ],
+      "wpmcp_run_restore_job": [
+        [
+          10,
+          "WPMCP\\Tools\\Backup\\Run_Restore_Job->handle",
+          1
+        ]
+      ],
+      "xmlrpc_enabled": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_enabled",
+          1
+        ]
+      ],
+      "xmlrpc_methods": [
+        [
+          9223372036854775807,
+          "WPMCP\\Tools\\Security\\Hardening_Settings::filter_xmlrpc_methods",
+          1
+        ]
+      ]
+    },
+    "removed": {},
+    "wp_cli_commands": [
+      {
+        "name": "wpmcp management-access reset",
+        "callback": "WPMCP\\Admin\\Management_Access::cli_reset",
+        "args": []
+      },
+      {
+        "name": "wpmcp gateway-revoke",
+        "callback": "WPMCP\\Gateway\\Gateway_Guard::cli_revoke",
+        "args": []
+      },
+      {
+        "name": "mcp-stdio serve",
+        "callback": "WPMCP\\MCP\\Stdio_Transport::serve",
+        "args": [
+          "shortdesc"
+        ]
+      }
+    ]
+  }
+}
