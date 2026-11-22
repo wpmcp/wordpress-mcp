@@ -63,8 +63,14 @@ class WporgFreeSurfaceTest extends \WP_UnitTestCase
         $methods = $this->removed_methods();
 
         $this->assertNotEmpty($methods);
-        $this->assertContains('register_analysis_abilities', $methods);
-        $this->assertNotNull($this->method_body('register_analysis_abilities'));
+        // After the Pro split the paid registration methods live in pro/ and
+        // leave the list; every method still listed must exist to be removed.
+        if (! \WPMCP\Tests\Support\Edition_Tree::is_split()) {
+            $this->assertContains('register_analysis_abilities', $methods);
+        }
+        foreach ($methods as $method) {
+            $this->assertNotNull($this->method_body($method), "REMOVED_METHODS names {$method}, which Plugin.php does not declare");
+        }
     }
 
     /** @return string[] */

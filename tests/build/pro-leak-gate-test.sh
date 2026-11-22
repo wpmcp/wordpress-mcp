@@ -92,7 +92,7 @@ expect 1 "directory listed without a slash" assert_no_pro_paths "$WORK/noslash.z
 make_tree sibling wpmcp "${FREE_BASE[@]}" src/Tools/CloudX/Other.php src/Tools/Media/Optimize_Media.php.bak src/Profile.php
 expect 0 "similar names are not leaks" assert_no_pro_paths "$WORK/sibling.zip" wpmcp "$M"
 
-make_tree prodir wpmcp "${FREE_BASE[@]}" pro/bootstrap.php
+make_tree prodir wpmcp "${FREE_BASE[@]}" pro/src/Pro/bootstrap.php
 expect 1 "pro/ in a free zip" assert_no_pro_paths "$WORK/prodir.zip" wpmcp "$M"
 expect 1 "pro/ in a free stage" assert_stage_no_pro_paths "$WORK/prodir/wpmcp" "$M"
 
@@ -104,7 +104,7 @@ expect 1 "free zip inlining is_premium true" assert_free_zip "$WORK/fstrue.zip" 
 expect 2 "unreadable zip" assert_no_pro_paths "$WORK/none.zip" wpmcp "$M"
 
 # Premium zip checks.
-PREMIUM_BASE=(wpmcp.php src/Plugin.php src/Freemius/wpmcp-fs.php vendor/autoload.php .wpmcp-pro pro/bootstrap.php pro/src/Tools/Cloud/Sync.php)
+PREMIUM_BASE=(wpmcp.php src/Plugin.php src/Freemius/wpmcp-fs.php vendor/autoload.php .wpmcp-pro pro/src/Pro/bootstrap.php pro/src/Tools/Cloud/Sync.php)
 FS_PREMIUM=true make_tree prem wpmcp-pro "${PREMIUM_BASE[@]}"
 expect 0 "valid premium zip" assert_premium_zip "$WORK/prem.zip" "$M"
 
@@ -114,14 +114,14 @@ expect 1 "premium zip inlining is_premium false" assert_premium_zip "$WORK/premf
 FS_PREMIUM=true make_tree premroot wpmcp "${PREMIUM_BASE[@]}"
 expect 1 "premium zip under wpmcp/" assert_premium_zip "$WORK/premroot.zip" "$M"
 
-FS_PREMIUM=true make_tree premnomark wpmcp-pro wpmcp.php src/Freemius/wpmcp-fs.php pro/bootstrap.php
+FS_PREMIUM=true make_tree premnomark wpmcp-pro wpmcp.php src/Freemius/wpmcp-fs.php pro/src/Pro/bootstrap.php
 expect 1 "premium zip without the marker" assert_premium_zip "$WORK/premnomark.zip" "$M"
 
 FS_PREMIUM=true MARKER_TEXT='something else' make_tree premtext wpmcp-pro "${PREMIUM_BASE[@]}"
 expect 1 "premium marker with the wrong text" assert_premium_zip "$WORK/premtext.zip" "$M"
 
 FS_PREMIUM=true make_tree premnoboot wpmcp-pro wpmcp.php src/Freemius/wpmcp-fs.php .wpmcp-pro pro/src/A.php
-expect 1 "premium zip without pro/bootstrap.php" assert_premium_zip "$WORK/premnoboot.zip" "$M"
+expect 1 "premium zip without pro/src/Pro/bootstrap.php" assert_premium_zip "$WORK/premnoboot.zip" "$M"
 
 FS_PREMIUM=true make_tree premtests wpmcp-pro "${PREMIUM_BASE[@]}" pro/tests/ATest.php
 expect 1 "premium zip with pro/tests" assert_premium_zip "$WORK/premtests.zip" "$M"

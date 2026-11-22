@@ -17,14 +17,13 @@
  *     into pro/src/Pro/Plugin_Slots.php, and each call site becomes one
  *     Edition slot call ($this->edition()->run('<slot>', ...)). The order
  *     abilities register in does not change. The free build runs the slot
- *     calls as no-ops; pro/bootstrap.php registers Plugin_Slots through the
+ *     calls as no-ops; src/Pro/bootstrap.php (moved with Pro) registers Plugin_Slots through the
  *     wpmcp_edition_slots filter (src/Edition/Edition.php).
  *  2. Every src/ path the manifest lists moves to pro/<path>, so namespaces
  *     stay as they are (composer maps WPMCP\ onto src/ and pro/src/).
  *  3. tests/pro/ moves to pro/tests/pro/ (tests/pro/Freemius stays public,
  *     under tests/free/Freemius), and every tests/free file that names a Pro
  *     class moves to pro/tests/free/.
- *  4. pro/bootstrap.php is written when it does not exist yet.
  *
  * Re-running on a tree that is already split changes nothing. A path that
  * exists both at its public location and under pro/ is a conflict and stops
@@ -51,7 +50,7 @@ const SLOT_MARKER = '$this->edition()->run(';
  *  - span: the lines from the one line starting with `start` through the
  *    first line equal to `end` after it.
  *
- * @var list<array{kind: string, name: string, start?: string, end?: string}>
+ * @var list<array{kind: string, name: string, slot?: string, start?: string, end?: string}>
  */
 const PLUGIN_SLOTS = [
     ['kind' => 'method', 'name' => 'register_analysis_abilities'],
@@ -76,12 +75,12 @@ const PLUGIN_SLOTS = [
     ['kind' => 'method', 'name' => 'register_image_optimization_runtime_hooks'],
     ['kind' => 'method', 'name' => 'register_dynamic_template_runtime_hooks'],
     ['kind' => 'method', 'name' => 'register_custom_code_runtime_hooks'],
-    ['kind' => 'ability', 'name' => 'wpmcp/optimize-media'],
-    ['kind' => 'ability', 'name' => 'wpmcp/insert-stock-image'],
-    ['kind' => 'ability', 'name' => 'wpmcp/install-package-from-zip'],
-    ['kind' => 'ability', 'name' => 'wpmcp/woo-ops'],
-    ['kind' => 'ability', 'name' => 'wpmcp/woo-read'],
-    ['kind' => 'ability', 'name' => 'wpmcp/woo-write'],
+    ['kind' => 'ability', 'name' => 'wpmcp/optimize-media', 'slot' => 'abilities.media.optimize'],
+    ['kind' => 'ability', 'name' => 'wpmcp/insert-stock-image', 'slot' => 'abilities.media.stock'],
+    ['kind' => 'ability', 'name' => 'wpmcp/install-package-from-zip', 'slot' => 'abilities.packages.zip_install'],
+    ['kind' => 'ability', 'name' => 'wpmcp/woo-ops', 'slot' => 'abilities.woocommerce.catalog_ops'],
+    ['kind' => 'ability', 'name' => 'wpmcp/woo-read', 'slot' => 'abilities.woocommerce.catalog_read'],
+    ['kind' => 'ability', 'name' => 'wpmcp/woo-write', 'slot' => 'abilities.woocommerce.catalog_write'],
     [
         'kind' => 'span',
         'name' => 'boot_cli_job',
@@ -580,7 +579,9 @@ function extract_plugin_slots(string $src): ?array
                     $remove[ $assign + 1 ] = true;
                 }
             }
-            $slot_name = 'ability:' . $name;
+            // Its own id, not the ability name: a build without the ability
+            // must not name it anywhere.
+            $slot_name = (string) ($slot['slot'] ?? 'ability.' . md5($name));
             $pieces[ $slot_name ] = ['lines' => array_merge($prefix, $body), 'registrar' => true];
             for ($k = $at; $k <= $end; $k++) {
                 $remove[ $k ] = true;
@@ -838,7 +839,7 @@ if (! defined('ABSPATH')) {
  * The Pro part of the Plugin.php surface: registration methods, ability
  * rows and boot wiring moved here by bin/pro-split.php. Plugin.php keeps a
  * slot call at each place this code ran, in the same order, and
- * pro/bootstrap.php registers this class through wpmcp_edition_slots.
+ * src/Pro/bootstrap.php registers this class through wpmcp_edition_slots.
  */
 final class Plugin_Slots implements Edition_Slot
 {
@@ -1134,10 +1135,6 @@ function plan(string $root): array
         $notes[] = 'test lists: ' . $lists['dropped'] . ' entries for moved tests dropped';
     }
 
-    // 4. pro/bootstrap.php.
-    if (! is_file($root . '/' . PRO_DIR . '/bootstrap.php')) {
-        $writes[ PRO_DIR . '/bootstrap.php' ] = bootstrap_template();
-    }
 
     // Conflicts and idempotency.
     foreach ($moves as $from => $to) {
@@ -1181,65 +1178,6 @@ function pro_class_index(string $root, array $manifest, array $writes): array
     }
     $out['WPMCP\\Pro\\' . SLOTS_CLASS] = SLOTS_FILE;
     return $out;
-}
-
-function bootstrap_template(): string
-{
-    return <<<'PHP'
-<?php
-
-/**
- * Pro entry point, required by the public loader (src/Edition/Pro_Loader.php)
- * after the public autoloader is up and before Plugin::boot(). The loader
- * has already added pro/src to the autoload path.
- */
-
-declare(strict_types=1);
-
-if (! defined('ABSPATH')) {
-    exit;
-}
-
-if (! defined('WPMCP_PRO_BUILD')) {
-    define('WPMCP_PRO_BUILD', true);
-}
-
-add_filter(
-    \WPMCP\Edition\Edition::SLOTS_FILTER,
-    static function (array $slots): array {
-        $slots[] = new \WPMCP\Pro\Plugin_Slots();
-        return $slots;
-    }
-);
-
-add_filter(
-    \WPMCP\Edition\Edition::REGISTRY_ROOTS_FILTER,
-    static function (array $roots): array {
-        $roots[] = __DIR__ . '/build/registry';
-        return $roots;
-    }
-);
-
-add_filter(
-    \WPMCP\Tools\Compose\Page_Composers::FILTER,
-    static function (array $composers): array {
-        $composers['elementor'] = new \WPMCP\Tools\Compose\Elementor_Page_Composer();
-        return $composers;
-    }
-);
-
-add_filter(
-    'wpmcp_skill_sources',
-    static function (array $sources): array {
-        $dir = __DIR__ . '/src/Skills/library';
-        if (is_dir($dir)) {
-            $sources[] = ['id' => 'pro', 'label' => 'Bundled with WP MCP Pro', 'path' => $dir];
-        }
-        return $sources;
-    }
-);
-
-PHP;
 }
 
 // ---------------------------------------------------------------------------
@@ -1578,6 +1516,12 @@ function prune_test_lists(string $root, array $moves): array
                 $out[] = $line;
                 continue;
             }
+            // A shard bound is a position in the serial order, not a file to
+            // run: it keeps its place at the test's new path.
+            if ('tests/parallel-shards.tsv' === $file) {
+                $out[] = str_replace($hit, $moves[ $hit ], $line);
+                continue;
+            }
             $dropped++;
             if ('phpunit-fast.xml.dist' === $file && isset($fast[ (string) $suite ])) {
                 $fast[ (string) $suite ][] = substr($moves[ $hit ], strlen(PRO_DIR) + 1);
@@ -1723,50 +1667,59 @@ function suggest(string $root, string $seeds_file): string
         }
     }
     $dropped = [];
+    $inbound = [];
+    foreach ($edges as $from => $tos) {
+        foreach (array_keys($tos) as $to) {
+            $inbound[ $to ][ $from ] = true;
+        }
+    }
+    // Grow to a fixed point (a public file every caller of which is Pro
+    // joins Pro), then shrink to one (a Pro file a public file loads goes
+    // back), and repeat until neither changes anything: growing first keeps
+    // the result independent of the order files are visited in.
     for ($round = 0; $round < 50; $round++) {
         $changed = false;
-        // Drop Pro files a public file names.
-        foreach ($edges as $from => $tos) {
-            if (isset($pro[ $from ])) {
-                continue;
+        do {
+            $grew = false;
+            foreach (array_keys($virtual) as $path) {
+                if (isset($pro[ $path ]) || 'wpmcp.php' === $path || ! str_starts_with($path, 'src/')) {
+                    continue;
+                }
+                $in = array_keys($inbound[ $path ] ?? []);
+                if ([] === $in || [] !== array_filter($in, static fn (string $f): bool => ! isset($pro[ $f ]))) {
+                    continue;
+                }
+                // A public file that names it by string or import keeps it public
+                // unless it was asked for (a seed); check lists such names.
+                $soft = array_keys($soft_in[ $path ] ?? []);
+                if ([] !== array_filter($soft, static fn (string $f): bool => ! isset($pro[ $f ]))) {
+                    continue;
+                }
+                $pro[ $path ] = true;
+                $grew = $changed = true;
             }
-            foreach (array_keys($tos) as $to) {
-                if (isset($pro[ $to ]) && SLOTS_FILE !== $to) {
-                    unset($pro[ $to ]);
-                    $dropped[ $to ] = $from;
-                    $changed = true;
+        } while ($grew);
+        do {
+            $shrank = false;
+            foreach ($edges as $from => $tos) {
+                if (isset($pro[ $from ])) {
+                    continue;
+                }
+                foreach (array_keys($tos) as $to) {
+                    if (isset($pro[ $to ]) && SLOTS_FILE !== $to) {
+                        unset($pro[ $to ]);
+                        $dropped[ $to ] = $from;
+                        $shrank = $changed = true;
+                    }
                 }
             }
-        }
-        // Add public files only Pro files name.
-        $inbound = [];
-        foreach ($edges as $from => $tos) {
-            foreach (array_keys($tos) as $to) {
-                $inbound[ $to ][ $from ] = true;
-            }
-        }
-        foreach (array_keys($virtual) as $path) {
-            if (isset($pro[ $path ]) || isset($dropped[ $path ]) || 'wpmcp.php' === $path || ! str_starts_with($path, 'src/')) {
-                continue;
-            }
-            $in = array_keys($inbound[ $path ] ?? []);
-            if ([] === $in) {
-                continue;
-            }
-            // A public file that names it by string or import keeps it public
-            // unless it was asked for (a seed); check lists such names.
-            $soft = array_keys($soft_in[ $path ] ?? []);
-            if ([] !== array_filter($soft, static fn (string $f): bool => ! isset($pro[ $f ]))) {
-                continue;
-            }
-            if ([] === array_filter($in, static fn (string $f): bool => ! isset($pro[ $f ]))) {
-                $pro[ $path ] = true;
-                $changed = true;
-            }
-        }
+        } while ($shrank);
         if (! $changed) {
             break;
         }
+    }
+    foreach (array_keys($pro) as $path) {
+        unset($dropped[ $path ]);
     }
     unset($pro[ SLOTS_FILE ]);
     // Seeds that hold no PHP (a skill directory, assets) are kept as given.

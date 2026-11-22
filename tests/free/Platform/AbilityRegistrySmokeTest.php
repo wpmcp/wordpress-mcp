@@ -4,6 +4,7 @@ namespace WPMCP\Tests\Free\Platform;
 
 use WPMCP\MCP\Registrar;
 use WPMCP\Pro\Gate;
+use WPMCP\Tests\Support\Edition_Tree;
 
 require_once __DIR__ . '/../../support/forms-adapters.php';
 
@@ -21,6 +22,10 @@ require_once __DIR__ . '/../../support/forms-adapters.php';
  * the exact same Ability objects through a Registrar inside a real
  * wp_abilities_api_init action window, then removes them again so the shared
  * registry is left as it was found.
+ *
+ * The manifest asserted is the part this tree registers
+ * (Edition_Tree::ability_manifest()): the whole surface with the Pro code,
+ * the free part in the free build, where no Pro ability exists to replay.
  */
 class AbilityRegistrySmokeTest extends \WP_UnitTestCase
 {
@@ -38,7 +43,7 @@ class AbilityRegistrySmokeTest extends \WP_UnitTestCase
             self::MANIFEST_PATH,
             'Ability manifest missing. Run `composer manifest:regenerate` and commit the result.'
         );
-        $manifest = require self::MANIFEST_PATH;
+        $manifest = Edition_Tree::ability_manifest();
 
         // Trigger the registry's lazy init through the real API path: the
         // first registry access fires wp_abilities_api_init, which is where

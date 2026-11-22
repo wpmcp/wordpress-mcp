@@ -5,6 +5,7 @@ namespace WPMCP\Tests\Free\Governance;
 use WPMCP\Admin\Opt_In_Settings_Page;
 use WPMCP\Governance\Governance_Audit_Log;
 use WPMCP\Governance\Opt_In_Settings;
+use WPMCP\Tests\Support\Edition_Tree;
 use WPMCP\Tools\Meta\Option_Guard;
 use WPMCP\Tools\Meta\Update_Option;
 
@@ -17,9 +18,26 @@ use WPMCP\Tools\Meta\Update_Option;
  * "set in code" and cannot be changed), every change lands in the
  * governance audit log, and the stored toggles are locked against the
  * generic option tools, so an agent cannot switch on its own permissions.
+ *
+ * This half covers the public groups and scans the public sources
+ * (Edition_Tree::public_sources()). Opt_In_Settings is public code and also
+ * lists the groups whose owner file is Pro; those are PRO_OWNED_GROUPS here,
+ * and tests/pro/Governance/OptInSettingsProTest checks their declarations,
+ * owners and rows (the WooCommerce per-op switch among them).
  */
 class OptInSettingsTest extends \WP_UnitTestCase
 {
+    /**
+     * Groups Opt_In_Settings lists whose owner file is Pro: the WooCommerce
+     * per-op switch (Woo_Write) and the block suite settings packs. The
+     * public scan does not see their declarations; the Pro half does.
+     */
+    public const PRO_OWNED_GROUPS = [
+        'wpmcp_enable_block_suite_settings_write',
+        'wpmcp_enable_otter_settings_write',
+        'wpmcp_woo_op_enabled',
+    ];
+
     private int $admin_id;
 
     protected function setUp(): void
@@ -55,21 +73,19 @@ class OptInSettingsTest extends \WP_UnitTestCase
     }
 
     /**
-     * Every opt_in_filter a pack declares, and the WooCommerce per-op
-     * switch, has a group here, so a new default-off pack cannot ship
-     * without its toggle. Found by scanning src/ the way the issue asks
-     * (grep for opt_in_filter), resolving constants named in the same file.
+     * The opt_in_filter values the given sources declare, found by scanning
+     * them the way the issue asks (grep for opt_in_filter), resolving
+     * constants named in the same file or a sibling class file.
+     *
+     * @param array<string, string> $sources src/... path => absolute path (Edition_Tree)
+     * @return array<string, true>
      */
-    public function test_every_opt_in_filter_in_src_has_a_group(): void
+    public static function declared_filters(\PHPUnit\Framework\TestCase $test, array $sources): array
     {
-        $root  = dirname(__DIR__, 3);
-        $found = [ 'wpmcp_woo_op_enabled' => true ];
-        $it    = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root . '/src', \FilesystemIterator::SKIP_DOTS));
-        foreach ($it as $file) {
-            if ('php' !== $file->getExtension()) {
-                continue;
-            }
-            $code = (string) file_get_contents($file->getPathname());
+        $found = [];
+        $all   = Edition_Tree::all_sources();
+        foreach ($sources as $public => $path) {
+            $code = (string) file_get_contents($path);
             if (! preg_match_all("/'opt_in_filter'\s*=>\s*([^,\]\n]+)/", $code, $m)) {
                 continue;
             }
@@ -81,7 +97,9 @@ class OptInSettingsTest extends \WP_UnitTestCase
                 }
                 if (preg_match('/^(?:self|([A-Za-z_]+))::([A-Z_]+)$/', $expr, $const)) {
                     $class = '' === $const[1] ? null : $const[1];
-                    $src   = null === $class ? $code : (string) file_get_contents($file->getPath() . '/' . $class . '.php');
+                    // A sibling class file, wherever the split put it.
+                    $sibling = null === $class ? null : ($all[ dirname($public) . '/' . $class . '.php' ] ?? null);
+                    $src     = null === $class ? $code : (null === $sibling ? '' : (string) file_get_contents($sibling));
                     if (preg_match('/const\s+' . $const[2] . "\s*=\s*'([a-z0-9_]+)'/", $src, $val)) {
                         $found[ $val[1] ] = true;
                         continue;
@@ -91,11 +109,27 @@ class OptInSettingsTest extends \WP_UnitTestCase
                 if (false !== strpos($expr, '$')) {
                     continue;
                 }
-                $this->fail('Could not resolve opt_in_filter expression ' . $expr . ' in ' . $file->getPathname());
+                $test->fail('Could not resolve opt_in_filter expression ' . $expr . ' in ' . $path);
             }
         }
+        return $found;
+    }
 
-        $groups = Opt_In_Settings::all_groups();
+    /**
+     * Every opt_in_filter a public pack declares has a group here, so a new
+     * default-off pack cannot ship without its toggle, and every group
+     * whose owner is public is declared by public code.
+     */
+    public function test_every_opt_in_filter_in_src_has_a_group(): void
+    {
+        $root   = Edition_Tree::root();
+        $found  = self::declared_filters($this, Edition_Tree::public_sources());
+        $all    = Opt_In_Settings::all_groups();
+        $pro    = array_keys(array_filter($all, static fn (array $group): bool => Edition_Tree::is_pro_path($group['owner'])));
+        sort($pro);
+        $this->assertSame(self::PRO_OWNED_GROUPS, $pro, 'PRO_OWNED_GROUPS must list exactly the groups whose owner file is Pro');
+        $groups = array_diff_key($all, array_flip(self::PRO_OWNED_GROUPS));
+
         $this->assertSame([], array_values(array_diff(array_keys($found), array_keys($groups))), 'opt_in_filter values with no settings toggle');
         $this->assertSame([], array_values(array_diff(array_keys($groups), array_keys($found))), 'toggles for filters no pack declares');
 
@@ -153,13 +187,6 @@ class OptInSettingsTest extends \WP_UnitTestCase
         $this->assertFalse($log[0]['allowed']);
     }
 
-    public function test_woo_toggle_opens_default_off_ops_and_keeps_args(): void
-    {
-        Opt_In_Settings::set('wpmcp_woo_op_enabled', true, 'site');
-        $this->assertTrue((bool) apply_filters('wpmcp_woo_op_enabled', false, 'subscriptions.cancel'));
-        $this->assertTrue((bool) apply_filters('wpmcp_woo_op_enabled', true, 'products.update'));
-    }
-
     public function test_a_filter_set_in_code_wins_and_locks_the_toggle(): void
     {
         Opt_In_Settings::set('wpmcp_enable_forms_write', true, 'site');
@@ -192,9 +219,8 @@ class OptInSettingsTest extends \WP_UnitTestCase
     public function test_destructive_groups_carry_a_warning(): void
     {
         $rows = (new Opt_In_Settings_Page())->rows('site');
-        $this->assertTrue($rows['wpmcp_woo_op_enabled']['destructive']);
-        $this->assertNotSame('', $rows['wpmcp_woo_op_enabled']['warning']);
         $this->assertTrue($rows['wpmcp_enable_crm_send']['destructive']);
+        $this->assertNotSame('', $rows['wpmcp_enable_crm_send']['warning']);
         $this->assertFalse($rows['wpmcp_enable_pods_write']['destructive']);
         $this->assertSame('', $rows['wpmcp_enable_pods_write']['warning']);
     }

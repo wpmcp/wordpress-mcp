@@ -181,7 +181,7 @@ assert_free_zip() {
 
 # assert_premium_zip <zip> [<manifest>]
 # The premium zip: root folder wpmcp-pro/ and nothing else at the top level,
-# the marker with its exact text, pro/bootstrap.php, no pro/tests and no
+# the marker with its exact text, pro/src/Pro/bootstrap.php, no pro/tests and no
 # dotfile anywhere under pro/, the inlined config saying is_premium true, and,
 # when a manifest is given, no manifest path left at its public location.
 assert_premium_zip() {
@@ -198,8 +198,8 @@ assert_premium_zip() {
 	marker=$(unzip -p -- "$zip" "$root/$WPMCP_PREMIUM_MARKER" | tr -d '\r')
 	[ "$marker" = "$WPMCP_PREMIUM_MARKER_TEXT" ] \
 		|| { echo "pro leak gate: $root/$WPMCP_PREMIUM_MARKER in $zip does not read \"$WPMCP_PREMIUM_MARKER_TEXT\"" >&2; return 1; }
-	grep -Fxq -- "$root/pro/bootstrap.php" <<<"$listing" \
-		|| { echo "pro leak gate: $zip has no $root/pro/bootstrap.php" >&2; return 1; }
+	grep -Fxq -- "$root/pro/src/Pro/bootstrap.php" <<<"$listing" \
+		|| { echo "pro leak gate: $zip has no $root/pro/src/Pro/bootstrap.php" >&2; return 1; }
 	# pro/tests, or any path under pro/ with a component that starts with a
 	# dot (.git, .github, .gitignore, editor files).
 	bad=$(grep -E "^$root/pro/(tests(/|\$)|(.*/)?\.)" <<<"$listing" || true)

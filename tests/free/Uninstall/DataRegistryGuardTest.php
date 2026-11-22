@@ -5,6 +5,7 @@ namespace WPMCP\Tests\Free\Uninstall;
 use WPMCP\Data_Registry;
 use WPMCP\Safety\File_Backup;
 use WPMCP\Safety\Snapshot_Store;
+use WPMCP\Tests\Support\Edition_Tree;
 use WPMCP\Tools\Backup\Restore_Files;
 use WPMCP\Tools\Backup\Site_Backup_Dir;
 use WPMCP\Tools\Export\Content_Mirror;
@@ -13,7 +14,6 @@ use WPMCP\Tools\Filesystem\Filesystem_Guard;
 use WPMCP\Tools\Redirects\Redirect_Store;
 use WPMCP\Tools\Search\Search_Index_Store;
 use WPMCP\Tools\Security\File_Quarantine;
-use WPMCP\Tools\WidgetBuilder\Compiler\Compiled_Widget_Manifest;
 
 /**
  * Guard for the data ownership registry (issue #480).
@@ -35,11 +35,19 @@ use WPMCP\Tools\WidgetBuilder\Compiler\Compiled_Widget_Manifest;
  *    registered nor declared as kept.
  *
  * It also fails on registry entries nothing in src/ uses any more.
+ *
+ * This half scans the public sources (Edition_Tree::public_sources()) and
+ * names Pro classes only by their values. Allowlist entries of Pro files
+ * (DYNAMIC_KEY_FILES) and foreign keys only Pro code writes live in
+ * tests/pro/Uninstall/DataRegistryGuardProTest, which reuses this scanner on
+ * the Pro sources. Data_Registry is public code and also lists stores only
+ * Pro code names; those are the PRO_OWNED_* lists here, which the Pro half
+ * verifies.
  */
 class DataRegistryGuardTest extends \WP_UnitTestCase
 {
     /** Write functions => [zero-based key argument, kind]. */
-    private const WRITERS = [
+    public const WRITERS = [
         'update_option'         => [ 0, 'option' ],
         'add_option'            => [ 0, 'option' ],
         'set_transient'         => [ 0, 'transient' ],
@@ -56,9 +64,10 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
     /**
      * Keys owned by WordPress core or another plugin that a tool writes on
      * the site's behalf. Uninstall must never delete these. An entry ending
-     * in '*' is a prefix.
+     * in '*' is a prefix. Keys only Pro code writes are declared in the Pro
+     * half; a key both halves write is declared here.
      */
-    private const FOREIGN = [
+    public const FOREIGN = [
         'option'         => [
             // Core's active plugin list: a safe package update puts the
             // plugin it swapped back on it, without loading the new code
@@ -68,7 +77,6 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             'bricks_global_classes_timestamp',
             'bricks_global_classes_user',
             'astra-settings',
-            'woocommerce_gateway_order',
             'wpseo_taxonomy_meta',
             // Yoast SEO Premium's redirect list and its exports (issue #681).
             'wpseo-premium-redirects-*',
@@ -98,22 +106,9 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             // Login_Url_Pack ops on the theme pair (issue #896).
             'whl_page',
             'whl_redirect_admin',
-            // FunnelKit Cart's settings, written by cart.update-settings on
-            // the woo-write pair (issue #832).
-            'fkcart_settings',
-            // Otter Blocks' feature switches and disabled blocks, set by
-            // update-otter-settings on the block-suites pair (issue #647).
-            'themeisle_blocks_settings_*',
-            'themeisle_disabled_blocks',
-            // Avada's global options, written by the Avada design_system
-            // scope on the builder pair (issue #637).
-            'fusion_options',
             // LiteSpeed Cache's own settings, one option per id, written by
             // set-litespeed-settings on the theme pair (issue #933).
             'litespeed.conf.*',
-            // WPBakery's saved templates, written by the builder pair's
-            // templates scope (issue #639).
-            'wpb_js_templates',
             // Code Snippets' own recently deactivated list, put back by a
             // snippet activation's rollback (issue #576).
             'recently_active_snippets',
@@ -206,15 +201,13 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
      * value) or one built by a helper whose prefix is pinned by a test of
      * its own class.
      */
-    private const DYNAMIC_KEY_FILES = [
+    public const DYNAMIC_KEY_FILES = [
         'src/Cron_Registry.php'                              => 'job store names from Cron_Registry::JOB_HOOKS, all wpmcp_',
         'src/Modules/Cmb2/Adapter/Wp_Cmb2_Values.php' => 'puts back a CMB2 options page\'s own option array (the box\'s option_key) after CMB2 rejected a value (issue #1089)',
         'src/Modules/Site_Gate_Settings/Adapter/Wp_Plan_Writer.php' => 'writes the gate plugin options its stores plan (ucp_options, wpmm_settings, mtnc-options, niteoCS_*), never a wpmcp_ key',
         'src/Auth/Atomic_Option.php'                         => 'creates whichever wpmcp_ option its caller locks',
         'src/Auth/Client_Metadata_Document.php'              => 'cache key built by cache_key() from CACHE_PREFIX (wpmcp_oauth_cimd_)',
         'src/Cloud/Cloud_Credentials.php'                    => 'restores its own wpmcp_cloud_ options from a snapshot',
-        'src/Cloud/Settings_Sync.php'                        => 'applies synced site settings the owner chose',
-        'src/Tools/CustomCode/Custom_Code_Store.php'         => 'per-post option built from POST_OPTION_PREFIX (wpmcp_custom_code_post_)',
         'src/Tools/Settings/Update_Settings.php'             => 'edits a named core setting',
         'src/Integrations/PixelYourSite_Store.php'           => 'writes the legacy option of one network (pys_facebook, pys_ga or pys_gtm), named by PixelYourSite_Network::row(); PixelYourSite\'s own data, never WP MCP\'s',
         'src/Integrations/Site_Gate_Pack.php'                => 'puts back the one gate option (seedprod_settings or ucp_options) it just wrote, named by WRITABLE; both are FOREIGN',
@@ -223,18 +216,14 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         'src/Tools/Packages/Safe_Package_Update.php'         => 'puts back the options a rolled-back package update changed (issue #843)',
         'src/Tools/Sync/Change_Set_Applier.php'              => 'applies a change set to named options',
         'src/Tools/Backup/Restore_Session.php'               => 'puts back the restoring user\'s own session and meta',
-        'src/Tools/Builders/Builder_Design_Write.php'        => 'page builder design options',
         'src/Tools/Builders/Avada_Cache.php'                 => 'Avada cache options',
-        'src/Tools/WooCommerce/Catalog/Shipping_Ops.php'     => 'WooCommerce shipping method settings',
         'src/Tools/Media/Upload_Grant.php'                   => 'grant option built from OPTION_PREFIX (wpmcp_upload_grant_)',
-        'src/Tools/Analysis/SeoData/Seo_Data_Lookup.php'     => 'cache key built by cache_name() from CACHE_PREFIX (wpmcp_seod_)',
         'src/Tools/Diagnostics/Mail_Check.php'               => 'rate-limit key built from LIMIT_KEY (wpmcp_mail_test_)',
         'src/Privacy/Personal_Data.php'                      => 'cursor and address keys built from CURSOR_PREFIX (wpmcp_privacy_cursor_) and IPS_PREFIX (wpmcp_privacy_ips_)',
         'src/Safety/Rollback_Service.php'                    => 'puts back recorded options and user meta',
         'src/Safety/Wc_Shipping_Zone_Snapshot.php'           => 'puts back recorded WooCommerce options',
         'src/Safety/BbPress_Posts_Snapshot.php'              => 'puts back the recorded bbPress super sticky list (_bbp_super_sticky_topics)',
         'src/Integrations/Theme_Settings_Pack.php'           => 'theme settings options',
-        'src/Integrations/Block_Suite_Settings.php'          => 'Kadence Blocks and Spectra settings options from its allowlist (issue #648)',
         'src/Integrations/Elementor_Addon_Packs.php'         => 'Elementor add-on settings',
         'src/Integrations/LMS_LearnDash.php'                 => 'LearnDash\'s own enrollment user meta (course_<id>_access_from)',
         'src/Integrations/Cache_Settings_Adapter.php'        => 'the cache plugin\'s own settings option (wp_rocket_settings, perfmatters_options, FLYING_PRESS_CONFIG)',
@@ -244,23 +233,28 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
      * Directory constants named like ours that uninstall deliberately keeps,
      * with the reason.
      */
-    private const KEPT_DIRS = [
+    public const KEPT_DIRS = [
         'wpmcp-skills' => 'skills the site owner wrote by hand in wp-content; WP MCP only reads them',
     ];
 
-    public function test_every_written_key_is_registered_or_declared_foreign(): void
+    /**
+     * Sort scanned writes into what the guard reports.
+     *
+     * @param array<int, array<string, mixed>> $writes        from writes()
+     * @param array<string, string>            $dynamic_files file => reason
+     * @param array<string, string[]>          $foreign       kind => entries
+     * @return array{dynamic_stale: string[], unresolved: string[], missing: string[], unknown: string[], foreign_used: array<string, true>}
+     */
+    public static function key_problems(array $writes, array $dynamic_files, array $foreign): array
     {
-        $writes = $this->writes();
-        $this->assertGreaterThan(50, count($writes), 'The scan found too few writes, so it is not looking in the right place.');
-
         $unresolved = [];
         $missing    = [];
         $unknown    = [];
-        $foreign    = [];
+        $used       = [];
         foreach ($writes as $write) {
             $where = sprintf('%s:%d %s(%s)', $write['file'], $write['line'], $write['function'], $write['expr']);
             if (null === $write['key']) {
-                if (! isset(self::DYNAMIC_KEY_FILES[ $write['file'] ])) {
+                if (! isset($dynamic_files[ $write['file'] ])) {
                     $unresolved[] = $where;
                 }
                 continue;
@@ -273,31 +267,70 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
                 }
                 continue;
             }
-            $entry = self::foreign($write['kind'], $key);
+            $entry = self::foreign($write['kind'], $key, $foreign);
             if (null === $entry) {
                 $unknown[] = $where . ' => ' . $key . ($exact ? '' : '*');
             } else {
-                $foreign[ $write['kind'] . ':' . $entry ] = true;
+                $used[ $write['kind'] . ':' . $entry ] = true;
             }
         }
 
         $dynamic = array_unique(array_column(array_filter($writes, static fn ($w) => null === $w['key']), 'file'));
-        $this->assertSame([], array_values(array_diff(array_keys(self::DYNAMIC_KEY_FILES), $dynamic)), 'DYNAMIC_KEY_FILES lists files with no dynamic write any more.');
-        $this->assertSame([], $unresolved, "Writes whose key could not be resolved; resolve it to a constant or add the file to DYNAMIC_KEY_FILES with the reason:\n" . implode("\n", $unresolved));
-        $this->assertSame([], $missing, "Keys WP MCP writes that Data_Registry does not cover, so deleting the plugin would leave them behind:\n" . implode("\n", $missing));
+        return [
+            'dynamic_stale' => array_values(array_diff(array_keys($dynamic_files), $dynamic)),
+            'unresolved'    => $unresolved,
+            'missing'       => $missing,
+            'unknown'       => $unknown,
+            'foreign_used'  => $used,
+        ];
+    }
+
+    /**
+     * @param array<string, string[]> $foreign kind => entries
+     * @return string[] "kind:entry"
+     */
+    public static function declared(array $foreign): array
+    {
         $declared = [];
-        foreach (self::FOREIGN as $kind => $entries) {
+        foreach ($foreign as $kind => $entries) {
             foreach ($entries as $entry) {
                 $declared[] = $kind . ':' . $entry;
             }
         }
-        $this->assertSame([], array_values(array_diff($declared, array_keys($foreign))), 'FOREIGN lists keys nothing in src/ writes any more.');
-        $this->assertSame([], $unknown, "Keys written that are neither WP MCP's (wpmcp_ / _wpmcp_) nor declared FOREIGN here. A new store must use a registered prefix:\n" . implode("\n", $unknown));
+        return $declared;
+    }
+
+    /**
+     * Data_Registry directories only a Pro constant names: the compiled
+     * widget store (Compiled_Widget_Manifest::DIR_NAME). The Pro half finds
+     * the constant.
+     */
+    public const PRO_OWNED_DIRS = [
+        'wpmcp-widgets',
+    ];
+
+    public function test_every_written_key_is_registered_or_declared_foreign(): void
+    {
+        $writes = self::writes();
+        $this->assertGreaterThan(50, count($writes), 'The scan found too few writes, so it is not looking in the right place.');
+
+        $found = self::key_problems($writes, self::DYNAMIC_KEY_FILES, self::FOREIGN);
+        $this->assertSame([], $found['dynamic_stale'], 'DYNAMIC_KEY_FILES lists files with no dynamic write any more.');
+        $this->assertSame([], $found['unresolved'], "Writes whose key could not be resolved; resolve it to a constant or add the file to DYNAMIC_KEY_FILES with the reason:\n" . implode("\n", $found['unresolved']));
+        $this->assertSame([], $found['missing'], "Keys WP MCP writes that Data_Registry does not cover, so deleting the plugin would leave them behind:\n" . implode("\n", $found['missing']));
+        $this->assertSame([], array_values(array_diff(self::declared(self::FOREIGN), array_keys($found['foreign_used']))), 'FOREIGN lists keys nothing in src/ writes any more.');
+        $this->assertSame([], $found['unknown'], "Keys written that are neither WP MCP's (wpmcp_ / _wpmcp_) nor declared FOREIGN here. A new store must use a registered prefix:\n" . implode("\n", $found['unknown']));
+    }
+
+    public function test_the_allowlists_name_only_public_files(): void
+    {
+        $pro = array_values(array_filter(array_keys(self::DYNAMIC_KEY_FILES), [ Edition_Tree::class, 'is_pro_path' ]));
+        $this->assertSame([], $pro, 'DYNAMIC_KEY_FILES entries of Pro files belong in tests/pro/Uninstall/DataRegistryGuardProTest.');
     }
 
     public function test_every_wpmcp_table_is_registered(): void
     {
-        $tables = $this->tables();
+        $tables = self::tables();
         $owned  = array_values(array_unique(array_filter(array_column($tables, 'name'), [self::class, 'looks_like_ours'])));
 
         $this->assertNotEmpty($owned, 'The scan found no WP MCP tables at all.');
@@ -306,7 +339,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
 
         $with_tables = array_unique(array_column(array_filter($tables, static fn ($t) => self::looks_like_ours($t['name'])), 'file'));
         $creators    = [];
-        foreach ($this->sources() as $relative => $src) {
+        foreach (self::sources() as $relative => $src) {
             if (preg_match('/\bdbDelta\s*\(/', $src) && 'src/Tools/Backup/Sql_Importer.php' !== $relative) {
                 $creators[] = $relative;
             }
@@ -315,22 +348,34 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         $this->assertSame([], array_values(array_diff($creators, $with_tables)), 'Files that run dbDelta() without a $wpdb->prefix . \'wpmcp_...\' table name the scan can see.');
     }
 
-    public function test_every_wpmcp_directory_constant_is_registered_or_kept(): void
+    /**
+     * @param array<string, string>|null $files src/... path => absolute path; the public sources when null
+     * @return array<string, string> directory name => file whose constant names it
+     */
+    public static function directory_constants(?array $files = null): array
     {
         $found = [];
-        foreach ($this->sources() as $relative => $src) {
+        foreach (self::sources($files) as $relative => $src) {
             if (preg_match_all("/const\s+\w*DIR\w*\s*=\s*'(\.?wpmcp[-_][^'\/]*)'/", $src, $m)) {
                 foreach ($m[1] as $name) {
                     $found[ $name ] = $relative;
                 }
             }
         }
+        return $found;
+    }
+
+    public function test_every_wpmcp_directory_constant_is_registered_or_kept(): void
+    {
+        $found = self::directory_constants();
         $this->assertNotEmpty($found);
 
         $registered = array_merge(Data_Registry::UPLOADS_DIRS, Data_Registry::CONTENT_DIRS);
         $missing    = array_diff(array_keys($found), $registered, array_keys(self::KEPT_DIRS));
         $this->assertSame([], array_values($missing), 'Directory constants named like WP MCP\'s that are neither in Data_Registry nor KEPT_DIRS.');
-        $this->assertSame([], array_values(array_diff($registered, array_keys($found))), 'Data_Registry lists directories no constant in src/ names any more.');
+        $this->assertSame([], array_values(array_diff($registered, array_keys($found), self::PRO_OWNED_DIRS)), 'Data_Registry lists directories no constant in src/ names any more.');
+        $this->assertSame([], array_values(array_diff(self::PRO_OWNED_DIRS, $registered)), 'PRO_OWNED_DIRS lists directories Data_Registry does not.');
+        $this->assertSame([], array_values(array_intersect(self::PRO_OWNED_DIRS, array_keys($found))), 'PRO_OWNED_DIRS lists directories a public constant names; drop them from the list.');
     }
 
     /**
@@ -351,7 +396,8 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             Data_Registry::UPLOADS_DIRS
         );
         $this->assertSame(
-            [ Restore_Files::DIR_NAME, Compiled_Widget_Manifest::DIR_NAME ],
+            // Compiled_Widget_Manifest::DIR_NAME by value (a Pro class; the Pro half pins it).
+            [ Restore_Files::DIR_NAME, 'wpmcp-widgets' ],
             Data_Registry::CONTENT_DIRS
         );
     }
@@ -385,7 +431,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             . "function f() { update_option(\"wpmcp_enc_{\$x}\", 1); }\n"
             . "function g() { \$this->update_option('not_a_call'); }\n}\n";
 
-        $writes = $this->writes_in('src/Demo.php', $src);
+        $writes = self::writes_in('src/Demo.php', $src);
 
         $this->assertSame(
             [ [ 'wpmcp_literal', true ], [ 'wpmcp_p_', false ], [ 'wpmcp_var_', false ], [ 'wpmcp_demo', true ], null, [ 'wpmcp_enc_', false ] ],
@@ -394,13 +440,13 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         $this->assertSame([ 'option', 'transient', 'transient', 'user_meta', 'option', 'option' ], array_column($writes, 'kind'));
     }
 
-    private static function looks_like_ours(string $key): bool
+    public static function looks_like_ours(string $key): bool
     {
         return 1 === preg_match('/^_?wpmcp/i', $key);
     }
 
     /** Whether the registry deletes $key (or every key starting with it). */
-    private static function covered(string $kind, string $key, bool $exact): bool
+    public static function covered(string $kind, string $key, bool $exact): bool
     {
         $check = static function (string $name) use ($kind): bool {
             switch ($kind) {
@@ -422,10 +468,14 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         return $exact ? $check($key) : $check($key) && $check($key . 'x');
     }
 
-    /** The FOREIGN entry that declares $key, or null. */
-    private static function foreign(string $kind, string $key): ?string
+    /**
+     * The FOREIGN entry that declares $key, or null.
+     *
+     * @param array<string, string[]>|null $foreign kind => entries; FOREIGN when null
+     */
+    public static function foreign(string $kind, string $key, ?array $foreign = null): ?string
     {
-        foreach (self::FOREIGN[ $kind ] ?? [] as $entry) {
+        foreach (($foreign ?? self::FOREIGN)[ $kind ] ?? [] as $entry) {
             if (str_ends_with($entry, '*') ? str_starts_with($key, substr($entry, 0, -1)) : $entry === $key) {
                 return $entry;
             }
@@ -433,39 +483,42 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         return null;
     }
 
-    /** @return array<string, string> relative path => source */
-    private function sources(): array
+    /**
+     * @param array<string, string>|null $files src/... path => absolute path (Edition_Tree); the public sources when null
+     * @return array<string, string> src/... path => source
+     */
+    public static function sources(?array $files = null): array
     {
-        $root  = dirname(__DIR__, 3);
-        $out   = [];
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root . '/src', \FilesystemIterator::SKIP_DOTS));
-        foreach ($files as $file) {
-            if ('php' === $file->getExtension()) {
-                $out[ ltrim(str_replace($root, '', $file->getPathname()), '/') ] = (string) file_get_contents($file->getPathname());
-            }
+        $out = [];
+        foreach ($files ?? Edition_Tree::public_sources() as $relative => $absolute) {
+            $out[ $relative ] = (string) file_get_contents($absolute);
         }
         ksort($out);
         return $out;
     }
 
-    private function writes(): array
+    /** @param array<string, string>|null $files src/... path => absolute path; the public sources when null */
+    public static function writes(?array $files = null): array
     {
         $writes = [];
-        foreach ($this->sources() as $relative => $src) {
-            $writes = array_merge($writes, $this->writes_in($relative, $src));
+        foreach (self::sources($files) as $relative => $src) {
+            $writes = array_merge($writes, self::writes_in($relative, $src));
         }
         return $writes;
     }
 
-    /** @return array<int, array{name:string,file:string}> */
-    private function tables(): array
+    /**
+     * @param array<string, string>|null $files src/... path => absolute path; the public sources when null
+     * @return array<int, array{name:string,file:string}>
+     */
+    public static function tables(?array $files = null): array
     {
         $tables = [];
-        foreach ($this->sources() as $relative => $src) {
-            $ctx    = $this->context($src);
-            $tokens = $this->tokens($src);
+        foreach (self::sources($files) as $relative => $src) {
+            $ctx    = self::context($src);
+            $tokens = self::tokens($src);
             foreach ($tokens as $i => $t) {
-                $this->track($ctx, $tokens, $i);
+                self::track($ctx, $tokens, $i);
                 if (! is_array($t) || T_VARIABLE !== $t[0] || '$wpdb' !== $t[1]) {
                     continue;
                 }
@@ -475,7 +528,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
                     || '.' !== ($tokens[ $i + 3 ] ?? null)) {
                     continue;
                 }
-                $resolved = $this->resolve_operand(array_slice($tokens, $i + 4, 3), $ctx);
+                $resolved = self::resolve_operand(array_slice($tokens, $i + 4, 3), $ctx);
                 if (null !== $resolved) {
                     $tables[] = [ 'name' => $resolved, 'file' => $relative ];
                 }
@@ -485,7 +538,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
     }
 
     /** Parse state, seeded with the file's own string class constants (private ones included). */
-    private function context(string $src): array
+    private static function context(string $src): array
     {
         preg_match_all("/const\\s+(\\w+)\\s*=\\s*'([^'\\\\]*)'\\s*;/", $src, $m, PREG_SET_ORDER);
         $consts = [];
@@ -495,7 +548,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         return [ 'namespace' => '', 'class' => '', 'uses' => [], 'function_start' => 0, 'consts' => $consts ];
     }
 
-    private function tokens(string $src): array
+    private static function tokens(string $src): array
     {
         return array_values(array_filter(
             token_get_all($src),
@@ -504,7 +557,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
     }
 
     /** Keep namespace, class, imports and the current function's start up to date. */
-    private function track(array &$ctx, array $tokens, int $i): void
+    private static function track(array &$ctx, array $tokens, int $i): void
     {
         $t = $tokens[ $i ];
         if (! is_array($t)) {
@@ -525,15 +578,15 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
     }
 
     /** @return array<int, array{file:string,line:int,function:string,kind:string,key:?array,expr:string}> */
-    private function writes_in(string $relative, string $src): array
+    public static function writes_in(string $relative, string $src): array
     {
-        $tokens = $this->tokens($src);
-        $ctx    = $this->context($src);
+        $tokens = self::tokens($src);
+        $ctx    = self::context($src);
         $writes = [];
         $count  = count($tokens);
 
         for ($i = 0; $i < $count; $i++) {
-            $this->track($ctx, $tokens, $i);
+            self::track($ctx, $tokens, $i);
             $t = $tokens[ $i ];
             if (! is_array($t) || ! in_array($t[0], [ T_STRING, T_NAME_FULLY_QUALIFIED ], true)) {
                 continue;
@@ -548,13 +601,13 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             }
 
             [ $position, $kind ] = self::WRITERS[ $function ];
-            $arg      = $this->arguments($tokens, $i + 1)[ $position ] ?? [];
+            $arg      = self::arguments($tokens, $i + 1)[ $position ] ?? [];
             $writes[] = [
                 'file'     => $relative,
                 'line'     => $t[2],
                 'function' => $function,
                 'kind'     => $kind,
-                'key'      => $this->resolve_key($arg, $ctx, $tokens, $i, 0),
+                'key'      => self::resolve_key($arg, $ctx, $tokens, $i, 0),
                 'expr'     => implode('', array_map(static fn ($x) => is_array($x) ? $x[1] : $x, $arg)),
             ];
         }
@@ -563,7 +616,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
     }
 
     /** The argument token lists of the call whose '(' is at $open. */
-    private function arguments(array $tokens, int $open): array
+    private static function arguments(array $tokens, int $open): array
     {
         $args  = [ [] ];
         $depth = 0;
@@ -593,7 +646,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
      *
      * @return array{0:string,1:bool}|null
      */
-    private function resolve_key(array $arg, array $ctx, array $tokens, int $at, int $depth): ?array
+    private static function resolve_key(array $arg, array $ctx, array $tokens, int $at, int $depth): ?array
     {
         if ([] === $arg) {
             return null;
@@ -606,7 +659,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         }
 
         if (is_array($arg[0]) && T_VARIABLE === $arg[0][0] && $depth < 2) {
-            $resolved = $this->resolve_variable($arg[0][1], $ctx, $tokens, $at, $depth);
+            $resolved = self::resolve_variable($arg[0][1], $ctx, $tokens, $at, $depth);
             if (null === $resolved) {
                 return null;
             }
@@ -614,7 +667,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         }
 
         $operand = is_array($arg[0]) && T_CONSTANT_ENCAPSED_STRING === $arg[0][0] ? array_slice($arg, 0, 1) : array_slice($arg, 0, 3);
-        $value   = $this->resolve_operand($operand, $ctx);
+        $value   = self::resolve_operand($operand, $ctx);
         if (null === $value) {
             return null;
         }
@@ -625,7 +678,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         return '.' === $rest[0] ? [ $value, false ] : null;
     }
 
-    private function resolve_variable(string $name, array $ctx, array $tokens, int $at, int $depth): ?array
+    private static function resolve_variable(string $name, array $ctx, array $tokens, int $at, int $depth): ?array
     {
         for ($i = $at - 1; $i > $ctx['function_start']; $i--) {
             $t = $tokens[ $i ];
@@ -634,14 +687,14 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
                 for ($j = $i + 2; $j < $at && ';' !== $tokens[ $j ]; $j++) {
                     $rhs[] = $tokens[ $j ];
                 }
-                return $this->resolve_key($rhs, $ctx, $tokens, $i, $depth + 1);
+                return self::resolve_key($rhs, $ctx, $tokens, $i, $depth + 1);
             }
         }
         return null;
     }
 
     /** A string literal or Class::CONST, resolved; null for anything else. */
-    private function resolve_operand(array $operand, array $ctx): ?string
+    private static function resolve_operand(array $operand, array $ctx): ?string
     {
         if (1 <= count($operand) && is_array($operand[0]) && T_CONSTANT_ENCAPSED_STRING === $operand[0][0]) {
             return stripslashes(substr($operand[0][1], 1, -1));

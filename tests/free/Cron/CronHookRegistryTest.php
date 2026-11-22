@@ -4,13 +4,11 @@ namespace WPMCP\Tests\Free\Cron;
 
 use WPMCP\Auth\Oauth_Gc;
 use WPMCP\Cron_Registry;
+use WPMCP\Tests\Support\Edition_Tree;
 use WPMCP\Tools\Backup\Backup_Job_Store;
 use WPMCP\Tools\Backup\Backup_Schedule;
 use WPMCP\Tools\Backup\Run_Backup_Job;
 use WPMCP\Tools\Backup\Run_Restore_Job;
-use WPMCP\Tools\Cli\Cli_Job_Store;
-use WPMCP\Tools\Cli\Run_Cli_Job;
-use WPMCP\Tools\Media\Optimize_Media_Job;
 use WPMCP\Tools\Redirects\Broken_Link_Scan_Store;
 use WPMCP\Tools\Redirects\Run_Broken_Link_Scan;
 
@@ -24,11 +22,18 @@ use WPMCP\Tools\Redirects\Run_Broken_Link_Scan;
  * argument (a string literal or a class constant such as self::HOOK), and
  * fails on any hook the registry does not list. It also fails on a registry
  * entry nothing schedules any more, so the list cannot rot.
+ *
+ * This half scans the public sources (Edition_Tree::public_sources()) and
+ * names Pro classes only by their values. Cron_Registry is public code and
+ * lists the hooks only Pro code schedules too; those are PRO_SCHEDULED_HOOKS
+ * here, and tests/pro/Cron/CronHookRegistryProTest checks that the Pro
+ * sources schedule them, scans the Pro sources the same way and pins the
+ * values to the Pro classes' constants.
  */
 class CronHookRegistryTest extends \WP_UnitTestCase
 {
     /** Scheduling functions => zero-based position of the hook argument. */
-    private const SCHEDULERS = [
+    public const SCHEDULERS = [
         'wp_schedule_event'            => 2,
         'wp_schedule_single_event'     => 1,
         'wp_reschedule_event'          => 2,
@@ -51,9 +56,20 @@ class CronHookRegistryTest extends \WP_UnitTestCase
         'src/Integrations/UpdraftPlus_Status.php',
     ];
 
+    /**
+     * Registry hooks that only Pro code schedules, by value: the WP-CLI job
+     * runner (Run_Cli_Job::HOOK) and the media optimization job
+     * (Optimize_Media_Job::HOOK). The public scan must not find them
+     * scheduled, and the Pro half must.
+     */
+    public const PRO_SCHEDULED_HOOKS = [
+        'wpmcp_run_cli_job',
+        'wpmcp_run_optimize_media_job',
+    ];
+
     public function test_every_scheduled_hook_is_in_the_registry(): void
     {
-        $calls = $this->scheduling_calls();
+        $calls = self::scheduling_calls();
         $this->assertNotEmpty($calls, 'The scan found no scheduling calls at all, so it is not looking in the right place.');
 
         $registry   = Cron_Registry::hooks();
@@ -77,10 +93,12 @@ class CronHookRegistryTest extends \WP_UnitTestCase
 
     public function test_every_registry_hook_is_scheduled_somewhere(): void
     {
-        $scheduled = array_unique(array_filter(array_column($this->scheduling_calls(), 'hook')));
-        $stale     = array_values(array_diff(Cron_Registry::hooks(), $scheduled));
+        $scheduled = array_unique(array_filter(array_column(self::scheduling_calls(), 'hook')));
+        $stale     = array_values(array_diff(Cron_Registry::hooks(), $scheduled, self::PRO_SCHEDULED_HOOKS));
 
         $this->assertSame([], $stale, 'Cron_Registry lists hooks nothing in src/ schedules: ' . implode(', ', $stale));
+        $this->assertSame([], array_values(array_diff(self::PRO_SCHEDULED_HOOKS, Cron_Registry::hooks())), 'PRO_SCHEDULED_HOOKS lists hooks Cron_Registry does not.');
+        $this->assertSame([], array_values(array_intersect(self::PRO_SCHEDULED_HOOKS, $scheduled)), 'PRO_SCHEDULED_HOOKS lists hooks public code schedules; drop them from the list.');
     }
 
     public function test_the_registry_names_the_known_hooks(): void
@@ -92,9 +110,8 @@ class CronHookRegistryTest extends \WP_UnitTestCase
             Backup_Schedule::HOOK,
             Run_Backup_Job::HOOK,
             Run_Restore_Job::HOOK,
-            Run_Cli_Job::HOOK,
             Run_Broken_Link_Scan::HOOK,
-            Optimize_Media_Job::HOOK,
+            ...self::PRO_SCHEDULED_HOOKS,
         ] as $hook) {
             $this->assertContains($hook, $hooks);
         }
@@ -114,9 +131,11 @@ class CronHookRegistryTest extends \WP_UnitTestCase
                 Run_Restore_Job::HOOK      => [ Backup_Job_Store::OPTION, 'jobs' ],
                 // Run_Static_Export::HOOK (issue #854), named by its value: the class is Pro only.
                 'wpmcp_run_static_export'  => [ Backup_Job_Store::OPTION, 'jobs' ],
-                Run_Cli_Job::HOOK         => [ Cli_Job_Store::OPTION, 'jobs' ],
+                // Run_Cli_Job::HOOK => Cli_Job_Store::OPTION, by value (Pro classes; the Pro half pins them).
+                'wpmcp_run_cli_job'        => [ 'wpmcp_cli_jobs', 'jobs' ],
                 Run_Broken_Link_Scan::HOOK => [ Broken_Link_Scan_Store::OPTION, 'scans' ],
-                Optimize_Media_Job::HOOK   => [ Optimize_Media_Job::OPTION, 'jobs' ],
+                // Optimize_Media_Job::HOOK and ::OPTION, by value (Pro class; the Pro half pins them).
+                'wpmcp_run_optimize_media_job' => [ 'wpmcp_optimize_media_jobs', 'jobs' ],
             ],
             Cron_Registry::JOB_HOOKS
         );
@@ -131,29 +150,26 @@ class CronHookRegistryTest extends \WP_UnitTestCase
             . "function wp_schedule_event() {}\n"
             . "function d() { \$this->wp_schedule_event(1, 2, 'not_a_call'); }\n}\n";
 
-        $calls = $this->calls_in('src/Demo.php', $src);
+        $calls = self::calls_in('src/Demo.php', $src);
 
         $this->assertSame(['wpmcp_literal_hook', Oauth_Gc::HOOK, null], array_column($calls, 'hook'));
     }
 
-    /** @return array<int, array{file:string,line:int,function:string,hook:?string,expr:string}> */
-    private function scheduling_calls(): array
+    /**
+     * @param array<string, string>|null $sources src/... path => absolute path (Edition_Tree); the public sources when null
+     * @return array<int, array{file:string,line:int,function:string,hook:?string,expr:string}>
+     */
+    public static function scheduling_calls(?array $sources = null): array
     {
-        $root  = dirname(__DIR__, 3);
         $calls = [];
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root . '/src', \FilesystemIterator::SKIP_DOTS));
-        foreach ($files as $file) {
-            if ('php' !== $file->getExtension()) {
-                continue;
-            }
-            $relative = ltrim(str_replace($root, '', $file->getPathname()), '/');
-            $calls    = array_merge($calls, $this->calls_in($relative, (string) file_get_contents($file->getPathname())));
+        foreach ($sources ?? Edition_Tree::public_sources() as $relative => $absolute) {
+            $calls = array_merge($calls, self::calls_in($relative, (string) file_get_contents($absolute)));
         }
         return $calls;
     }
 
     /** @return array<int, array{file:string,line:int,function:string,hook:?string,expr:string}> */
-    private function calls_in(string $relative, string $src): array
+    public static function calls_in(string $relative, string $src): array
     {
         $tokens    = array_values(array_filter(
             token_get_all($src),
@@ -196,13 +212,13 @@ class CronHookRegistryTest extends \WP_UnitTestCase
                 continue;
             }
 
-            $args  = $this->arguments($tokens, $i + 1);
+            $args  = self::arguments($tokens, $i + 1);
             $arg   = $args[ self::SCHEDULERS[ $function ] ] ?? [];
             $calls[] = [
                 'file'     => $relative,
                 'line'     => $t[2],
                 'function' => $function,
-                'hook'     => $this->resolve($arg, $namespace, $class, $uses),
+                'hook'     => self::resolve($arg, $namespace, $class, $uses),
                 'expr'     => implode('', array_map(static fn ($x) => is_array($x) ? $x[1] : $x, $arg)),
             ];
         }
@@ -211,7 +227,7 @@ class CronHookRegistryTest extends \WP_UnitTestCase
     }
 
     /** The argument token lists of the call whose '(' is at $open. */
-    private function arguments(array $tokens, int $open): array
+    private static function arguments(array $tokens, int $open): array
     {
         $args  = [[]];
         $depth = 0;
@@ -235,7 +251,7 @@ class CronHookRegistryTest extends \WP_UnitTestCase
     }
 
     /** A string literal or Class::CONST argument, resolved; null for anything dynamic. */
-    private function resolve(array $arg, string $namespace, string $class, array $uses): ?string
+    private static function resolve(array $arg, string $namespace, string $class, array $uses): ?string
     {
         if (1 === count($arg) && is_array($arg[0]) && T_CONSTANT_ENCAPSED_STRING === $arg[0][0]) {
             return stripslashes(substr($arg[0][1], 1, -1));

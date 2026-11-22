@@ -5,6 +5,7 @@
 src/Cloud/Gateway_Cloud.php
 src/Cloud/Gateway_Consent.php
 src/Cloud/Settings_Sync.php
+src/Integrations/Block_Suite_Essential_Blocks_Guard.php
 src/Integrations/Block_Suite_Otter.php
 src/Integrations/Block_Suite_Settings.php
 src/Integrations/Block_Suite_Styles.php
@@ -29,6 +30,7 @@ src/Pro/Chat/System_Prompt.php
 src/Pro/Chat/Tool_Executor.php
 src/Pro/Chat/Tool_Inventory.php
 src/Pro/Chat/Turn_Runner.php
+src/Pro/bootstrap.php
 src/Skills/library/wpmcp-elementor-editing/
 src/Tools/Analysis/A11y_Analyzer.php
 src/Tools/Analysis/Add_Alt_Text_From_Context.php
@@ -100,6 +102,25 @@ src/Tools/Builders/Flatsome_Shortcodes.php
 src/Tools/Builders/Get_Builder_Content.php
 src/Tools/Builders/Kirki_Content.php
 src/Tools/Builders/Kirki_Tree.php
+src/Tools/Builders/Oxygen6_Component_Properties.php
+src/Tools/Builders/Oxygen6_Component_Property.php
+src/Tools/Builders/Oxygen6_Guard.php
+src/Tools/Builders/Oxygen6_Library_Exporter.php
+src/Tools/Builders/Oxygen6_Library_Importer.php
+src/Tools/Builders/Oxygen6_Library_Package.php
+src/Tools/Builders/Oxygen6_Operations.php
+src/Tools/Builders/Oxygen6_Page_Creator.php
+src/Tools/Builders/Oxygen6_Property_Writer.php
+src/Tools/Builders/Oxygen6_Reads.php
+src/Tools/Builders/Oxygen6_Request_Error.php
+src/Tools/Builders/Oxygen6_Settings_Validator.php
+src/Tools/Builders/Oxygen6_Snapshots.php
+src/Tools/Builders/Oxygen6_Store.php
+src/Tools/Builders/Oxygen6_Template_Settings.php
+src/Tools/Builders/Oxygen6_Template_Writer.php
+src/Tools/Builders/Oxygen6_Values.php
+src/Tools/Builders/Oxygen6_Vocabulary.php
+src/Tools/Builders/Oxygen6_Vocabulary_Source.php
 src/Tools/Builders/Oxygen_Page.php
 src/Tools/Builders/SiteOrigin_Content.php
 src/Tools/Builders/SiteOrigin_Layout.php
@@ -107,7 +128,18 @@ src/Tools/Builders/Thrive_Design.php
 src/Tools/Builders/Update_Builder_Content.php
 src/Tools/Builders/Visual_Composer_Content.php
 src/Tools/Builders/Visual_Composer_Design.php
+src/Tools/Builders/Visual_Composer_Element_Rule.php
+src/Tools/Builders/Visual_Composer_Element_Rules.php
 src/Tools/Builders/Visual_Composer_Html.php
+src/Tools/Builders/Visual_Composer_Markup.php
+src/Tools/Builders/Visual_Composer_Markup_Node.php
+src/Tools/Builders/Visual_Composer_Markup_Parser.php
+src/Tools/Builders/Visual_Composer_Page_Store.php
+src/Tools/Builders/Visual_Composer_Structure_Plan.php
+src/Tools/Builders/Visual_Composer_Structure_Planner.php
+src/Tools/Builders/Visual_Composer_Structure_Snapshot.php
+src/Tools/Builders/Visual_Composer_Structure_Write.php
+src/Tools/Builders/Visual_Composer_Template.php
 src/Tools/Builders/WPBakery_Templates.php
 src/Tools/Cli/Cancel_Cli_Job.php
 src/Tools/Cli/Cli_Job_Store.php
@@ -147,7 +179,9 @@ src/Tools/Elementor/Add_Div_Block.php
 src/Tools/Elementor/Add_Flexbox.php
 src/Tools/Elementor/Add_Widget.php
 src/Tools/Elementor/Apply_Template.php
+src/Tools/Elementor/Atomic_Element.php
 src/Tools/Elementor/Atomic_Layout.php
+src/Tools/Elementor/Atomic_Styles.php
 src/Tools/Elementor/Atomic_Widget_Map.php
 src/Tools/Elementor/Batch_Update.php
 src/Tools/Elementor/Create_Code_Snippet.php
@@ -161,7 +195,9 @@ src/Tools/Elementor/Delete_Global_Variable.php
 src/Tools/Elementor/Delete_Theme_Template.php
 src/Tools/Elementor/Detect_Elementor_Version.php
 src/Tools/Elementor/Duplicate_Element.php
+src/Tools/Elementor/Element_Tree.php
 src/Tools/Elementor/Element_Window.php
+src/Tools/Elementor/Elementor_Template_Data.php
 src/Tools/Elementor/Export_Page.php
 src/Tools/Elementor/Export_Template.php
 src/Tools/Elementor/Find_Element.php
@@ -270,14 +306,26 @@ src/Tools/WooCommerce/Catalog/Woo_Write.php
 
 # Kept public because a public file still names them (needs a seam first):
 #   src/Integrations/ACF_Batch_Update.php  <- src/Integrations/ACF_Integration.php
+#   src/Integrations/Amelia_Api.php  <- src/Integrations/Amelia_Pack.php
 #   src/Integrations/Amelia_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/BetterDocs_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
-#   src/Integrations/Booking_Adapter.php  <- src/Integrations/Booking_BookingPress.php
+#   src/Integrations/Booking_Adapter.php  <- src/Integrations/Booking_Pack.php
+#   src/Integrations/Booking_BookingPress.php  <- src/Integrations/Booking_Pack.php
+#   src/Integrations/Booking_Bookly.php  <- src/Integrations/Booking_Pack.php
+#   src/Integrations/Booking_LatePoint.php  <- src/Integrations/Booking_Pack.php
 #   src/Integrations/Booking_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
+#   src/Integrations/Booking_Simply_Schedule.php  <- src/Integrations/Booking_Pack.php
 #   src/Integrations/CRM_Adapter.php  <- src/Integrations/CRM_FluentCRM.php
+#   src/Integrations/CRM_FluentCRM.php  <- src/Integrations/CRM_Pack.php
 #   src/Integrations/CRM_FunnelKit.php  <- src/Integrations/CRM_Pack.php
+#   src/Integrations/CRM_MailPoet.php  <- src/Integrations/CRM_Pack.php
 #   src/Integrations/CRM_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
+#   src/Integrations/Cache_Settings_Adapter.php  <- src/Integrations/Cache_Settings_Pack.php
+#   src/Integrations/Cache_Settings_FlyingPress.php  <- src/Integrations/Cache_Settings_Pack.php
+#   src/Integrations/Cache_Settings_LiteSpeed.php  <- src/Integrations/Cache_Settings_Pack.php
 #   src/Integrations/Cache_Settings_Pack.php  <- src/Integrations/Theme_Integration.php
+#   src/Integrations/Cache_Settings_Perfmatters.php  <- src/Integrations/Cache_Settings_Pack.php
+#   src/Integrations/Cache_Settings_WP_Rocket.php  <- src/Integrations/Cache_Settings_Pack.php
 #   src/Integrations/CartFlows_Pack.php  <- src/Integrations/Theme_Integration.php
 #   src/Integrations/Checkout_Field_Editor_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/Code_Snippets_Activation.php  <- src/Integrations/Code_Snippets_Pack.php
@@ -289,33 +337,51 @@ src/Tools/WooCommerce/Catalog/Woo_Write.php
 #   src/Integrations/ElementsKit_Operations.php  <- src/Integrations/ElementsKit_Pack.php
 #   src/Integrations/Email_Marketing_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/FunnelKit_Bumps.php  <- src/Integrations/FunnelKit_Pack.php
+#   src/Integrations/FunnelKit_Offer_Line.php  <- src/Integrations/FunnelKit_Upsell_Operations.php
 #   src/Integrations/FunnelKit_Pack.php  <- src/Integrations/Theme_Integration.php
 #   src/Integrations/FunnelKit_Upsell_Operations.php  <- src/Integrations/FunnelKit_Pack.php
 #   src/Integrations/FunnelKit_Upsell_Store.php  <- src/Integrations/FunnelKit_Upsell_Operations.php
-#   src/Integrations/FunnelKit_Writes.php  <- src/Integrations/FunnelKit_Upsell_Store.php
+#   src/Integrations/FunnelKit_Writes.php  <- src/Integrations/FunnelKit_Pack.php
 #   src/Integrations/Gamipress_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/Helpdesk_Adapter.php  <- src/Integrations/Helpdesk_Awesome_Support.php
+#   src/Integrations/Helpdesk_Awesome_Support.php  <- src/Integrations/Helpdesk_Pack.php
+#   src/Integrations/Helpdesk_Fluent_Support.php  <- src/Integrations/Helpdesk_Pack.php
 #   src/Integrations/Helpdesk_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/HubSpot_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/I18n_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
+#   src/Integrations/I18n_Page_Text.php  <- src/Integrations/I18n_Pack.php
 #   src/Integrations/I18n_Strings.php  <- src/Integrations/I18n_Pack.php
 #   src/Integrations/Jetpack_Crm_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
-#   src/Integrations/LMS_Adapter.php  <- src/Integrations/LMS_LearnPress.php
+#   src/Integrations/LMS_Adapter.php  <- src/Integrations/LMS_Tutor.php
 #   src/Integrations/LMS_LearnDash.php  <- src/Integrations/LMS_Pack.php
+#   src/Integrations/LMS_LearnPress.php  <- src/Integrations/LMS_Pack.php
+#   src/Integrations/LMS_LifterLMS.php  <- src/Integrations/LMS_Pack.php
+#   src/Integrations/LMS_MasterStudy.php  <- src/Integrations/LMS_Pack.php
 #   src/Integrations/LMS_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
+#   src/Integrations/LMS_Sensei.php  <- src/Integrations/LMS_Pack.php
 #   src/Integrations/LMS_Thrive_Apprentice.php  <- src/Integrations/LMS_Pack.php
 #   src/Integrations/Loco_Translate_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/Mailing_List_Groundhogg.php  <- src/Integrations/Mailing_List_Pack.php
 #   src/Integrations/Mailing_List_Newsletter.php  <- src/Integrations/Mailing_List_Pack.php
 #   src/Integrations/Mailing_List_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/Mailing_List_Remote.php  <- src/Integrations/Mailing_List_Pack.php
+#   src/Integrations/MasterStudy_Curriculum_Store.php  <- src/Integrations/LMS_MasterStudy.php
+#   src/Integrations/MasterStudy_Material.php  <- src/Integrations/LMS_MasterStudy.php
+#   src/Integrations/MasterStudy_Section.php  <- src/Integrations/LMS_MasterStudy.php
 #   src/Integrations/MemberPress_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/Offload_Media_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/Paid_Memberships_Pro_Pack.php  <- src/Integrations/Paid_Memberships_Pro_Integration.php
+#   src/Integrations/Po_File.php  <- src/Integrations/Loco_Translate_Pack.php
 #   src/Integrations/Restrict_Content_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/Seo_Schema_Template_Ops.php  <- src/Integrations/Seo_Extras_Pack.php
 #   src/Integrations/SureCart_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/TablePress_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
+#   src/Integrations/Theme_Layouts_Adapter.php  <- src/Integrations/Theme_Layouts_Pack.php
+#   src/Integrations/Theme_Layouts_Astra.php  <- src/Integrations/Theme_Layouts_Pack.php
+#   src/Integrations/Theme_Layouts_Blocksy.php  <- src/Integrations/Theme_Layouts_Pack.php
+#   src/Integrations/Theme_Layouts_GeneratePress.php  <- src/Integrations/Theme_Layouts_Pack.php
+#   src/Integrations/Theme_Layouts_Hfe.php  <- src/Integrations/Theme_Layouts_Pack.php
+#   src/Integrations/Theme_Layouts_Kadence.php  <- src/Integrations/Theme_Layouts_Pack.php
 #   src/Integrations/Theme_Layouts_Pack.php  <- src/Integrations/Theme_Framework_Pack.php
 #   src/Integrations/Theme_Pack_Blocksy.php  <- src/Integrations/Theme_Framework_Pack.php
 #   src/Integrations/Theme_Pack_Divi.php  <- src/Integrations/Theme_Framework_Pack.php
@@ -330,13 +396,14 @@ src/Tools/WooCommerce/Catalog/Woo_Write.php
 #   src/Integrations/Translation_Settings_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/WPCode_Pack.php  <- src/Integrations/Plugin_Data_Integration.php
 #   src/Integrations/WPFunnels_Pack.php  <- src/Integrations/Theme_Integration.php
+#   src/Integrations/WPML_String_Store.php  <- src/Integrations/WPML_String_Translation.php
 #   src/Integrations/WPML_String_Translation.php  <- src/Integrations/I18n_Strings.php
 #   src/Integrations/WP_Mail_SMTP_Status.php  <- src/Integrations/Ops_Status_Packs.php
 #   src/Integrations/Yoast_Premium_Redirect_Ops.php  <- src/Integrations/Seo_Extras_Pack.php
-#   src/Tools/Elementor/Atomic_Element.php  <- src/Tools/Elementor/Atomic_Layout.php
-#   src/Tools/Elementor/Atomic_Styles.php  <- src/Tools/Elementor/Atomic_Layout.php
-#   src/Tools/Elementor/Global_Class_Schema.php  <- src/Tools/Elementor/Atomic_Styles.php
-#   src/Tools/SEO/SEO_Adapter.php  <- src/Integrations/I18n_Page_Text.php
+#   src/Tools/Elementor/Atomic_Props.php  <- src/Tools/Elementor/Global_Class_Schema.php
+#   src/Tools/Elementor/Global_Class_Schema.php  <- src/Tools/Elementor/Global_Classes_Store.php
+#   src/Tools/SEO/Aioseo_Store.php  <- src/Tools/SEO/SEO_Adapter.php
+#   src/Tools/SEO/SEO_Adapter.php  <- src/Plugin.php
 #   src/Tools/ThemeBuilder/Dynamic/Binding_Resolver.php  <- src/Tools/ThemeBuilder/Dynamic/Dynamic_Template_Ops.php
 #   src/Tools/ThemeBuilder/Dynamic/Dynamic_Sources.php  <- src/Tools/ThemeBuilder/Dynamic/Dynamic_Template_Ops.php
 #   src/Tools/ThemeBuilder/Dynamic/Dynamic_Template_Ops.php  <- src/Integrations/Theme_Integration.php

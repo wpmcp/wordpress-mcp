@@ -2,6 +2,8 @@
 
 namespace WPMCP\Tests\Free\Safety;
 
+use WPMCP\Tests\Support\Edition_Tree;
+
 /**
  * Issue #440 guard: wp_update_post() and wp_trash_post() re-save a post's
  * whole row, so for a user without unfiltered_html kses rewrites the text
@@ -13,6 +15,11 @@ namespace WPMCP\Tests\Free\Safety;
  * wp_trash_post() calls and fails on any that is not listed below with its
  * reason. Creating a new post is the usual legitimate case: every field of a
  * new row is new input, so all of it is filtered.
+ *
+ * This half scans the public sources (Edition_Tree::public_sources()), so it
+ * runs the same in every tree. The Pro sources, and the allowlist entries
+ * of Pro files, are in tests/pro/Safety/DirectPostWriteGuardProTest, which
+ * reuses direct_calls() from here.
  */
 class DirectPostWriteGuardTest extends \WP_UnitTestCase
 {
@@ -20,7 +27,8 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
 
     /**
      * File (relative to src/) => [function => number of direct calls], with
-     * one line saying why each file may call it directly.
+     * one line saying why each file may call it directly. Public files only;
+     * Pro files are listed in the Pro half.
      *
      * @var array<string, array{calls: array<string, int>, reason: string}>
      */
@@ -33,10 +41,6 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_update_post' => 2, 'wp_trash_post' => 1, 'wp_insert_post' => 1],
             'reason' => 'Restores a snapshot row as stored; every call runs inside Save_Filters::without() with all post save filters lifted.',
         ],
-        'Tools/Builders/Avada_Library.php'            => [
-            'calls'  => ['wp_insert_post' => 1],
-            'reason' => 'Creates a new Avada library post from a page element (issue #637); every field is new.',
-        ],
         'Tools/Builders/Beaver_Builder_Page.php'      => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Beaver Builder saved template from a page node (issue #638); every field is new.',
@@ -44,10 +48,6 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
         'Integrations/Thrive_Ultimatum_Pack.php'      => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Thrive Ultimatum campaign post (issue #828); every field is new. Its other writes are metas and the plugin\'s own tables.',
-        ],
-        'Tools/Builders/Flatsome_Blocks.php'          => [
-            'calls'  => ['wp_insert_post' => 1],
-            'reason' => 'Creates a new UX Block (blocks post) from a page element or page (issue #849); every field is new.',
         ],
         'Integrations/Core_Fonts_Pack.php'            => [
             'calls'  => ['wp_insert_post' => 1],
@@ -69,10 +69,6 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new theme add-on layout post (issue #656); every field is new. Updates go through Save_Filters.',
         ],
-        'Tools/Builders/Bricks_Page.php'              => [
-            'calls'  => ['wp_insert_post' => 1],
-            'reason' => 'Creates a new Bricks section template from a page element (issue #633); every field is new.',
-        ],
         'Integrations/Event_Calendar_Writes.php'      => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new event, venue or organizer post for The Events Calendar or Modern Events Calendar (issue #677); every field is new. Updates go through Save_Filters.',
@@ -80,10 +76,6 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
         'Tools/Builders/Breakdance_Page.php'          => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Breakdance Global Block or Oxygen Component from a page node (issues #634, #635); every field is new.',
-        ],
-        'Tools/Builders/Oxygen6_Store.php'            => [
-            'calls'  => ['wp_insert_post' => 1],
-            'reason' => 'Creates a new Oxygen 6 page, template, header, footer or Component for create_page, save_template and import (issue #805); every field is new.',
         ],
         'Tools/SiteEditor/Site_Templates_Write.php'   => [
             'calls'  => ['wp_insert_post' => 1],
@@ -97,14 +89,6 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a post the target does not have yet; every field is new.',
         ],
-        'Tools/WidgetBuilder/Widget_Spec_Store.php'   => [
-            'calls'  => ['wp_insert_post' => 1],
-            'reason' => 'Creates a new widget spec post.',
-        ],
-        'Tools/BlockBuilder/Block_Spec_Store.php'     => [
-            'calls'  => ['wp_insert_post' => 1],
-            'reason' => 'Creates a new block spec post.',
-        ],
         'Tools/Compose/Build_Page.php'                => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new page.',
@@ -117,14 +101,6 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates the copy (or stage) of a post as a new row.',
         ],
-        'Tools/Elementor/Elementor_Template_Data.php' => [
-            'calls'  => ['wp_insert_post' => 1],
-            'reason' => 'Creates a new Elementor template post.',
-        ],
-        'Tools/Elementor/Create_Code_Snippet.php'     => [
-            'calls'  => ['wp_insert_post' => 1],
-            'reason' => 'Creates a new code snippet post.',
-        ],
         'Tools/ThemeBuilder/Template_Store.php'       => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new site part post.',
@@ -136,10 +112,6 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
         'Memory/Memory_Store.php'                     => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new memory entry.',
-        ],
-        'Pro/Chat/Conversation_Store.php'             => [
-            'calls'  => ['wp_insert_post' => 1],
-            'reason' => 'Creates a new chat conversation post.',
         ],
         'Integrations/LMS_Adapter.php'                => [
             'calls'  => ['wp_insert_post' => 1],
@@ -219,28 +191,19 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
         ],
     ];
 
-    private static function src(): string
-    {
-        return dirname(__DIR__, 3) . '/src';
-    }
-
     /**
      * Direct calls to the watched functions, found with the tokenizer so
      * comments, strings, method calls and function definitions never count.
      *
-     * @return array<string, array<string, int>> file => [function => count]
+     * @param array<string, string>|null $sources src/... path => absolute path (Edition_Tree); the public sources when null
+     * @return array<string, array<string, int>> file (relative to src/) => [function => count]
      */
-    private static function direct_calls(): array
+    public static function direct_calls(?array $sources = null): array
     {
-        $root  = self::src();
         $found = [];
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS));
-        foreach ($files as $file) {
-            if ('php' !== $file->getExtension()) {
-                continue;
-            }
+        foreach ($sources ?? Edition_Tree::public_sources() as $public => $absolute) {
             $tokens = array_values(array_filter(
-                token_get_all((string) file_get_contents($file->getPathname())),
+                token_get_all((string) file_get_contents($absolute)),
                 static fn ($t) => ! is_array($t) || ! in_array($t[0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], true)
             ));
             foreach ($tokens as $i => $token) {
@@ -258,7 +221,7 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
                 if (is_array($prev) && in_array($prev[0], [T_FUNCTION, T_OBJECT_OPERATOR, T_DOUBLE_COLON, T_NULLSAFE_OBJECT_OPERATOR], true)) {
                     continue;
                 }
-                $relative                  = str_replace('\\', '/', substr($file->getPathname(), strlen($root) + 1));
+                $relative                    = substr($public, strlen('src/'));
                 $found[ $relative ][ $name ] = ($found[ $relative ][ $name ] ?? 0) + 1;
             }
         }
@@ -306,5 +269,11 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             }
         }
         $this->assertSame([], $stale, 'Keep ALLOWED exact, so a removed call does not leave room for a new one.');
+    }
+
+    public function test_the_allowlist_names_only_public_files(): void
+    {
+        $pro = array_values(array_filter(array_keys(self::ALLOWED), static fn (string $file): bool => Edition_Tree::is_pro_path('src/' . $file)));
+        $this->assertSame([], $pro, 'Allowlist entries of Pro files belong in tests/pro/Safety/DirectPostWriteGuardProTest.');
     }
 }

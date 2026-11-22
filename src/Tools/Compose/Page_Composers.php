@@ -22,20 +22,9 @@ final class Page_Composers
     {
     }
 
-    /**
-     * The elementor composer, named by string: it ships only where the Pro
-     * code does (the unsplit tree and the premium zip), and the free zip has
-     * no class by that name.
-     */
-    private const ELEMENTOR = '\\WPMCP\\Tools\\Compose\\Elementor_Page_Composer';
-
     public static function from_hooks(): self
     {
-        $defaults = [];
-        if (class_exists(self::ELEMENTOR)) {
-            $defaults['elementor'] = new (self::ELEMENTOR)();
-        }
-        $value = apply_filters(self::FILTER, $defaults);
+        $value = apply_filters(self::FILTER, []);
         $composers = [];
         if (is_array($value)) {
             foreach ($value as $dialect => $composer) {

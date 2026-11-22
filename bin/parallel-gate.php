@@ -146,7 +146,12 @@ function leg_key(string $spec): string
 function suite_files(string $root): array
 {
     $files = [];
-    foreach (['tests/free', 'tests/pro'] as $dir) {
+    // tests/pro empties when bin/pro-split.php runs; the private Pro suite in
+    // pro/tests joins the shards when the submodule is checked out.
+    foreach (['tests/free', 'tests/pro', 'pro/tests/free', 'pro/tests/pro'] as $dir) {
+        if (! is_dir($root . '/' . $dir)) {
+            continue;
+        }
         $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . '/' . $dir, FilesystemIterator::SKIP_DOTS));
         $here = [];
         foreach ($it as $f) {
@@ -242,7 +247,9 @@ function split_files(array $files, array $weights, int $k): array
 /** Sorts like the serial run: tests/free before tests/pro, then by path. */
 function serial_key(string $file): string
 {
-    return (str_starts_with($file, 'tests/free/') ? '0' : '1') . $file;
+    // The free suite first, wherever it lives (pro/tests/free after the Pro split).
+    $free = str_starts_with($file, 'tests/free/') || str_starts_with($file, 'pro/tests/free/');
+    return ($free ? '0' . preg_replace('#^pro/#', '', $file) : '1' . preg_replace('#^pro/#', '', $file));
 }
 
 /**

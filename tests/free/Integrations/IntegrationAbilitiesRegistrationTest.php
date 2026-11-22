@@ -4,6 +4,7 @@ namespace WPMCP\Tests\Free\Integrations;
 
 use WPMCP\Integrations\Forms_Integration;
 use WPMCP\Tests\Free\Platform\RegisteredAbilities;
+use WPMCP\Tests\Support\Edition_Tree;
 
 require_once __DIR__ . '/../../support/forms-adapters.php';
 
@@ -64,12 +65,12 @@ class IntegrationAbilitiesRegistrationTest extends \WP_UnitTestCase
      */
     public function test_each_forms_adapter_registers_only_while_its_host_plugin_is_loaded(): void
     {
-        foreach (wpmcp_forms_adapter_classes() as $slug => $class) {
+        foreach (self::forms_adapters() as $slug => $class) {
             $this->assertTrue((new $class())->registers_only_when_available(), "{$slug} must follow its host plugin");
         }
 
         $absent = self::replayed_names(false);
-        foreach (wpmcp_forms_pair_names() as $name) {
+        foreach (self::forms_pair_names() as $name) {
             $this->assertNotContains($name, $absent, "{$name} must not register while its plugin is absent");
         }
         foreach (self::TOOLS as $name) {
@@ -77,7 +78,7 @@ class IntegrationAbilitiesRegistrationTest extends \WP_UnitTestCase
         }
 
         $present = self::replayed_names(true);
-        foreach (wpmcp_forms_pair_names() as $name) {
+        foreach (self::forms_pair_names() as $name) {
             $this->assertContains($name, $present, "{$name} must register while its plugin is loaded");
         }
     }
@@ -106,6 +107,35 @@ class IntegrationAbilitiesRegistrationTest extends \WP_UnitTestCase
         $this->assertFalse($absent->should_register());
         $absent->available = true;
         $this->assertTrue($absent->should_register());
+    }
+
+    /**
+     * The forms adapters this tree ships: all of them with the Pro code, and
+     * without it only those whose class lives at a public path (the adapter
+     * pack is Pro and absent from the free build).
+     *
+     * @return array<string, class-string<Forms_Integration>> slug => class
+     */
+    private static function forms_adapters(): array
+    {
+        if (Edition_Tree::has_pro_code()) {
+            return wpmcp_forms_adapter_classes();
+        }
+        return array_filter(
+            wpmcp_forms_adapter_classes(),
+            static fn (string $class): bool => ! Edition_Tree::is_pro_path('src/Integrations/' . substr(strrchr($class, '\\'), 1) . '.php')
+        );
+    }
+
+    /** @return string[] the wpmcp/{slug}-read and -write names of forms_adapters(). */
+    private static function forms_pair_names(): array
+    {
+        $names = [];
+        foreach (array_keys(self::forms_adapters()) as $slug) {
+            $names[] = "wpmcp/{$slug}-read";
+            $names[] = "wpmcp/{$slug}-write";
+        }
+        return $names;
     }
 
     /**

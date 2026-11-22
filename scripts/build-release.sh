@@ -58,8 +58,8 @@ if [ "$PREMIUM" = 1 ]; then
     # Never build a premium zip without Pro: an uninitialised submodule is an
     # empty directory, so the entry point and the class tree are checked, not
     # just the directory.
-    if [ ! -f "$ROOT/pro/bootstrap.php" ] || [ ! -d "$ROOT/pro/src" ]; then
-        echo "premium build: pro/bootstrap.php or pro/src/ is missing from this checkout." >&2
+    if [ ! -f "$ROOT/pro/src/Pro/bootstrap.php" ] || [ ! -d "$ROOT/pro/src" ]; then
+        echo "premium build: pro/src/Pro/bootstrap.php or pro/src/ is missing from this checkout." >&2
         echo "The Pro code is the private submodule at pro/; fetch it with: git submodule update --init pro" >&2
         exit 1
     fi
@@ -104,7 +104,6 @@ if [ "$PREMIUM" = 1 ]; then
     # and asset trees when present. Never pro/tests, pro/.git, pro/.github or
     # any other dotfile.
     mkdir -p "$STAGE/pro"
-    cp "$ROOT/pro/bootstrap.php" "$STAGE/pro/bootstrap.php"
     for dir in src modules build skills assets; do
         if [ -d "$ROOT/pro/$dir" ]; then cp -R "$ROOT/pro/$dir" "$STAGE/pro/$dir"; fi
     done
@@ -197,7 +196,7 @@ assert_self_hosted_zip "$ZIP" "$FOLDER/wpmcp.php" "$VERSION" || { echo "gate: $Z
 
 # Gate: the Pro leak gate (scripts/lib/pro-leak-gate.sh). The free zip carries
 # no manifest path, no pro/, no marker and inlines 'is_premium' => false; the
-# premium zip is rooted at wpmcp-pro/, carries the marker and pro/bootstrap.php,
+# premium zip is rooted at wpmcp-pro/, carries the marker and pro/src/Pro/bootstrap.php,
 # no pro/tests or dotfiles under pro/, and inlines 'is_premium' => true.
 if [ "$PREMIUM" = 1 ]; then
     assert_premium_zip "$ZIP" "$MANIFEST" || { echo "gate: $ZIP is not a valid premium build" >&2; exit 1; }

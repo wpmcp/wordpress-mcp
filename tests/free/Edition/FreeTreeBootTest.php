@@ -3,7 +3,7 @@
 namespace WPMCP\Tests\Free\Edition;
 
 use WPMCP\Edition\Edition;
-use WPMCP\Edition\Pro_Loader;
+use WPMCP\Tests\Support\Edition_Tree;
 use WPMCP\Plugin;
 use WPMCP\Tests\Free\Platform\RegisteredAbilities;
 
@@ -17,12 +17,6 @@ use WPMCP\Tests\Free\Platform\RegisteredAbilities;
  */
 final class FreeTreeBootTest extends \WP_UnitTestCase
 {
-    private const MANIFEST_PATH = __DIR__ . '/../../support/ability-manifest.php';
-
-    private static function has_pro(): bool
-    {
-        return null !== (new Pro_Loader(WPMCP_DIR))->bootstrap_file();
-    }
 
     public function test_the_plugin_booted(): void
     {
@@ -34,19 +28,22 @@ final class FreeTreeBootTest extends \WP_UnitTestCase
     public function test_edition_slots_match_the_tree(): void
     {
         $edition = Edition::from_hooks();
-        if (self::has_pro()) {
+        if (Edition_Tree::has_pro_dir()) {
             $this->assertTrue($edition->has_contributors(), 'pro/ is present but registered no edition slot');
             $this->assertTrue(defined('WPMCP_PRO_BUILD'));
             return;
         }
+        // Before the split Plugin.php still runs the Pro code itself.
         $this->assertFalse($edition->has_contributors(), 'a contributor registered without pro/');
-        $this->assertFalse(defined('WPMCP_PRO_BUILD'));
-        $this->assertFalse(class_exists('WPMCP\\Pro\\Plugin_Slots'), 'the Pro slot class loads without pro/');
+        if (! Edition_Tree::has_pro_code()) {
+            $this->assertFalse(defined('WPMCP_PRO_BUILD'));
+            $this->assertFalse(class_exists('WPMCP\\Pro\\Plugin_Slots'), 'the Pro slot class loads without pro/');
+        }
     }
 
     public function test_every_free_ability_registers(): void
     {
-        $manifest = require self::MANIFEST_PATH;
+        $manifest = Edition_Tree::ability_manifest();
         $registered = RegisteredAbilities::manifest_map();
         $missing = [];
         foreach ($manifest['abilities'] as $name => $tier) {

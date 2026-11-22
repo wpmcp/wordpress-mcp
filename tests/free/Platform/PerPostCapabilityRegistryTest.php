@@ -5,6 +5,7 @@ namespace WPMCP\Tests\Free\Platform;
 use WPMCP\MCP\Ability;
 use WPMCP\MCP\Registrar;
 use WPMCP\Pro\Gate;
+use WPMCP\Tests\Support\Edition_Tree;
 use WPMCP\Tools\Content\Content_Guard;
 
 /**
@@ -122,8 +123,16 @@ class PerPostCapabilityRegistryTest extends \WP_UnitTestCase
         }
         $this->granted = '';
 
-        $this->assertGreaterThan(80, count($walked), 'Too few abilities walked: ' . implode(', ', $walked));
+        // The full surface walks about 99 abilities; the free build, without
+        // the Pro builder, SEO and analysis tools, walks about 53. Each floor
+        // sits a little under its tree, so a broken enumeration still fails.
+        $min = Edition_Tree::has_pro_code() ? 80 : 45;
+        $this->assertGreaterThan($min, count($walked), 'Too few abilities walked: ' . implode(', ', $walked));
+        $registered = Edition_Tree::ability_manifest()['abilities'];
         foreach (['wpmcp/update-post', 'wpmcp/delete-post', 'wpmcp/set-post-terms', 'wpmcp/set-post-meta', 'wpmcp/restore-revision', 'wpmcp/get-post', 'wpmcp/update-blocks', 'wpmcp/update-builder-content', 'wpmcp/update-media', 'wpmcp/delete-media'] as $name) {
+            if (! isset($registered[ $name ])) {
+                continue; // A Pro ability (update-builder-content), absent from the free build.
+            }
             $this->assertContains($name, $walked);
         }
         $this->assertSame([], $failures);

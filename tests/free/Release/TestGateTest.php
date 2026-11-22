@@ -186,6 +186,12 @@ class TestGateTest extends TestCase
             if ($cols[5] === '-') {
                 continue;
             }
+            // A live group whose tests are all in the private Pro suite has
+            // nothing here to carry it when pro/ is not checked out.
+            $listed = '-' === $cols[7] ? [] : explode(',', $cols[7]);
+            if ([] !== $listed && ! is_dir($root . '/pro/tests') && [] === array_filter($listed, static fn (string $f): bool => ! str_starts_with($f, 'pro/'))) {
+                continue;
+            }
             $want = [];
             foreach (explode(',', $cols[5]) as $group) {
                 $this->assertArrayHasKey($group, $files, "leg {$cols[0]} names group {$group}, which no test carries");

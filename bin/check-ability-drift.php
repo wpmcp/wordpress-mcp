@@ -294,6 +294,26 @@ $warnings          = [];
 // trait and enum actually declared under src/.
 $srcFiles   = $phpFiles($root . '/src');
 $entryFiles = array_values(array_filter(glob($root . '/*.php') ?: [], 'is_file'));
+// The private Pro tree (pro/, after bin/pro-split.php) is part of the plugin
+// when it is checked out; its entry point is loaded by path (Pro_Loader).
+if (is_dir($root . '/pro/src')) {
+    $srcFiles = array_merge($srcFiles, $phpFiles($root . '/pro/src'));
+}
+foreach (['pro/src/Pro/bootstrap.php', 'src/Pro/bootstrap.php'] as $proEntry) {
+    if (is_file($root . '/' . $proEntry)) {
+        $entryFiles[] = $root . '/' . $proEntry;
+    }
+}
+// Pro-only paths (pro-manifest.txt): in a tree without pro/ a public file may
+// still name one of their classes behind a runtime check; that class lives in
+// the private tree, not nowhere.
+$proManifest = [];
+foreach (is_file($root . '/pro-manifest.txt') ? (array) file($root . '/pro-manifest.txt', FILE_IGNORE_NEW_LINES) : [] as $line) {
+    $line = trim((string) $line);
+    if ('' !== $line && '#' !== $line[0]) {
+        $proManifest[$line] = true;
+    }
+}
 // The entry file is the one file where a dangling class fatals at load, and
 // the wp.org flavor regenerates it, so it is scanned as well as seeded from.
 $scanFiles  = array_merge($srcFiles, $entryFiles);
@@ -362,6 +382,9 @@ foreach ($scanFiles as $path) {
         }
         if (! isset($declared[strtolower($fqcn)])) {
             $expect       = str_replace('\\', '/', substr($fqcn, strlen('WPMCP\\')));
+            if (isset($proManifest['src/' . $expect . '.php']) && ! is_dir($root . '/pro/src')) {
+                continue;
+            }
             $undeclared[] = 'named but not declared on disk: ' . $fqcn
                 . ' (from ' . $rel . ', expected src/' . $expect . '.php)';
         }

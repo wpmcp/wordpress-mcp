@@ -74,6 +74,7 @@ src/Integrations/WPForms_Integration.php
 src/Integrations/WPFunnels_Pack.php
 src/Integrations/Yoast_Premium_Redirect_Ops.php
 src/Pro/
+src/Pro/bootstrap.php
 src/Skills/library/wpmcp-elementor-editing/
 src/Tools/Analysis/
 src/Tools/Analysis/Add_Alt_Text_From_Context.php
@@ -99,8 +100,17 @@ src/Tools/Brand/Apply_Brand_Kit.php
 src/Tools/Brand/Get_Brand_Kit.php
 src/Tools/Brand/List_Brand_Kits.php
 src/Tools/Brand/Rollback_Brand_Kit.php
+src/Tools/Builders/Breakdance_Design.php
 src/Tools/Builders/Detect_Builder.php
+src/Tools/Builders/Engine_Template_Settings.php
 src/Tools/Builders/Get_Builder_Content.php
+src/Tools/Builders/Oxygen_Page.php
+src/Tools/Builders/Oxygen6_Request_Error.php
+src/Tools/Builders/Oxygen6_Settings_Validator.php
+src/Tools/Builders/Oxygen6_Store.php
+src/Tools/Builders/Oxygen6_Template_Settings.php
+src/Tools/Builders/Oxygen6_Values.php
+src/Tools/Builders/Oxygen6_Vocabulary.php
 src/Tools/Builders/Update_Builder_Content.php
 src/Tools/Cli/
 src/Tools/Cli/Cancel_Cli_Job.php
@@ -124,6 +134,7 @@ src/Tools/Cloud/Cloud_Sync_Settings.php
 src/Tools/Code/Activate_Php_Snippet.php
 src/Tools/Code/Run_Php_Snippet.php
 src/Tools/Compose/Elementor_Composer.php
+src/Tools/Compose/Elementor_Page_Composer.php
 src/Tools/CustomCode/
 src/Tools/CustomCode/Add_Custom_Js.php
 src/Tools/CustomCode/Add_Scoped_Css.php
@@ -148,6 +159,8 @@ src/Tools/Elementor/Delete_Global_Variable.php
 src/Tools/Elementor/Delete_Theme_Template.php
 src/Tools/Elementor/Detect_Elementor_Version.php
 src/Tools/Elementor/Duplicate_Element.php
+src/Tools/Elementor/Element_Tree.php
+src/Tools/Elementor/Elementor_Template_Data.php
 src/Tools/Elementor/Export_Page.php
 src/Tools/Elementor/Export_Template.php
 src/Tools/Elementor/Find_Element.php
@@ -219,4 +232,3 @@ src/Tools/WooCommerce/Catalog/
 src/Tools/WooCommerce/Catalog/Woo_Ops.php
 src/Tools/WooCommerce/Catalog/Woo_Read.php
 src/Tools/WooCommerce/Catalog/Woo_Write.php
-src/Tools/Compose/Elementor_Page_Composer.php

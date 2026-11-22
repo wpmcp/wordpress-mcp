@@ -8,7 +8,9 @@ use WPMCP\Tools\Elementor\Get_Global_Settings;
  * get-global-settings is the free-tier read half of issue #60 ("read free /
  * writes pro"): any site can read the active kit's design tokens as
  * structured data, while every kit write stays pro. These tests live in
- * tests/free because the read must work with the pro gate closed.
+ * tests/free because the read must work with the pro gate closed. That the
+ * kit writes stay on the pro tier is asserted in
+ * tests/pro/Elementor/GlobalSettingsReadProTest, next to the writes.
  */
 class GlobalSettingsReadTest extends \WP_UnitTestCase
 {
@@ -66,21 +68,5 @@ class GlobalSettingsReadTest extends \WP_UnitTestCase
             $abilities['wpmcp/get-global-settings'],
             'Issue #60 specifies the kit read as free tier; only the kit writes are pro.'
         );
-    }
-
-    public function test_writes_stay_on_the_pro_tier(): void
-    {
-        $abilities = \WPMCP\Tests\Free\Platform\RegisteredAbilities::manifest_map();
-
-        foreach (
-            [
-                'wpmcp/update-global-colors',
-                'wpmcp/update-global-typography',
-                'wpmcp/replace-system-colors',
-                'wpmcp/replace-system-typography',
-            ] as $name
-        ) {
-            $this->assertSame('pro', $abilities[$name] ?? null, "{$name} must stay pro tier");
-        }
     }
 }

@@ -23,7 +23,7 @@ if (! defined('ABSPATH')) {
  */
 final class Pro_Loader
 {
-    public const BOOTSTRAP = 'bootstrap.php';
+    public const BOOTSTRAP = 'src/Pro/bootstrap.php';
     public const DIR = 'pro';
 
     public function __construct(private readonly string $plugin_dir)
@@ -57,7 +57,9 @@ final class Pro_Loader
     }
 
     /**
-     * Add the pro/src autoload fallback and require pro/bootstrap.php.
+     * Add the pro/src autoload fallback and require the Pro entry point,
+     * pro/src/Pro/bootstrap.php (src/Pro/bootstrap.php in a tree the split
+     * has not run on, or in a build that copies Pro over the plugin paths).
      *
      * @return bool true when this copy carries Pro and it was loaded
      */

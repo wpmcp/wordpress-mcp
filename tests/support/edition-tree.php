@@ -31,7 +31,7 @@ final class Edition_Tree
     /** True when pro/ is checked out. */
     public static function has_pro_dir(): bool
     {
-        return is_file(self::root() . '/pro/bootstrap.php');
+        return is_file(self::root() . '/pro/src/Pro/bootstrap.php');
     }
 
     /** True when the Pro code is present at all: pro/ checked out, or the tree is not split yet. */

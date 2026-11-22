@@ -5,6 +5,7 @@ namespace WPMCP\Tests\Free\Platform;
 use WPMCP\MCP\Ability;
 use WPMCP\Pro\Gate;
 use WPMCP\Safety\Snapshot_Store;
+use WPMCP\Tests\Support\Edition_Tree;
 
 /**
  * Registry-wide companion to PublishCapabilityTest (issue #482).
@@ -281,8 +282,16 @@ class PostStatusCapabilityRegistryTest extends \WP_UnitTestCase
     public function test_every_exemption_names_a_registered_ability(): void
     {
         $names = array_map(static fn (Ability $a): string => $a->name, RegisteredAbilities::all());
+        $registered = Edition_Tree::ability_manifest()['abilities'];
         foreach (array_keys(self::EXEMPT) as $name) {
             if (in_array($name, ['wpmcp/update-order-status', 'wpmcp/apply-product-import'], true) && ! class_exists('WooCommerce')) {
+                continue;
+            }
+            if (! isset($registered[ $name ])) {
+                // A Pro ability (set-widget-status, set-block-status,
+                // create-code-snippet), absent from the free build. It must
+                // still be a known ability name, so a typo is not excused.
+                $this->assertArrayHasKey($name, (require dirname(__DIR__, 2) . '/support/ability-manifest.php')['abilities'], $name . ' is exempt but not an ability');
                 continue;
             }
             $this->assertContains($name, $names, $name . ' is exempt but not registered');

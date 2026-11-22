@@ -1,6 +1,8 @@
 <?php
 
-namespace WPMCP\Tests\Free\Platform;
+namespace WPMCP\Tests\Pro\Platform;
+
+use WPMCP\Tests\Free\Platform\RegisteredAbilities;
 
 /**
  * The Elementor v4 global variable tools register like the global class
@@ -9,7 +11,7 @@ namespace WPMCP\Tests\Free\Platform;
  * that is advertised as destructive. Registration is unconditional, so this
  * holds whether or not Elementor is installed.
  */
-class GlobalVariablesRegistrationTest extends \WP_UnitTestCase
+class GlobalVariablesRegistrationProTest extends \WP_UnitTestCase
 {
     public function test_the_four_tools_register_with_the_global_class_conventions(): void
     {
