@@ -1,0 +1,2 @@
+/* Trimmed from Visual Composer 45.16.4 elements/basicButton/public/dist/element.bundle.js: only the tag and the containment settings (relatedTo, containerFor, parentWrapper) its settings.json registers, in the minified form. */
+(self.vcvWebpackJsonp4x=self.vcvWebpackJsonp4x||[]).push([["element"],{"./basicButton/settings.json":function(e){"use strict";e.exports=JSON.parse('{"tag":{"access":"protected","type":"string","value":"basicButton"},"relatedTo":{"type":"group","access":"protected","value":["General","Buttons"]}}')}}]);

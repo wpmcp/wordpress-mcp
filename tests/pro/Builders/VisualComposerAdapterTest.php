@@ -200,11 +200,10 @@ class VisualComposerAdapterTest extends \WP_UnitTestCase
         $out   = $this->write($drift, ['operation' => 'update', 'path' => 'c3d4e5f', 'text' => '<p>x</p>']);
         $this->assertSame('editor_render_required', $out->get_error_code());
 
-        foreach (['add', 'remove', 'move'] as $operation) {
-            $out = $this->write($id, ['operation' => $operation, 'path' => 'c3d4e5f', 'to' => 'b2c3d4e', 'element' => ['tag' => 'textBlock']]);
-            $this->assertWPError($out);
-            $this->assertSame('editor_render_required', $out->get_error_code(), $operation);
-        }
+        // A new element needs its markup and CSS rendered (move and remove: VisualComposerStructureTest, issue #1112).
+        $out = $this->write($id, ['operation' => 'add', 'path' => 'c3d4e5f', 'to' => 'b2c3d4e', 'element' => ['tag' => 'textBlock']]);
+        $this->assertWPError($out);
+        $this->assertSame('editor_render_required', $out->get_error_code());
         $out = $this->write($id, ['content' => '{"elements":{}}']);
         $this->assertSame('editor_render_required', $out->get_error_code());
 
