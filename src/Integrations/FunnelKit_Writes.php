@@ -28,8 +28,9 @@ if (! defined('ABSPATH')) {
  * funnel; add, reorder, enable or disable and delete a step; publish all
  * steps; set and remove checkout products with quantity and discount.
  * Order bumps live in Funnel Builder Pro and are in FunnelKit_Bumps (issue
- * #663), which reuses the REST, undo and price helpers here; upsell offer
- * writes and A/B experiments are not covered yet.
+ * #663), and upsell offer writes in FunnelKit_Upsell_Operations (issue
+ * #1021); both reuse the REST, undo and price helpers here. A/B experiments
+ * are not covered yet.
  *
  * Each write is snapshotted first as a whole-funnel image
  * (FunnelKit_Funnel_Snapshot: the bwf_funnels row, its bwf_funnelmeta rows

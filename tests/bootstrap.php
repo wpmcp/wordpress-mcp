@@ -97,6 +97,8 @@ tests_add_filter( 'muplugins_loaded', function () {
         wpmcp_maybe_require_plugin( 'sureforms/sureforms.php' );
         // Issue #676: the Everest Forms ops on the plugin-data pair.
         wpmcp_maybe_require_plugin( 'everest-forms/everest-forms.php' );
+        // Issue #676: the JetFormBuilder ops on the plugin-data pair.
+        wpmcp_maybe_require_plugin( 'jetformbuilder/jet-form-builder.php' );
     }
 
     // The live blocks job (issue #287, WPMCP_LIVE_BLOCKS=1) renders blocks

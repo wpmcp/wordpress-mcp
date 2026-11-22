@@ -80,7 +80,8 @@ final class Ops_Status_Packs
             Post_SMTP_Status::operations(),
             Image_Optimizer_Pack::operations(),
             Relevanssi_Status::operations(),
-            FiboSearch_Status::operations()
+            FiboSearch_Status::operations(),
+            SearchWP_Status::operations()
         );
     }
 

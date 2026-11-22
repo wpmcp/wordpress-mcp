@@ -346,12 +346,54 @@ if (! function_exists('wpforms')) {
                 date datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
                 PRIMARY KEY  (entry_id)
             )");
+            // WPForms Pro's child tables, as its WPForms_Entry_Fields_Handler,
+            // WPForms_Entry_Meta_Handler and Payments\Payment (1.8.2+) define
+            // them: each row names its entry by entry_id (issue #1031).
+            $wpdb->query('CREATE TABLE IF NOT EXISTS ' . $wpdb->prefix . "wpforms_entry_fields (
+                id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                entry_id bigint(20) unsigned NOT NULL DEFAULT 0,
+                form_id bigint(20) unsigned NOT NULL DEFAULT 0,
+                field_id int(11) NOT NULL DEFAULT 0,
+                value longtext NOT NULL,
+                date datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+                PRIMARY KEY  (id)
+            )");
+            $wpdb->query('CREATE TABLE IF NOT EXISTS ' . $wpdb->prefix . "wpforms_entry_meta (
+                id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                entry_id bigint(20) unsigned NOT NULL DEFAULT 0,
+                form_id bigint(20) unsigned NOT NULL DEFAULT 0,
+                user_id bigint(20) unsigned NOT NULL DEFAULT 0,
+                status varchar(30) NOT NULL DEFAULT '',
+                type varchar(255) NOT NULL DEFAULT '',
+                data longtext NOT NULL,
+                date datetime NOT NULL DEFAULT '2026-01-01 00:00:00',
+                PRIMARY KEY  (id)
+            )");
+            $wpdb->query('CREATE TABLE IF NOT EXISTS ' . $wpdb->prefix . "wpforms_payments (
+                id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                form_id bigint(20) unsigned NOT NULL DEFAULT 0,
+                entry_id bigint(20) unsigned NOT NULL DEFAULT 0,
+                status varchar(10) NOT NULL DEFAULT '',
+                total_amount decimal(26,8) NOT NULL DEFAULT 0,
+                PRIMARY KEY  (id)
+            )");
         }
 
         public static function uninstall(): void
         {
             global $wpdb;
             $wpdb->query('DROP TABLE IF EXISTS ' . self::table());
+            foreach ([ 'wpforms_entry_fields', 'wpforms_entry_meta', 'wpforms_payments' ] as $child) {
+                $wpdb->query('DROP TABLE IF EXISTS ' . $wpdb->prefix . $child);
+            }
+        }
+
+        /** Seed a row of one of the child tables above. */
+        public static function seed_child(string $table, array $row): int
+        {
+            global $wpdb;
+            $wpdb->insert($wpdb->prefix . $table, $row);
+            return (int) $wpdb->insert_id;
         }
 
         public static function seed(array $row): int

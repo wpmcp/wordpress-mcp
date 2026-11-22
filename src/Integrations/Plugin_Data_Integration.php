@@ -294,7 +294,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
 
     public function is_available(): bool
     {
-        return Events_Manager_Pack::active() || BbPress_Pack::active() || JetEngine_Pack::active() || Pods_Pack::active() || TranslatePress_Pack::active() || Code_Snippets_Pack::active() || WS_Form_Pack::active() || Everest_Forms_Pack::active() || Activity_Log_Pack::active() || Action_Scheduler_Pack::active() || Email_Log_Pack::active() || Pretty_Links_Pack::active() || Thirsty_Affiliates_Pack::active() || Advanced_Ads_Pack::active() || Popup_Maker_Pack::active() || OptinMonster_Pack::active() || Site_Reviews_Pack::active() || WPGraphQL_Pack::active() || Simple_Pay_Pack::active() || Paid_Member_Subscriptions_Pack::active() || FooGallery_Pack::active() || WpForo_Pack::active() || Asgaros_Forum_Pack::active() || Restrict_Content_Pack::active() || Ultimate_Member_Pack::active() || Cpt_Builder_Pack::active() || PublishPress_Pack::active() || Listings_Pack::active() || EDD_Pack::active() || Search_Replace_Pack::active() || Popup_Builder_Pack::active() || Hustle_Pack::active() || Depicter_Pack::active() || Tracking_Pack::active() || Discount_Rules_Pack::active() || Instagram_Feed_Pack::active() || WP_All_Import_Pack::active() || FileBird_Pack::active() || Max_Mega_Menu_Pack::active() || Maps_Pack::active() || BuddyPress_Pack::active()
+        return Events_Manager_Pack::active() || BbPress_Pack::active() || JetEngine_Pack::active() || Pods_Pack::active() || TranslatePress_Pack::active() || Code_Snippets_Pack::active() || WS_Form_Pack::active() || Everest_Forms_Pack::active() || Activity_Log_Pack::active() || Action_Scheduler_Pack::active() || Email_Log_Pack::active() || Pretty_Links_Pack::active() || Thirsty_Affiliates_Pack::active() || Advanced_Ads_Pack::active() || Popup_Maker_Pack::active() || OptinMonster_Pack::active() || Site_Reviews_Pack::active() || WPGraphQL_Pack::active() || Simple_Pay_Pack::active() || Paid_Member_Subscriptions_Pack::active() || FooGallery_Pack::active() || JetFormBuilder_Pack::active() || Kadence_Forms_Pack::active() || Jetpack_Forms_Pack::active() || WpForo_Pack::active() || Asgaros_Forum_Pack::active() || Restrict_Content_Pack::active() || Ultimate_Member_Pack::active() || Cpt_Builder_Pack::active() || PublishPress_Pack::active() || Listings_Pack::active() || EDD_Pack::active() || Search_Replace_Pack::active() || Popup_Builder_Pack::active() || Hustle_Pack::active() || Depicter_Pack::active() || Tracking_Pack::active() || Discount_Rules_Pack::active() || Instagram_Feed_Pack::active() || WP_All_Import_Pack::active() || FileBird_Pack::active() || Max_Mega_Menu_Pack::active() || Maps_Pack::active() || BuddyPress_Pack::active()
             || Gamipress_Pack::active()
             || LMS_Pack::active()
             || Thrive_Ultimatum_Pack::active()
@@ -333,6 +333,9 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
     {
         return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future, Custom Post Type UI and MB Custom Post Types post types, Better Search Replace and Search Regex search and replace, Popup Builder, Hustle and Depicter popups, GTM4WP, PixelYourSite, Meta Pixel for WordPress and Microsoft Clarity tracking IDs, Discount Rules for WooCommerce pricing rules, Smash Balloon Instagram Feed feeds, WP All Import and WP All Export jobs, FileBird media folders, Max Mega Menu settings and themes, WP Go Maps, WP Maps and WP Store Locator locations'
             . ', FooGallery galleries'
+            . ', JetFormBuilder forms'
+            . ', Kadence Blocks forms'
+            . ', Jetpack Forms responses'
             . ', Tutor LMS, LifterLMS, LearnDash, LearnPress, Sensei LMS and Thrive Apprentice courses, TablePress tables'
             . ', GamiPress points, achievements and ranks'
             . ', wpDataTables and Ninja Tables tables'
@@ -404,6 +407,9 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             [ 'Microsoft Clarity', false, Tracking_Pack::clarity_operations() ],
             [ 'Better Search Replace, Search Regex', true, Search_Replace_Pack::operations() ],
             [ 'FooGallery', false, FooGallery_Pack::operations() ],
+            [ 'JetFormBuilder', false, JetFormBuilder_Pack::operations() ],
+            [ 'Kadence Blocks forms', false, Kadence_Forms_Pack::operations() ],
+            [ 'Jetpack Forms', false, Jetpack_Forms_Pack::operations() ],
             [ 'wpForo', false, WpForo_Pack::operations() ],
             [ 'Asgaros Forum', false, Asgaros_Forum_Pack::operations() ],
             [ 'Restrict Content', false, Restrict_Content_Pack::operations() ],
@@ -504,6 +510,9 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             Tracking_Pack::operations(),
             Search_Replace_Pack::operations(),
             FooGallery_Pack::operations(),
+            JetFormBuilder_Pack::operations(),
+            Kadence_Forms_Pack::operations(),
+            Jetpack_Forms_Pack::operations(),
             WpForo_Pack::operations(),
             Asgaros_Forum_Pack::operations(),
             Restrict_Content_Pack::operations(),
