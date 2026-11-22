@@ -171,6 +171,8 @@ class Theme_Integration extends Integration_Dispatcher
         'neve',
         'hello-elementor',
         'hestia',
+        'divi',
+        'flatsome',
     ];
 
     /** Bundled core theme slugs, reported as the 'core' framework. */
@@ -343,6 +345,7 @@ class Theme_Integration extends Integration_Dispatcher
             Login_Url_Pack::operations(),
             Consent_Pack::operations(),
             Cache_Settings_Pack::operations(),
+            ElementsKit_Pack::operations(),
             Redirection_Pack::operations(),
             Rank_Math_Redirects_Pack::operations(),
             Elementor_Addon_Packs::operations(),
@@ -530,8 +533,8 @@ class Theme_Integration extends Integration_Dispatcher
     private function detect_framework(): ?string
     {
         $template = get_template();
-        if (in_array($template, self::FRAMEWORKS, true)) {
-            return $template;
+        if (in_array(strtolower($template), self::FRAMEWORKS, true)) {
+            return strtolower($template);
         }
         if (in_array($template, self::CORE_THEMES, true)) {
             return 'core';

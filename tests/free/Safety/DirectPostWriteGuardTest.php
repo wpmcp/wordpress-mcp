@@ -45,6 +45,10 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Thrive Ultimatum campaign post (issue #828); every field is new. Its other writes are metas and the plugin\'s own tables.',
         ],
+        'Tools/Builders/Flatsome_Blocks.php'          => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new UX Block (blocks post) from a page element or page (issue #849); every field is new.',
+        ],
         'Integrations/Core_Fonts_Pack.php'            => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new font family or font face post (issue #712), as core\'s font endpoints do; every field is new.',

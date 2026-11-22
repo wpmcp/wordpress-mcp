@@ -198,6 +198,10 @@ return [
         // build them; the Kadence pack and the shared builder stay.
         'src/Integrations/Theme_Pack_GeneratePress.php',
         'src/Integrations/Theme_Pack_Blocksy.php',
+        // The Divi theme options pack (issue #1011), paid-tier, stripped the same way.
+        'src/Integrations/Theme_Pack_Divi.php',
+        // The Flatsome theme options pack (issue #849), paid-tier, stripped the same way.
+        'src/Integrations/Theme_Pack_Flatsome.php',
         // The premium theme add-on layout ops (issue #656), paid-tier.
         // strip.php takes out the merge in Theme_Framework_Pack and the
         // docblock lines that name them.
@@ -208,6 +212,7 @@ return [
         'src/Integrations/Theme_Layouts_GeneratePress.php',
         'src/Integrations/Theme_Layouts_Hfe.php',
         'src/Integrations/Theme_Layouts_Target_Rules.php',
+        'src/Integrations/Theme_Layouts_Blocksy.php',
         // The Blocksy Companion extension ops (issue #650), paid-tier.
         // strip.php takes out the merge and the rollback refresh in
         // Theme_Framework_Pack.
@@ -217,6 +222,17 @@ return [
         // takes out the line in Theme_Integration that merges them and the
         // rollback hook in Plugin that refreshes one suite's cache.
         'src/Integrations/Elementor_Addon_Packs.php',
+        // The ElementsKit pack (issue #1012), paid-tier, standalone. strip.php
+        // takes out its one merge line in Theme_Integration.
+        'src/Integrations/ElementsKit_Catalog.php',
+        'src/Integrations/ElementsKit_Element_Sync.php',
+        'src/Integrations/ElementsKit_Lists.php',
+        'src/Integrations/ElementsKit_Operations.php',
+        'src/Integrations/ElementsKit_Pack.php',
+        'src/Integrations/ElementsKit_Plan.php',
+        'src/Integrations/ElementsKit_Planner.php',
+        'src/Integrations/ElementsKit_Snapshot.php',
+        'src/Integrations/ElementsKit_Store.php',
         // FunnelKit funnel and step reads (issue #356), paid-tier. strip.php
         // takes out the line in Theme_Integration that merges them.
         'src/Integrations/FunnelKit_Pack.php',

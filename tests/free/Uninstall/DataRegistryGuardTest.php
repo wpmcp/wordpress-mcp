@@ -75,6 +75,10 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             'show_on_front',
             'page_on_front',
             'page_for_posts',
+            // ElementsKit's widget and module lists and Elementor's Element
+            // Manager list, switched together by the ElementsKit pack (issue #1012).
+            'elementskit_options',
+            'elementor_disabled_elements',
             // The SeedProd, Under Construction, WP Maintenance Mode,
             // Maintenance and CMP gate settings, toggled by the
             // Site_Gate_Pack ops on the theme pair (issue #903).

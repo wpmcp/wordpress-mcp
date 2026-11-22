@@ -1493,7 +1493,7 @@ $edits['src/Tools/SEO/SEO_Adapter.php'] = [
     ["        'aioseo' => Aioseo_Store::class,\n", '', 1],
 ];
 
-// Two of the theme framework packs (issue #288) are the paid add-on's; their
+// Four of the theme framework packs (issues #288, #1011, #849) are the paid add-on's; their
 // spec files are removed by policy.php, so only the cases that build them
 // leave Theme_Framework_Pack.
 $edits['src/Integrations/Theme_Framework_Pack.php'] = [
@@ -1503,6 +1503,12 @@ $edits['src/Integrations/Theme_Framework_Pack.php'] = [
             . "        }\n"
             . "        if ('blocksy' === \$framework) {\n"
             . "            return Theme_Pack_Blocksy::spec();\n"
+            . "        }\n"
+            . "        if ('divi' === \$framework) {\n"
+            . "            return Theme_Pack_Divi::spec();\n"
+            . "        }\n"
+            . "        if ('flatsome' === \$framework) {\n"
+            . "            return Theme_Pack_Flatsome::spec();\n"
             . "        }\n",
         '',
         1,
@@ -2149,6 +2155,13 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
 // them into the theme pair and their rollback refresher leave with them.
 $edits['src/Integrations/Theme_Integration.php'][] = [
     "            Cache_Settings_Pack::operations(),\n",
+    '',
+    1,
+];
+// The ElementsKit pack (issue #1012) is the paid add-on's. Its files are
+// removed by policy.php, so its one merge line leaves with them.
+$edits['src/Integrations/Theme_Integration.php'][] = [
+    "            ElementsKit_Pack::operations(),\n",
     '',
     1,
 ];

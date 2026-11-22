@@ -81,6 +81,9 @@ final class Theme_Layouts_Pack
         if ('generatepress' === $family) {
             return new Theme_Layouts_GeneratePress();
         }
+        if ('blocksy' === $family) {
+            return new Theme_Layouts_Blocksy();
+        }
         if ('ultimate-addons' === $family) {
             return new Theme_Layouts_Hfe();
         }

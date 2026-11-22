@@ -225,6 +225,9 @@ class Handshake_Instructions
         if (defined('KIRKI_VERSION') && defined('KIRKI_POST_TYPE')) {
             return 'kirki';
         }
+        if ('flatsome' === $template) {
+            return 'flatsome';
+        }
 
         return 'gutenberg';
     }

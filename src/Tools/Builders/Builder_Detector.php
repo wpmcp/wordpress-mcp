@@ -53,6 +53,8 @@ if (! defined('ABSPATH')) {
  * `[vc_section]` shortcode in post_content (a WPBakery page saved with its
  * backend editor off) or an Avada `[fusion_builder_container]` (an Avada
  * page whose flag is off or was never written, as on imported content),
+ * then, while Flatsome is the active theme, a UX Builder `[section]`,
+ * `[row]` or `[ux_*]` shortcode or a UX Block post (`blocks`),
  * falling back to 'classic' when none match.
  */
 class Builder_Detector
@@ -160,6 +162,12 @@ class Builder_Detector
 
         if (preg_match('/\[fusion_builder_container[\s\]]/', $content)) {
             return 'avada';
+        }
+
+        // Flatsome (UX Builder) shortcodes, or a UX Block (`blocks` post),
+        // count only while Flatsome is the template (a child's parent too).
+        if ((bool) apply_filters('wpmcp_flatsome_active', 'flatsome' === strtolower((string) get_template())) && (($post && 'blocks' === $post->post_type) || preg_match('/\[(?:section|row|ux_[a-z_]+)[\s\]]/', $content))) {
+            return 'flatsome';
         }
 
         return 'classic';

@@ -302,6 +302,7 @@ class ProBannerTest extends \WP_UnitTestCase
             'avada'          => 'Avada',
             'thrive'         => 'Thrive Architect',
             'betheme'        => 'BeTheme',
+            'flatsome'       => 'Flatsome',
         ];
 
         foreach ($names as $builder => $name) {
