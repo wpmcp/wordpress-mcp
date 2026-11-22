@@ -416,6 +416,12 @@ final class Plugin
     public const BRAND = 'wpmcp';
 
     /**
+     * The product name in page titles and H1s (issues #1127, #1128):
+     * "WP MCP: Abilities". The admin menu keeps BRAND.
+     */
+    public const PRODUCT_NAME = 'WP MCP';
+
+    /**
      * "<brand>: <screen>" for a page title or an H1. One translatable
      * pattern owns the separator so a locale can reorder the two parts or
      * use its own punctuation (French " : ", a full-width colon in CJK), and
@@ -427,7 +433,7 @@ final class Plugin
         return sprintf(
             /* translators: 1: product name (not translated), 2: admin screen name */
             __('%1$s: %2$s', 'wpmcp'),
-            self::BRAND,
+            self::PRODUCT_NAME,
             $screen
         );
     }
