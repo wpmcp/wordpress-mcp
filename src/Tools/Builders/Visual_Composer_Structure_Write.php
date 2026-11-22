@@ -73,6 +73,10 @@ final class Visual_Composer_Structure_Write
         if ($plan instanceof \WP_Error) {
             return $plan;
         }
+        $refusal = Visual_Composer_Content::unfiltered_html_refusal($post_id, $plan->html);
+        if (null !== $refusal) {
+            return $refusal;
+        }
 
         $operation_id = $this->snapshot->run($post_id, $args, fn () => $this->store->save($post_id, $plan));
 

@@ -46,6 +46,11 @@ class VisualComposerStructureTest extends \WP_UnitTestCase
         Gate::set_pro_for_tests(true);
         Snapshot_Store::install();
         $this->admin = self::factory()->user->create(['role' => 'administrator']);
+        // On a network only a super admin has unfiltered_html; without it kses
+        // rewrites the saved Visual Composer markup the fixtures store.
+        if (is_multisite()) {
+            grant_super_admin($this->admin);
+        }
         wp_set_current_user($this->admin);
         add_filter('wpmcp_visual_composer_active', '__return_true');
         add_filter('wpmcp_visual_composer_element_dirs', static fn () => [dirname(__DIR__, 2) . '/support/visual-composer/structure-elements']);
@@ -269,6 +274,52 @@ class VisualComposerStructureTest extends \WP_UnitTestCase
             ),
             get_post($id)->post_content
         );
+    }
+
+    /**
+     * A site administrator on a network has no unfiltered_html, so kses would
+     * run over the post_content a write saves and rewrite the live page (it
+     * drops the script and mangles the attributes of T2_HTML). The ops refuse
+     * instead and leave both stores untouched; the same change by a super
+     * admin goes through.
+     *
+     * @return array{0:int,1:string,2:string} page, content and document before
+     */
+    private function network_site_admin_page(): array
+    {
+        if (! is_multisite()) {
+            $this->markTestSkipped('An administrator lacks unfiltered_html on a network only.');
+        }
+        // The page as Visual Composer saved it for a user who may store it.
+        $id = $this->page();
+        wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
+        $this->assertFalse(current_user_can('unfiltered_html'));
+
+        return [$id, get_post($id)->post_content, (string) get_post_meta($id, 'vcv-pageContent', true)];
+    }
+
+    public function test_a_structural_write_kses_would_rewrite_is_refused_for_a_user_without_unfiltered_html(): void
+    {
+        [$id, $content, $doc] = $this->network_site_admin_page();
+
+        $out = $this->write($id, ['operation' => 'move', 'path' => self::R2, 'to' => '', 'index' => 0]);
+
+        $this->assertWPError($out);
+        $this->assertSame('unfiltered_html_required', $out->get_error_code());
+        $this->assertSame($content, get_post($id)->post_content);
+        $this->assertSame($doc, get_post_meta($id, 'vcv-pageContent', true));
+    }
+
+    public function test_an_element_update_kses_would_rewrite_is_refused_for_a_user_without_unfiltered_html(): void
+    {
+        [$id, $content, $doc] = $this->network_site_admin_page();
+
+        $out = $this->write($id, ['operation' => 'update', 'path' => self::T1, 'text' => '<p>Uno</p>']);
+
+        $this->assertWPError($out);
+        $this->assertSame('unfiltered_html_required', $out->get_error_code());
+        $this->assertSame($content, get_post($id)->post_content);
+        $this->assertSame($doc, get_post_meta($id, 'vcv-pageContent', true));
     }
 
     public function test_a_row_may_move_into_a_column_as_visual_composer_allows(): void
