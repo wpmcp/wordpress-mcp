@@ -16,16 +16,28 @@ namespace WPMCP\Tests\Free\Perf;
  * second, steady-state run is the one measured, so first-request seeding
  * does not count.
  *
- * MEASURED on origin/main fd3e70c8 (22 Nov 2026), WordPress 7.1, PHP 8.5:
+ * MEASURED on origin/main bb5d778f (22 Nov 2026), WordPress 7.1, PHP 8.5:
  *
  *   context  src files (bytes)     Plugin.php  Freemius files  classes  abilities
- *   front    105 (1,981,921)       loaded      49              101      0
- *   admin    100 (1,967,684)       loaded      51              97       0
- *   rest     627 (6,671,444)       loaded      49              622      255
- *   mcp      632 (6,714,638)       loaded      49              627      255
+ *   front    124 (2,193,760)       loaded      49              119      0
+ *   admin    119 (2,179,265)       loaded      51              115      0
+ *   rest     738 (8,275,124)       loaded      49              732      255
+ *   mcp      743 (8,318,060)       loaded      49              737      255
  *
  * (255 abilities: the free tier with no third-party plugin active. With the
  * canonical test plugins active, bin/bench/run.php sees 266.)
+ *
+ * Since the first measurement (fd3e70c8, the same day: 105, 100, 627, 632
+ * src files) the budgets were raised, not the code changed, for two causes
+ * the module migration is the fix for. The kernel itself (Kernel_Boot,
+ * Registry, Container, Hook_Loader, Presence, Request_Context,
+ * Route_Scoped_Mount and two Api\V1 contracts) loads in every context: 10
+ * of the 19 new front-end files. The rest are packs that still register
+ * through Plugin.php: each one adds its hooks to every request and, while
+ * WPMCP_ROUTE_SCOPED_MCP is off (the default), its operations and store
+ * classes to every REST request, because the adapter registers every
+ * ability on rest_api_init. No single merge regressed: every pack merged
+ * that day landed on the legacy path.
  *
  * BUDGETS are those numbers plus a margin of 10 percent, at least 5, rounded
  * up to a multiple of 5, so that feature PRs merging alongside the module
@@ -39,10 +51,10 @@ final class FootprintTest extends \WP_UnitTestCase
 {
     /** context => metric => budget (at most). */
     private const BUDGETS = [
-        'front' => ['src' => 120, 'freemius' => 55, 'classes' => 115, 'abilities' => 0],
-        'admin' => ['src' => 110, 'freemius' => 60, 'classes' => 110, 'abilities' => 0],
-        'rest'  => ['src' => 690, 'freemius' => 55, 'classes' => 685, 'abilities' => 285],
-        'mcp'   => ['src' => 700, 'freemius' => 55, 'classes' => 690, 'abilities' => 285],
+        'front' => ['src' => 140, 'freemius' => 55, 'classes' => 135, 'abilities' => 0],
+        'admin' => ['src' => 135, 'freemius' => 60, 'classes' => 130, 'abilities' => 0],
+        'rest'  => ['src' => 815, 'freemius' => 55, 'classes' => 810, 'abilities' => 285],
+        'mcp'   => ['src' => 820, 'freemius' => 55, 'classes' => 815, 'abilities' => 285],
     ];
 
     private static string $prefix = '';
