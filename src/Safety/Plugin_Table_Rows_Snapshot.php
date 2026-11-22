@@ -79,9 +79,32 @@ if (! defined('ABSPATH')) {
  * Ninja Tables restore its render cache of the tables involved is cleared
  * through its own function, as its own row edits do.
  *
+ * Forum rows (issue #671) come from two forum plugins' own tables. wpForo
+ * keeps its main board in {prefix}wpforo_forums, _topics, _posts and
+ * _postmeta, keyed by forumid and topicid (posts and postmeta captured by
+ * the topic they belong to, so a moved topic's rows all go back). Asgaros
+ * Forum keeps {prefix}forum_topics and forum_posts keyed by id, and a
+ * topic's posts by their parent_id. Each kind allows only its one table.
+ * After a wpForo restore its own cache is cleaned (wpforo_clean_cache), as
+ * its screens do after a change.
+ *
+ * Restrict Content membership levels (issue #669, the
+ * `restrict_content_pro` table the plugin names its levels table, so kind
+ * rcp_levels with the prefix "restrict_content_" and the one suffix
+ * "pro") are keyed by their own id. After a restore the plugin's cached
+ * copies of the rows are dropped (its BerlinDB cache group
+ * rcp-membership_levels), as its own query does after a write.
+ *
+ * Easy Digital Downloads discounts (issue #664, the `edd_adjustments` table,
+ * the one suffix "adjustments") are keyed by their own id; a create
+ * reserves its id the same way. EDD reads the table through BerlinDB, which
+ * caches rows and query results in the object cache, so after a restore the
+ * cached lookups of the table are retired (purge_edd_cache()), the way
+ * BerlinDB's own writes do.
+ *
  * Restoring takes the capability the write itself needs: edit_post on each
  * captured post for a Pods row or a MemberPress rule's rows, manage_options
- * for a dictionary row or a Pretty Links link, and Wordfence's own admin capability (manage_options,
+ * for a dictionary row, a Pretty Links link, a Restrict Content level, an EDD discount or a forum row, and Wordfence's own admin capability (manage_options,
  * manage_network on a multisite network) for a Wordfence row.
  */
 final class Plugin_Table_Rows_Snapshot
@@ -95,12 +118,21 @@ final class Plugin_Table_Rows_Snapshot
         'mepr_rule_access' => 'mepr_rule_access_',
         'rank_math'        => 'rank_math_',
         'prli'             => 'prli_',
+        'wpforo_forum'          => 'wpforo_',
+        'wpforo_topic'          => 'wpforo_',
+        'wpforo_topic_posts'    => 'wpforo_',
+        'wpforo_topic_postmeta' => 'wpforo_',
+        'asgaros_topic'         => 'forum_',
+        'asgaros_post'          => 'forum_',
+        'asgaros_topic_posts'   => 'forum_',
         'pmpro_levels'     => 'pmpro_',
         'pmpro_members'    => 'pmpro_',
         'pmpro_codes'      => 'pmpro_',
         'wpdatatables'      => 'wpdata',
         'wpdatatables_rows' => 'wpdatatables_',
         'ninja_table'       => 'ninja_table_',
+        'rcp_levels'       => 'restrict_content_',
+        'edd'              => 'edd_',
     ];
 
     /**
@@ -118,6 +150,19 @@ final class Plugin_Table_Rows_Snapshot
         'wordfence_blocks'  => 'IP',
         'pmpro_members'     => 'user_id',
         'wpdatatables_rows' => 'table_id',
+        'wpforo_forum'          => 'forumid',
+        'wpforo_topic'          => 'topicid',
+        'wpforo_topic_posts'    => 'topicid',
+        'wpforo_topic_postmeta' => 'topicid',
+        'asgaros_topic_posts'   => 'parent_id',
+    ];
+
+    /** kind => the column its rows are read in order of, for a table with no `id` column. */
+    private const ORDER_COLUMNS = [
+        'wpforo_forum'          => 'forumid',
+        'wpforo_topic'          => 'topicid',
+        'wpforo_topic_posts'    => 'postid',
+        'wpforo_topic_postmeta' => 'metaid',
     ];
 
     /** kind => the only suffixes it allows, for a kind with a fixed table. */
@@ -125,12 +170,21 @@ final class Plugin_Table_Rows_Snapshot
         'mepr_rule_access' => [ 'conditions' ],
         'rank_math'        => [ 'redirections' ],
         'prli'             => [ 'links' ],
+        'wpforo_forum'          => [ 'forums' ],
+        'wpforo_topic'          => [ 'topics' ],
+        'wpforo_topic_posts'    => [ 'posts' ],
+        'wpforo_topic_postmeta' => [ 'postmeta' ],
+        'asgaros_topic'         => [ 'topics' ],
+        'asgaros_post'          => [ 'posts' ],
+        'asgaros_topic_posts'   => [ 'posts' ],
         'pmpro_levels'     => [ 'membership_levels' ],
         'pmpro_members'    => [ 'memberships_users' ],
         'pmpro_codes'      => [ 'discount_codes' ],
         'wpdatatables'      => [ 'tables' ],
         'wpdatatables_rows' => [ 'rows' ],
         'ninja_table'       => [ 'items' ],
+        'rcp_levels'       => [ 'pro' ],
+        'edd'              => [ 'adjustments' ],
     ];
 
     /**
@@ -263,7 +317,7 @@ final class Plugin_Table_Rows_Snapshot
      * @param int[] $ids
      * @return array<int, array<string, string|null>>
      */
-    public static function rows(string $table, array $ids, string $column = 'id'): array
+    public static function rows(string $table, array $ids, string $column = 'id', string $order = 'id'): array
     {
         global $wpdb;
 
@@ -274,7 +328,7 @@ final class Plugin_Table_Rows_Snapshot
         $in = implode(',', array_fill(0, count($ids), '%d'));
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- a snapshot must read the live rows of a third-party table; $in holds only %d placeholders.
-        $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE %i IN ($in) ORDER BY id ASC", $table, $column, ...$ids), ARRAY_A);
+        $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE %i IN ($in) ORDER BY %i ASC", ...array_merge([ $table, $column ], $ids, [ $order ])), ARRAY_A);
 
         return array_values((array) $rows);
     }
@@ -460,6 +514,15 @@ final class Plugin_Table_Rows_Snapshot
         if ('ninja_table' === $kind) {
             self::clear_ninja_tables_cache(array_merge(array_column((array) ($data['rows'] ?? []), 'table_id'), (array) ($data['table_ids'] ?? [])));
         }
+        if (str_starts_with($kind, 'wpforo_') && function_exists('wpforo_clean_cache')) {
+            wpforo_clean_cache();
+        }
+        if ('rcp_levels' === $kind) {
+            self::flush_rcp_level_cache($ids);
+        }
+        if ('edd' === $kind) {
+            self::purge_edd_cache((string) $data['suffix'], $ids);
+        }
         self::after_wordfence_restore($kind);
     }
 
@@ -476,6 +539,47 @@ final class Plugin_Table_Rows_Snapshot
         }
         foreach (array_unique(array_filter(array_map('intval', $table_ids))) as $table_id) {
             \ninjaTablesClearTableDataCache($table_id);
+        }
+    }
+
+    /**
+     * Drop Restrict Content's cached copies of the given membership level
+     * rows and move its level query cache on, as its own BerlinDB query does
+     * after a write (cache group rcp-membership_levels).
+     *
+     * @param array<int, int|string> $ids
+     */
+    public static function flush_rcp_level_cache(array $ids): void
+    {
+        foreach ($ids as $id) {
+            wp_cache_delete((int) $id, 'rcp-membership_levels');
+        }
+        wp_cache_set('last_changed', microtime(), 'rcp-membership_levels');
+    }
+
+    /**
+     * Retire Easy Digital Downloads' cached lookups for rows of one of its
+     * tables, as BerlinDB does after its own writes: the rows cached by id
+     * (group edd-<suffix>) are dropped, and the last_changed stamp of the
+     * table's query cache and of each by-column lookup group
+     * (edd-<suffix>-by-<column>) is rotated, so every cached result is
+     * rebuilt on the next read.
+     *
+     * @param array<int, int|string> $ids
+     */
+    public static function purge_edd_cache(string $suffix, array $ids): void
+    {
+        $table = self::table('edd', $suffix);
+        if (null === $table) {
+            return;
+        }
+        $group = 'edd-' . $suffix;
+        foreach ($ids as $id) {
+            wp_cache_delete((int) $id, $group);
+        }
+        wp_cache_set('last_changed', microtime(), $group);
+        foreach (self::columns($table) as $column) {
+            wp_cache_set('last_changed', microtime(), $group . '-by-' . $column);
         }
     }
 
@@ -503,7 +607,7 @@ final class Plugin_Table_Rows_Snapshot
     private static function kind_rows(string $kind, string $table, array $ids): array
     {
         if (! isset(self::BINARY_COLUMNS[ $kind ])) {
-            return self::rows($table, $ids, self::key_column($kind));
+            return self::rows($table, $ids, self::key_column($kind), self::ORDER_COLUMNS[ $kind ] ?? 'id');
         }
         if ([] === $ids) {
             return [];
@@ -547,30 +651,27 @@ final class Plugin_Table_Rows_Snapshot
         $live   = self::columns($table);
         $binary = self::BINARY_COLUMNS[ $kind ];
         foreach ($rows as $row) {
-            $columns = [];
-            $values  = [];
-            $names   = [];
-            $args    = [];
+            $values = [];
+            $names  = [];
+            $args   = [];
             foreach ((array) $row as $column => $value) {
                 $column = (string) $column;
                 if (! in_array($column, $live, true)) {
                     throw new Mutation_Failed('Could not restore a row of ' . esc_html($table) . ': its column ' . esc_html($column) . ' is gone.');
                 }
-                $columns[] = '%i';
-                $names[]   = $column;
-                if (null === $value) {
-                    $values[] = 'NULL';
-                    continue;
+                $names[] = $column;
+                // Each value is one of three literals: NULL, %s, or UNHEX(%s)
+                // for a binary column.
+                $values[] = (null === $value ? 'NULL' : (in_array($column, $binary, true) ? 'UNHEX(%s)' : '%s'));
+                if (null !== $value) {
+                    $args[] = (string) $value;
                 }
-                $values[] = in_array($column, $binary, true) ? 'UNHEX(%s)' : '%s';
-                $args[]   = (string) $value;
             }
-            if ([] === $columns) {
+            if ([] === $names) {
                 continue;
             }
-            $sql = 'INSERT INTO %i (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ')';
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- third-party table with no WP API; $sql holds only %i, %s, UNHEX(%s) and NULL.
-            if (false === $wpdb->query($wpdb->prepare($sql, $table, ...$names, ...$args))) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- third-party table with no WP API; one %i per column, and $values holds only %s, UNHEX(%s) and NULL.
+            if (false === $wpdb->query($wpdb->prepare('INSERT INTO %i (' . implode(', ', array_fill(0, count($names), '%i')) . ') VALUES (' . implode(', ', $values) . ')', $table, ...$names, ...$args))) {
                 throw new Mutation_Failed('Could not restore a row of ' . esc_html($table) . ': ' . esc_html($wpdb->last_error));
             }
         }
@@ -642,6 +743,24 @@ final class Plugin_Table_Rows_Snapshot
         if (in_array($kind, [ 'wpdatatables', 'wpdatatables_rows', 'ninja_table' ], true)) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring ' . ('ninja_table' === $kind ? 'Ninja Tables' : 'wpDataTables') . ' rows requires the manage_options capability.');
+            }
+            return;
+        }
+        if (str_starts_with($kind, 'wpforo_') || str_starts_with($kind, 'asgaros_')) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring forum rows requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('rcp_levels' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring a Restrict Content membership level requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('edd' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring Easy Digital Downloads discounts requires the manage_options capability.');
             }
             return;
         }

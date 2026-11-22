@@ -350,6 +350,7 @@ class Restore_Site_Backup
         $staged      = null;
         $session_sql = null;
         $safety      = null;
+        $lock_lost   = false;
 
         try {
             self::extend_limits();
@@ -391,6 +392,9 @@ class Restore_Site_Backup
 
                 try {
                     $import = $this->import_dump($sql_path, $scan, $maintenance, $state);
+                } catch (Restore_Lock_Lost $e) {
+                    $lock_lost = true;
+                    throw $e;
                 } catch (\Throwable $e) {
                     // Anything thrown mid-import (a hook, a fatal-ish type
                     // error) is still a half-imported database: treat it
@@ -409,6 +413,7 @@ class Restore_Site_Backup
                 self::restore_session_variables($session_sql);
                 wp_cache_flush();
                 self::keep_job_history($jobs);
+                self::interrupt_backup_jobs();
                 Restore_Logs::reapply($logs);
 
                 if (null === $import['failure']) {
@@ -441,6 +446,9 @@ class Restore_Site_Backup
                         }
                     }
                 }
+            } catch (Restore_Lock_Lost $e) {
+                $lock_lost = true;
+                throw $e;
             } catch (\Throwable $e) {
                 // Something unexpected after the safety archive exists: the
                 // caller needs its job id more than anything else.
@@ -452,18 +460,27 @@ class Restore_Site_Backup
                 ), 0, $e);
             }
         } finally {
-            if (null !== $session_sql) {
-                self::restore_session_variables($session_sql);
+            if ($lock_lost) {
+                // Another restore may own the database now (issue #1124):
+                // its maintenance window, progress file and lock are left
+                // alone. Only this request's own staging folder goes.
+                if (null !== $files && null !== $staged) {
+                    $files->discard($staged);
+                }
+            } else {
+                if (null !== $session_sql) {
+                    self::restore_session_variables($session_sql);
+                }
+                $maintenance->leave();
+                $this->last_maintenance = $maintenance->window();
+                if (null !== $files && null !== $staged) {
+                    $files->discard($staged);
+                }
+                if (null !== $safety) {
+                    self::clear_state();
+                }
+                self::release_lock();
             }
-            $maintenance->leave();
-            $this->last_maintenance = $maintenance->window();
-            if (null !== $files && null !== $staged) {
-                $files->discard($staged);
-            }
-            if (null !== $safety) {
-                self::clear_state();
-            }
-            self::release_lock();
         }
 
         $restored = null === $import['failure'];
@@ -521,6 +538,16 @@ class Restore_Site_Backup
             $table = $class['table'];
             $count++;
 
+            // The statement may have been retried by wpdb on a new
+            // connection (issue #1124): nothing is written for it unless
+            // this worker still holds the lock. The next statement's check
+            // then stops the import.
+            $writes = (null !== $table && $previous === $options && $table !== $options)
+                || (null !== $table && ($table !== $previous || 0 === $count % self::STATE_EVERY));
+            if ($writes && ! self::holds_lock()) {
+                return;
+            }
+
             if (null !== $table && $previous === $options && $table !== $options) {
                 $maintenance->after_options_imported();
             }
@@ -545,7 +572,21 @@ class Restore_Site_Backup
             do_action('wpmcp_restore_statement_executed', $statement, $class);
         };
 
-        $result = (new Sql_Importer($sql_path, $this->policy_for(null)))->import($scan['placeholder'], $after);
+        // Issue #1124: a named lock goes with its connection, and wpdb
+        // reconnects quietly, so a dropped connection would leave this
+        // worker importing without the lock, next to the recovery restore.
+        // Before each statement it checks it still holds the lock.
+        $before = static function (): bool {
+            return self::holds_lock();
+        };
+
+        $result = (new Sql_Importer($sql_path, $this->policy_for(null)))->import($scan['placeholder'], $after, $before);
+        if (! empty($result['aborted'])) {
+            throw new Restore_Lock_Lost(sprintf(
+                'This restore lost the restore lock after %d statements (its database connection dropped, so the server released the lock) and stopped without writing anything more. Another restore may be running now: get-backup-status shows it.',
+                (int) $result['executed']
+            ));
+        }
 
         // The options table was the last one in the dump: nothing followed
         // it to trigger the re-assert, but the row still changed.
@@ -575,6 +616,8 @@ class Restore_Site_Backup
                 'restored'  => null === $import['failure'],
                 'failure'   => $import['failure'],
             ];
+        } catch (Restore_Lock_Lost $e) {
+            throw $e;
         } catch (\Throwable $e) {
             return [
                 'attempted' => true,
@@ -748,6 +791,34 @@ class Restore_Site_Backup
         }
     }
 
+    /**
+     * Issue #1152: a backup job still running or queued once the import
+     * is over (it came back with the restored database, or was in the
+     * store when the restore started) would resume against a replaced
+     * database, from a build saved by another copy of the site. Each one
+     * is marked failed as interrupted, with the reason, its build cursor
+     * dropped and its step event removed. Restore jobs are left alone.
+     */
+    private static function interrupt_backup_jobs(): void
+    {
+        foreach (Backup_Job_Store::list() as $job) {
+            $id = (int) ($job['id'] ?? 0);
+            if ($id <= 0 || self::JOB_TYPE === ($job['type'] ?? null) || ! in_array($job['status'] ?? '', ['running', 'queued'], true)) {
+                continue;
+            }
+            Backup_Job_Store::update($id, [
+                'status'                 => 'failed',
+                'interrupted_by_restore' => true,
+                'finished_at'            => gmdate('c'),
+                'error'                  => sprintf(
+                    'Interrupted by a database restore: this backup was %s when the restore replaced the database, so it was not continued. Start the backup again.',
+                    (string) $job['status']
+                ),
+            ], ['build']);
+            wp_clear_scheduled_hook(Run_Backup_Job::HOOK, [$id]);
+        }
+    }
+
     private static function site_prefix(): string
     {
         global $wpdb;
@@ -821,6 +892,20 @@ class Restore_Site_Backup
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- MySQL named lock; no API exists.
         $wpdb->query($wpdb->prepare('SELECT RELEASE_LOCK(%s)', self::lock_name()));
+    }
+
+    /**
+     * Whether this request's connection holds the restore lock (issue
+     * #1124). False after the connection dropped and wpdb reconnected, and
+     * when another connection holds it. Run_Backup_Job reads it so the
+     * restore's own safety archive still runs (issue #1152).
+     */
+    public static function holds_lock(): bool
+    {
+        global $wpdb;
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- MySQL named lock; no API exists.
+        return '1' === (string) $wpdb->get_var($wpdb->prepare('SELECT IS_USED_LOCK(%s) = CONNECTION_ID()', self::lock_name()));
     }
 
     private static function lock_is_free(): bool
