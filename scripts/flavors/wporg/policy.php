@@ -44,6 +44,10 @@ return [
         // dismissible banner on WP MCP's own screens is planned for the first
         // update after approval.
         'src/Admin/Pro_Banner.php',
+        // The GitHub star prompt leaves with it, for the same decision: the
+        // first submissions ship no promotional notices, and it also names
+        // Pro_Banner and the Pro gate, which this build does not have.
+        'src/Admin/Star_Prompt.php',
         // Update checks against GitHub releases for free installs of the
         // self-hosted build. A directory plugin is updated by WordPress.org
         // and nothing else (guideline 8), and the WooCommerce flavor shares
