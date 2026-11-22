@@ -197,7 +197,7 @@ class Audit_Log_Page
 
         $this->render_filter_form($filters);
         $this->render_pagination(self::TAB_MUTATIONS, $filters, $total, $paged, $pages, 'top');
-        echo '<table class="widefat"><thead><tr>'
+        echo '<table class="widefat striped"><thead><tr>'
             . '<th>' . esc_html__('Who', 'wpmcp') . '</th>'
             . '<th>' . esc_html__('When', 'wpmcp') . '</th>'
             . '<th>' . esc_html__('What', 'wpmcp') . '</th>'
@@ -309,19 +309,46 @@ class Audit_Log_Page
                 array_map('rawurlencode', array_merge(['page' => self::SLUG, 'tab' => $tab], array_map('strval', $filters))),
                 admin_url('admin.php')
             );
-            $links = paginate_links([
-                'base'      => add_query_arg('paged', '%#%', $base),
-                'format'    => '',
-                'current'   => $paged,
-                'total'     => $pages,
-                'prev_text' => __('&lsaquo; Previous', 'wpmcp'),
-                'next_text' => __('Next &rsaquo;', 'wpmcp'),
-            ]);
-            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() escapes its own URLs and the link text above is translator-provided entities.
-            echo ' <span class="pagination-links">' . $links . '</span>';
+            echo ' <span class="pagination-links">';
+            // Core list-table paging (issue #1125): first, previous, "N of M",
+            // next and last, a disabled span where a button would go nowhere.
+            $this->render_page_button('first-page', __('First page', 'wpmcp'), '&laquo;', $paged > 1 ? 1 : null, $base);
+            $this->render_page_button('prev-page', __('Previous page', 'wpmcp'), '&lsaquo;', $paged > 1 ? $paged - 1 : null, $base);
+            printf(
+                '<span class="screen-reader-text">%s</span><span id="table-paging-%s" class="paging-input"><span class="tablenav-paging-text">%s</span></span>',
+                esc_html__('Current Page', 'wpmcp'),
+                esc_attr($which),
+                sprintf(
+                    /* translators: 1: current page, 2: total pages. */
+                    esc_html_x('%1$s of %2$s', 'paging', 'wpmcp'),
+                    esc_html(number_format_i18n($paged)),
+                    '<span class="total-pages">' . esc_html(number_format_i18n($pages)) . '</span>'
+                )
+            );
+            $this->render_page_button('next-page', __('Next page', 'wpmcp'), '&rsaquo;', $paged < $pages ? $paged + 1 : null, $base);
+            $this->render_page_button('last-page', __('Last page', 'wpmcp'), '&raquo;', $paged < $pages ? $pages : null, $base);
+            echo '</span>';
         }
 
         echo '</div><br class="clear" /></div>';
+    }
+
+    /** One core paging button, or its disabled span when $target is null. */
+    private function render_page_button(string $class, string $label, string $glyph, ?int $target, string $base): void
+    {
+        if (null === $target) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $glyph is one of the literal HTML entities passed above.
+            printf('<span class="tablenav-pages-navspan button disabled" aria-hidden="true">%s</span> ', $glyph);
+            return;
+        }
+        printf(
+            '<a class="%s button" href="%s"><span class="screen-reader-text">%s</span><span aria-hidden="true">%s</span></a> ',
+            esc_attr($class),
+            esc_url(add_query_arg('paged', $target, $base)),
+            esc_html($label),
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $glyph is one of the literal HTML entities passed above.
+            $glyph
+        );
     }
 
     private function render_requests(): void
@@ -353,7 +380,7 @@ class Audit_Log_Page
         $this->render_request_filter_form($filters);
         $this->render_pagination(self::TAB_REQUESTS, $filters, $total, $paged, $pages, 'top');
 
-        echo '<table class="widefat"><thead><tr>'
+        echo '<table class="widefat striped"><thead><tr>'
             . '<th>' . esc_html__('When', 'wpmcp') . '</th>'
             . '<th>' . esc_html__('Tool', 'wpmcp') . '</th>'
             . '<th>' . esc_html__('Client', 'wpmcp') . '</th>'
