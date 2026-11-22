@@ -1,0 +1,89 @@
+# WPMCP 2.0 module gates (design section 1.6, G2 to G5) as PHPStan rules.
+# Included by phpstan.neon.dist. Every knob is a parameter under `wpmcp`, so
+# a test or an add-on can point the rules at its own registry and namespaces.
+#
+# The rule classes must be autoloadable before PHPStan builds its container:
+# composer's autoload-dev maps WPMCP\PHPStan\ to tools/phpstan/src/. Without
+# that mapping, pass `--autoload-file=tools/phpstan/autoload.php`.
+
+parametersSchema:
+    wpmcp: structure([
+        # Compiled registries to read module ownership from; missing files are skipped.
+        registries: listOf(string())
+        # Root the registries' path globs are relative to.
+        repoRoot: string()
+        # Namespace roots of the WPMCP\Modules\<Id>\ convention (fallback ownership).
+        moduleNamespaceRoots: listOf(string())
+        # Namespaces that must never name a module class.
+        kernelNamespaces: listOf(string())
+        # WPMCP namespaces (ending in \) or classes a module may name besides its own.
+        publicNamespaces: listOf(string())
+        # Value namespaces whose classes modules may create and call static constructors on.
+        valueNamespaces: listOf(string())
+        # fnmatch patterns of the files that declare WordPress core symbols.
+        wordpressStubPatterns: listOf(string())
+        # Grandfathered static calls, `Class::method` fnmatch patterns. May only shrink.
+        staticCallAllowlist: listOf(string())
+    ])
+
+parameters:
+    wpmcp:
+        registries:
+            - %currentWorkingDirectory%/build/registry/boot.php
+            - %currentWorkingDirectory%/pro/build/registry/boot.php
+        repoRoot: %currentWorkingDirectory%
+        moduleNamespaceRoots:
+            - 'WPMCP\Modules\'
+        kernelNamespaces:
+            - 'WPMCP\Kernel\'
+            - 'WPMCP\Api\'
+        # The public API, plus the platform namespaces frozen as public API for
+        # phase A (design section 1.5). Shrinks as phase A ends.
+        publicNamespaces:
+            - 'WPMCP\Api\'
+            - 'WPMCP\MCP\'
+            - 'WPMCP\Safety\'
+            - 'WPMCP\Governance\'
+            - 'WPMCP\Auth\'
+            - 'WPMCP\Identity\'
+            - 'WPMCP\RateLimit\'
+            - 'WPMCP\Privacy\'
+            - 'WPMCP\Integrations\Support\'
+            - 'WPMCP\Tools\Content\Content_Guard'
+        valueNamespaces:
+            - 'WPMCP\Api\V1\Value\'
+        wordpressStubPatterns:
+            - '*/php-stubs/wordpress-stubs/*'
+        staticCallAllowlist: []
+
+services:
+    -
+        class: WPMCP\PHPStan\ModuleMap
+        arguments:
+            registryFiles: %wpmcp.registries%
+            repoRoot: %wpmcp.repoRoot%
+            conventionRoots: %wpmcp.moduleNamespaceRoots%
+    -
+        class: WPMCP\PHPStan\SymbolOrigin
+        arguments:
+            wordpressStubPatterns: %wpmcp.wordpressStubPatterns%
+    -
+        class: WPMCP\PHPStan\NoCrossModuleReferenceRule
+        arguments:
+            kernelNamespaces: %wpmcp.kernelNamespaces%
+            publicNamespaces: %wpmcp.publicNamespaces%
+        tags: [phpstan.rules.rule]
+    -
+        class: WPMCP\PHPStan\NoForeignNewRule
+        arguments:
+            valueNamespaces: %wpmcp.valueNamespaces%
+        tags: [phpstan.rules.rule]
+    -
+        class: WPMCP\PHPStan\NoStaticHelperCallRule
+        arguments:
+            valueNamespaces: %wpmcp.valueNamespaces%
+            allowlist: %wpmcp.staticCallAllowlist%
+        tags: [phpstan.rules.rule]
+    -
+        class: WPMCP\PHPStan\LayerRule
+        tags: [phpstan.rules.rule]
