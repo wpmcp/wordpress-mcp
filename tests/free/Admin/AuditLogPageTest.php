@@ -27,7 +27,7 @@ class AuditLogPageTest extends \WP_UnitTestCase
 
     public function test_get_operations_returns_rows_with_no_filters(): void
     {
-        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', str_repeat('a', 64));
+        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', hash('sha256', (string) 'op-1'));
 
         $out = (new Audit_Log_Page())->get_operations([]);
 
@@ -37,8 +37,8 @@ class AuditLogPageTest extends \WP_UnitTestCase
 
     public function test_get_operations_applies_tool_name_filter(): void
     {
-        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', str_repeat('a', 64));
-        Snapshot_Store::save('op-2', 'sess', $this->snapshot(), 'update-user', str_repeat('a', 64));
+        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', hash('sha256', (string) 'op-1'));
+        Snapshot_Store::save('op-2', 'sess', $this->snapshot(), 'update-user', hash('sha256', (string) 'op-2'));
 
         $out = (new Audit_Log_Page())->get_operations(['tool_name' => 'update-user']);
 
@@ -48,7 +48,7 @@ class AuditLogPageTest extends \WP_UnitTestCase
 
     public function test_get_operations_never_leaks_before_blob(): void
     {
-        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', str_repeat('a', 64));
+        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', hash('sha256', (string) 'op-1'));
 
         $out = (new Audit_Log_Page())->get_operations([]);
 
@@ -57,7 +57,7 @@ class AuditLogPageTest extends \WP_UnitTestCase
 
     public function test_render_outputs_a_row_per_operation(): void
     {
-        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', str_repeat('a', 64));
+        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', hash('sha256', (string) 'op-1'));
 
         ob_start();
         (new Audit_Log_Page())->render();
@@ -71,7 +71,7 @@ class AuditLogPageTest extends \WP_UnitTestCase
     {
         // tool_name is attacker-influenced in principle (stored from the
         // ability that ran); render() must escape it rather than echo raw.
-        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), '<script>alert(1)</script>', str_repeat('a', 64));
+        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), '<script>alert(1)</script>', hash('sha256', (string) 'op-1'));
 
         ob_start();
         (new Audit_Log_Page())->render();
@@ -88,7 +88,7 @@ class AuditLogPageTest extends \WP_UnitTestCase
      */
     public function test_render_ignores_a_filter_that_sanitizes_to_empty(): void
     {
-        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', str_repeat('a', 64));
+        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', hash('sha256', (string) 'op-1'));
         $_GET['tool_name'] = '<b></b>';
 
         ob_start();
@@ -97,26 +97,29 @@ class AuditLogPageTest extends \WP_UnitTestCase
 
         // The row survives: no tool_name filter was applied.
         $this->assertStringContainsString('delete-post', $html);
-        $this->assertStringContainsString('<input type="text" name="tool_name" placeholder="Tool name" value="" />', $html);
+        // Issue #1126: the tool filter is a dropdown, left on "All tools".
+        $this->assertStringContainsString('<select name="tool_name"><option value="">All tools</option>', $html);
+        $this->assertStringNotContainsString("selected='selected'", $html);
     }
 
     public function test_render_round_trips_a_real_filter_value_into_the_form(): void
     {
-        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', str_repeat('a', 64));
-        Snapshot_Store::save('op-2', 'sess', $this->snapshot(2), 'update-user', str_repeat('a', 64));
+        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', hash('sha256', (string) 'op-1'));
+        Snapshot_Store::save('op-2', 'sess', $this->snapshot(2), 'update-user', hash('sha256', (string) 'op-2'));
         $_GET['tool_name'] = 'update-user';
 
         ob_start();
         (new Audit_Log_Page())->render();
         $html = ob_get_clean();
 
-        $this->assertStringContainsString('value="update-user"', $html);
-        $this->assertStringNotContainsString('delete-post', $html);
+        $this->assertStringContainsString('<option value="update-user" selected=\'selected\'>', $html);
+        // The other tool is still offered in the dropdown, but no row lists it.
+        $this->assertStringNotContainsString('<td>delete-post', $html);
     }
 
     public function test_render_ignores_an_array_valued_filter_param(): void
     {
-        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', str_repeat('a', 64));
+        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', hash('sha256', (string) 'op-1'));
         $_GET['tool_name'] = ['delete-post'];
 
         ob_start();
@@ -124,7 +127,8 @@ class AuditLogPageTest extends \WP_UnitTestCase
         $html = ob_get_clean();
 
         $this->assertStringContainsString('delete-post', $html);
-        $this->assertStringContainsString('name="tool_name" placeholder="Tool name" value="" />', $html);
+        $this->assertStringContainsString('<select name="tool_name"><option value="">All tools</option>', $html);
+        $this->assertStringNotContainsString("selected='selected'", $html);
     }
 
     /**
@@ -133,7 +137,7 @@ class AuditLogPageTest extends \WP_UnitTestCase
      */
     public function test_render_filter_form_emits_the_registered_slug_not_the_request(): void
     {
-        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', str_repeat('a', 64));
+        Snapshot_Store::save('op-1', 'sess', $this->snapshot(), 'delete-post', hash('sha256', (string) 'op-1'));
         $_GET['page'] = 'not-this-page';
 
         ob_start();

@@ -28,7 +28,7 @@ class AuditLogSessionColumnTest extends \WP_UnitTestCase
 
     private function save(string $op, string $session): void
     {
-        Snapshot_Store::save($op, $session, [ 'object_type' => 'post', 'object_id' => 1, 'data' => [ 'post' => null, 'meta' => [] ] ], 'update-post', str_repeat('a', 64));
+        Snapshot_Store::save($op, $session, [ 'object_type' => 'post', 'object_id' => 1, 'data' => [ 'post' => null, 'meta' => [] ] ], 'update-post', hash('sha256', (string) $op));
     }
 
     private function render(): string
