@@ -32,7 +32,8 @@
       "WPMCP\\PHPStan\\": "tools/phpstan/src/",
       "WPMCP\\Tests\\Kernel\\": "tests/kernel/",
       "WPMCP\\Tests\\Modules\\": "tests/modules/"
-    }
+    },
+    "classmap": ["tests/kernel/Fixture/"]
   },
   "scripts": {
     "test": "phpunit",
