@@ -1940,9 +1940,11 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
     [
         "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future'\n"
             . "            . ', FooGallery galleries'\n"
+            . "            . ', JetFormBuilder forms'\n"
             . "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS courses, TablePress tables';\n",
         "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores, WP Job Manager, GeoDirectory and Directorist listings, PublishPress Planner, PublishPress Checklists and PublishPress Future'\n"
-            . "            . ', FooGallery galleries';\n",
+            . "            . ', FooGallery galleries'\n"
+            . "            . ', JetFormBuilder forms';\n",
         1,
     ],
     [
