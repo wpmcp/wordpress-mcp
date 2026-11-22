@@ -389,7 +389,7 @@ final class EDD_Pack
             'sku'              => (string) get_post_meta($id, 'edd_sku', true),
             'sales'            => (int) get_post_meta($id, '_edd_download_sales', true),
             'earnings'         => self::money(get_post_meta($id, '_edd_download_earnings', true)),
-            'date'             => $post instanceof \WP_Post ? (string) $post->post_date_gmt : '',
+            'date'             => $post instanceof \WP_Post ? self::post_date_utc($post) : '',
             'link'             => (string) get_permalink($id),
         ];
         if (! $full || ! $post instanceof \WP_Post) {
@@ -851,5 +851,20 @@ final class EDD_Pack
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- EDD's own hook, fired by edd_update_discount(), so its extensions see the write.
         do_action('edd_post_update_discount', $set, $id);
         return [ 'discount' => self::discount_view((array) self::discount_row($id)) ];
+    }
+
+    /**
+     * A download's date in UTC ('Y-m-d H:i:s'). WordPress leaves
+     * post_date_gmt at zero until a post is published, so a draft's comes
+     * from its local post_date (issue #1153).
+     */
+    private static function post_date_utc(\WP_Post $post): string
+    {
+        $gmt = (string) $post->post_date_gmt;
+        if ('' !== $gmt && '0000-00-00 00:00:00' !== $gmt) {
+            return $gmt;
+        }
+        $local = (string) $post->post_date;
+        return '' === $local || '0000-00-00 00:00:00' === $local ? '' : get_gmt_from_date($local);
     }
 }
