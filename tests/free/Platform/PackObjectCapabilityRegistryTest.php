@@ -48,6 +48,7 @@ class PackObjectCapabilityRegistryTest extends \WP_UnitTestCase
         'plugin-data:code-snippets-update-snippet:id' => 'a Code Snippets snippet row in its own table, behind manage_options (Code Snippets\' own capability)',
         'plugin-data:code-snippets-activate-snippet:id' => 'a Code Snippets snippet row in its own table, behind manage_options (Code Snippets\' own capability)',
         'plugin-data:code-snippets-deactivate-snippet:id' => 'a Code Snippets snippet row in its own table, behind manage_options (Code Snippets\' own capability)',
+        'plugin-data:code-snippets-trash-snippet:id' => 'a Code Snippets snippet row in its own table, behind manage_options (Code Snippets\' own capability)',
         'theme:get-privacy-request:request_id' => 'a core personal data request (a user_request post, never a content post), behind manage_options plus export_others_personal_data or erase_others_personal_data for its type',
         'theme:mark-request-complete:request_id' => 'a core personal data request (a user_request post, never a content post), behind manage_options plus export_others_personal_data or erase_others_personal_data for its type',
         'theme:ignore-wordfence-scan-issue:issue_id' => 'a Wordfence scan issue row in its own table, behind manage_options (manage_network on a network), Wordfence\'s own capability',
