@@ -58,6 +58,30 @@ if (! defined('ABSPATH')) {
  * client id. Its editor script adds blockID and ubCustomCSS to every ub/
  * block, beyond what the server-side block.json schemas declare, so its
  * schema is lenient too: declared attributes keep their types.
+ *
+ * GreenShift (issue #1009) registers its blocks with no attributes and keys
+ * each block's CSS, kept in its inlineCssStyles attribute and printed at
+ * render time, on an id of gsbp- plus seven characters of the client id.
+ * Its editor also saves the page's CSS to the _gspb_post_css meta, served in
+ * the head; writes rebuild that from the blocks (Block_Suite_GreenShift_Css)
+ * and a rollback restores it with the post.
+ *
+ * Essential Blocks (issue #1009) keeps the CSS its editor generates in each
+ * block's blockMeta attribute, keyed by blockId, and writes it to per-post
+ * files under uploads/eb-style when they are missing. The server cannot
+ * compute blockMeta, so writes that would need it must bring it
+ * (Block_Suite_Essential_Blocks_Guard); writes and rollbacks drop the files
+ * so they are rebuilt (Block_Suite_Essential_Blocks_Css).
+ *
+ * CoBlocks (issue #1009) styles with classes and has no per-block unique
+ * id (id_attr is empty). Its editor adds a coblocks attribute the
+ * block.json schemas do not declare, so its schema is lenient over the
+ * registered attributes. Its dimension controls keep editor-written CSS in
+ * the _coblocks_dimensions meta, which a write leaves as it is and a
+ * rollback restores with the post.
+ *
+ * id_refs names the attributes, besides the markup, that carry a block's
+ * own id and get the id swapped in with it.
  */
 final class Block_Suite
 {
@@ -68,6 +92,9 @@ final class Block_Suite
     public const BLOCKSY        = 'blocksy';
     public const STACKABLE      = 'stackable';
     public const ULTIMATE       = 'ultimate-blocks';
+    public const GREENSHIFT     = 'greenshift';
+    public const ESSENTIAL      = 'essential-blocks';
+    public const COBLOCKS       = 'coblocks';
 
     /** Stands in for the unique id inside markup an agent writes before the id exists. */
     public const PLACEHOLDER = '__UNIQUE_ID__';
@@ -116,8 +143,10 @@ final class Block_Suite
     /**
      * Per suite: id_style is how the editor shapes a new id (see
      * generate_id()), schema is where attribute definitions come from
-     * (registry: block.json, strict; defaults: attributes.php, lenient), and
-     * version is the constant holding the version, when there is one.
+     * (registry: block.json, strict; lenient: block.json, unknown attributes
+     * allowed; defaults: attributes.php, lenient), and version is the
+     * constant holding the version, when there is one. An empty id_attr
+     * means the suite's blocks have no unique id.
      *
      * @return array<string,array<string,string>> suite slug => spec
      */
@@ -194,6 +223,38 @@ final class Block_Suite
                 'version'   => 'ULTIMATE_BLOCKS_VERSION',
                 'schema'    => 'defaults',
             ],
+            self::GREENSHIFT     => [
+                'label'     => 'GreenShift',
+                'namespace' => 'greenshift-blocks/',
+                'id_attr'   => 'id',
+                'id_style'  => 'gsbp',
+                'id_refs'   => 'inlineCssStyles,localId',
+                'css_model' => 'per_post_cache',
+                'constant'  => 'GREENSHIFT_DIR_URL',
+                'version'   => '',
+                'schema'    => 'defaults',
+            ],
+            self::ESSENTIAL      => [
+                'label'     => 'Essential Blocks',
+                'namespace' => 'essential-blocks/',
+                'id_attr'   => 'blockId',
+                'id_style'  => 'eb',
+                'id_refs'   => 'blockMeta,commonStyles',
+                'css_model' => 'per_post_cache',
+                'constant'  => 'ESSENTIAL_BLOCKS_VERSION',
+                'version'   => 'ESSENTIAL_BLOCKS_VERSION',
+                'schema'    => 'defaults',
+            ],
+            self::COBLOCKS       => [
+                'label'     => 'CoBlocks',
+                'namespace' => 'coblocks/',
+                'id_attr'   => '',
+                'id_style'  => 'none',
+                'css_model' => 'render_time',
+                'constant'  => 'COBLOCKS_VERSION',
+                'version'   => 'COBLOCKS_VERSION',
+                'schema'    => 'lenient',
+            ],
         ];
     }
 
@@ -239,6 +300,8 @@ final class Block_Suite
      * takes characters 2 to 10 and prefixes the post id, GenerateBlocks takes
      * the same characters without the hyphen, Spectra and Blocksy take the
      * first eight, and Otter prefixes those with wp-block-{namespace}-{name}-.
+     * GreenShift prefixes seven with gsbp-; Essential Blocks adds five
+     * random characters to a per-block prefix, here eb-{name}-.
      *
      * @param array<string,bool> $taken
      */
@@ -259,6 +322,12 @@ final class Block_Suite
                     break;
                 case 'uuid':
                     $id = $uuid;
+                    break;
+                case 'gsbp':
+                    $id = 'gsbp-' . substr($uuid, 0, 7);
+                    break;
+                case 'eb':
+                    $id = 'eb-' . substr((string) strrchr('/' . $block_name, '/'), 1) . '-' . substr($uuid, 0, 5);
                     break;
                 default:
                     $id = self::GENERATEBLOCKS === $suite ? str_replace('-', '', substr($uuid, 2, 9)) : substr($uuid, 0, 8);
@@ -309,11 +378,12 @@ final class Block_Suite
     }
 
     /**
-     * Rebuild the suite's cached CSS for a post after a write or restore.
+     * Rebuild the suite's cached CSS for a post after a write or restore
+     * ($restored: a rollback put the post and its meta back).
      *
      * @return array{model:string,refreshed:bool}
      */
-    public static function refresh_css(string $suite, int $post_id): array
+    public static function refresh_css(string $suite, int $post_id, bool $restored = false): array
     {
         $spec = self::spec($suite);
         if (null === $spec) {
@@ -341,6 +411,11 @@ final class Block_Suite
                 foreach (self::STACKABLE_META as $key) {
                     delete_post_meta($post_id, $key);
                 }
+            } elseif (self::GREENSHIFT === $suite && ! $restored) {
+                // A restore put _gspb_post_css back with the post, as the editor last saved it.
+                Block_Suite_GreenShift_Css::for_site()->rebuild($post_id);
+            } elseif (self::ESSENTIAL === $suite) {
+                ( new Block_Suite_Essential_Blocks_Css(wp_upload_dir(null, false)['basedir'] . '/eb-style/') )->drop($post_id);
             }
             $refreshed = true;
         }
@@ -566,7 +641,7 @@ final class Block_Suite
     {
         foreach (array_keys(self::specs()) as $suite) {
             if (self::is_active($suite)) {
-                self::refresh_css($suite, $post_id);
+                self::refresh_css($suite, $post_id, true);
             }
         }
     }
