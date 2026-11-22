@@ -270,6 +270,15 @@ class Run_Backup_Job
      */
     public function handle_scheduled(int $job_id): void
     {
+        // Issue #1152: while a restore imports, the job store and every
+        // table are being replaced. A backup step would build an archive of
+        // a half-restored database from whatever record the import has put
+        // back, so no job starts or resumes. The restore marks the jobs it
+        // leaves running or queued as interrupted when it ends.
+        if (Restore_Site_Backup::is_running() && ! Restore_Site_Backup::holds_lock()) {
+            return;
+        }
+
         $job = Backup_Job_Store::get($job_id);
         if (null === $job || Restore_Site_Backup::JOB_TYPE === ($job['type'] ?? null)) {
             return;
@@ -327,6 +336,17 @@ class Run_Backup_Job
             $builder = new Chunked_Archive_Build();
             if (null === $build) {
                 $build = $builder->start((string) self::archive_scope($job));
+            }
+            // A build saved before WPMCP_BACKUP_DIR was set, or one that
+            // came back with a restored database, points at a partial
+            // archive in another folder (issue #1152). It is never resumed
+            // there: archives are only written under Site_Backup_Dir.
+            $partial = (string) ($build['partial'] ?? '');
+            if ('' !== $partial && ! self::in_backup_dir($partial)) {
+                throw new \RuntimeException(sprintf(
+                    'Stopped: this backup\'s partial archive (%s) is not in the current backup folder, so it was not continued. Start the backup again.',
+                    esc_html(basename($partial))
+                ));
             }
             if ($died) {
                 if ((int) $build['attempts'] > self::MAX_STEP_ATTEMPTS) {
@@ -402,6 +422,14 @@ class Run_Backup_Job
         wp_schedule_single_event(time(), self::HOOK, [$job_id]);
     }
 
+    /** Whether $path sits directly in the current backup folder. */
+    private static function in_backup_dir(string $path): bool
+    {
+        $root = realpath(Site_Backup_Dir::path());
+        $dir  = realpath(dirname($path));
+        return false !== $root && false !== $dir && $root === $dir;
+    }
+
     /**
      * Schedule this job's step event to come back once a step that is
      * running now would count as dead, replacing any event already queued
@@ -474,6 +502,13 @@ class Run_Backup_Job
 
     public function handle(int $job_id): void
     {
+        // No backup runs during another request's restore (issue #1152),
+        // see handle_scheduled(). The restore's own pre-restore safety
+        // archive runs in the request holding the restore lock.
+        if (Restore_Site_Backup::is_running() && ! Restore_Site_Backup::holds_lock()) {
+            return;
+        }
+
         $job = Backup_Job_Store::get($job_id);
         if (null === $job) {
             return;
