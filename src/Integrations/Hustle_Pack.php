@@ -29,9 +29,10 @@ if (! defined('ABSPATH')) {
  * provider rows (form fields, API keys) are never selected, and neither is
  * the tracking table's ip column, so nothing needs masking.
  *
- * Writes are not part of this pack yet: Hustle caches module rows in the
- * object cache and keeps derived schedule flags beside the settings, so an
- * undoable write needs its own snapshot kind first (follow-up to #898).
+ * Writes (issue #1091) are Hustle_Write_Operations': content, schedule,
+ * active switch and display conditions, each under a one-row before-image,
+ * with Hustle's cache and schedule flags refreshed after the write and
+ * after an undo (after_rows_restored()).
  *
  * Presence is filterable (wpmcp_hustle_active, default: HUSTLE_BASE_FILE is
  * defined).
@@ -94,7 +95,14 @@ final class Hustle_Pack
             'requires'   => static fn () => self::presence(),
         ];
 
-        return [
+        $db     = Typed::db();
+        $writes = [];
+        if (null !== $db) {
+            $store  = new Hustle_Write_Store($db);
+            $writes = ( new Hustle_Write_Operations($store, new Hustle_Write_Snapshots($store), static fn () => self::presence()) )->definitions();
+        }
+
+        return $writes + [
             'hustle-list-modules' => $base + [
                 'description'  => 'List Hustle popups, slide-ins and embeds: id, name, type, mode, active, title, triggers, schedule dates, views, conversions. Filter by type, active, search. page, per_page (max 100)',
                 'input_schema' => [
@@ -287,5 +295,22 @@ final class Hustle_Pack
             'modules' => array_map(static fn (array $r): array => self::view($r, false, $metas[ (int) $r['module_id'] ] ?? [], $counts[ (int) $r['module_id'] ] ?? []), $rows),
             'total'   => $total,
         ];
+    }
+
+    /**
+     * After an undo restored rows of Hustle's tables
+     * (wpmcp_rollback_db_rows_restored), drop Hustle's cached modules and
+     * reset their schedule flags, as its own save does.
+     */
+    public static function after_rows_restored(string $table): void
+    {
+        $db = Typed::db();
+        if (null === $db || ! self::active()) {
+            return;
+        }
+        $store = new Hustle_Write_Store($db);
+        if (in_array(strtolower($table), [ strtolower($store->table(Hustle_Write_Store::MODULES)), strtolower($store->table(Hustle_Write_Store::META)) ], true)) {
+            $store->refresh_all();
+        }
     }
 }

@@ -553,6 +553,7 @@ final class Plugin
         // drop the banner caches their own save drops (#686).
         [\WPMCP\Integrations\Consent_Pack::class, 'after_rows_restored', 'wpmcp_rollback_db_rows_restored'],
         [\WPMCP\Integrations\Variation_Swatches_Pack::class, 'after_rows_restored', 'wpmcp_rollback_db_rows_restored'], // An undo of a swatch type change drops WooCommerce's attribute caches (#1096).
+        [\WPMCP\Integrations\Hustle_Pack::class, 'after_rows_restored', 'wpmcp_rollback_db_rows_restored'], // An undo of a Hustle write drops its module cache and schedule flags (#1091).
         // An undo of a WPCode snippet write never leaves the snippet active
         // and rebuilds WPCode's cache of active snippets; an undo of
         // set-header-footer clears page caches as WPCode's save does (#697).
