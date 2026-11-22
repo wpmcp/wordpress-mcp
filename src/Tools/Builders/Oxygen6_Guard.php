@@ -59,7 +59,7 @@ final class Oxygen6_Guard
         }
         $create = Oxygen6_Values::str(Oxygen6_Values::at($type->cap, 'create_posts'));
         if (! current_user_can($create)) {
-            return new \WP_Error('forbidden', "Creating a {$post_type} needs the {$create} capability.", ['status' => 403, 'capability' => $create]);
+            return new \WP_Error('forbidden', "Creating a post of type \"{$post_type}\" needs the {$create} capability.", ['status' => 403, 'capability' => $create]);
         }
         $live = Oxygen6_Values::str(Oxygen6_Values::at($type->cap, 'publish_posts'));
         if ($publish && ! current_user_can($live)) {
@@ -88,7 +88,7 @@ final class Oxygen6_Guard
             $root  = Oxygen6_Values::at($doc, 'root');
             $found = is_object($root) ? $this->code_element($root) : null;
             if (null !== $found) {
-                return new \WP_Error('forbidden', "This import holds a {$found} element, which runs or prints code on the site; importing it needs the unfiltered_html capability.", ['status' => 403, 'capability' => 'unfiltered_html']);
+                return new \WP_Error('forbidden', "This import holds the element \"{$found}\", which runs or prints code on the site; importing it needs the unfiltered_html capability.", ['status' => 403, 'capability' => 'unfiltered_html']);
             }
         }
 

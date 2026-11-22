@@ -53,7 +53,7 @@ final class Oxygen6_Library_Package
         }
         $item = $data['item'] ?? null;
         if (! is_array($item) || ! (self::is_post_item($item) || self::is_template_item($item))) {
-            Oxygen6_Request_Error::raise('The export item must be {postData, breakdanceData} or {title, settings, postType, breakdanceData}, each breakdanceData holding a tree_json_string with an Oxygen tree.');
+            Oxygen6_Request_Error::raise(sprintf('The export item must be {postData, %1$s} or {title, settings, postType, %1$s}, each %1$s holding a tree_json_string with an Oxygen tree.', 'breakdanceData'));
         }
         $components = $data['components'] ?? [];
         if (! is_array($components) || ! array_is_list($components)) {
@@ -62,7 +62,7 @@ final class Oxygen6_Library_Package
         $checked = [];
         foreach ($components as $component) {
             if (! is_array($component) || ! is_int($component['id'] ?? null) || ! self::is_template_item($component) || Oxygen6_Store::KINDS['block'] !== $component['postType']) {
-                Oxygen6_Request_Error::raise('Every entry of components must be {id, title, settings, postType: oxygen_block, breakdanceData}.');
+                Oxygen6_Request_Error::raise(sprintf('Every entry of components must be {id, title, settings, postType: oxygen_block, %s}.', 'breakdanceData'));
             }
             $checked[] = Oxygen6_Values::map($component);
         }

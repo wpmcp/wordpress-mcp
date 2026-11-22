@@ -288,7 +288,7 @@ class VisualComposerStructureTest extends \WP_UnitTestCase
     {
         $id = $this->page();
         $this->refused($id, ['operation' => 'move', 'path' => self::C1, 'to' => self::R2], 'editor_render_required', 'a column (the row lays out its columns)');
-        $this->refused($id, ['operation' => 'remove', 'path' => self::C2], 'editor_render_required', 'removing a column');
+        $this->refused($id, ['operation' => 'remove', 'path' => self::C2], 'editor_render_required', 'removing the element "column"');
         $this->refused($id, ['operation' => 'move', 'path' => self::T1, 'to' => ''], 'editor_render_required', 'a Text Block at the top (the editor wraps it in a row)');
         $this->refused($id, ['operation' => 'add', 'to' => self::C1, 'element' => ['tag' => 'textBlock', 'output' => '<p>x</p>']], 'editor_render_required', 'a new element');
         $this->refused($id, ['operation' => 'add', 'to' => self::C1, 'element' => ['template' => 1]], 'editor_render_required', 'a template into a page that has a layout');
