@@ -24,7 +24,9 @@
 # WPMCP_LIVE_ACTIVITY_LOG=1, WP Activity Log and Simple History only
 # (bin/test-local.sh --live-activity-log), or, with WPMCP_LIVE_ACTION_SCHEDULER=1,
 # the standalone Action Scheduler only (bin/test-local.sh
-# --live-action-scheduler), or, with
+# --live-action-scheduler), or, with WPMCP_LIVE_GALLERIES=1, MetaSlider,
+# Modula, Envira Gallery Lite, NextGEN Gallery and Smart Slider 3 only
+# (bin/test-local.sh --live-galleries), or, with
 # WPMCP_LIVE_SITE_GATE=1, the five coming soon and maintenance plugins only
 # (bin/test-local.sh --live-site-gate), or, with WPMCP_LIVE_EMAIL_LOG=1,
 # WP Mail Logging, Check and Log Email and Email Log only
@@ -308,6 +310,19 @@ fi
 if [ "${WPMCP_LIVE_ACTION_SCHEDULER:-}" = "1" ]; then
 	PLUGINS=(
 		"action-scheduler:action-scheduler.php"
+	)
+fi
+
+# The live galleries and sliders job (issue #705) runs the gallery and slider
+# ops on the plugin-data pair against the real plugins, all free on
+# wordpress.org. Exclusive like the other live jobs.
+if [ "${WPMCP_LIVE_GALLERIES:-}" = "1" ]; then
+	PLUGINS=(
+		"ml-slider:ml-slider.php"
+		"modula-best-grid-gallery:Modula.php"
+		"envira-gallery-lite:envira-gallery-lite.php"
+		"nextgen-gallery:nggallery.php"
+		"smart-slider-3:smart-slider-3.php"
 	)
 fi
 

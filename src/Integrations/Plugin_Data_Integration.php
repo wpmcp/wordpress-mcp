@@ -294,7 +294,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
 
     public function is_available(): bool
     {
-        return Events_Manager_Pack::active() || BbPress_Pack::active() || JetEngine_Pack::active() || Pods_Pack::active() || TranslatePress_Pack::active() || Code_Snippets_Pack::active() || WS_Form_Pack::active() || Everest_Forms_Pack::active() || Activity_Log_Pack::active() || Action_Scheduler_Pack::active() || Email_Log_Pack::active() || Pretty_Links_Pack::active() || Thirsty_Affiliates_Pack::active() || Advanced_Ads_Pack::active() || Popup_Maker_Pack::active() || OptinMonster_Pack::active() || Site_Reviews_Pack::active() || WPGraphQL_Pack::active() || Simple_Pay_Pack::active() || Paid_Member_Subscriptions_Pack::active() || FooGallery_Pack::active() || JetFormBuilder_Pack::active() || Kadence_Forms_Pack::active() || Jetpack_Forms_Pack::active() || Woo_Conversion_Packs::active() || WpForo_Pack::active() || Asgaros_Forum_Pack::active() || Restrict_Content_Pack::active() || Ultimate_Member_Pack::active() || Cpt_Builder_Pack::active() || PublishPress_Pack::active() || Listings_Pack::active() || EDD_Pack::active() || Search_Replace_Pack::active() || Popup_Builder_Pack::active() || Hustle_Pack::active() || Depicter_Pack::active() || Tracking_Pack::active() || Discount_Rules_Pack::active() || Instagram_Feed_Pack::active() || WP_All_Import_Pack::active() || FileBird_Pack::active() || Max_Mega_Menu_Pack::active() || Maps_Pack::active() || BuddyPress_Pack::active()
+        return Events_Manager_Pack::active() || BbPress_Pack::active() || JetEngine_Pack::active() || Pods_Pack::active() || TranslatePress_Pack::active() || Code_Snippets_Pack::active() || WS_Form_Pack::active() || Everest_Forms_Pack::active() || Activity_Log_Pack::active() || Action_Scheduler_Pack::active() || Email_Log_Pack::active() || Pretty_Links_Pack::active() || Thirsty_Affiliates_Pack::active() || Advanced_Ads_Pack::active() || Popup_Maker_Pack::active() || OptinMonster_Pack::active() || Site_Reviews_Pack::active() || WPGraphQL_Pack::active() || Simple_Pay_Pack::active() || Paid_Member_Subscriptions_Pack::active() || FooGallery_Pack::active() || JetFormBuilder_Pack::active() || Kadence_Forms_Pack::active() || Jetpack_Forms_Pack::active() || Woo_Conversion_Packs::active() || Gallery_Packs::active() || WpForo_Pack::active() || Asgaros_Forum_Pack::active() || Restrict_Content_Pack::active() || Ultimate_Member_Pack::active() || Cpt_Builder_Pack::active() || PublishPress_Pack::active() || Listings_Pack::active() || EDD_Pack::active() || Search_Replace_Pack::active() || Popup_Builder_Pack::active() || Hustle_Pack::active() || Depicter_Pack::active() || Tracking_Pack::active() || Discount_Rules_Pack::active() || Instagram_Feed_Pack::active() || WP_All_Import_Pack::active() || FileBird_Pack::active() || Max_Mega_Menu_Pack::active() || Maps_Pack::active() || BuddyPress_Pack::active()
             || Gamipress_Pack::active()
             || LMS_Pack::active()
             || Thrive_Ultimatum_Pack::active()
@@ -427,6 +427,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             $groups[] = [ Listings_Pack::label($prefix), false, Listings_Pack::operations_for($prefix) ];
         }
         $groups = array_merge($groups, Woo_Conversion_Packs::host_groups()); // central-list-ok: the plugin-data pair does not read the registry yet; operation_hosts() mirrors operations()
+        $groups = array_merge($groups, Gallery_Packs::host_groups()); // central-list-ok: the plugin-data pair does not read the registry yet; operation_hosts() mirrors operations()
         foreach (LMS_Pack::adapters() as $adapter) {
             $groups[] = [ $adapter->label(), false, $adapter->operations() ];
         }
@@ -515,6 +516,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             Kadence_Forms_Pack::operations(),
             Jetpack_Forms_Pack::operations(),
             Woo_Conversion_Packs::operations(),
+            Gallery_Packs::operations(),
             WpForo_Pack::operations(),
             Asgaros_Forum_Pack::operations(),
             Restrict_Content_Pack::operations(),
