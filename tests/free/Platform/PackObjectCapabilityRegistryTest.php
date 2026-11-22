@@ -46,6 +46,7 @@ class PackObjectCapabilityRegistryTest extends \WP_UnitTestCase
         'plugin-data:elementor-export-submissions:ids' => 'an Elementor Pro submission row, behind manage_options (Elementor Pro\'s own submissions capability)',
         'plugin-data:gtm4wp-set-settings:container_ids' => 'Google Tag Manager container ids (GTM-XXXX), not WordPress objects, behind manage_options (issue #899)',
         'plugin-data:clarity-set-project-id:project_id' => 'a Microsoft Clarity project id, not a WordPress object, behind manage_options (issue #899)',
+        'plugin-data:pixelyoursite-set-settings:ids' => 'PixelYourSite pixel, measurement and container ids, not WordPress objects, behind manage_options (issue #1094)',
         'plugin-data:elementor-update-submission-status:id' => 'an Elementor Pro submission row, behind manage_options (Elementor Pro\'s own submissions capability)',
         'plugin-data:elementor-delete-submission:id' => 'an Elementor Pro submission row, behind manage_options (Elementor Pro\'s own submissions capability)',
         'plugin-data:thrive-automator-get-automation:id' => 'a Thrive Automator automation (a tve_automation post Thrive never registers as a post type, so it has no per-object capability), behind manage_options (Thrive Automator\'s own admin capability)',
