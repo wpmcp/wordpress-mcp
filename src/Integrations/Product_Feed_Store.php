@@ -50,13 +50,14 @@ final class Product_Feed_Store
     /** @return list<\WP_Post> */
     public function feeds(?bool $active): array
     {
+        // No suppress_filters: get_posts() defaults it to true, and the explicit
+        // argument is what Plugin Check flags.
         $posts = get_posts([
-            'post_type'        => self::POST_TYPE,
-            'post_status'      => null === $active ? [ 'publish', 'draft', 'private', 'pending' ] : ( $active ? [ 'publish' ] : [ 'draft', 'private', 'pending' ] ),
-            'posts_per_page'   => 200,
-            'orderby'          => 'ID',
-            'order'            => 'ASC',
-            'suppress_filters' => true,
+            'post_type'      => self::POST_TYPE,
+            'post_status'    => null === $active ? [ 'publish', 'draft', 'private', 'pending' ] : ( $active ? [ 'publish' ] : [ 'draft', 'private', 'pending' ] ),
+            'posts_per_page' => 200,
+            'orderby'        => 'ID',
+            'order'          => 'ASC',
         ]);
         return array_values($posts);
     }

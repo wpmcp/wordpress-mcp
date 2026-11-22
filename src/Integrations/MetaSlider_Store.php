@@ -109,6 +109,7 @@ final class MetaSlider_Store
             'posts_per_page'   => -1,
             'fields'           => 'ids',
             'no_found_rows'    => true,
+            // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.SuppressFilters_suppress_filters -- mirrors MetaSlider's own get_slides(): a language filter (WPML) must not hide slides of the slider.
             'suppress_filters' => true,
             'tax_query'        => [ [ 'taxonomy' => self::TAXONOMY, 'field' => 'slug', 'terms' => (string) $slider ] ], // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- MetaSlider's own slide lookup.
         ]);
