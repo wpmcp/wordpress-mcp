@@ -275,7 +275,7 @@ class Run_Backup_Job
         // a half-restored database from whatever record the import has put
         // back, so no job starts or resumes. The restore marks the jobs it
         // leaves running or queued as interrupted when it ends.
-        if (Restore_Site_Backup::is_running() && ! Restore_Site_Backup::holds_lock()) {
+        if (self::restore_importing_elsewhere()) {
             return;
         }
 
@@ -422,6 +422,16 @@ class Run_Backup_Job
         wp_schedule_single_event(time(), self::HOOK, [$job_id]);
     }
 
+    /**
+     * Whether another request's restore is importing now (issue #1152).
+     * The restore's own safety archive runs in the request that holds the
+     * restore lock, so it is not counted.
+     */
+    private static function restore_importing_elsewhere(): bool
+    {
+        return Restore_Site_Backup::is_running() && ! Restore_Site_Backup::holds_lock();
+    }
+
     /** Whether $path sits directly in the current backup folder. */
     private static function in_backup_dir(string $path): bool
     {
@@ -505,7 +515,7 @@ class Run_Backup_Job
         // No backup runs during another request's restore (issue #1152),
         // see handle_scheduled(). The restore's own pre-restore safety
         // archive runs in the request holding the restore lock.
-        if (Restore_Site_Backup::is_running() && ! Restore_Site_Backup::holds_lock()) {
+        if (self::restore_importing_elsewhere()) {
             return;
         }
 
