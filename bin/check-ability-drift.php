@@ -337,8 +337,8 @@ foreach ($scanFiles as $path) {
     preg_match_all('/[\'"]\\\\{0,2}(WPMCP(?:\\\\{1,2}[A-Za-z0-9_]+)+)[\'"]/', $code, $strings);
     $named = array_merge(
         $named,
-        $news[1],
-        $statics[1],
+        array_map(static fn($c) => str_replace('\\\\', '\\', $c), $news[1]),
+        array_map(static fn($c) => str_replace('\\\\', '\\', $c), $statics[1]),
         array_map(static fn($c) => str_replace('\\\\', '\\', $c), $strings[1])
     );
 

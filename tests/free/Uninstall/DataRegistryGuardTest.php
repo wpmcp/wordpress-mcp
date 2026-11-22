@@ -208,6 +208,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
      */
     private const DYNAMIC_KEY_FILES = [
         'src/Cron_Registry.php'                              => 'job store names from Cron_Registry::JOB_HOOKS, all wpmcp_',
+        'src/Modules/Site_Gate_Settings/Adapter/Wp_Plan_Writer.php' => 'writes the gate plugin options its stores plan (ucp_options, wpmm_settings, mtnc-options, niteoCS_*), never a wpmcp_ key',
         'src/Auth/Atomic_Option.php'                         => 'creates whichever wpmcp_ option its caller locks',
         'src/Auth/Client_Metadata_Document.php'              => 'cache key built by cache_key() from CACHE_PREFIX (wpmcp_oauth_cimd_)',
         'src/Cloud/Cloud_Credentials.php'                    => 'restores its own wpmcp_cloud_ options from a snapshot',
