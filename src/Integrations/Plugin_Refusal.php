@@ -61,6 +61,7 @@ final class Plugin_Refusal
         'Limit Login Attempts Reloaded' => [ 'file' => 'limit-login-attempts-reloaded/limit-login-attempts-reloaded.php', 'slug' => 'limit-login-attempts-reloaded' ],
         'UpdraftPlus'      => [ 'file' => 'updraftplus/updraftplus.php', 'slug' => 'updraftplus' ],
         'BackWPup'         => [ 'file' => 'backwpup/backwpup.php', 'slug' => 'backwpup' ],
+        'All-in-One WP Migration' => [ 'file' => 'all-in-one-wp-migration/all-in-one-wp-migration.php', 'slug' => 'all-in-one-wp-migration' ],
         'Code Snippets'    => [ 'file' => 'code-snippets/code-snippets.php', 'slug' => 'code-snippets' ],
         'WPCode'           => [ 'file' => 'insert-headers-and-footers/ihaf.php', 'slug' => 'insert-headers-and-footers' ],
         'bbPress'          => [ 'file' => 'bbpress/bbpress.php', 'slug' => 'bbpress' ],
