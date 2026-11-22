@@ -37,9 +37,29 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Avada library post from a page element (issue #637); every field is new.',
         ],
+        'Integrations/Thrive_Ultimatum_Pack.php'      => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Thrive Ultimatum campaign post (issue #828); every field is new. Its other writes are metas and the plugin\'s own tables.',
+        ],
+        'Integrations/Core_Fonts_Pack.php'            => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new font family or font face post (issue #712), as core\'s font endpoints do; every field is new.',
+        ],
+        'Integrations/CartFlows_Pack.php'             => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new CartFlows flow or step post (issue #662); every field is new. Changes to existing flows and steps are meta writes.',
+        ],
+        'Integrations/Cpt_Builder_Pack.php'           => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new MB Custom Post Types definition post (issue #710); every field is new. Updates go through Save_Filters.',
+        ],
         'Integrations/Theme_Layouts_Pack.php'         => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new theme add-on layout post (issue #656); every field is new. Updates go through Save_Filters.',
+        ],
+        'Integrations/Event_Calendar_Writes.php'      => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new event, venue or organizer post for The Events Calendar or Modern Events Calendar (issue #677); every field is new. Updates go through Save_Filters.',
         ],
         'Tools/Builders/Oxygen_Page.php'              => [
             'calls'  => ['wp_insert_post' => 1],
@@ -105,6 +125,14 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new course, section or lesson post.',
         ],
+        'Integrations/LMS_Thrive_Apprentice.php'      => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Thrive Apprentice lesson post.',
+        ],
+        'Integrations/LMS_LearnPress.php'             => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new LearnPress lesson or quiz post before placing it in a section row.',
+        ],
         'Integrations/Core_Patterns_Pack.php'         => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new synced pattern (wp_block) post.',
@@ -112,6 +140,14 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
         'Integrations/BetterDocs_Pack.php'            => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new BetterDocs doc post.',
+        ],
+        'Integrations/Thrive_Ovation_Pack.php'        => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Thrive Ovation testimonial post (issue #829); every field is new. Updates go through Save_Filters.',
+        ],
+        'Integrations/Listings_Pack.php'              => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new WP Job Manager, GeoDirectory or Directorist listing post (issue #707).',
         ],
         'Integrations/Thirsty_Affiliates_Pack.php'    => [
             'calls'  => ['wp_insert_post' => 1],
@@ -121,9 +157,29 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Advanced Ads ad post.',
         ],
+        'Integrations/Gamipress_Pack.php'             => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new GamiPress achievement post.',
+        ],
+        'Integrations/WPFunnels_Pack.php'             => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new, empty WPFunnels funnel post.',
+        ],
+        'Integrations/FooGallery_Pack.php'            => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new FooGallery gallery post.',
+        ],
+        'Integrations/Popup_Maker_Pack.php'           => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Popup Maker popup post.',
+        ],
         'Integrations/MemberPress_Pack.php'           => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new MemberPress membership or rule post.',
+        ],
+        'Integrations/EDD_Pack.php'                   => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Easy Digital Downloads download post.',
         ],
     ];
 

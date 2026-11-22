@@ -584,6 +584,24 @@ class Rollback_Service
         if (Action_Scheduler_Snapshot::TYPE === $type) {
             return [ [ 'manage_options' ] ];
         }
+        // A user's GamiPress state (issue #833): restoring it takes the
+        // capability GamiPress's manager screens default to.
+        if (Gamipress_User_Snapshot::TYPE === $type) {
+            return [ [ Gamipress_User_Snapshot::capability() ] ];
+        }
+        // FunnelKit Automations contact tags and lists and automation
+        // statuses (issue #831): FunnelKit's own access check, which
+        // FunnelKit_Automations_Snapshot::restore() asks, is manage_options
+        // by default.
+        if (FunnelKit_Automations_Snapshot::TYPE === $type) {
+            return [ [ 'manage_options' ] ];
+        }
+        // A SureCart product or coupon is store data in SureCart's cloud
+        // (issue #665); every SureCart write takes manage_options, so its
+        // undo does too.
+        if (SureCart_Snapshot::TYPE === $type) {
+            return [ [ 'manage_options' ] ];
+        }
         if ('crm_rows' === $type) {
             $kind = (string) ($snapshot['data']['kind'] ?? '');
             if ('mailpoet' === Crm_Rows_Snapshot::plugin($kind)) {
@@ -1103,7 +1121,7 @@ class Rollback_Service
      */
     private static function is_session_reverse_snapshot(array $snapshot): bool
     {
-        return in_array($snapshot['object_type'], [ 'db_rows', 'db_cleanup', 'acf_options', 'option_set', 'redirection_item', 'plugin_table_rows', 'buddypress_rows', 'bbpress_posts', 'crm_rows', 'amelia_rows', 'helpdesk_ticket', 'action_scheduler', Wc_Shipping_Zone_Snapshot::TYPE, Wc_Shipping_Zone_Snapshot::CREATE_TYPE ], true)
+        return in_array($snapshot['object_type'], [ 'db_rows', 'db_cleanup', 'acf_options', 'option_set', 'redirection_item', 'plugin_table_rows', 'buddypress_rows', 'bbpress_posts', 'crm_rows', 'funnelkit_automations', 'amelia_rows', 'helpdesk_ticket', 'action_scheduler', 'surecart_object', Wc_Shipping_Zone_Snapshot::TYPE, Wc_Shipping_Zone_Snapshot::CREATE_TYPE ], true)
             || self::is_compiled_widget_snapshot($snapshot);
     }
 
@@ -1947,8 +1965,11 @@ class Rollback_Service
             'buddypress_rows',
             'bbpress_posts',
             'crm_rows',
+            'funnelkit_automations',
             'helpdesk_ticket',
             'action_scheduler',
+            'gamipress_user',
+            'surecart_object',
             'funnelkit_funnel',
             'funnelkit_funnel_create',
             'amelia_rows',
@@ -2256,9 +2277,27 @@ class Rollback_Service
             return;
         }
 
+        // Gamipress_User_Snapshot::TYPE, spelled as a literal for the restorable-types parity test.
+        if ('gamipress_user' === $snapshot['object_type']) {
+            self::warn_if(Gamipress_User_Snapshot::restore($snapshot));
+            return;
+        }
+
+        // SureCart_Snapshot::TYPE, spelled as a literal for the restorable-types parity test.
+        if ('surecart_object' === $snapshot['object_type']) {
+            self::warn_if(SureCart_Snapshot::restore($snapshot));
+            return;
+        }
+
         // Crm_Rows_Snapshot::TYPE, spelled as a literal for the restorable-types parity test.
         if ('crm_rows' === $snapshot['object_type']) {
             self::warn_if(Crm_Rows_Snapshot::restore($snapshot));
+            return;
+        }
+
+        // FunnelKit_Automations_Snapshot::TYPE, spelled as a literal for the restorable-types parity test.
+        if ('funnelkit_automations' === $snapshot['object_type']) {
+            self::warn_if(FunnelKit_Automations_Snapshot::restore($snapshot));
             return;
         }
 
@@ -2838,6 +2877,9 @@ class Rollback_Service
         } finally {
             if ([] !== $attempted) {
                 Database_Guard::invalidate_caches($table, ['rows' => $attempted]);
+                // Lets the plugin that owns the table drop what it derives
+                // from these rows, as its own save does (issue #686).
+                do_action('wpmcp_rollback_db_rows_restored', $table);
             }
         }
     }
@@ -2983,6 +3025,9 @@ class Rollback_Service
      */
     private const DEACTIVATE_ON_CREATION_ROLLBACK = ['wpmcp_widget', 'wpmcp_block'];
 
+    /** Post types a creation undo removes instead of trashing: menu items (issue #598) and fonts (issue #712). */
+    private const REMOVE_ON_CREATION_ROLLBACK = ['nav_menu_item', 'wp_font_face', 'wp_font_family'];
+
     /**
      * Undo a creation recorded by Post_Creation_Snapshot (create-post,
      * duplicate-post, create-custom-widget, create-custom-block; issue #192).
@@ -3032,10 +3077,12 @@ class Rollback_Service
             // remove-menu-item and core's wp_delete_nav_menu_item() remove
             // one (issue #598): a menu item in the trash is listed nowhere
             // and only holds its menu's position. It is a link, not content.
-            if ('nav_menu_item' === $current->post_type) {
+            // Font Library posts (issue #712) go the same way: core has no
+            // trash for fonts, and deleting a face takes its stored files.
+            if (in_array($current->post_type, self::REMOVE_ON_CREATION_ROLLBACK, true)) {
                 if (! wp_delete_post($post_id, true)) {
                     self::$post_create_untouched = true;
-                    self::warn("Menu item {$post_id} created by this operation could not be removed; it was left in place.");
+                    self::warn("Post {$post_id} ({$current->post_type}) created by this operation could not be removed; it was left in place.");
                 }
                 continue;
             }
