@@ -77,7 +77,7 @@ class OptInRequiredCatalogTest extends \WP_UnitTestCase
                     "{$label} is default-off: give its definition an opt_in_filter, or list it as per-op only"
                 );
             } else {
-                $this->assertMatchesRegularExpression('/^wpmcp_[a-z_]+$/', $filter, $label);
+                $this->assertMatchesRegularExpression('/^wpmcp_[a-z0-9_]+$/', $filter, $label);
             }
 
             $out = $this->refusal($dispatcher, $op, $def);
