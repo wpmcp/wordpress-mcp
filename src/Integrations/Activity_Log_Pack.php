@@ -486,8 +486,13 @@ final class Activity_Log_Pack
         if (! is_serialized($value)) {
             return $value;
         }
-        // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, WordPress.PHP.NoSilencedErrors.Discouraged -- the plugin stores its metadata with maybe_serialize(); no class may be instantiated.
-        $decoded = @unserialize($value, [ 'allowed_classes' => false ]);
+        // WP Activity Log stores some metadata (PluginData, ThemeData) as a
+        // serialized stdClass, and its message builder reads their
+        // properties, so stdClass is allowed: it has no constructor, no
+        // __wakeup and no __destruct. Every other class stays an inert
+        // __PHP_Incomplete_Class (issue #1139).
+        // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize, WordPress.PHP.NoSilencedErrors.Discouraged -- the plugin stores its metadata with maybe_serialize(); no class but stdClass may be instantiated.
+        $decoded = @unserialize($value, [ 'allowed_classes' => [ 'stdClass' ] ]);
         return false === $decoded && 'b:0;' !== $value ? $value : $decoded;
     }
 
