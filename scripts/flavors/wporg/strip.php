@@ -2149,6 +2149,13 @@ $edits['src/Integrations/Theme_Integration.php'][] = [
     '',
     1,
 ];
+// The ElementsKit pack (issue #1012) is the paid add-on's. Its files are
+// removed by policy.php, so its one merge line leaves with them.
+$edits['src/Integrations/Theme_Integration.php'][] = [
+    "            ElementsKit_Pack::operations(),\n",
+    '',
+    1,
+];
 $edits['src/Plugin.php'][] = [
     "        // An undo of a Thrive Automator status change resets its scheduled\n"
         . "        // trigger events, as the forward write did (#830).\n"

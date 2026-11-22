@@ -220,6 +220,17 @@ return [
         // takes out the line in Theme_Integration that merges them and the
         // rollback hook in Plugin that refreshes one suite's cache.
         'src/Integrations/Elementor_Addon_Packs.php',
+        // The ElementsKit pack (issue #1012), paid-tier, standalone. strip.php
+        // takes out its one merge line in Theme_Integration.
+        'src/Integrations/ElementsKit_Catalog.php',
+        'src/Integrations/ElementsKit_Element_Sync.php',
+        'src/Integrations/ElementsKit_Lists.php',
+        'src/Integrations/ElementsKit_Operations.php',
+        'src/Integrations/ElementsKit_Pack.php',
+        'src/Integrations/ElementsKit_Plan.php',
+        'src/Integrations/ElementsKit_Planner.php',
+        'src/Integrations/ElementsKit_Snapshot.php',
+        'src/Integrations/ElementsKit_Store.php',
         // FunnelKit funnel and step reads (issue #356), paid-tier. strip.php
         // takes out the line in Theme_Integration that merges them.
         'src/Integrations/FunnelKit_Pack.php',

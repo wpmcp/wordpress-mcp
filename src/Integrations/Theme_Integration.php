@@ -344,6 +344,7 @@ class Theme_Integration extends Integration_Dispatcher
             Login_Url_Pack::operations(),
             Consent_Pack::operations(),
             Cache_Settings_Pack::operations(),
+            ElementsKit_Pack::operations(),
             Redirection_Pack::operations(),
             Rank_Math_Redirects_Pack::operations(),
             Elementor_Addon_Packs::operations(),
