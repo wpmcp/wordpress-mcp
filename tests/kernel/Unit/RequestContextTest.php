@@ -25,6 +25,13 @@ final class RequestContextTest extends TestCase
         yield 'filtered prefix' => [Context::Mcp, ['uri' => '/api/mcp/wpmcp-server', 'prefix' => 'api']];
         yield 'subdirectory install' => [Context::Rest, ['uri' => '/blog/wp-json/wp/v2/posts', 'home_path' => '/blog']];
         yield 'similar route is not mcp' => [Context::Rest, ['uri' => '/wp-json/mcp/wpmcp-server-other']];
+        yield 'pathinfo permalinks mcp' => [Context::Mcp, ['uri' => '/index.php/wp-json/mcp/wpmcp-server']];
+        yield 'pathinfo permalinks rest' => [Context::Rest, ['uri' => '/index.php/wp-json/wp/v2/posts']];
+        yield 'pathinfo permalinks in a subdirectory' => [Context::Mcp, ['uri' => '/blog/index.php/wp-json/mcp/wpmcp-server', 'home_path' => '/blog']];
+        yield 'pathinfo front end' => [Context::Frontend, ['uri' => '/index.php/hello-world/']];
+        yield 'mcp route in another case' => [Context::Mcp, ['uri' => '/wp-json/MCP/WPMCP-Server']];
+        yield 'plain mcp route in another case' => [Context::Mcp, ['uri' => '/', 'get' => ['rest_route' => '/Mcp/Wpmcp-Server/']]];
+        yield 'prefix in another case is not rest' => [Context::Frontend, ['uri' => '/WP-JSON/mcp/wpmcp-server']];
         yield 'front end' => [Context::Frontend, ['uri' => '/hello-world/']];
         yield 'front end with a wp-json word in a slug' => [Context::Frontend, ['uri' => '/about-wp-json/']];
     }

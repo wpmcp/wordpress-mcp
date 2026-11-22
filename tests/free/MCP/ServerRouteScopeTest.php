@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace WPMCP\Tests\Free\MCP;
 
 use WPMCP\Kernel\Request_Context;
-use WPMCP\MCP\Server;
+use WPMCP\Api\V1\Value\Context;
+use WPMCP\MCP\Route_Scoped_Mount;
 
 /**
  * Decision D8: with WPMCP_ROUTE_SCOPED_MCP on, the MCP adapter is
@@ -54,6 +55,8 @@ class ServerRouteScopeTest extends \WP_UnitTestCase
             'MCP route, filtered prefix'   => [new Request_Context(uri: '/api/mcp/wpmcp-server', rest_prefix: 'api'), true],
             'default prefix when filtered' => [new Request_Context(uri: '/wp-json/mcp/wpmcp-server', rest_prefix: 'api'), false],
             'WP-CLI'                       => [new Request_Context(is_cli: true), true],
+            'MCP route, PATHINFO'          => [new Request_Context(uri: '/index.php/wp-json/mcp/wpmcp-server'), true],
+            'MCP route, other case'        => [new Request_Context(uri: '/wp-json/MCP/WPMCP-Server'), true],
         ];
     }
 
@@ -62,7 +65,56 @@ class ServerRouteScopeTest extends \WP_UnitTestCase
      */
     public function test_a_route_scoped_mount_serves_only_the_mcp_route_and_wp_cli(Request_Context $context, bool $mounts): void
     {
-        $this->assertSame($mounts, Server::mounts_in($context));
+        $this->assertSame($mounts, Route_Scoped_Mount::serves($context));
+    }
+
+    public function test_without_the_flag_the_request_is_never_read(): void
+    {
+        $read  = false;
+        $mount = new Route_Scoped_Mount(false);
+
+        $this->assertTrue($mount->mounts(static function () use (&$read): Request_Context {
+            $read = true;
+            return new Request_Context(uri: '/sample-page/');
+        }));
+        $this->assertFalse($read, 'With the flag off boot() must not read the request');
+    }
+
+    public function test_with_the_flag_the_request_decides(): void
+    {
+        $mount = new Route_Scoped_Mount(true);
+
+        $this->assertFalse($mount->mounts(static fn (): Request_Context => new Request_Context(uri: '/sample-page/')));
+        $this->assertTrue($mount->mounts(static fn (): Request_Context => new Request_Context(uri: '/wp-json/mcp/wpmcp-server')));
+    }
+
+    public function test_the_flag_reads_the_constant(): void
+    {
+        $this->assertFalse(Route_Scoped_Mount::enabled_by_constant(), 'The constant is not defined in the suite process');
+    }
+
+    public function test_a_rest_route_in_a_form_post_body_is_read(): void
+    {
+        $get  = $_GET;
+        $post = $_POST;
+        $uri  = $_SERVER['REQUEST_URI'] ?? null;
+        try {
+            $_GET                   = [];
+            $_POST                  = ['rest_route' => '/mcp/wpmcp-server'];
+            $_SERVER['REQUEST_URI'] = '/';
+            $this->assertSame(Context::Mcp, Request_Context::from_globals()->context(), 'WordPress reads rest_route from the POST body too');
+
+            $_POST = ['rest_route' => ['not', 'a', 'string']];
+            $this->assertSame(Context::Frontend, Request_Context::from_globals()->context(), 'A non-string rest_route is ignored');
+        } finally {
+            $_GET  = $get;
+            $_POST = $post;
+            if (null === $uri) {
+                unset($_SERVER['REQUEST_URI']);
+            } else {
+                $_SERVER['REQUEST_URI'] = $uri;
+            }
+        }
     }
 
     /**
@@ -78,6 +130,7 @@ class ServerRouteScopeTest extends \WP_UnitTestCase
             'flag on, unrelated REST route'      => ['/wp-json/wp/v2/posts', true, '-', false, false],
             'flag on, MCP route, pretty'         => ['/wp-json/mcp/wpmcp-server', true, '-', false, true],
             'flag on, MCP route, rest_route'     => ['/', true, '/mcp/wpmcp-server', false, true],
+            'flag on, MCP route, PATHINFO'       => ['/index.php/wp-json/mcp/wpmcp-server', true, '-', false, true],
             'flag on, WP-CLI'                    => ['/', true, '-', true, true],
         ];
     }
