@@ -11,9 +11,15 @@ namespace WPMCP\Registry;
  */
 final class Php_Exporter
 {
-    public static function file(mixed $value, string $header): string
+    /**
+     * @param bool $guard Add the ABSPATH guard, for a file that ships in the
+     *                    plugin (a module's surface.lock.php), so a direct
+     *                    request to it exits as every shipped file must.
+     */
+    public static function file(mixed $value, string $header, bool $guard = false): string
     {
-        return "<?php\n// " . $header . "\n\ndeclare(strict_types=1);\n\nreturn " . self::export($value) . ";\n";
+        $exit = $guard ? "if (! defined('ABSPATH')) {\n    exit;\n}\n\n" : '';
+        return "<?php\n// " . $header . "\n\ndeclare(strict_types=1);\n\n" . $exit . 'return ' . self::export($value) . ";\n";
     }
 
     public static function export(mixed $value, int $depth = 0): string

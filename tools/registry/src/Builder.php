@@ -363,7 +363,7 @@ final class Builder
             $dir = null !== $this->options->locks_root
                 ? rtrim($this->options->locks_root, '/') . '/' . $id
                 : (str_starts_with((string) $m['dir'], '/') ? (string) $m['dir'] : rtrim($this->options->repo_root, '/') . '/' . $m['dir']);
-            $out[ $id ] = [$dir . '/surface.lock.php', Php_Exporter::file($lock, self::LOCK_HEADER)];
+            $out[ is_string($id) ? $id : (string) json_encode($id) ] = [$dir . '/surface.lock.php', Php_Exporter::file($lock, self::LOCK_HEADER, true)];
         }
         return $out;
     }

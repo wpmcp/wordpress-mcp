@@ -46,6 +46,7 @@ live-site-gate	live-site-gate	free	default	-	site-gate-live	-	tests/free/Integra
 live-email-log	live-email-log	free	default	-	email-log-live	-	tests/free/Integrations/EmailLogLiveTest.php
 live-amelia	live-amelia	free	default	-	amelia-live	-	tests/pro/Integrations/AmeliaLiveTest.php
 live-funnelkit	live-funnelkit	free	default	-	funnelkit-live	-	tests/pro/Integrations/FunnelKitLiveTest.php
+live-woo-addons	live-woo-addons	free	default	-	woo-addons-live	-	tests/free/Integrations/ProductFeedLiveTest.php,tests/free/Integrations/VariationSwatchesLiveTest.php
 live-polylang	live-polylang	free	default	-	polylang-live	-	tests/pro/Integrations/I18nPolylangLiveTest.php
 live-wp-mail-smtp	live-wp-mail-smtp	free	default	-	wp-mail-smtp-live	-	tests/free/Integrations/WpMailSmtpLiveTest.php
 live-fluent-smtp	live-fluent-smtp	free	default	-	fluent-smtp-live	-	tests/free/Integrations/FluentSmtpLiveTest.php
