@@ -83,9 +83,16 @@ if (! defined('ABSPATH')) {
  * leaving the contact in place, once quotes, invoices, transactions or tasks
  * have been linked to it since or while the plugin is not loaded.
  *
+ * Easy Digital Downloads discounts (issue #664, the `edd_adjustments` table,
+ * the one suffix "adjustments") are keyed by their own id; a create
+ * reserves its id the same way. EDD reads the table through BerlinDB, which
+ * caches rows and query results in the object cache, so after a restore the
+ * cached lookups of the table are retired (purge_edd_cache()), the way
+ * BerlinDB's own writes do.
+ *
  * Restoring takes the capability the write itself needs: edit_post on each
  * captured post for a Pods row or a MemberPress rule's rows, manage_options
- * for a dictionary row, a Pretty Links link or a Restrict Content level, and Wordfence's own admin capability (manage_options,
+ * for a dictionary row, a Pretty Links link, a Restrict Content level or an EDD discount, and Wordfence's own admin capability (manage_options,
  * manage_network on a multisite network) for a Wordfence row, and Jetpack
  * CRM's admin_zerobs_customers (or manage_options) for a contact.
  */
@@ -105,6 +112,7 @@ final class Plugin_Table_Rows_Snapshot
         'pmpro_codes'      => 'pmpro_',
         'rcp_levels'       => 'restrict_content_',
         'jpcrm'            => 'zbs_',
+        'edd'              => 'edd_',
     ];
 
     /**
@@ -134,6 +142,7 @@ final class Plugin_Table_Rows_Snapshot
         'pmpro_codes'      => [ 'discount_codes' ],
         'rcp_levels'       => [ 'pro' ],
         'jpcrm'            => [ 'contacts' ],
+        'edd'              => [ 'adjustments' ],
     ];
 
     /**
@@ -470,6 +479,9 @@ final class Plugin_Table_Rows_Snapshot
         if ('rcp_levels' === $kind) {
             self::flush_rcp_level_cache($ids);
         }
+        if ('edd' === $kind) {
+            self::purge_edd_cache((string) $data['suffix'], $ids);
+        }
         self::after_wordfence_restore($kind);
     }
 
@@ -519,6 +531,32 @@ final class Plugin_Table_Rows_Snapshot
             throw new Mutation_Failed(sprintf('Rollback refused: Jetpack CRM is not active, so contact %d was left in place. Activate it and undo again.', (int) $id));
         }
         $api->deleteContact([ 'id' => $id, 'saveOrphans' => false ]);
+    }
+
+    /**
+     * Retire Easy Digital Downloads' cached lookups for rows of one of its
+     * tables, as BerlinDB does after its own writes: the rows cached by id
+     * (group edd-<suffix>) are dropped, and the last_changed stamp of the
+     * table's query cache and of each by-column lookup group
+     * (edd-<suffix>-by-<column>) is rotated, so every cached result is
+     * rebuilt on the next read.
+     *
+     * @param array<int, int|string> $ids
+     */
+    public static function purge_edd_cache(string $suffix, array $ids): void
+    {
+        $table = self::table('edd', $suffix);
+        if (null === $table) {
+            return;
+        }
+        $group = 'edd-' . $suffix;
+        foreach ($ids as $id) {
+            wp_cache_delete((int) $id, $group);
+        }
+        wp_cache_set('last_changed', microtime(), $group);
+        foreach (self::columns($table) as $column) {
+            wp_cache_set('last_changed', microtime(), $group . '-by-' . $column);
+        }
     }
 
     /**
@@ -589,30 +627,27 @@ final class Plugin_Table_Rows_Snapshot
         $live   = self::columns($table);
         $binary = self::BINARY_COLUMNS[ $kind ];
         foreach ($rows as $row) {
-            $columns = [];
-            $values  = [];
-            $names   = [];
-            $args    = [];
+            $values = [];
+            $names  = [];
+            $args   = [];
             foreach ((array) $row as $column => $value) {
                 $column = (string) $column;
                 if (! in_array($column, $live, true)) {
                     throw new Mutation_Failed('Could not restore a row of ' . esc_html($table) . ': its column ' . esc_html($column) . ' is gone.');
                 }
-                $columns[] = '%i';
-                $names[]   = $column;
-                if (null === $value) {
-                    $values[] = 'NULL';
-                    continue;
+                $names[] = $column;
+                // Each value is one of three literals: NULL, %s, or UNHEX(%s)
+                // for a binary column.
+                $values[] = (null === $value ? 'NULL' : (in_array($column, $binary, true) ? 'UNHEX(%s)' : '%s'));
+                if (null !== $value) {
+                    $args[] = (string) $value;
                 }
-                $values[] = in_array($column, $binary, true) ? 'UNHEX(%s)' : '%s';
-                $args[]   = (string) $value;
             }
-            if ([] === $columns) {
+            if ([] === $names) {
                 continue;
             }
-            $sql = 'INSERT INTO %i (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ')';
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- third-party table with no WP API; $sql holds only %i, %s, UNHEX(%s) and NULL.
-            if (false === $wpdb->query($wpdb->prepare($sql, $table, ...$names, ...$args))) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- third-party table with no WP API; one %i per column, and $values holds only %s, UNHEX(%s) and NULL.
+            if (false === $wpdb->query($wpdb->prepare('INSERT INTO %i (' . implode(', ', array_fill(0, count($names), '%i')) . ') VALUES (' . implode(', ', $values) . ')', $table, ...$names, ...$args))) {
                 throw new Mutation_Failed('Could not restore a row of ' . esc_html($table) . ': ' . esc_html($wpdb->last_error));
             }
         }
@@ -690,6 +725,12 @@ final class Plugin_Table_Rows_Snapshot
         if ('rcp_levels' === $kind) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring a Restrict Content membership level requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('edd' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring Easy Digital Downloads discounts requires the manage_options capability.');
             }
             return;
         }

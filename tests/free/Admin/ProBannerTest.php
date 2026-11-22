@@ -81,6 +81,18 @@ class ProBannerTest extends \WP_UnitTestCase
         $this->assertStringContainsString('class="notice', $html, 'it is a standard WordPress admin notice');
     }
 
+    /**
+     * rollback-session is a free tool, so the banner must not sell session
+     * restore as a Pro feature. What Pro adds is history depth.
+     */
+    public function test_claims_only_what_pro_adds(): void
+    {
+        $html = $this->rendered();
+
+        $this->assertStringContainsString('Unlimited snapshot history while your licence is active', $html);
+        $this->assertStringNotContainsString('session restore', $html);
+    }
+
     public function test_renders_nothing_with_an_active_pro_licence(): void
     {
         Gate::set_pro_for_tests(true);
