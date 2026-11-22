@@ -63,7 +63,7 @@ final class MakeModuleTest extends TestCase
             if (str_ends_with($file->getPathname(), '.php')) {
                 $code_text = (string) file_get_contents($file->getPathname());
                 self::assertStringContainsString('declare(strict_types=1);', $code_text, $file->getPathname());
-                self::assertDoesNotMatchRegularExpression('/\x{2014}|\x{2013}/u', $code_text, 'no em or en dashes in generated code');
+                self::assertDoesNotMatchRegularExpression('/[' . mb_chr(0x2013) . mb_chr(0x2014) . ']/u', $code_text, 'no em or en dashes in generated code');
             }
         }
     }

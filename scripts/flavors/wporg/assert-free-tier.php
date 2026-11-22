@@ -86,6 +86,19 @@ const WITHHELD_METHODS = [
     'register_custom_code_runtime_hooks',
 ];
 
+/**
+ * Ability constructions whose tier is data from the compiled registry the
+ * build ships (build/registry, written by bin/build-registry.php for the
+ * flavor), keyed by file, with the one tier argument text that site passes.
+ * Gate 2 cannot read such a tier from source, so it checks the shipped
+ * registry instead (gate 2b): every compiled ability and every flavor tier
+ * override must be free. Any other argument at the same file is still a
+ * gate 2 finding.
+ */
+const REGISTRY_TIER_SITES = [
+    'src/Kernel/Ability_Loader.php' => '$tier',
+];
+
 /** Directories never inspected: third-party code is not this build's prose. */
 const SKIPPED_DIRECTORIES = ['vendor', 'node_modules'];
 
@@ -121,9 +134,14 @@ if (! is_file($registrar)) {
 //    registrar's runtime tier refusal removed the last backstop, and a text
 //    scan for "'pro'," only sees tiers written as source literals: a computed,
 //    inherited or overridden tier is exactly what this has to catch.
+$registry_sourced = false;
 foreach ($php as $file) {
     foreach (ability_tiers($file) as [$line, $tier]) {
         if ("'free'" === $tier) {
+            continue;
+        }
+        if (null !== $tier && (REGISTRY_TIER_SITES[ relative($stage, $file) ] ?? null) === $tier) {
+            $registry_sourced = true;
             continue;
         }
         $findings[] = sprintf(
@@ -132,6 +150,28 @@ foreach ($php as $file) {
             $line,
             null === $tier ? 'an argument list this gate could not read' : $tier
         );
+    }
+}
+
+// 2b. The registry-sourced tiers of gate 2: what the build's compiled
+//     registry would hand the kernel loader. A missing registry loads no
+//     ability, so only rows that ship are checked.
+if ($registry_sourced) {
+    $registry_dir = $stage . '/build/registry';
+    $boot = is_file($registry_dir . '/boot.php') ? require $registry_dir . '/boot.php' : [];
+    $overrides = is_array($boot) ? (array) (((array) ($boot['flavor_definition'] ?? []))['tier_overrides'] ?? []) : [];
+    foreach ($overrides as $ability => $override) {
+        if ('free' !== (string) $override) {
+            $findings[] = sprintf('build/registry/boot.php overrides %s to tier \'%s\', not \'free\'', (string) $ability, (string) $override);
+        }
+    }
+    $rows = is_file($registry_dir . '/abilities.php') ? require $registry_dir . '/abilities.php' : [];
+    foreach (is_array($rows) ? $rows : [] as $row) {
+        $row = (array) $row;
+        $tier = (string) ($row['tier'] ?? 'free');
+        if ('free' !== $tier) {
+            $findings[] = sprintf('build/registry/abilities.php ships %s with tier \'%s\', not \'free\'', (string) ($row['name'] ?? '(unnamed)'), $tier);
+        }
     }
 }
 

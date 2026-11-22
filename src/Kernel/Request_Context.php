@@ -39,16 +39,23 @@ final class Request_Context
         $this->context = self::detect($uri, $query, $is_cli, $doing_cron, $doing_ajax, $is_admin, $rest_prefix, $home_path, $mcp_route);
     }
 
-    /** Reads the current request. Call once, after plugins_loaded. */
-    public static function from_globals(): self
+    /**
+     * Reads the current request. Call once, after plugins_loaded.
+     *
+     * @param array<mixed>|null $post_body the form POST body; null reads the request's own
+     *                                     through filter_input_array(), never $_POST, as this
+     *                                     is routing and acts on nothing submitted
+     */
+    public static function from_globals(?array $post_body = null): self
     {
         $uri = isset($_SERVER['REQUEST_URI']) ? (string) wp_unslash($_SERVER['REQUEST_URI']) : '/'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only matched against fixed routes, never output or stored.
         $home = function_exists('home_url') ? (string) wp_parse_url(home_url('/'), PHP_URL_PATH) : '';
         $prefix = function_exists('rest_get_url_prefix') ? rest_get_url_prefix() : 'wp-json';
         // WordPress takes rest_route from the query string, else from a form POST body.
         $rest_route = isset($_GET['rest_route']) ? wp_unslash($_GET['rest_route']) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- routing only: matched against a fixed route, never stored or output.
-        if (null === $rest_route && isset($_POST['rest_route'])) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- routing only, as above.
-            $rest_route = wp_unslash($_POST['rest_route']); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- routing only: matched against a fixed route, never stored or output.
+        if (null === $rest_route) {
+            $post_body ??= self::form_body(filter_input_array(INPUT_POST, ['rest_route' => ['filter' => FILTER_UNSAFE_RAW, 'flags' => FILTER_REQUIRE_SCALAR]]));
+            $rest_route = $post_body['rest_route'] ?? null;
         }
         $query = is_string($rest_route) ? ['rest_route' => $rest_route] : [];
 
@@ -62,6 +69,16 @@ final class Request_Context
             rest_prefix: $prefix,
             home_path: rtrim($home, '/'),
         );
+    }
+
+    /**
+     * filter_input_array() gives null (CLI, no body) or false as well as an array.
+     *
+     * @return array<mixed>
+     */
+    private static function form_body(mixed $body): array
+    {
+        return is_array($body) ? $body : [];
     }
 
     public function context(): Context
