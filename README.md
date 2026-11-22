@@ -4,9 +4,13 @@
 
 # WordPress MCP Server Plugin (WP MCP)
 
-WP MCP is a free WordPress MCP plugin that turns your site into an MCP server, so Claude, ChatGPT, Cursor and other AI agents can manage WordPress and WooCommerce, with undo for every supported write.
+### AI agents can break a live WordPress or WooCommerce site. WP MCP lets you take the change back.
 
-Built for site owners, agencies and developers who want an AI agent working on a live WordPress site without the risk of an edit they cannot take back.
+WP MCP is a free, self-hosted WordPress MCP plugin for Claude, ChatGPT, Cursor and other AI agents. It takes a snapshot before each supported write, rolls the change back on its own when the check after it fails, and lets you undo one change or a whole AI session, free.
+
+<img src="assets/readme/undo-demo.gif" width="900" alt="WordPress MCP server demo: an AI agent changes a page heading over MCP, then one click on Restore in the WP MCP History screen puts the original back">
+
+**Did WP MCP save you a rollback? [Star it on GitHub](https://github.com/wpmcp/wordpress-mcp) so other WordPress builders can find it.** It is a small project, and every star helps.
 
 [Docs](https://wpmcp-pro.com/docs) · [Integrations](https://wpmcp-pro.com/integrations) · [Changelog](https://wpmcp-pro.com/changelog) · [Pricing](https://wpmcp-pro.com/pricing) · [WooCommerce edition](https://github.com/wpmcp/wordpress-mcp-for-woocommerce)
 
@@ -22,25 +26,126 @@ Built for site owners, agencies and developers who want an AI agent working on a
 
 1. Download [wpmcp.zip](https://github.com/wpmcp/wordpress-mcp/releases/latest/download/wpmcp.zip).
 2. In wp-admin, go to **Plugins > Add New > Upload Plugin**, choose the zip, click **Install Now**, then **Activate**.
-3. Open **wpmcp > Connection** and connect Claude, ChatGPT or Cursor.
+3. Open **wpmcp > Connection**, create an application password, and paste the config it shows into your client (or use one of the blocks below).
 
 Requires WordPress 6.9+ and PHP 8.1+. Free installs update in one click from **Dashboard > Updates**.
 
-<p align="center">
-  <img src="assets/readme/undo-demo.gif" width="900" alt="WordPress MCP server demo: an AI agent changes a page heading over MCP, then one click on Restore in the WP MCP History screen puts the original back">
-</p>
+The free plugin keeps your last 20 changes with no time limit. Pro keeps unlimited history while the licence is active. A few writes cannot be undone; they are [listed](docs/reference/safety-model.md#what-cannot-be-undone), and each says so in its response.
+
+## Copy-paste config
+
+The endpoint is `https://your-site.com/wp-json/mcp/wpmcp-server`. Each block below signs in with a WordPress application password sent as HTTP Basic auth. The **wpmcp > Connection** screen prints these same blocks with your site and credential already filled in, so pasting from there is the quickest route. To fill one in by hand, build the header value like this:
+
+```bash
+echo -n "your-username:xxxx xxxx xxxx xxxx xxxx xxxx" | base64
+# Authorization value: Basic <that output>
+```
+
+<details open>
+<summary><strong>Claude Code</strong></summary>
+
+One command in your project:
+
+```bash
+claude mcp add --transport http wpmcp https://your-site.com/wp-json/mcp/wpmcp-server --header "Authorization: Basic BASE64_OF_username:application-password"
+```
+
+Or paste into `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "wpmcp": {
+      "type": "http",
+      "url": "https://your-site.com/wp-json/mcp/wpmcp-server",
+      "headers": {
+        "Authorization": "Basic BASE64_OF_username:application-password"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Claude Desktop</strong></summary>
+
+Easiest: on **wpmcp > Connection**, download `wpmcp.mcpb` and double-click it, then enter the username and application password when asked.
+
+Or merge this into `claude_desktop_config.json`, then fully quit and reopen Claude Desktop. The config file only runs local servers, so this entry starts the `mcp-remote` bridge, which needs Node.js:
+
+```json
+{
+  "mcpServers": {
+    "wpmcp": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://your-site.com/wp-json/mcp/wpmcp-server", "--header", "Authorization:${WPMCP_AUTH_HEADER}"],
+      "env": { "WPMCP_AUTH_HEADER": "Basic BASE64_OF_username:application-password" }
+    }
+  }
+}
+```
+
+Keep `Authorization:${WPMCP_AUTH_HEADER}` without a space; the value with its space goes in `env`. The claude.ai and Claude Desktop custom connector signs in with OAuth instead, which is off by default: see the [client reference](docs/reference/connecting-clients.md#oauth-and-the-custom-connector).
+
+</details>
+
+<details>
+<summary><strong>Cursor</strong></summary>
+
+Paste into `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global):
+
+```json
+{
+  "mcpServers": {
+    "wpmcp": {
+      "type": "http",
+      "url": "https://your-site.com/wp-json/mcp/wpmcp-server",
+      "headers": {
+        "Authorization": "Basic BASE64_OF_username:application-password"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Windsurf</strong></summary>
+
+The Connection screen does not print a Windsurf block yet. Windsurf runs local (stdio) MCP servers from its `mcp_config.json` (open it from the MCP servers panel in Windsurf's settings), so the route that works with any stdio client is the same `mcp-remote` bridge Claude Desktop uses, which needs Node.js:
+
+```json
+{
+  "mcpServers": {
+    "wpmcp": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://your-site.com/wp-json/mcp/wpmcp-server", "--header", "Authorization:${WPMCP_AUTH_HEADER}"],
+      "env": { "WPMCP_AUTH_HEADER": "Basic BASE64_OF_username:application-password" }
+    }
+  }
+}
+```
+
+Then refresh the MCP servers list in Windsurf.
+
+</details>
+
+ChatGPT, VS Code and other clients: see [Connect your AI client](#connect-your-ai-client-claude-code-claude-desktop-chatgpt-cursor) below.
 
 > **WP MCP Pro, 10% off for GitHub users:** use code `WPMCPGIT` at [wpmcp-pro.com/pricing](https://wpmcp-pro.com/pricing?coupon=WPMCPGIT&utm_source=github&utm_medium=readme)
 
 ## What the WordPress MCP server does
 
-**A WordPress AI agent with undo.** Every supported write is snapshotted before it runs, checked after, and rolled back on its own if the check fails. Undo one change or a whole agent session from the AI, or any single change with one click on the History screen in wp-admin. The free plugin keeps your last 20 undo points; Pro keeps unlimited history while the licence is active. The few things that cannot be undone are [listed](docs/reference/safety-model.md#what-cannot-be-undone), and each says so in its response.
+**A WordPress AI agent with undo.** Each supported write is snapshotted before it runs, checked after, and rolled back on its own if the check fails. Undo one change or a whole agent session from the AI, or any single change with one click on the History screen in wp-admin. The free plugin keeps your last 20 undo points; Pro keeps unlimited history while the licence is active. The few things that cannot be undone are [listed](docs/reference/safety-model.md#what-cannot-be-undone), and each says so in its response.
 
 **Build pages in Gutenberg, Elementor and other builders.** The free plugin reads and edits Gutenberg blocks, inserts patterns and converts HTML to blocks, verifying the markup after every edit. Pro adds Elementor MCP editing of the full element tree, plus Bricks, Divi, Beaver Builder, Breakdance, Oxygen, WPBakery, Avada and other builders. [Builder details](docs/reference/page-builders.md).
 
 **Run the site.** Posts, pages, media, menus, users, settings, plugins and themes, plus cache clearing, performance and security scans and backups. Risky tools (raw database writes, file edits, package updates, code execution) ship switched off until you opt in.
 
-**Run your store as a WooCommerce MCP server.** Products and variations, bulk price changes, orders, coupons and stock, each write undoable. Pro adds WooCommerce Subscriptions, Bookings and Memberships. Prefer a store-only build? See the [WooCommerce edition](https://github.com/wpmcp/wordpress-mcp-for-woocommerce).
+**Run your store as a WooCommerce MCP server.** Products and variations, bulk price changes, orders, coupons and stock, with undo for each supported write. Pro adds WooCommerce Subscriptions, Bookings and Memberships. Prefer a store-only build? See the [WooCommerce edition](https://github.com/wpmcp/wordpress-mcp-for-woocommerce).
 
 **Works with your plugins.** Integrations for ACF, Yoast SEO and Rank Math, form, LMS, membership and other plugins register only while that plugin is active, so your AI client sees tools for what your site actually runs. Built on the WordPress Abilities API and the official WordPress MCP Adapter. [All integrations](https://wpmcp-pro.com/integrations).
 
