@@ -779,6 +779,12 @@ if [ "$plan_only" = true ]; then
 	exit 0
 fi
 
+# The compiled module registry (build/registry) before any leg: without it the
+# plugin boots with no modules. composer's post-autoload-dump writes it, so a
+# worktree whose vendor/ was copied has none; tests/bootstrap.php checks again.
+"$PHP" "$ROOT/bin/build-registry.php" --if-stale --quiet --artifacts= --no-locks \
+	|| die "build/registry is missing or stale and bin/build-registry.php failed"
+
 # --parallel --reuse-logs=<dir>: report on a parallel run's logs again (its
 # baselines compared anew), without a slot, a database or a run.
 if [ -n "$parallel" ] && [ -n "${WPMCP_PARALLEL_REUSE_LOGS:-}" ]; then

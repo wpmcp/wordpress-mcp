@@ -24,6 +24,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 require_once dirname( __DIR__ ) . '/vendor/yoast/phpunit-polyfills/phpunitpolyfills-autoload.php';
 
+// build/registry first, so the suite never runs on a missing or stale module
+// registry (a worktree whose vendor/ was copied has none):
+// tools/registry/src/Freshness.php.
+$wpmcp_registry_error = \WPMCP\Registry\Freshness::ensure( dirname( __DIR__ ) );
+if ( null !== $wpmcp_registry_error ) {
+    fwrite( STDERR, "WP MCP tests: build/registry is stale and could not be rebuilt: {$wpmcp_registry_error}\n" );
+    exit( 1 );
+}
+
 if ( ! class_exists( 'WP_UnitTestCase', false ) ) {
     // phpcs:ignore Generic.Files.OneObjectStructurePerFile.MultipleFound, PSR1.Classes.ClassDeclaration.MissingNamespace
     abstract class WP_UnitTestCase extends \Yoast\PHPUnitPolyfills\TestCases\TestCase {

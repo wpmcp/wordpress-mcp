@@ -8,7 +8,7 @@
  *
  *   php bin/build-registry.php [--root=src] [--root=pro/modules] [--flavor=full]
  *       [--out=build/registry] [--artifacts=build/artifacts] [--exclude=path]
- *       [--check] [--all-flavors] [--auto] [--addon] [--quiet] [--no-locks]
+ *       [--check] [--all-flavors] [--auto] [--addon] [--quiet] [--no-locks] [--if-stale]
  *
  *   composer registry:build   build the full flavor
  *   composer registry:check   validate every flavor and fail on a stale lock; writes nothing
@@ -16,6 +16,9 @@
  * --artifacts= (empty) writes no artifacts and --no-locks no surface.lock.php,
  * so a release build can write build/registry into its stage and leave the
  * checkout untouched (scripts/lib/stage-registry.sh).
+ *
+ * --if-stale exits 0 without writing while build/registry is newer than its
+ * inputs (WPMCP\Registry\Freshness).
  *
  * --auto exits 0 without writing when no module exists yet (the composer
  * post-autoload-dump hook). Exit codes: 0 ok, 1 build failed, 2 bad usage.
@@ -52,12 +55,17 @@ foreach (array_slice($argv, 1) as $arg) {
     }
     $args[ $m[1] ][] = $m[2] ?? true;
 }
-$known = ['root', 'flavor', 'out', 'artifacts', 'exclude', 'check', 'all-flavors', 'auto', 'addon', 'quiet', 'no-locks'];
+$known = ['root', 'flavor', 'out', 'artifacts', 'exclude', 'check', 'all-flavors', 'auto', 'addon', 'quiet', 'no-locks', 'if-stale'];
 foreach (array_keys($args) as $key) {
     if (! in_array($key, $known, true)) {
         fwrite(STDERR, "Unknown option --{$key}\n");
         exit(2);
     }
+}
+// --if-stale: nothing to do while build/registry is newer than every input
+// (tools/registry/src/Freshness.php); bin/test-local.sh runs it first.
+if (isset($args['if-stale']) && ! \WPMCP\Registry\Freshness::stale($root)) {
+    exit(0);
 }
 $abs = static fn (string $p): string => str_starts_with($p, '/') ? $p : $root . '/' . $p;
 $one = static fn (string $key, string $default): string => is_string($args[ $key ][0] ?? null) ? $args[ $key ][0] : $default;

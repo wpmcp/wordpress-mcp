@@ -454,6 +454,10 @@ rm -f "$ZIP"
 #     pipeline, see the note there.
 # shellcheck source=scripts/lib/zip-gate.sh
 . "$ROOT/scripts/lib/zip-gate.sh"
+
+# Gate: the compiled module registry ships (D11); without it the plugin boots
+# with no modules, their integrations and opt-in switches gone.
+zip_includes "$ZIP" "$SLUG/build/registry/boot.php" || { echo "gate: $ZIP has no build/registry" >&2; exit 1; }
 set +e
 zip_excludes "$ZIP" Php_Snippet_Runner.php Wp_Cli_Executor.php Run_Php_Snippet.php Run_Wp_Cli.php
 zip_status=$?
