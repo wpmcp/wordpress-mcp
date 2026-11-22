@@ -4,6 +4,7 @@ namespace WPMCP\Admin;
 
 use WPMCP\MCP\Request_Log;
 use WPMCP\Plugin;
+use WPMCP\Safety\Snapshot_Store;
 use WPMCP\Tools\List_Operations;
 
 if (! defined('ABSPATH')) {
@@ -189,16 +190,19 @@ class Audit_Log_Page
             $paged  = $pages;
             $result = $this->get_operations($filters + ['limit' => $per_page, 'offset' => ($paged - 1) * $per_page]);
         }
-        $ops   = $result['operations'];
-        $nonce = wp_create_nonce('wpmcp_restore');
+        $ops           = $result['operations'];
+        $nonce         = wp_create_nonce('wpmcp_restore');
+        $session_nonce = wp_create_nonce(Restore_Controller::SESSION_ACTION);
+        $sessions_seen = [];
 
         $this->render_filter_form($filters);
         $this->render_pagination(self::TAB_MUTATIONS, $filters, $total, $paged, $pages, 'top');
-        echo '<table class="widefat"><thead><tr>'
+        echo '<table class="widefat striped"><thead><tr>'
             . '<th>' . esc_html__('Who', 'wpmcp') . '</th>'
             . '<th>' . esc_html__('When', 'wpmcp') . '</th>'
             . '<th>' . esc_html__('What', 'wpmcp') . '</th>'
             . '<th>' . esc_html__('Domain', 'wpmcp') . '</th>'
+            . '<th>' . esc_html__('Session', 'wpmcp') . '</th>'
             . '<th></th>'
             . '</tr></thead><tbody>';
 
@@ -216,6 +220,8 @@ class Audit_Log_Page
             printf('<td>%s</td>', esc_html($what));
             printf('<td>%s</td>', esc_html((string) ($op['domain'] ?? '')));
             echo '<td>';
+            $this->render_session_cell((string) ($op['session_id'] ?? ''), $session_nonce, $sessions_seen);
+            echo '</td><td>';
             if (! empty($op['rollback_available'])) {
                 printf(
                     '<button class="button wpmcp-restore" data-op="%s" data-nonce="%s">%s</button>',
@@ -232,6 +238,46 @@ class Audit_Log_Page
 
         echo '</tbody></table>';
         $this->render_pagination(self::TAB_MUTATIONS, $filters, $total, $paged, $pages, 'bottom');
+    }
+
+    /**
+     * A row's session (issue #1150): a link that filters the table to it,
+     * and on the session's first row on the page an Undo session button
+     * that runs rollback-session. The catch-all session ('' or 'default')
+     * and a session with nothing left to undo get no button.
+     *
+     * @param array<string, bool> $seen sessions that already have a button on this page
+     */
+    private function render_session_cell(string $session_id, string $nonce, array &$seen): void
+    {
+        if (Snapshot_Store::is_loose_session($session_id)) {
+            echo esc_html__('None', 'wpmcp');
+            return;
+        }
+
+        printf(
+            '<a href="%s" title="%s"><code>%s</code></a>',
+            esc_url(add_query_arg(['page' => self::SLUG, 'tab' => self::TAB_MUTATIONS, 'session_id' => rawurlencode($session_id)], admin_url('admin.php'))),
+            esc_attr__('Show only this session', 'wpmcp'),
+            esc_html(strlen($session_id) > 24 ? substr($session_id, 0, 24) . '...' : $session_id)
+        );
+
+        if (isset($seen[ $session_id ])) {
+            return;
+        }
+        $seen[ $session_id ] = true;
+
+        $live = Snapshot_Store::live_count_for_session($session_id);
+        if ($live < 1) {
+            return;
+        }
+        printf(
+            ' <button type="button" class="button wpmcp-undo-session" data-session="%s" data-count="%d" data-nonce="%s">%s</button>',
+            esc_attr($session_id),
+            (int) $live,
+            esc_attr($nonce),
+            esc_html__('Undo session', 'wpmcp')
+        );
     }
 
     /** The requested page of either tab, 1 or more. */
@@ -263,19 +309,46 @@ class Audit_Log_Page
                 array_map('rawurlencode', array_merge(['page' => self::SLUG, 'tab' => $tab], array_map('strval', $filters))),
                 admin_url('admin.php')
             );
-            $links = paginate_links([
-                'base'      => add_query_arg('paged', '%#%', $base),
-                'format'    => '',
-                'current'   => $paged,
-                'total'     => $pages,
-                'prev_text' => __('&lsaquo; Previous', 'wpmcp'),
-                'next_text' => __('Next &rsaquo;', 'wpmcp'),
-            ]);
-            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() escapes its own URLs and the link text above is translator-provided entities.
-            echo ' <span class="pagination-links">' . $links . '</span>';
+            echo ' <span class="pagination-links">';
+            // Core list-table paging (issue #1125): first, previous, "N of M",
+            // next and last, a disabled span where a button would go nowhere.
+            $this->render_page_button('first-page', __('First page', 'wpmcp'), '&laquo;', $paged > 1 ? 1 : null, $base);
+            $this->render_page_button('prev-page', __('Previous page', 'wpmcp'), '&lsaquo;', $paged > 1 ? $paged - 1 : null, $base);
+            printf(
+                '<span class="screen-reader-text">%s</span><span id="table-paging-%s" class="paging-input"><span class="tablenav-paging-text">%s</span></span>',
+                esc_html__('Current Page', 'wpmcp'),
+                esc_attr($which),
+                sprintf(
+                    /* translators: 1: current page, 2: total pages. */
+                    esc_html_x('%1$s of %2$s', 'paging', 'wpmcp'),
+                    esc_html(number_format_i18n($paged)),
+                    '<span class="total-pages">' . esc_html(number_format_i18n($pages)) . '</span>'
+                )
+            );
+            $this->render_page_button('next-page', __('Next page', 'wpmcp'), '&rsaquo;', $paged < $pages ? $paged + 1 : null, $base);
+            $this->render_page_button('last-page', __('Last page', 'wpmcp'), '&raquo;', $paged < $pages ? $pages : null, $base);
+            echo '</span>';
         }
 
         echo '</div><br class="clear" /></div>';
+    }
+
+    /** One core paging button, or its disabled span when $target is null. */
+    private function render_page_button(string $class, string $label, string $glyph, ?int $target, string $base): void
+    {
+        if (null === $target) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $glyph is one of the literal HTML entities passed above.
+            printf('<span class="tablenav-pages-navspan button disabled" aria-hidden="true">%s</span> ', $glyph);
+            return;
+        }
+        printf(
+            '<a class="%s button" href="%s"><span class="screen-reader-text">%s</span><span aria-hidden="true">%s</span></a> ',
+            esc_attr($class),
+            esc_url(add_query_arg('paged', $target, $base)),
+            esc_html($label),
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $glyph is one of the literal HTML entities passed above.
+            $glyph
+        );
     }
 
     private function render_requests(): void
@@ -307,7 +380,7 @@ class Audit_Log_Page
         $this->render_request_filter_form($filters);
         $this->render_pagination(self::TAB_REQUESTS, $filters, $total, $paged, $pages, 'top');
 
-        echo '<table class="widefat"><thead><tr>'
+        echo '<table class="widefat striped"><thead><tr>'
             . '<th>' . esc_html__('When', 'wpmcp') . '</th>'
             . '<th>' . esc_html__('Tool', 'wpmcp') . '</th>'
             . '<th>' . esc_html__('Client', 'wpmcp') . '</th>'
@@ -425,7 +498,7 @@ class Audit_Log_Page
     private function filters_from_request(): array
     {
         $filters = [];
-        foreach (['user_id', 'tool_name', 'domain', 'object_type', 'object_id', 'date_from', 'date_to'] as $key) {
+        foreach (['user_id', 'tool_name', 'domain', 'object_type', 'object_id', 'session_id', 'date_from', 'date_to'] as $key) {
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter on an admin list screen; the value only narrows what is displayed.
             $value = isset($_GET[ $key ]) ? sanitize_text_field(wp_unslash($_GET[ $key ])) : '';
             if ('' !== $value) {
@@ -455,6 +528,11 @@ class Audit_Log_Page
             esc_attr((string) ($filters['user_id'] ?? ''))
         );
         printf(
+            '<input type="text" name="session_id" placeholder="%s" value="%s" />',
+            esc_attr__('Session', 'wpmcp'),
+            esc_attr((string) ($filters['session_id'] ?? ''))
+        );
+        printf(
             '<input type="date" name="date_from" value="%s" />',
             esc_attr((string) ($filters['date_from'] ?? ''))
         );
@@ -468,6 +546,13 @@ class Audit_Log_Page
 
     private function render_restore_script(): void
     {
+        $undo_text = [
+            /* translators: 1: number of writes, 2: session id. */
+            'ask'    => __('Undo %1$s writes from session %2$s, newest first? Each object goes back to how it was before the session. If any write cannot be undone, nothing is changed.', 'wpmcp'),
+            /* translators: %s: number of writes undone. */
+            'done'   => __('Undid %s writes from the session.', 'wpmcp'),
+            'failed' => __('The session could not be undone.', 'wpmcp'),
+        ];
         ?>
         <script>
         document.addEventListener('click', function (e) {
@@ -482,6 +567,66 @@ class Audit_Log_Page
             body.set('nonce', btn.dataset.nonce);
             fetch(ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })
                 .then(function () { window.location.reload(); });
+        });
+
+        // Undo session (issue #1150): confirm with the number of writes,
+        // run rollback-session, then show what it did or the refusal.
+        var wpmcpUndoKey = 'wpmcpUndoSessionResult';
+        var wpmcpUndoText = <?php echo wp_json_encode($undo_text); ?>;
+        var wpmcpUndoNotice = function (ok, text) {
+            var wrap = document.querySelector('.wrap h1');
+            if (! wrap) {
+                return;
+            }
+            var div = document.createElement('div');
+            div.className = 'notice is-dismissible ' + (ok ? 'notice-success' : 'notice-error');
+            var p = document.createElement('p');
+            p.textContent = text;
+            div.appendChild(p);
+            wrap.insertAdjacentElement('afterend', div);
+        };
+        try {
+            var wpmcpSaved = window.sessionStorage.getItem(wpmcpUndoKey);
+            if (wpmcpSaved) {
+                window.sessionStorage.removeItem(wpmcpUndoKey);
+                var wpmcpParsed = JSON.parse(wpmcpSaved);
+                wpmcpUndoNotice(!! wpmcpParsed.ok, String(wpmcpParsed.text));
+            }
+        } catch (err) {}
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('.wpmcp-undo-session');
+            if (! btn) {
+                return;
+            }
+            e.preventDefault();
+            var count = parseInt(btn.dataset.count, 10) || 0;
+            if (! window.confirm(wpmcpUndoText.ask.replace('%1$s', count).replace('%2$s', btn.dataset.session))) {
+                return;
+            }
+            btn.disabled = true;
+            var body = new URLSearchParams();
+            body.set('action', '<?php echo esc_js(Restore_Controller::SESSION_ACTION); ?>');
+            body.set('session_id', btn.dataset.session);
+            body.set('nonce', btn.dataset.nonce);
+            fetch(ajaxurl, { method: 'POST', credentials: 'same-origin', body: body })
+                .then(function (r) { return r.json(); })
+                .then(function (res) {
+                    if (res && res.success) {
+                        var done = wpmcpUndoText.done.replace('%s', res.data.restored_count);
+                        var warnings = (res.data.warnings || []).join(' ');
+                        try {
+                            window.sessionStorage.setItem(wpmcpUndoKey, JSON.stringify({ ok: true, text: warnings ? done + ' ' + warnings : done }));
+                        } catch (err) {}
+                        window.location.reload();
+                        return;
+                    }
+                    btn.disabled = false;
+                    wpmcpUndoNotice(false, (res && res.data && res.data.message) ? res.data.message : wpmcpUndoText.failed);
+                })
+                .catch(function () {
+                    btn.disabled = false;
+                    wpmcpUndoNotice(false, wpmcpUndoText.failed);
+                });
         });
         </script>
         <?php
