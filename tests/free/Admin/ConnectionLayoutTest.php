@@ -106,7 +106,8 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
         $this->assertStringContainsString('value="oauth_client_approval"', $clients);
 
         $settings = $this->panel($html, 'settings');
-        $this->assertStringContainsString('value="uninstall_data"', $settings);
+        // The switch itself needs a network admin on multisite; the section is there either way.
+        $this->assertStringContainsString('Delete all WP MCP data when the plugin is deleted', $settings);
         $this->assertStringContainsString('name="management_mode"', $settings);
 
         $advanced = $this->panel($html, 'advanced');
