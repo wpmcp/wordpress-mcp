@@ -33,6 +33,7 @@ class BackupPluginOpsTest extends \WP_UnitTestCase
         add_filter('wpmcp_updraftplus_free_bytes', static fn () => 10 * 1024 * 1024 * 1024);
         delete_transient('wpmcp_updraftplus_run_lock');
         wp_clear_scheduled_hook(UpdraftPlus_Status::RUN_HOOK);
+        wp_clear_scheduled_hook(UpdraftPlus_Status::DB_RUN_HOOK);
     }
 
     protected function tearDown(): void
@@ -41,6 +42,7 @@ class BackupPluginOpsTest extends \WP_UnitTestCase
             remove_all_filters($filter);
         }
         wp_unschedule_hook(UpdraftPlus_Status::RUN_HOOK);
+        wp_unschedule_hook(UpdraftPlus_Status::DB_RUN_HOOK);
         delete_transient('wpmcp_updraftplus_run_lock');
         if ('' !== $this->dir && is_dir($this->dir)) {
             array_map('unlink', (array) glob($this->dir . '/*'));
@@ -153,6 +155,44 @@ class BackupPluginOpsTest extends \WP_UnitTestCase
         $this->assertSame('backup_rate_limited', $again['error']['code'] ?? null);
     }
 
+    /** @return array<int,string> every UpdraftPlus backup-now hook waiting on WP-Cron. */
+    private function queued_hooks(): array
+    {
+        $out = [];
+        foreach ((array) _get_cron_array() as $events) {
+            foreach ([ 'updraft_backupnow_backup_all', 'updraft_backupnow_backup_database', 'updraft_backupnow_backup' ] as $hook) {
+                if (! empty($events[ $hook ])) {
+                    $out[] = $hook;
+                }
+            }
+        }
+        return $out;
+    }
+
+    public function test_only_database_schedules_the_database_backup_hook(): void
+    {
+        // Issue #1159: UpdraftPlus's backup_all() backs up files too whatever the options say;
+        // only the backup_database hook runs a database-only set.
+        $this->opt_in();
+
+        $out = $this->call('write', 'run-updraftplus-backup', [ 'only_database' => true ], true);
+        $this->assertArrayNotHasKey('error', $out);
+        $this->assertSame([ 'db' ], $out['result']['components']);
+        $this->assertSame([ 'updraft_backupnow_backup_database' ], $this->queued_hooks());
+
+        delete_transient('wpmcp_updraftplus_run_lock');
+        $this->assertSame('backup_running', $this->call('write', 'run-updraftplus-backup', [], true)['error']['code'] ?? null, 'a queued database run blocks another');
+    }
+
+    public function test_without_only_database_a_full_backup_is_queued(): void
+    {
+        $this->opt_in();
+
+        $out = $this->call('write', 'run-updraftplus-backup', [], true);
+        $this->assertArrayNotHasKey('error', $out);
+        $this->assertSame([ 'updraft_backupnow_backup_all' ], $this->queued_hooks());
+    }
+
     public function test_run_refused_while_queued_running_or_low_disk(): void
     {
         $this->opt_in();
@@ -168,6 +208,34 @@ class BackupPluginOpsTest extends \WP_UnitTestCase
         add_filter('wpmcp_updraftplus_free_bytes', static fn () => 1024);
         $this->assertSame('backup_low_disk', $this->call('write', 'run-updraftplus-backup', [], true)['error']['code'] ?? null);
         $this->assertSame([], $this->queued());
+    }
+
+    /** Issue #1163: All-in-One WP Migration installed but off is reported as inactive, not missing. */
+    public function test_aio_wp_migration_refusal_tells_inactive_from_missing(): void
+    {
+        remove_all_filters('wpmcp_aio_wp_migration_active');
+        add_filter('wpmcp_aio_wp_migration_active', '__return_false');
+        $file = 'all-in-one-wp-migration/all-in-one-wp-migration.php';
+        $path = WP_PLUGIN_DIR . '/' . $file;
+        $this->assertFileDoesNotExist($path, 'fixture expects the plugin not to be installed');
+
+        $missing = $this->call('read', 'list-aio-wp-migration-backups')['error'] ?? [];
+        $this->assertSame('aio_wp_migration_inactive', $missing['code'] ?? null);
+        $this->assertSame('missing', $missing['data']['state'] ?? null);
+        $this->assertStringContainsString('is not installed', $missing['message']);
+        $this->assertSame('https://wordpress.org/plugins/all-in-one-wp-migration/', $missing['data']['install_url'] ?? null);
+
+        wp_mkdir_p(dirname($path));
+        file_put_contents($path, "<?php\n");
+        try {
+            $inactive = $this->call('read', 'list-aio-wp-migration-backups')['error'] ?? [];
+        } finally {
+            unlink($path);
+            rmdir(dirname($path));
+        }
+        $this->assertSame('inactive', $inactive['data']['state'] ?? null);
+        $this->assertSame($file, $inactive['data']['required_plugin'] ?? null);
+        $this->assertStringContainsString('All-in-One WP Migration is installed but not active', $inactive['message']);
     }
 
     public function test_inactive_plugins_are_refused_by_name(): void
