@@ -13,7 +13,7 @@ final class Php_Exporter
 {
     public static function file(mixed $value, string $header): string
     {
-        return "<?php\n// " . $header . "\n\nreturn " . self::export($value) . ";\n";
+        return "<?php\n// " . $header . "\n\ndeclare(strict_types=1);\n\nreturn " . self::export($value) . ";\n";
     }
 
     public static function export(mixed $value, int $depth = 0): string

@@ -512,7 +512,7 @@ if (isset($opt['no-run'])) {
 // composer autoload map (an add-on or a test fixture root) is autoloaded
 // from WPMCP_MODULE_AUTOLOAD by tools/registry/autoload-env.php.
 $php_bin = escapeshellarg(PHP_BINARY);
-$env = 'WPMCP_MODULE_AUTOLOAD=' . escapeshellarg("{$ns}={$dir};{$tests_ns}={$tests_dir}");
+$env = 'WPMCP_MODULE_AUTOLOAD=' . escapeshellarg(trim("{$ns}={$dir};{$tests_ns}={$tests_dir};" . (string) getenv('WPMCP_MODULE_AUTOLOAD'), ';'));
 $build = sprintf('%s %s -d auto_prepend_file=%s %s/bin/build-registry.php --root=%s --out=%s --artifacts=%s --quiet', $env, $php_bin, escapeshellarg($repo . '/tools/registry/autoload-env.php'), escapeshellarg($repo), escapeshellarg($dir), escapeshellarg(sys_get_temp_dir() . '/wpmcp-make-module-' . getmypid() . '/registry'), escapeshellarg(sys_get_temp_dir() . '/wpmcp-make-module-' . getmypid() . '/artifacts'));
 passthru($build, $code);
 $tmp = sys_get_temp_dir() . '/wpmcp-make-module-' . getmypid();
