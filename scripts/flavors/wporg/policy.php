@@ -218,6 +218,10 @@ return [
         'src/Integrations/Core_Privacy_Pack.php',
         // And its order bump ops (issue #663), merged only by FunnelKit_Pack.
         'src/Integrations/FunnelKit_Bumps.php',
+        // And its upsell offer writes (issue #1021), merged only by FunnelKit_Pack.
+        'src/Integrations/FunnelKit_Upsell_Operations.php',
+        'src/Integrations/FunnelKit_Upsell_Store.php',
+        'src/Integrations/FunnelKit_Offer_Line.php',
         // LMS course structure and enrollments (issue #394), paid-tier.
         // strip.php takes out the lines in Plugin_Data_Integration that merge
         // the ops, count the pack towards availability and name it in the
