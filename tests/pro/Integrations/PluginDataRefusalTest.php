@@ -28,6 +28,7 @@ class PluginDataRefusalTest extends \WP_UnitTestCase
         'wpmcp_lifterlms_active', 'wpmcp_mailpoet_active', 'wpmcp_memberpress_active', 'wpmcp_multilingual_active',
         'wpmcp_pods_active', 'wpmcp_tablepress_active', 'wpmcp_translatepress_active', 'wpmcp_tutor_active',
         'wpmcp_ws_form_active',
+        'wpmcp_everest_forms_active',
         'wpmcp_wp_activity_log_active',
         'wpmcp_simple_history_active',
         'wpmcp_action_scheduler_active',
@@ -35,7 +36,18 @@ class PluginDataRefusalTest extends \WP_UnitTestCase
         'wpmcp_check_email_active',
         'wpmcp_email_log_active',
         'wpmcp_weglot_active',
+        'wpmcp_wpforo_active',
+        'wpmcp_asgaros_active',
         'wpmcp_gtranslate_active',
+        'wpmcp_thrive_ovation_active',
+        'wpmcp_newsletter_active',
+        'wpmcp_groundhogg_active',
+        'wpmcp_mc4wp_active',
+        'wpmcp_brevo_active',
+        'wpmcp_loco_active',
+        'wpmcp_surecart_active',
+        'wpmcp_wpgraphql_active',
+        'wpmcp_checkout_field_editor_active',
     ];
 
     private Registrar $original;
