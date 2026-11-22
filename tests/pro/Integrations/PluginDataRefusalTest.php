@@ -40,6 +40,8 @@ class PluginDataRefusalTest extends \WP_UnitTestCase
         'wpmcp_groundhogg_active',
         'wpmcp_mc4wp_active',
         'wpmcp_brevo_active',
+        'wpmcp_loco_active',
+        'wpmcp_surecart_active',
         'wpmcp_wpgraphql_active',
         'wpmcp_checkout_field_editor_active',
     ];
