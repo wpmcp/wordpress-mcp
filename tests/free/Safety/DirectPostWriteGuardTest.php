@@ -49,6 +49,10 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new theme add-on layout post (issue #656); every field is new. Updates go through Save_Filters.',
         ],
+        'Integrations/Event_Calendar_Writes.php'      => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new event, venue or organizer post for The Events Calendar or Modern Events Calendar (issue #677); every field is new. Updates go through Save_Filters.',
+        ],
         'Tools/Builders/Oxygen_Page.php'              => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Oxygen Component from a page node (issue #635); every field is new.',
@@ -113,6 +117,10 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new course, section or lesson post.',
         ],
+        'Integrations/LMS_LearnPress.php'             => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new LearnPress lesson or quiz post before placing it in a section row.',
+        ],
         'Integrations/Core_Patterns_Pack.php'         => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new synced pattern (wp_block) post.',
@@ -128,6 +136,14 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
         'Integrations/Advanced_Ads_Pack.php'          => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Advanced Ads ad post.',
+        ],
+        'Integrations/FooGallery_Pack.php'            => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new FooGallery gallery post.',
+        ],
+        'Integrations/Popup_Maker_Pack.php'           => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Popup Maker popup post.',
         ],
         'Integrations/MemberPress_Pack.php'           => [
             'calls'  => ['wp_insert_post' => 1],

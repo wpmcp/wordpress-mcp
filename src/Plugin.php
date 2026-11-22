@@ -523,6 +523,9 @@ final class Plugin
         // An undo of a cache plugin settings write lets the plugin rebuild
         // what it derives from its settings, as its own save does (#692).
         [\WPMCP\Integrations\Cache_Settings_Pack::class, 'after_options_restored'],
+        // An undo of a consent banner text write lets Complianz and CookieYes
+        // drop the banner caches their own save drops (#686).
+        [\WPMCP\Integrations\Consent_Pack::class, 'after_rows_restored', 'wpmcp_rollback_db_rows_restored'],
         // An undo of a WPCode snippet write never leaves the snippet active
         // and rebuilds WPCode's cache of active snippets; an undo of
         // set-header-footer clears page caches as WPCode's save does (#697).
@@ -532,6 +535,10 @@ final class Plugin
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'restore_translation_group', 'wpmcp_rollback_translation_group'],
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'hold_sync', 'wpmcp_rollback_hold_translation_sync'],
         [\WPMCP\Tools\I18n\I18n_Adapter::class, 'release_sync', 'wpmcp_rollback_release_translation_sync'],
+        // Modern Events Calendar reads its calendar from its own mec_events
+        // and mec_dates tables, derived from the event meta; an undo that
+        // restores an event post rebuilds them as the write did (#677).
+        [\WPMCP\Integrations\Modern_Events_Calendar_Writes::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],
     ];
 
     /**
@@ -2838,6 +2845,8 @@ final class Plugin
                     'max_files'       => [ 'type' => 'integer' ],
                     'max_seconds'     => [ 'type' => 'integer' ],
                     'vulnerabilities' => [ 'type' => 'boolean' ],
+                    // Issue #1151: scan_meta.compromise.next_cursor of a truncated compromise scan.
+                    'cursor'          => [ 'type' => 'string' ],
                 ],
             ],
             [$scan_security, 'handle'],

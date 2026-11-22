@@ -196,6 +196,21 @@ class EddPackTest extends \WP_UnitTestCase
         $this->assertSame([ [ 'index' => 1, 'name' => 'Basic', 'amount' => 5.0 ], [ 'index' => 2, 'name' => 'Pro', 'amount' => 15.0 ] ], $search['downloads'][0]['prices']);
     }
 
+    /** Issue #1153: a draft has no post_date_gmt yet; its date is its local post_date in UTC. */
+    public function test_a_draft_download_reports_its_real_date_in_utc(): void
+    {
+        update_option('timezone_string', '');
+        update_option('gmt_offset', 5);
+        $draft = $this->download([], [ 'post_status' => 'draft', 'post_date' => '2026-11-20 23:44:30' ]);
+        $this->assertSame('0000-00-00 00:00:00', get_post($draft)->post_date_gmt, 'fixture: WordPress leaves a draft at zero');
+        $published = $this->download([], [ 'post_title' => 'Live', 'post_date' => '2026-10-01 12:00:00', 'post_date_gmt' => '2026-10-01 07:00:00' ]);
+
+        $this->assertSame('2026-11-20 18:44:30', $this->read('edd-get-download', [ 'download_id' => $draft ])['download']['date']);
+        $rows = array_column($this->read('edd-list-downloads', [ 'status' => 'draft' ])['downloads'], 'date', 'id');
+        $this->assertSame('2026-11-20 18:44:30', $rows[ $draft ] ?? null);
+        $this->assertSame('2026-10-01 07:00:00', $this->read('edd-get-download', [ 'download_id' => $published ])['download']['date']);
+    }
+
     public function test_get_download_refuses_another_post_type(): void
     {
         $post = self::factory()->post->create();
