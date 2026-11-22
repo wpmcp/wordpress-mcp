@@ -54,6 +54,18 @@
     "shipped": true
   },
   {
+    "class": "WPMCP\\Integrations\\Variation_Swatches_Pack",
+    "method": "after_rows_restored",
+    "hook": "wpmcp_rollback_db_rows_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Hustle_Pack",
+    "method": "after_rows_restored",
+    "hook": "wpmcp_rollback_db_rows_restored",
+    "shipped": true
+  },
+  {
     "class": "WPMCP\\Tools\\I18n\\I18n_Adapter",
     "method": "restore_translation_group",
     "hook": "wpmcp_rollback_translation_group",
@@ -75,6 +87,12 @@
     "class": "WPMCP\\Integrations\\Modern_Events_Calendar_Writes",
     "method": "after_post_restored",
     "hook": "wpmcp_rollback_post_restored",
+    "shipped": true
+  },
+  {
+    "class": "WPMCP\\Integrations\\Gallery_Packs",
+    "method": "attach_refreshers",
+    "hook": "init",
     "shipped": true
   }
 ]
