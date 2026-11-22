@@ -39,8 +39,9 @@ if (! defined('ABSPATH')) {
  * has a stored translation in some language (registered:false), keyed by
  * the same md5 of its text either way.
  *
- * WPML String Translation keeps strings in its own tables and is not
- * covered yet: with WPML the ops answer string_translation_unsupported.
+ * With WPML the same ops run over WPML String Translation's own tables
+ * (WPML_String_Translation, issue #1053); without String Translation they
+ * answer string_translation_unsupported.
  */
 final class I18n_Strings
 {
@@ -86,14 +87,23 @@ final class I18n_Strings
         if (true !== $base) {
             return $base;
         }
+        if (self::wpml()) {
+            return WPML_String_Translation::create()->requirement();
+        }
         if ('polylang' !== I18n_Adapter::active_plugin()) {
             return [
                 'code'    => 'string_translation_unsupported',
-                'message' => 'Theme and plugin string translation works with Polylang. WPML String Translation is not supported yet.',
+                'message' => 'Theme and plugin string translation works with Polylang and WPML String Translation.',
                 'data'    => [],
             ];
         }
         return true;
+    }
+
+    /** Whether WPML is the site's multilingual plugin, so the ops run over WPML String Translation (issue #1053). */
+    private static function wpml(): bool
+    {
+        return 'wpml' === I18n_Adapter::active_plugin();
     }
 
     /** @return array<string, array<string, mixed>> */
@@ -110,13 +120,13 @@ final class I18n_Strings
         return [
             'list-string-domains' => $base + [
                 'mode'         => 'read',
-                'description'  => 'Polylang string groups (the theme or plugin that registered them) with string counts, translated and missing per language.',
+                'description'  => 'Polylang or WPML String Translation string groups (the theme or plugin that registered them) with string counts, translated and missing per language.',
                 'input_schema' => [ 'type' => 'object', 'properties' => [] ],
-                'handler'      => [ self::class, 'list_domains' ],
+                'handler'      => static fn (): array => self::wpml() ? WPML_String_Translation::create()->list_domains() : self::list_domains(),
             ],
             'get-strings'         => $base + [
                 'mode'         => 'read',
-                'description'  => 'Polylang theme and plugin strings {key, name, domain, string, translations, missing}, filtered by domain, language, search, missing_only, paged.',
+                'description'  => 'Polylang or WPML String Translation theme and plugin strings {key, name, domain, string, translations, missing}, filtered by domain, language, search, missing_only, paged.',
                 'input_schema' => [
                     'type'       => 'object',
                     'properties' => [
@@ -128,14 +138,14 @@ final class I18n_Strings
                         'per_page'     => [ 'type' => 'integer', 'minimum' => 1, 'maximum' => self::MAX_PER_PAGE, 'default' => 50 ],
                     ],
                 ],
-                'validate'     => static fn (array $args): ?array => isset($args['language']) ? self::language_refusal((string) $args['language']) : null,
-                'handler'      => [ self::class, 'get_strings' ],
+                'validate'     => static fn (array $args): ?array => isset($args['language']) && ! self::wpml() ? self::language_refusal((string) $args['language']) : null,
+                'handler'      => static fn (array $args): array => self::wpml() ? WPML_String_Translation::create()->get_strings($args) : self::get_strings($args),
             ],
             'update-strings'      => $base + [
                 'mode'               => 'write',
                 'enabled_by_default' => (bool) apply_filters('wpmcp_enable_string_translation_write', false),
                 'opt_in_filter'      => self::OPT_IN_FILTER,
-                'description'        => 'Set Polylang string translations in one language by key from get-strings; an empty translation clears one. Undo: rollback-operation.',
+                'description'        => 'Set Polylang or WPML String Translation string translations in one language by key from get-strings; an empty translation clears one. Undo: rollback-operation.',
                 'input_schema'       => [
                     'type'       => 'object',
                     'properties' => [
@@ -156,12 +166,12 @@ final class I18n_Strings
                     ],
                     'required'   => [ 'language', 'strings' ],
                 ],
-                'validate'           => [ self::class, 'update_refusal' ],
-                'snapshot'           => static fn (array $args): array => [
+                'validate'           => static fn (array $args): ?array => self::wpml() ? WPML_String_Translation::create()->update_refusal($args) : self::update_refusal($args),
+                'snapshot'           => static fn (array $args): array => self::wpml() ? WPML_String_Translation::snapshot_target($args) : [
                     'object_type' => 'term',
                     'object_id'   => Snapshot::term_key(self::TAXONOMY, (string) self::language((string) $args['language'])['slug']),
                 ],
-                'handler'            => [ self::class, 'update_strings' ],
+                'handler'            => static fn (array $args): array => self::wpml() ? WPML_String_Translation::create()->update_strings($args) : self::update_strings($args),
             ],
         ];
     }

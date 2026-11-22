@@ -167,6 +167,12 @@ if (! defined('ABSPATH')) {
  * "curriculum_materials"), keyed by the section (`section_id`). MasterStudy
  * caches neither, so a restore puts the rows back and nothing more.
  *
+ * WPML String Translation strings (issue #1053, the `icl_strings` table,
+ * the one suffix "strings") are keyed by their own id, with every
+ * `icl_string_translations` row of each string as a companion, so a restore
+ * puts back a string's status and all its translations and removes the
+ * ones a write added.
+ *
  * Easy Digital Downloads discounts (issue #664, the `edd_adjustments` table,
  * the one suffix "adjustments") are keyed by their own id; a create
  * reserves its id the same way. EDD reads the table through BerlinDB, which
@@ -225,6 +231,7 @@ final class Plugin_Table_Rows_Snapshot
         'learnpress_section_items' => 'learnpress_',
         'masterstudy_sections'     => 'stm_lms_',
         'masterstudy_materials'    => 'stm_lms_',
+        'wpml_strings'             => 'icl_',
         'edd'              => 'edd_',
     ];
 
@@ -311,6 +318,7 @@ final class Plugin_Table_Rows_Snapshot
         'learnpress_section_items' => [ 'section_items' ],
         'masterstudy_sections'     => [ 'curriculum_sections' ],
         'masterstudy_materials'    => [ 'curriculum_materials' ],
+        'wpml_strings'             => [ 'strings' ],
         'edd'              => [ 'adjustments' ],
     ];
 
@@ -327,6 +335,7 @@ final class Plugin_Table_Rows_Snapshot
     private const COMPANIONS = [
         'pmpro_levels' => [ 'membership_levels_groups' => 'level' ],
         'pmpro_codes'  => [ 'discount_codes_levels' => 'code_id' ],
+        'wpml_strings' => [ 'string_translations' => 'string_id' ],
     ];
 
     /** Booking plugin kinds (issue #679), restored under manage_options. */
@@ -1023,6 +1032,12 @@ final class Plugin_Table_Rows_Snapshot
         if ('rank_math' === $kind) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring a Rank Math redirection requires the manage_options capability.');
+            }
+            return;
+        }
+        if ('wpml_strings' === $kind) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring WPML string translations requires the manage_options capability.');
             }
             return;
         }

@@ -306,6 +306,9 @@ return [
         'src/Integrations/I18n_Page_Text.php',
         // Theme and plugin string translation (issue #689), merged by I18n_Pack.
         'src/Integrations/I18n_Strings.php',
+        // Its WPML String Translation half (issue #1053).
+        'src/Integrations/WPML_String_Translation.php',
+        'src/Integrations/WPML_String_Store.php',
         // MemberPress (issue #668), paid-tier. strip.php takes out the lines
         // in Plugin_Data_Integration that merge the ops and count the pack
         // towards availability. The plugin_table_rows kind for its rule
