@@ -59,6 +59,13 @@ ZIP="$ROOT/dist/wpmcp-$VERSION.zip"
 rm -f "$ZIP"
 (cd "$STAGE_PARENT" && zip -rq "$ZIP" wpmcp -x "*.DS_Store")
 
+# shellcheck source=scripts/lib/zip-gate.sh
+. "$ROOT/scripts/lib/zip-gate.sh"
+
+# Gate: the compiled module registry ships (D11); without it the plugin boots
+# with no modules, their integrations and opt-in switches gone.
+zip_includes "$ZIP" "wpmcp/build/registry/boot.php" || { echo "gate: $ZIP has no build/registry" >&2; exit 1; }
+
 # Gate: every assets/ path that src/ resolves against WPMCP_DIR must be in the
 # zip, or the Freemius connect screen renders a 404 icon (#164).
 for asset in $(grep -rhoE "WPMCP_DIR \. 'assets/[^']+'" "$ROOT/src" | sed -E "s/.*'(assets\/[^']+)'/\1/" | sort -u); do

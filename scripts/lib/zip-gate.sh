@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Zip-listing gate shared by the release builds (issue #167). Sourced, never
-# executed: it defines one function and nothing else.
+# Zip-listing gates shared by the release builds (issue #167). Sourced, never
+# executed: it defines two functions and nothing else.
 #
 #   zip_excludes <zip> <basename>...
+#   zip_includes <zip> <path>...
 #
 # Returns 0 when no entry of the zip ends in any of the basenames, 1 (with
 # every offending entry on stderr) when one does, and 2 when the listing
@@ -28,6 +29,29 @@ zip_excludes() {
     hits="$(grep -E -- "(^|/)${name}\$" <<<"$listing" || true)"
     if [ -n "$hits" ]; then
       echo "$hits" >&2
+      status=1
+    fi
+  done
+  return "$status"
+}
+
+# zip_includes <zip> <path>...
+#
+# Returns 0 when the zip holds every path (an exact entry, such as
+# wpmcp/build/registry/boot.php), 1 (with each missing path on stderr) when
+# one is missing, and 2 when the listing cannot be read. The release builds
+# use it for the compiled module registry: a zip without it boots with no
+# modules.
+zip_includes() {
+  local zip="$1"
+  shift
+  local listing
+  listing="$(unzip -Z1 -- "$zip")" || return 2
+
+  local path status=0
+  for path in "$@"; do
+    if ! grep -Fxq -- "$path" <<<"$listing"; then
+      echo "missing: $path" >&2
       status=1
     fi
   done

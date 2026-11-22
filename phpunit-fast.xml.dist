@@ -44,6 +44,7 @@
       <file>tests/free/Performance/FindingTest.php</file>
       <file>tests/free/Platform/AbilityDriftGuardTest.php</file>
       <file>tests/free/Platform/WporgStripTest.php</file>
+      <file>tests/free/Platform/ZipGateTest.php</file>
       <file>tests/free/PluginBootstrapTest.php</file>
       <file>tests/free/Privacy/MaskingTest.php</file>
       <file>tests/free/Proxy/ProxyGatewayRoutingTest.php</file>

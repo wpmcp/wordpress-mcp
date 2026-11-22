@@ -28,9 +28,15 @@ final class Kernel_Boot
     /** @var array<string, ?string> dispatcher => active variant, for this request */
     private array $kernel_variants = [];
 
-    /** The compiled registry; empty (no modules) when build/registry is absent. */
+    /**
+     * The compiled registry; empty (no modules) when build/registry is absent,
+     * which a development checkout reports (Registry_Health).
+     */
     public function registry(): Registry
     {
+        if (null === $this->kernel_registry) {
+            (new Registry_Health(dirname(self::registry_dir(), 2)))->report();
+        }
         return $this->kernel_registry ??= Registry::from_dirs([self::registry_dir()]);
     }
 
