@@ -16,4 +16,3 @@ tests/free/Packages/DeactivatePluginTest.php
 tests/free/Integrations/ActionSchedulerPackTest.php
 # Fail alone on multisite, pass in the serial multisite suite.
 tests/free/Content/CodePostGuardTest.php
-tests/pro/Integrations/ThemeLayoutsPackTest.php

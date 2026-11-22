@@ -5055,7 +5055,7 @@
     "name": "wpmcp/get-elementor-data",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Get_Elementor_Data->handle",
     "description": "A page's parsed Elementor tree (id, elType, widgetType, settings, children). Large pages: summary=true (skeleton with labels and child/descendant counts), max_depth (cut nodes report truncated_children) or element_id for one subtree. Reports total/returned_elements, truncated; data_hash covers the whole page, so windowed reads are a valid expected_hash",
     "input_schema": {
@@ -5093,7 +5093,7 @@
     "name": "wpmcp/update-element",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Update_Element->handle",
     "description": "Update an Elementor element's settings by id, merging the given settings into its existing settings. Writes the page's _elementor_data, snapshot-first; undo: rollback-operation",
     "input_schema": {
@@ -5130,7 +5130,7 @@
     "name": "wpmcp/add-widget",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Add_Widget->handle",
     "description": "Add a widget to a page's _elementor_data under parent_id (or top level) at an optional position. Cataloged widget_types (list-widgets) take typed params validated before any write; other registered widgets take raw settings. Needs expected_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -5179,7 +5179,7 @@
     "name": "wpmcp/update-widget",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Update_Widget->handle",
     "description": "Patch a cataloged widget's settings by element id from typed params (add-widget's schema; see get-widget-schema), validated and merged. Non-cataloged widgets are refused toward update-element. Needs expected_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -5220,7 +5220,7 @@
     "name": "wpmcp/remove-element",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Remove_Element->handle",
     "description": "Remove an element (and its children) from a page's _elementor_data by id. Undo: rollback-operation (_elementor_data is ordinary postmeta the post snapshot captures)",
     "input_schema": {
@@ -5253,7 +5253,7 @@
     "name": "wpmcp/move-element",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Move_Element->handle",
     "description": "Reparent an element by id: remove it and append it as a child of a new parent in the page's _elementor_data. Refuses moves into itself or its descendants. Undo: rollback-operation (post snapshot)",
     "input_schema": {
@@ -5290,7 +5290,7 @@
     "name": "wpmcp/generate-widget",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Generate_Widget->handle",
     "description": "Generate a widget of any cataloged type (list-widgets / get-widget-schema) into a page's _elementor_data under parent_id or top level, with a seedable element id. Unknown types and invalid settings are refused before any write. Undo: rollback-operation",
     "input_schema": {
@@ -5333,7 +5333,7 @@
     "name": "wpmcp/update-global-colors",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Update_Global_Colors->handle",
     "description": "Update the active Elementor kit's global colors: system_colors entries patch the four system tokens by _id (color/title); custom_colors entries update one by _id or append. Colors must be hex. Needs expected_hash from get-global-settings. Undo: rollback-operation",
     "input_schema": {
@@ -5368,7 +5368,7 @@
     "name": "wpmcp/update-global-typography",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Update_Global_Typography->handle",
     "description": "Update the active Elementor kit's global typography: system_typography entries patch the four system tokens by _id; custom_typography entries update one by _id or append. typography_* fields merge in; setting a font enables custom typography so the token renders. Needs expected_hash from get-global-settings. Undo: rollback-operation",
     "input_schema": {
@@ -5403,7 +5403,7 @@
     "name": "wpmcp/replace-system-colors",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Replace_System_Colors->handle",
     "description": "Atomically replace all four Elementor system color slots (primary, secondary, text, accent) on the active kit: each exactly once with a valid hex color, or nothing is written. No \"title\" keeps the current one. Needs expected_hash from get-global-settings. Undo: rollback-operation",
     "input_schema": {
@@ -5436,7 +5436,7 @@
     "name": "wpmcp/replace-system-typography",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Replace_System_Typography->handle",
     "description": "Atomically replace all four Elementor system typography slots (primary, secondary, text, accent) on the active kit: each exactly once, or nothing is written. Each entry needs at least one typography_* field; unknown keys are refused; a font enables custom typography; no \"title\" keeps the current one. Needs expected_hash from get-global-settings. Undo: rollback-operation",
     "input_schema": {
@@ -5469,7 +5469,7 @@
     "name": "wpmcp/list-global-classes",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\List_Global_Classes->handle",
     "description": "List the Elementor v4 global CSS classes of the active kit in stored order (empty when the feature has not been used), with the state_hash the global class write tools require as expected_hash",
     "input_schema": {
@@ -5491,7 +5491,7 @@
     "name": "wpmcp/create-global-class",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_global_class_write_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Create_Global_Class->handle",
     "description": "Create an Elementor v4 global class (Class Manager) with a label and styles; returns its g- id. Pass friendly \"styles\" and/or raw $$type \"props\", optional breakpoint/state; validated against Elementor's schema, so a property it would drop is refused. Needs expected_hash from list-global-classes. Undo: rollback-operation",
     "input_schema": {
@@ -5549,7 +5549,7 @@
     "name": "wpmcp/update-global-class",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_global_class_write_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Update_Global_Class->handle",
     "description": "Update an Elementor v4 global class by g- id: rename it and/or merge styles into one breakpoint + state variant (replace_variant:true replaces it), so other responsive or hover rules survive. Needs expected_hash from list-global-classes. Undo: rollback-operation",
     "input_schema": {
@@ -5613,7 +5613,7 @@
     "name": "wpmcp/delete-global-class",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_global_class_write_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Delete_Global_Class->handle",
     "description": "Delete an Elementor v4 global class by g- id. Without confirm:true it is a dry run listing every post using the class; with it, the class set is snapshotted, then the class deleted (rollback-operation restores it). Needs expected_hash from list-global-classes",
     "input_schema": {
@@ -5649,7 +5649,7 @@
     "name": "wpmcp/reorder-global-classes",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_global_class_write_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Reorder_Global_Classes->handle",
     "description": "Set the order of Elementor v4 global classes, which is their CSS source order and decides ties at equal specificity. Pass order: [g-id, ...]; omitted classes follow in current order and unknown ids are refused. Needs expected_hash from list-global-classes. Undoable",
     "input_schema": {
@@ -5685,7 +5685,7 @@
     "name": "wpmcp/list-global-variables",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_global_variable_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\List_Global_Variables->handle",
     "description": "List Elementor v4 global variables (color, font, size design tokens) with the state_hash the write tools need as expected_hash",
     "input_schema": {
@@ -5707,7 +5707,7 @@
     "name": "wpmcp/create-global-variable",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_global_variable_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Create_Global_Variable->handle",
     "description": "Create an Elementor v4 global variable; returns its e-gv- id. label is the CSS variable name (letters, digits, - _). value: hex/rgb()/hsl() color, font family, size like 16px, or any CSS for custom-size (sizes need Elementor Pro). Needs expected_hash from list-global-variables. Undoable",
     "input_schema": {
@@ -5754,7 +5754,7 @@
     "name": "wpmcp/update-global-variable",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_global_variable_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Update_Global_Variable->handle",
     "description": "Update an Elementor v4 global variable by e-gv- id: label, value, or size/custom-size switch (no other type change). Needs expected_hash from list-global-variables. Undoable",
     "input_schema": {
@@ -5802,7 +5802,7 @@
     "name": "wpmcp/delete-global-variable",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_global_variable_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Delete_Global_Variable->handle",
     "description": "Delete an Elementor v4 global variable by e-gv- id. Without confirm:true it is a dry run listing the posts and classes using it. Needs expected_hash from list-global-variables. Undoable",
     "input_schema": {
@@ -5838,7 +5838,7 @@
     "name": "wpmcp/export-page",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Export_Page->handle",
     "description": "Export a page's Elementor content to a portable structure (content element tree + page_settings + type + version), the envelope import-template accepts, so a design can move between pages or sites",
     "input_schema": {
@@ -5867,7 +5867,7 @@
     "name": "wpmcp/save-as-template",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Save_As_Template->handle",
     "description": "Save a page's Elementor content as a reusable elementor_library template of template_type (page, section, container, header, footer, single, archive, popup, ...; default page). Not snapshotted (creates only); remove with delete-post",
     "input_schema": {
@@ -5905,7 +5905,7 @@
     "name": "wpmcp/apply-template",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Apply_Template->handle",
     "description": "Copy a library template's content into a page with fresh ids that never collide, appended (default, optionally under parent_id at position) or replacing the whole page (mode=replace). Needs expected_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -5951,7 +5951,7 @@
     "name": "wpmcp/import-template",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Import_Template->handle",
     "description": "Create an elementor_library template from an export-page or export-template envelope, also across sites. Element ids are regenerated; the envelope's page_settings and display conditions apply when present. Not snapshotted (creates only); remove with delete-post",
     "input_schema": {
@@ -5986,7 +5986,7 @@
     "name": "wpmcp/export-template",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Export_Template->handle",
     "description": "Export an elementor_library template as the portable envelope import-template accepts (element tree, page_settings, conditions, type, version), so it round-trips between sites intact",
     "input_schema": {
@@ -6015,7 +6015,7 @@
     "name": "wpmcp/create-theme-template",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Create_Theme_Template->handle",
     "description": "Create an Elementor theme-builder template: a header, footer, single, archive, loop-item, search-results or error-404 elementor_library post, optionally seeded with elements and display conditions. Not snapshotted (creates only); remove with delete-theme-template",
     "input_schema": {
@@ -6054,7 +6054,7 @@
     "name": "wpmcp/set-template-conditions",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Set_Template_Conditions->handle",
     "description": "Set where an Elementor theme template renders: conditions as part arrays ([\"include\",\"singular\",\"post\"]) or slash strings (\"include/general\"), through Elementor Pro's conditions manager when present, else the same _elementor_conditions meta. Snapshot-first; undo: rollback-operation",
     "input_schema": {
@@ -6087,7 +6087,7 @@
     "name": "wpmcp/get-theme-template",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Get_Theme_Template->handle",
     "description": "Read one Elementor library template: its type, display conditions and element count",
     "input_schema": {
@@ -6116,7 +6116,7 @@
     "name": "wpmcp/list-theme-templates",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\List_Theme_Templates->handle",
     "description": "List Elementor theme-builder templates (header, footer, single, archive, ...), optionally filtered to one template_type, each with its display conditions",
     "input_schema": {
@@ -6142,7 +6142,7 @@
     "name": "wpmcp/resolve-theme-template",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Resolve_Theme_Template->handle",
     "description": "Which Elementor theme-builder template wins for a location (header, footer, single, archive, ...): every candidate with its conditions, specificity and matching excludes, plus the winner. post_type/post_id resolve against a real target, else only specificity counts",
     "input_schema": {
@@ -6179,7 +6179,7 @@
     "name": "wpmcp/delete-theme-template",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Delete_Theme_Template->handle",
     "description": "Delete an Elementor library template by moving it to the trash (reversible through WordPress trash / restore-post), mirroring the default delete-post path",
     "input_schema": {
@@ -6208,7 +6208,7 @@
     "name": "wpmcp/detect-elementor-version",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Detect_Elementor_Version->handle",
     "description": "Report the Elementor and Elementor Pro versions, supports_atomic (Elementor 4.0+) and atomic_tools_registered: the four atomic write tools register only on a builder that renders atomic elements, so check before assuming they exist",
     "input_schema": {
@@ -6230,7 +6230,7 @@
     "name": "wpmcp/add-flexbox",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_atomic_elementor_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Add_Flexbox->handle",
     "description": "Add an Elementor 4.0+ atomic flexbox (e-flexbox) to a page under parent_id (or top level), optional position. Optional flat style (keys on add-atomic-widget; raw props for the rest) becomes a local v4 style class; unknown keys or bad values error, never dropped. Needs expected_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -6275,7 +6275,7 @@
     "name": "wpmcp/add-div-block",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_atomic_elementor_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Add_Div_Block->handle",
     "description": "Add an Elementor 4.0+ atomic div-block (e-div-block) to a page under parent_id (or top level), optional position. Optional flat style (keys on add-atomic-widget; raw props for the rest) becomes a local v4 style class; unknown keys or bad values error, never dropped. Needs expected_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -6320,7 +6320,7 @@
     "name": "wpmcp/add-atomic-widget",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_atomic_elementor_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Add_Atomic_Widget->handle",
     "description": "Add an Elementor 4.0+ atomic widget (e-* widgetType, e.g. e-heading, e-paragraph, e-button, e-image) to a page. Friendly params (title, content, text, image_url, alt, link) become typed $$type props for known types; any type also takes raw $$type-wrapped settings. Optional flat style becomes a local v4 style class. Keys: align, align_items, background_color, border_color, border_radius, border_width, color, column_gap, direction, display, flex_direction, flex_wrap, font_size, font_style, font_weight, gap, height, justify, justify_content, letter_spacing, line_height, margin, margin_bottom, margin_left, margin_right, margin_top, max_height, max_width, min_height, min_width, overflow, padding, padding_bottom, padding_left, padding_right, padding_top, text_align, text_decoration, text_transform, width, wrap; raw props for the rest. Unknown keys or bad values error, never dropped. Needs expected_hash. Undo: rollback-operation",
     "input_schema": {
@@ -6372,7 +6372,7 @@
     "name": "wpmcp/update-atomic-widget",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_atomic_elementor_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Update_Atomic_Widget->handle",
     "description": "Update an Elementor 4.0+ atomic widget's settings by element id. Friendly params map to typed $$type props for known types (only those passed change); raw $$type-wrapped settings also work. Optional flat style (keys on add-atomic-widget; raw props for the rest) becomes a local v4 style class; unknown keys or bad values error, never dropped. A style object rewrites its generated local style class. Needs expected_hash. Undo: rollback-operation",
     "input_schema": {
@@ -6418,7 +6418,7 @@
     "name": "wpmcp/create-popup",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Create_Popup->handle",
     "description": "Create an Elementor popup (elementor_library post, type popup), optionally seeded with elements and trigger/display settings. Not snapshotted (creates only); configure further with set-popup-settings, remove with delete-post",
     "input_schema": {
@@ -6453,7 +6453,7 @@
     "name": "wpmcp/set-popup-settings",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Set_Popup_Settings->handle",
     "description": "Set an Elementor popup's trigger/display settings (open/close triggers, timing, advanced rules), merged into the popup's _elementor_page_settings. Snapshot-first; undo: rollback-operation",
     "input_schema": {
@@ -6486,7 +6486,7 @@
     "name": "wpmcp/list-dynamic-tags",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\List_Dynamic_Tags->handle",
     "description": "List registered Elementor dynamic tags (name, title, group), optionally by group. Most come from Elementor Pro, so the list is short or empty without it",
     "input_schema": {
@@ -6512,7 +6512,7 @@
     "name": "wpmcp/set-dynamic-tag",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Set_Dynamic_Tag->handle",
     "description": "Bind an Elementor dynamic tag to an element setting, written into settings[__dynamic__][setting_key] in Elementor's [elementor-tag ...] format; other bindings are kept. Needs expected_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -6560,7 +6560,7 @@
     "name": "wpmcp/add-custom-css",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Add_Custom_Css->handle",
     "description": "Add site-wide custom CSS via core Additional CSS (no Elementor Pro needed). Appends; replace=true overwrites, css=\"\" + replace=true clears. Needs edit_css. Snapshot-first when the Additional-CSS post exists (undo: rollback-operation)",
     "input_schema": {
@@ -6592,7 +6592,7 @@
     "name": "wpmcp/get-custom-css",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Get_Custom_Css->handle",
     "description": "Read the site's WordPress core Additional CSS",
     "input_schema": {
@@ -6614,7 +6614,7 @@
     "name": "wpmcp/create-code-snippet",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Create_Code_Snippet->handle",
     "description": "Create an Elementor Custom Code snippet. location: wp_head, wp_body_open or wp_footer. Off by default: needs wpmcp_allow_js_injection + unfiltered_html. Renders via Elementor Pro Custom Code. Undo: delete-code-snippet",
     "input_schema": {
@@ -6655,7 +6655,7 @@
     "name": "wpmcp/list-code-snippets",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\List_Code_Snippets->handle",
     "description": "List the Elementor Custom Code snippets stored on this site (elementor_snippet posts) with their location, priority and code",
     "input_schema": {
@@ -6677,7 +6677,7 @@
     "name": "wpmcp/delete-code-snippet",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_pro_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Delete_Code_Snippet->handle",
     "description": "Delete an Elementor Custom Code snippet by moving it to the trash (reversible through WordPress trash / restore-post), mirroring the default delete-post path",
     "input_schema": {
@@ -6706,7 +6706,7 @@
     "name": "wpmcp/add-container",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_structural_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Add_Container->handle",
     "description": "Create an Elementor layout element (container by default, or section/column) at top level or under parent_id, optional position. Columns need a parent; widgets are never parents. Needs expected_hash from get-elementor-data; stale reads refused. Undo: rollback-operation",
     "input_schema": {
@@ -6756,7 +6756,7 @@
     "name": "wpmcp/update-container",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_structural_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Update_Container->handle",
     "description": "Merge settings into an Elementor container, section or column by id: given keys are set, others survive. Widgets are refused (use update-element). Needs expected_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -6797,7 +6797,7 @@
     "name": "wpmcp/batch-update",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_structural_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Batch_Update->handle",
     "description": "Apply N Elementor element settings updates atomically under ONE snapshot: every {element_id, settings} is validated first, one unknown id refuses the batch, and any failure rolls it all back. Needs expected_hash from get-elementor-data. One rollback-operation undoes it",
     "input_schema": {
@@ -6849,7 +6849,7 @@
     "name": "wpmcp/reorder-elements",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_structural_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Reorder_Elements->handle",
     "description": "Reorder the children of one Elementor parent (or the top level without parent_id) to an explicit id order, which must be an exact permutation of the current children. Needs expected_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -6892,7 +6892,7 @@
     "name": "wpmcp/duplicate-element",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_structural_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Duplicate_Element->handle",
     "description": "Deep-copy an Elementor element and its subtree with fresh ids, inserted right after the original. New ids use Elementor's 7-char hex format and are unique on the page. Needs expected_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -6929,7 +6929,7 @@
     "name": "wpmcp/set-element-label",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_structural_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Set_Element_Label->handle",
     "description": "Set an Elementor element's navigator label (stored as the _title setting); an empty label clears the custom name. All other settings survive untouched. Needs expected_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -6970,7 +6970,7 @@
     "name": "wpmcp/find-element",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_structural_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Find_Element->handle",
     "description": "Search a page's Elementor tree by el_type, widget_type, setting_key + setting_value and/or css_class (AND-combined, at least one). Each match reports element_id, types, navigator label and ancestor path; returns the current data_hash to chain a mutation",
     "input_schema": {
@@ -7014,7 +7014,7 @@
     "name": "wpmcp/update-page-settings",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_elementor_structural_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Elementor\\Update_Page_Settings->handle",
     "description": "Merge settings into a page's Elementor page settings (_elementor_page_settings): given keys are set, others survive. Post field keys (post_title, post_status, template, ...) are refused, use the post tools. Needs expected_hash = settings_hash from get-elementor-data. Undo: rollback-operation",
     "input_schema": {
@@ -7051,7 +7051,7 @@
     "name": "wpmcp/list-brand-kits",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_brand_kit_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Brand\\List_Brand_Kits->handle",
     "description": "List brand kits (bundled presets plus any from the wpmcp_brand_kits option or filter): slug, category, source, the four system colors, font families, logo flag. Filter by category, source (bundled/site) or search",
     "input_schema": {
@@ -7087,7 +7087,7 @@
     "name": "wpmcp/get-brand-kit",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_brand_kit_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Brand\\Get_Brand_Kit->handle",
     "description": "Return one brand kit in the shape apply-brand-kit writes: system slots as hex, named swatches with _id, typography mapped to Elementor typography_* fields. Entries failing validation are listed in \"invalid\" and make the kit unappliable",
     "input_schema": {
@@ -7116,7 +7116,7 @@
     "name": "wpmcp/apply-brand-kit",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_brand_kit_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Brand\\Apply_Brand_Kit->handle",
     "description": "Apply a brand kit to the active Elementor kit (system colors, swatches, the four system typography tokens, logo) as ONE snapshotted operation. Without confirm:true it only returns the per-token diff and settings_hash; with it, expected_hash must match. Any invalid entry refuses the whole kit. Undo: rollback-brand-kit or rollback-operation",
     "input_schema": {
@@ -7154,7 +7154,7 @@
     "name": "wpmcp/rollback-brand-kit",
     "tier": "pro",
     "group": "elementor",
-    "method": "register_brand_kit_abilities",
+    "method": "register_elementor_abilities",
     "handler": "WPMCP\\Tools\\Brand\\Rollback_Brand_Kit->handle",
     "description": "Undo a brand-kit apply by restoring its single snapshot (palette, swatches, typography, logo). Defaults to the most recent apply not yet rolled back; pass operation_id to target a specific apply",
     "input_schema": {
@@ -7179,8 +7179,8 @@
   {
     "name": "wpmcp/detect-builder",
     "tier": "pro",
-    "group": "builder",
-    "method": "register_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Builders\\Detect_Builder->handle",
     "description": "Post builder: elementor|bricks|divi|wpbakery|avada|beaver-builder|breakdance|oxygen|oxygen-classic|thrive|cornerstone|betheme|brizy|siteorigin|kirki|visual-composer|flatsome|gutenberg|classic",
     "input_schema": {
@@ -7208,8 +7208,8 @@
   {
     "name": "wpmcp/get-builder-content",
     "tier": "pro",
-    "group": "builder",
-    "method": "register_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Builders\\Get_Builder_Content->handle",
     "description": "Bricks elements by id; Divi|WPBakery|Avada shortcodes, Thrive HTML, oxygen-classic JSON, Divi 5 blocks, Cornerstone elements, SiteOrigin rows (last 7 with paths); Beaver Builder|Breakdance|Oxygen nodes; BeTheme sections by uid; Brizy JSON by _id; Kirki|Visual Composer elements by id; Flatsome shortcodes with paths; Oxygen scope properties|conditions|export. Or scope design_system|templates|catalog (element: its controls) for builder bricks|breakdance|oxygen|divi|wpbakery|avada|thrive|cornerstone|betheme|brizy|siteorigin|kirki|beaver-builder|visual-composer (also pages)",
     "input_schema": {
@@ -7243,8 +7243,8 @@
   {
     "name": "wpmcp/update-builder-content",
     "tier": "pro",
-    "group": "builder",
-    "method": "register_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Builders\\Update_Builder_Content->handle",
     "description": "Bricks JSON; Divi|WPBakery|Avada shortcodes, Thrive HTML; oxygen-classic|Beaver Builder|Breakdance|Oxygen|Cornerstone|SiteOrigin JSON tree. All but Divi 4: operation update(path,attrs,text), add(to,index,element), remove(path), move(path,to,index); to ''=top. WPBakery|Breakdance|Oxygen|Thrive|Cornerstone|Beaver|Bricks: also publish, restore(path: revision id). WPBakery|Avada|Breakdance|Oxygen|Thrive|Cornerstone|SiteOrigin|Beaver|Bricks: element {template}; need expected_hash. Avada|Breakdance|Oxygen|Thrive|Beaver|Bricks: save_template(path,element {title}). Oxygen: element {component}; set_properties(path,attrs); create_page|import(content,element); save_template element {kind,settings}; set_conditions(element {settings}). BeTheme: JSON sections; path/to are uids, update element {size}, element {template}, publish; needs expected_hash. Brizy: same with _ids, attrs merge into value. SiteOrigin: path r.c.w, publish. Kirki: JSON elements; path/to are ids, update text, element {symbol}, publish; needs expected_hash. visual-composer: update(path id, text|attrs) of rendered content, remove, move, add element {template} on a blank page, publish; expected_hash. Flatsome: path ops, element {block: id}, save_template; needs expected_hash. scope design_system (bricks|breakdance|oxygen|avada): add/update/remove at classes|variables|palettes|typography|options/<id>[/<color id>]; scope templates (wpbakery): at <id>. expected_hash: read's hash (Divi 5, WPBakery, Avada, Breakdance, Oxygen, Thrive, Cornerstone, SiteOrigin, Beaver, Bricks), hashes.<list>. Undo: rollback-operation",
     "input_schema": {
@@ -7512,7 +7512,7 @@
     "name": "wpmcp/generate-schema-markup",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Generate_Schema_Markup->handle",
     "description": "Generate schema.org JSON-LD (Article, WebPage, LocalBusiness or Product) for a post from title, dates, author, excerpt or SEO description, featured image, permalink and, for Product, the WooCommerce record. Proposal only: writes nothing",
     "input_schema": {
@@ -7550,7 +7550,7 @@
     "name": "wpmcp/generate-meta-tags",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Generate_Meta_Tags->handle",
     "description": "Propose a post's title, description, canonical, robots, OpenGraph and Twitter tags from SEO plugin fields or the post record, each with its source. Read-only proposal",
     "input_schema": {
@@ -7579,7 +7579,7 @@
     "name": "wpmcp/get-social-meta",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Get_Social_Meta->handle",
     "description": "Read a post's OpenGraph and Twitter overrides (title, description, image) from the active SEO plugin as one field set. Plugins with unmapped social storage return a structured unsupported response",
     "input_schema": {
@@ -7608,7 +7608,7 @@
     "name": "wpmcp/set-social-image",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Set_Social_Image->handle",
     "description": "Set a post's OpenGraph and/or Twitter image from an attachment_id or image_url via the active SEO plugin. Snapshotted, undo with rollback-operation. Unmapped plugins return supported:false",
     "input_schema": {
@@ -7654,7 +7654,7 @@
     "name": "wpmcp/get-term-seo-meta",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Get_Term_SEO_Meta->handle",
     "description": "Read a term's SEO fields (as get-seo-meta) by taxonomy plus term_id or slug. Fields the plugin lacks on terms are in unsupported_fields; no term storage returns supported:false",
     "input_schema": {
@@ -7689,7 +7689,7 @@
     "name": "wpmcp/update-term-seo-meta",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Update_Term_SEO_Meta->handle",
     "description": "Set a term's SEO fields (as update-seo-meta) by taxonomy plus term_id or slug. Snapshotted; rollback-operation undoes it. Fields the plugin lacks on terms return in skipped_fields",
     "input_schema": {
@@ -10830,8 +10830,8 @@
   {
     "name": "wpmcp/extract-content",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Extract_Content->handle",
     "description": "A post's plain text and structure (headings, word count, link and image counts). keywords=N adds the top N terms and 2-3 word phrases, title and headings weighted. Read-only",
     "input_schema": {
@@ -10862,8 +10862,8 @@
   {
     "name": "wpmcp/analyze-seo",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Analyze_Seo->handle",
     "description": "op score (default; post_id): on-page SEO 0-100 with findings (title/meta length, headings, words, alt, links, keyword density, readability). op keywords: volume, difficulty, CPC, intent. op backlinks (target domain or URL): link counts. Both use your provider key (set-seo-data-key), cached. Read-only",
     "input_schema": {
@@ -10914,8 +10914,8 @@
   {
     "name": "wpmcp/set-seo-data-key",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\SeoData\\Set_Seo_Data_Key->handle",
     "description": "Save SEO data provider credentials for analyze-seo (empty api_key clears); dataforseo: \"login:password\". Encrypted, never echoed",
     "input_schema": {
@@ -10950,8 +10950,8 @@
   {
     "name": "wpmcp/analyze-accessibility",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Analyze_Accessibility->handle",
     "description": "Scan a post's HTML for WCAG issues (missing alt text, heading jumps, empty or vague link text, unlabeled form controls): scored findings with element locations. Read-only",
     "input_schema": {
@@ -10979,8 +10979,8 @@
   {
     "name": "wpmcp/check-contrast",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Check_Contrast->handle",
     "description": "WCAG contrast ratio of a foreground/background hex pair, with AA/AAA pass/fail for normal and large text. Read-only",
     "input_schema": {
@@ -11012,8 +11012,8 @@
   {
     "name": "wpmcp/fix-color-contrast",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Fix_Color_Contrast->handle",
     "description": "Raise failing inline text/background color pairs in a post to a target WCAG ratio by lightness only (hue kept); before/after color, ratio, level per pair. Dry run unless apply=true; one snapshot, one rollback",
     "input_schema": {
@@ -11053,8 +11053,8 @@
   {
     "name": "wpmcp/add-alt-text-from-context",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Add_Alt_Text_From_Context->handle",
     "description": "Write missing image alt text in a post from filename, nearest heading or title. Keeps existing alt unless overwrite_existing=true; skips decorative images. Dry run unless apply=true; one snapshot, one rollback",
     "input_schema": {
@@ -11091,8 +11091,8 @@
   {
     "name": "wpmcp/fix-link-text",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Fix_Link_Text->handle",
     "description": "Replace empty or generic internal link text (\"click here\", \"read more\") with the destination title (WCAG 2.4.4, SEO). Skips external links and anchors with markup. Dry run unless apply=true; one snapshot, one rollback",
     "input_schema": {
@@ -11412,8 +11412,8 @@
   {
     "name": "wpmcp/run-wp-cli",
     "tier": "pro",
-    "group": "cli",
-    "method": "register_cli_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cli\\Run_Wp_Cli->handle",
     "description": "Run an allowlisted wp-cli subcommand (e.g. \"core version\"); returns stdout, stderr, exit code. Off by default (WPMCP_ALLOW_WP_CLI or wpmcp_allow_wp_cli); refused on production without a separate override; only subcommands on the wpmcp_wp_cli_allowlist filter run; shell metacharacters are rejected first",
     "input_schema": {
@@ -11441,8 +11441,8 @@
   {
     "name": "wpmcp/dispatch-cli-job",
     "tier": "pro",
-    "group": "cli",
-    "method": "register_cli_job_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cli\\Dispatch_Cli_Job->handle",
     "description": "Queue an allowlisted wp-cli command as a background job; returns its id (poll get-cli-job). Same gates as run-wp-cli (off by default: WPMCP_ALLOW_WP_CLI or wpmcp_allow_wp_cli; production needs a separate override; allowlisted subcommands and flags; no shell metacharacters), re-checked at run time, so closing them stops queued jobs. timeout seconds (default 300, max 900). Refused while too many jobs are queued or running",
     "input_schema": {
@@ -11473,8 +11473,8 @@
   {
     "name": "wpmcp/get-cli-job",
     "tier": "pro",
-    "group": "cli",
-    "method": "register_cli_job_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cli\\Get_Cli_Job->handle",
     "description": "Return a background CLI job by id: status (queued/running/completed/failed/canceled), the dispatched command and, once run, size-capped stdout/stderr, exit code and timed-out flag, or the error that stopped it",
     "input_schema": {
@@ -11502,8 +11502,8 @@
   {
     "name": "wpmcp/list-cli-jobs",
     "tier": "pro",
-    "group": "cli",
-    "method": "register_cli_job_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cli\\List_Cli_Jobs->handle",
     "description": "List background CLI jobs, newest first, with an optional status filter (queued/running/completed/failed/canceled)",
     "input_schema": {
@@ -11528,8 +11528,8 @@
   {
     "name": "wpmcp/cancel-cli-job",
     "tier": "pro",
-    "group": "cli",
-    "method": "register_cli_job_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cli\\Cancel_Cli_Job->handle",
     "description": "Cancel a queued background CLI job: unschedule its WP-Cron event and mark it canceled so it never runs. Errors if the job is unknown or no longer queued (running or terminal)",
     "input_schema": {
@@ -11557,8 +11557,8 @@
   {
     "name": "wpmcp/run-php-snippet",
     "tier": "pro",
-    "group": "php_exec",
-    "method": "register_php_exec_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Code\\Run_Php_Snippet->handle",
     "description": "Run a guarded arbitrary PHP snippet; returns its return value, output and any thrown error. REMOTE CODE EXECUTION: off by default (WPMCP_ALLOW_PHP_EXEC or wpmcp_allow_php_exec); refused on production or an unrecognized environment unless WPMCP_ALLOW_PHP_EXEC_ON_PRODUCTION is also set; the static validator rejects flagged snippets first (a speed-bump, not a security boundary). Not snapshotted; cannot be undone.",
     "input_schema": {
@@ -11586,8 +11586,8 @@
   {
     "name": "wpmcp/activate-php-snippet",
     "tier": "pro",
-    "group": "php_exec",
-    "method": "register_php_exec_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Code\\Activate_Php_Snippet->handle",
     "description": "Activate a STORED PHP SNIPPET by id (not Elementor custom code): flips the status flag, never executes it. Refused unless PHP execution is enabled (WPMCP_ALLOW_PHP_EXEC or wpmcp_allow_php_exec, default off) and the environment permits it (as run-php-snippet). Every attempt audited. Snapshot-first; rollback restores it inactive",
     "input_schema": {
@@ -11618,8 +11618,8 @@
   {
     "name": "wpmcp/add-scoped-css",
     "tier": "pro",
-    "group": "custom_code",
-    "method": "register_custom_code_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\CustomCode\\Add_Scoped_Css->handle",
     "description": "Store CSS printed in wp_head only on one post/page (post_id required). Pass css, or selector plus bare declarations; element_id (Elementor) scopes it to .elementor-element-<id>. Appends; replace=true overwrites, css=\"\" + replace=true clears. Site-wide: add-custom-css. Needs edit_css and manage_options. Refuses script-capable CSS (markup, expression(), script or data: URLs, @import), even obfuscated. Snapshot-first per page",
     "input_schema": {
@@ -11663,8 +11663,8 @@
   {
     "name": "wpmcp/add-custom-js",
     "tier": "pro",
-    "group": "custom_code",
-    "method": "register_custom_code_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\CustomCode\\Add_Custom_Js->handle",
     "description": "Store the site-wide JS snippet printed in wp_footer (replaces the previous one; js=\"\" + replace=true clears). XSS-CLASS SURFACE, off by default: needs WPMCP_ALLOW_JS_INJECTION or wpmcp_allow_js_injection, plus unfiltered_html and manage_options. Snapshot-first; closing the gate stops rendering stored JS",
     "input_schema": {
@@ -13226,7 +13226,7 @@
     "name": "wpmcp/gravityforms-read",
     "tier": "pro",
     "group": "integration",
-    "method": "register_forms_pack_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Gravity_Forms_Integration->handle_read",
     "description": "Read op on Gravity Forms (forms, fields, notifications, entries, entry notes): operation + its args (list-operations lists each op's schema)",
     "input_schema": {
@@ -13258,7 +13258,7 @@
     "name": "wpmcp/gravityforms-write",
     "tier": "pro",
     "group": "integration",
-    "method": "register_forms_pack_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Gravity_Forms_Integration->handle_write",
     "description": "Write op on Gravity Forms (forms, fields, notifications, entries, entry notes): operation + args per its schema (list-operations on the read half). Snapshot-first if possible (undo: rollback-operation); destructive ops need confirm:true",
     "input_schema": {
@@ -13296,7 +13296,7 @@
     "name": "wpmcp/formidable-read",
     "tier": "pro",
     "group": "integration",
-    "method": "register_forms_pack_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Formidable_Integration->handle_read",
     "description": "Read op on Formidable Forms (forms, fields, notifications, and entries): operation + its args (list-operations lists each op's schema)",
     "input_schema": {
@@ -13328,7 +13328,7 @@
     "name": "wpmcp/formidable-write",
     "tier": "pro",
     "group": "integration",
-    "method": "register_forms_pack_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Formidable_Integration->handle_write",
     "description": "Write op on Formidable Forms (forms, fields, notifications, and entries): operation + args per its schema (list-operations on the read half). Snapshot-first if possible (undo: rollback-operation); destructive ops need confirm:true",
     "input_schema": {
@@ -13366,7 +13366,7 @@
     "name": "wpmcp/wpforms-read",
     "tier": "pro",
     "group": "integration",
-    "method": "register_forms_pack_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\WPForms_Integration->handle_read",
     "description": "Read op on WPForms (forms, fields, notifications; entries with entry storage): operation + its args (list-operations lists each op's schema)",
     "input_schema": {
@@ -13398,7 +13398,7 @@
     "name": "wpmcp/wpforms-write",
     "tier": "pro",
     "group": "integration",
-    "method": "register_forms_pack_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\WPForms_Integration->handle_write",
     "description": "Write op on WPForms (forms, fields, notifications; entries with entry storage): operation + args per its schema (list-operations on the read half). Snapshot-first if possible (undo: rollback-operation); destructive ops need confirm:true",
     "input_schema": {
@@ -13436,7 +13436,7 @@
     "name": "wpmcp/ninjaforms-read",
     "tier": "pro",
     "group": "integration",
-    "method": "register_forms_pack_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Ninja_Forms_Integration->handle_read",
     "description": "Read op on Ninja Forms (forms, fields, notifications, submissions): operation + its args (list-operations lists each op's schema)",
     "input_schema": {
@@ -13468,7 +13468,7 @@
     "name": "wpmcp/ninjaforms-write",
     "tier": "pro",
     "group": "integration",
-    "method": "register_forms_pack_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Ninja_Forms_Integration->handle_write",
     "description": "Write op on Ninja Forms (forms, fields, notifications, submissions): operation + args per its schema (list-operations on the read half). Snapshot-first if possible (undo: rollback-operation); destructive ops need confirm:true",
     "input_schema": {
@@ -13506,7 +13506,7 @@
     "name": "wpmcp/fluentforms-read",
     "tier": "pro",
     "group": "integration",
-    "method": "register_forms_pack_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Fluent_Forms_Integration->handle_read",
     "description": "Read op on Fluent Forms (forms, fields, notifications, entries): operation + its args (list-operations lists each op's schema)",
     "input_schema": {
@@ -13538,7 +13538,7 @@
     "name": "wpmcp/fluentforms-write",
     "tier": "pro",
     "group": "integration",
-    "method": "register_forms_pack_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Fluent_Forms_Integration->handle_write",
     "description": "Write op on Fluent Forms (forms, fields, notifications, entries): operation + args per its schema (list-operations on the read half). Snapshot-first if possible (undo: rollback-operation); destructive ops need confirm:true",
     "input_schema": {
@@ -13576,7 +13576,7 @@
     "name": "wpmcp/block-suites-read",
     "tier": "pro",
     "group": "integration",
-    "method": "register_block_suite_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Block_Suites_Integration->handle_read",
     "description": "Read op on block suite blocks, patterns, settings and page CSS: operation + its args (list-operations lists each op's schema)",
     "input_schema": {
@@ -13608,7 +13608,7 @@
     "name": "wpmcp/block-suites-write",
     "tier": "pro",
     "group": "integration",
-    "method": "register_block_suite_abilities",
+    "method": "register_integration_abilities",
     "handler": "WPMCP\\Integrations\\Block_Suites_Integration->handle_write",
     "description": "Write op on block suite blocks, patterns, settings and page CSS: operation + args per its schema (list-operations on the read half). Snapshot-first if possible (undo: rollback-operation); destructive ops need confirm:true",
     "input_schema": {
@@ -13645,8 +13645,8 @@
   {
     "name": "wpmcp/create-custom-widget",
     "tier": "pro",
-    "group": "widget_builder",
-    "method": "register_widget_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\WidgetBuilder\\Create_Custom_Widget->handle",
     "description": "Create a custom Elementor widget from a data spec (title, controls, template with {{name}} placeholders), stored as a wpmcp_widget post. Without unfiltered_html the template is wp_kses_post-filtered (template_filtered: true)",
     "input_schema": {
@@ -13677,8 +13677,8 @@
   {
     "name": "wpmcp/update-custom-widget",
     "tier": "pro",
-    "group": "widget_builder",
-    "method": "register_widget_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\WidgetBuilder\\Update_Custom_Widget->handle",
     "description": "Replace a custom widget's spec by id (re-validated; same wp_kses_post gate as create)",
     "input_schema": {
@@ -13713,8 +13713,8 @@
   {
     "name": "wpmcp/get-custom-widget",
     "tier": "pro",
-    "group": "widget_builder",
-    "method": "register_widget_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\WidgetBuilder\\Get_Custom_Widget->handle",
     "description": "Read a custom widget's stored spec by id",
     "input_schema": {
@@ -13742,8 +13742,8 @@
   {
     "name": "wpmcp/list-custom-widgets",
     "tier": "pro",
-    "group": "widget_builder",
-    "method": "register_widget_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\WidgetBuilder\\List_Custom_Widgets->handle",
     "description": "List this site's custom widgets (id, name, title, active/inactive)",
     "input_schema": {
@@ -13764,8 +13764,8 @@
   {
     "name": "wpmcp/delete-custom-widget",
     "tier": "pro",
-    "group": "widget_builder",
-    "method": "register_widget_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\WidgetBuilder\\Delete_Custom_Widget->handle",
     "description": "Move a custom widget to the trash (reversible via restore-post)",
     "input_schema": {
@@ -13796,8 +13796,8 @@
   {
     "name": "wpmcp/set-widget-status",
     "tier": "pro",
-    "group": "widget_builder",
-    "method": "register_widget_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\WidgetBuilder\\Set_Widget_Status->handle",
     "description": "Enable (publish) or disable (draft) a custom widget by id",
     "input_schema": {
@@ -13832,8 +13832,8 @@
   {
     "name": "wpmcp/validate-widget-spec",
     "tier": "pro",
-    "group": "widget_builder",
-    "method": "register_widget_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\WidgetBuilder\\Validate_Widget_Spec->handle",
     "description": "Validate a custom-widget spec without storing it",
     "input_schema": {
@@ -13861,8 +13861,8 @@
   {
     "name": "wpmcp/compile-custom-widget",
     "tier": "pro",
-    "group": "widget_builder",
-    "method": "register_widget_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\WidgetBuilder\\Compiler\\Compile_Custom_Widget->handle",
     "description": "Compile a published custom-widget spec into a native Elementor widget; the plugin, never the agent, writes and lints the PHP. Off unless wpmcp_enable_widget_compiler is on; needs edit_files, honors DISALLOW_FILE_EDIT. set-widget-status disables it",
     "input_schema": {
@@ -13893,8 +13893,8 @@
   {
     "name": "wpmcp/list-control-types",
     "tier": "pro",
-    "group": "widget_builder",
-    "method": "register_widget_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\WidgetBuilder\\List_Control_Types->handle",
     "description": "List the control types a custom-widget spec may use and their Elementor controls",
     "input_schema": {
@@ -13915,8 +13915,8 @@
   {
     "name": "wpmcp/create-custom-block",
     "tier": "pro",
-    "group": "block_builder",
-    "method": "register_block_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\BlockBuilder\\Create_Custom_Block->handle",
     "description": "Create a custom Gutenberg block from a data spec (title, attributes, template with {{name}} placeholders). Validated, stored as a wpmcp_block post and registered at runtime; a render_callback interprets the template (no code generation, no eval). Remove with delete-custom-block",
     "input_schema": {
@@ -13947,8 +13947,8 @@
   {
     "name": "wpmcp/update-custom-block",
     "tier": "pro",
-    "group": "block_builder",
-    "method": "register_block_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\BlockBuilder\\Update_Custom_Block->handle",
     "description": "Replace a custom block's spec by id (re-validated before it is stored). Snapshotted: returns an operation_id for rollback-operation",
     "input_schema": {
@@ -13983,8 +13983,8 @@
   {
     "name": "wpmcp/get-custom-block",
     "tier": "pro",
-    "group": "block_builder",
-    "method": "register_block_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\BlockBuilder\\Get_Custom_Block->handle",
     "description": "Read one custom block's stored spec by id",
     "input_schema": {
@@ -14012,8 +14012,8 @@
   {
     "name": "wpmcp/list-custom-blocks",
     "tier": "pro",
-    "group": "block_builder",
-    "method": "register_block_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\BlockBuilder\\List_Custom_Blocks->handle",
     "description": "List the custom blocks on this site (id, name, title, active/inactive)",
     "input_schema": {
@@ -14034,8 +14034,8 @@
   {
     "name": "wpmcp/delete-custom-block",
     "tier": "pro",
-    "group": "block_builder",
-    "method": "register_block_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\BlockBuilder\\Delete_Custom_Block->handle",
     "description": "Delete a custom block by moving it to the trash. Snapshotted: returns an operation_id for rollback-operation (restore-post also works)",
     "input_schema": {
@@ -14066,8 +14066,8 @@
   {
     "name": "wpmcp/set-block-status",
     "tier": "pro",
-    "group": "block_builder",
-    "method": "register_block_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\BlockBuilder\\Set_Block_Status->handle",
     "description": "Enable (publish) or disable (draft) a custom block by id. Snapshotted: returns an operation_id for rollback-operation; a no-op status change writes nothing",
     "input_schema": {
@@ -14106,8 +14106,8 @@
   {
     "name": "wpmcp/validate-block-spec",
     "tier": "pro",
-    "group": "block_builder",
-    "method": "register_block_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\BlockBuilder\\Validate_Block_Spec->handle",
     "description": "Statically validate a custom-block spec (title, attributes, template) without storing it",
     "input_schema": {
@@ -14135,8 +14135,8 @@
   {
     "name": "wpmcp/list-block-control-types",
     "tier": "pro",
-    "group": "block_builder",
-    "method": "register_block_builder_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\BlockBuilder\\List_Block_Control_Types->handle",
     "description": "List the attribute types a custom-block spec may use and the block.json type each maps to",
     "input_schema": {
@@ -14549,8 +14549,8 @@
   {
     "name": "wpmcp/cloud-connect",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Connect->handle",
     "description": "Connect this site to WP MCP Cloud: store the cloud url + api key and verify them by fetching the account, which is returned. gateway_consent (default false) permits a gateway credential upload; false withdraws it and kills any the cloud holds",
     "input_schema": {
@@ -14586,8 +14586,8 @@
   {
     "name": "wpmcp/cloud-status",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Status->handle",
     "description": "Whether this site is connected to WP MCP Cloud, and where",
     "input_schema": {
@@ -14608,8 +14608,8 @@
   {
     "name": "wpmcp/cloud-list-assets",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_List_Assets->handle",
     "description": "List the assets (widget/block specs) in this site's WP MCP Cloud account",
     "input_schema": {
@@ -14630,8 +14630,8 @@
   {
     "name": "wpmcp/cloud-push-assets",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Push_Assets->handle",
     "description": "Push this site's custom widget and block specs up to WP MCP Cloud (backup + reuse across sites). Optional type filter (widget|block)",
     "input_schema": {
@@ -14656,8 +14656,8 @@
   {
     "name": "wpmcp/cloud-pull-assets",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Pull_Assets->handle",
     "description": "Pull this site's WP MCP Cloud builder assets and recreate them as local custom widget/block specs (each validated first; refusals listed under skipped with a reason)",
     "input_schema": {
@@ -14678,8 +14678,8 @@
   {
     "name": "wpmcp/cloud-sync-settings",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Sync_Settings->handle",
     "description": "Preview what would sync to WP MCP Cloud: governance toggles, MCP exposure switch, tool-exposure mode, skills switch. Never secrets or code-level gates (db writes, php exec, cli allowlist)",
     "input_schema": {
@@ -14700,8 +14700,8 @@
   {
     "name": "wpmcp/cloud-push-settings",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Push_Settings->handle",
     "description": "Push the cloud-sync-settings posture plus identity scopes (no secrets) to WP MCP Cloud for cloud-apply-settings elsewhere. Paid. Changes nothing here",
     "input_schema": {
@@ -14722,8 +14722,8 @@
   {
     "name": "wpmcp/cloud-apply-settings",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Apply_Settings->handle",
     "description": "Apply a posture: a cloud-sync-settings map, or (settings omitted) the last pushed one. Re-filtered to the allowlist; toggles and identities merge, scope fields only; never changes the MCP exposure switch or disables rollback-operation. Paid. Each write snapshotted; applied[i] pairs with operation_ids[i]; matching options listed as unchanged",
     "input_schema": {
@@ -14751,8 +14751,8 @@
   {
     "name": "wpmcp/cloud-marketplace-browse",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Marketplace_Browse->handle",
     "description": "Browse WP MCP Cloud marketplace widget and block specs, optionally by type and search",
     "input_schema": {
@@ -14784,8 +14784,8 @@
   {
     "name": "wpmcp/cloud-marketplace-install",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Marketplace_Install->handle",
     "description": "Install a WP MCP Cloud marketplace listing by slug: validated like validate-widget-spec / validate-block-spec, template run through wp_kses_post, lands INACTIVE until set-widget-status / set-block-status. Refuses a name colliding with a local spec",
     "input_schema": {
@@ -14813,8 +14813,8 @@
   {
     "name": "wpmcp/cloud-gateway-provision",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Gateway_Provision->handle",
     "description": "Mint the gateway credential bound to a scoped identity (MCP connection, that allowlist only) and upload it. Needs consent=true; replace=true kills a live one. Upload needs cloud-connect gateway_consent. Secrets shown ONCE. Revoke: gateway-revoke",
     "input_schema": {
@@ -14852,8 +14852,8 @@
   {
     "name": "wpmcp/cloud-gateway-status",
     "tier": "pro",
-    "group": "cloud",
-    "method": "register_cloud_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Gateway_Status->handle",
     "description": "Gateway credential's bound identity, upload and consent state. No secrets",
     "input_schema": {
@@ -15112,8 +15112,8 @@
   {
     "name": "wpmcp/memory-recall",
     "tier": "pro",
-    "group": "memory",
-    "method": "register_memory_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Memory\\Memory_Recall->handle",
     "description": "Read this site's APPROVED project memory: published facts, conventions, guardrails, session summaries and enforced block rules. Pending proposals are never returned (only their count), so unapproved suggestions never read back as policy",
     "input_schema": {
@@ -15151,8 +15151,8 @@
   {
     "name": "wpmcp/memory-propose",
     "tier": "pro",
-    "group": "memory",
-    "method": "register_memory_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Memory\\Memory_Propose->handle",
     "description": "Propose one durable memory entry, stored PENDING and inert (not injected into sessions; severity=block not enforced) until an admin publishes it in wp-admin. severity=block needs at least one target (tool:<ability>, post_id:<id>, post_type:<slug>); once published, matching calls are refused (enforced, not advisory)",
     "input_schema": {
@@ -15206,8 +15206,8 @@
   {
     "name": "wpmcp/memory-save-summary",
     "tier": "pro",
-    "group": "memory",
-    "method": "register_memory_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Memory\\Memory_Save_Summary->handle",
     "description": "Record what a session changed as a pending session-summary entry. Facts come from that session's snapshot rows, not the supplied prose or any LLM, so it cannot over- or under-claim. Optional takeaways are filed as separate pending proposals",
     "input_schema": {

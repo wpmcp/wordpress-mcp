@@ -5059,7 +5059,7 @@
     "name": "wpmcp/generate-schema-markup",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Generate_Schema_Markup->handle",
     "description": "Generate schema.org JSON-LD (Article, WebPage, LocalBusiness or Product) for a post from title, dates, author, excerpt or SEO description, featured image, permalink and, for Product, the WooCommerce record. Proposal only: writes nothing",
     "input_schema": {
@@ -5097,7 +5097,7 @@
     "name": "wpmcp/generate-meta-tags",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Generate_Meta_Tags->handle",
     "description": "Propose a post's title, description, canonical, robots, OpenGraph and Twitter tags from SEO plugin fields or the post record, each with its source. Read-only proposal",
     "input_schema": {
@@ -5126,7 +5126,7 @@
     "name": "wpmcp/get-social-meta",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Get_Social_Meta->handle",
     "description": "Read a post's OpenGraph and Twitter overrides (title, description, image) from the active SEO plugin as one field set. Plugins with unmapped social storage return a structured unsupported response",
     "input_schema": {
@@ -5155,7 +5155,7 @@
     "name": "wpmcp/set-social-image",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Set_Social_Image->handle",
     "description": "Set a post's OpenGraph and/or Twitter image from an attachment_id or image_url via the active SEO plugin. Snapshotted, undo with rollback-operation. Unmapped plugins return supported:false",
     "input_schema": {
@@ -5201,7 +5201,7 @@
     "name": "wpmcp/get-term-seo-meta",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Get_Term_SEO_Meta->handle",
     "description": "Read a term's SEO fields (as get-seo-meta) by taxonomy plus term_id or slug. Fields the plugin lacks on terms are in unsupported_fields; no term storage returns supported:false",
     "input_schema": {
@@ -5236,7 +5236,7 @@
     "name": "wpmcp/update-term-seo-meta",
     "tier": "pro",
     "group": "seo",
-    "method": "register_seo_pro_abilities",
+    "method": "register_seo_abilities",
     "handler": "WPMCP\\Tools\\SEO\\Update_Term_SEO_Meta->handle",
     "description": "Set a term's SEO fields (as update-seo-meta) by taxonomy plus term_id or slug. Snapshotted; rollback-operation undoes it. Fields the plugin lacks on terms return in skipped_fields",
     "input_schema": {
@@ -8055,8 +8055,8 @@
   {
     "name": "wpmcp/extract-content",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Extract_Content->handle",
     "description": "A post's plain text and structure (headings, word count, link and image counts). keywords=N adds the top N terms and 2-3 word phrases, title and headings weighted. Read-only",
     "input_schema": {
@@ -8087,8 +8087,8 @@
   {
     "name": "wpmcp/analyze-seo",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Analyze_Seo->handle",
     "description": "op score (default; post_id): on-page SEO 0-100 with findings (title/meta length, headings, words, alt, links, keyword density, readability). op keywords: volume, difficulty, CPC, intent. op backlinks (target domain or URL): link counts. Both use your provider key (set-seo-data-key), cached. Read-only",
     "input_schema": {
@@ -8139,8 +8139,8 @@
   {
     "name": "wpmcp/set-seo-data-key",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\SeoData\\Set_Seo_Data_Key->handle",
     "description": "Save SEO data provider credentials for analyze-seo (empty api_key clears); dataforseo: \"login:password\". Encrypted, never echoed",
     "input_schema": {
@@ -8175,8 +8175,8 @@
   {
     "name": "wpmcp/analyze-accessibility",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Analyze_Accessibility->handle",
     "description": "Scan a post's HTML for WCAG issues (missing alt text, heading jumps, empty or vague link text, unlabeled form controls): scored findings with element locations. Read-only",
     "input_schema": {
@@ -8204,8 +8204,8 @@
   {
     "name": "wpmcp/check-contrast",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Check_Contrast->handle",
     "description": "WCAG contrast ratio of a foreground/background hex pair, with AA/AAA pass/fail for normal and large text. Read-only",
     "input_schema": {
@@ -8237,8 +8237,8 @@
   {
     "name": "wpmcp/fix-color-contrast",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Fix_Color_Contrast->handle",
     "description": "Raise failing inline text/background color pairs in a post to a target WCAG ratio by lightness only (hue kept); before/after color, ratio, level per pair. Dry run unless apply=true; one snapshot, one rollback",
     "input_schema": {
@@ -8278,8 +8278,8 @@
   {
     "name": "wpmcp/add-alt-text-from-context",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Add_Alt_Text_From_Context->handle",
     "description": "Write missing image alt text in a post from filename, nearest heading or title. Keeps existing alt unless overwrite_existing=true; skips decorative images. Dry run unless apply=true; one snapshot, one rollback",
     "input_schema": {
@@ -8316,8 +8316,8 @@
   {
     "name": "wpmcp/fix-link-text",
     "tier": "pro",
-    "group": "analysis",
-    "method": "register_analysis_abilities",
+    "group": "prologue",
+    "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Analysis\\Fix_Link_Text->handle",
     "description": "Replace empty or generic internal link text (\"click here\", \"read more\") with the destination title (WCAG 2.4.4, SEO). Skips external links and anchors with markup. Dry run unless apply=true; one snapshot, one rollback",
     "input_schema": {
