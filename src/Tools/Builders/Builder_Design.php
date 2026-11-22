@@ -16,8 +16,10 @@ if (! defined('ABSPATH')) {
  * Avada_Design and Avada_Library), and Divi 5 for templates
  * and catalog (see Divi5_Design) and WPBakery (issue #639, see
  * WPBakery_Design), Thrive Architect (issue #640, see
- * Thrive_Design), Cornerstone (issue #646, see Cornerstone_Design) and
- * BeTheme (issue #643, see BeTheme_Design); the builder comes from the
+ * Thrive_Design), Beaver Builder (issue #638, see Beaver_Builder_Page),
+ * Cornerstone (issue #646, see Cornerstone_Design) and
+ * BeTheme (issue #643, see BeTheme_Design) and Kirki (issue #641,
+ * templates and catalog, see Kirki_Content); the builder comes from the
  * `builder` argument, or is detected from `post_id` when that is given
  * instead. Reads only: writes to global design data are a later phase.
  */
@@ -25,7 +27,7 @@ class Builder_Design
 {
     public const SCOPES = ['design_system', 'templates', 'catalog'];
 
-    public const BUILDERS = ['bricks', 'breakdance', 'oxygen', 'divi', 'wpbakery', 'avada', 'thrive', 'cornerstone', 'betheme', 'siteorigin'];
+    public const BUILDERS = ['bricks', 'breakdance', 'oxygen', 'divi', 'wpbakery', 'avada', 'thrive', 'cornerstone', 'betheme', 'siteorigin', 'kirki', 'visual-composer', 'beaver-builder'];
 
     /**
      * @param array<string,mixed> $args
@@ -34,6 +36,10 @@ class Builder_Design
     public static function read(array $args)
     {
         $scope = (string) $args['scope'];
+        // Visual Composer also lists its pages (issue #642).
+        if ('pages' === $scope && 'visual-composer' === (string) ($args['builder'] ?? '')) {
+            return Visual_Composer_Design::read($scope, '');
+        }
         if (! in_array($scope, self::SCOPES, true)) {
             return new \WP_Error('invalid_scope', "scope must be 'design_system', 'templates' or 'catalog'; got '{$scope}'.");
         }
@@ -49,11 +55,11 @@ class Builder_Design
         }
 
         if ('' === $builder) {
-            return new \WP_Error('missing_builder', 'A scope read needs builder (bricks, breakdance, oxygen, divi, wpbakery, avada, thrive, cornerstone, betheme or siteorigin) or a post_id to detect it from.');
+            return new \WP_Error('missing_builder', 'A scope read needs builder (bricks, breakdance, oxygen, divi, wpbakery, avada, thrive, cornerstone, betheme or siteorigincornerstone, betheme or kirkicornerstone, betheme or visual-composercornerstone, betheme or beaver-builder) or a post_id to detect it from.');
         }
 
         if (! in_array($builder, self::BUILDERS, true)) {
-            return new \WP_Error('unsupported_builder', "scope reads support 'bricks', 'breakdance', 'oxygen', 'divi', 'wpbakery', 'avada', 'thrive', 'cornerstone', 'betheme' and 'siteorigin'; got '{$builder}'.");
+            return new \WP_Error('unsupported_builder', "scope reads support 'bricks', 'breakdance', 'oxygen', 'divi', 'wpbakery', 'avada', 'thrive', 'cornerstone', 'betheme' and 'siteorigin' and 'kirki' and 'visual-composer' and 'beaver-builder'; got '{$builder}'.");
         }
 
         $element = (string) ($args['element'] ?? '');
@@ -84,6 +90,18 @@ class Builder_Design
 
         if ('siteorigin' === $builder) {
             return SiteOrigin_Content::design($scope, $element);
+        }
+
+        if ('kirki' === $builder) {
+            return Kirki_Content::design($scope, $element);
+        }
+
+        if ('visual-composer' === $builder) {
+            return Visual_Composer_Design::read($scope, $element);
+        }
+
+        if ('beaver-builder' === $builder) {
+            return Beaver_Builder_Page::read($scope, $element);
         }
 
         if ('divi' === $builder) {

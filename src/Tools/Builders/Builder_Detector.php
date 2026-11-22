@@ -40,6 +40,11 @@ if (! defined('ABSPATH')) {
  * a SiteOrigin Page Builder layout (a `panels_data` row holding a row or a
  * widget, issue #644; before block markers, since the plugin renders it in
  * place of post_content, which may hold its HTML copy),
+ * a Kirki page builder page (`kirki_editor_mode` = 'kirki', issue #641;
+ * Kirki renders its layout from postmeta too),
+ * a Visual Composer page (a `vcv-pageContent` document with elements on a
+ * page not switched to another editor, issue #642; before block markers,
+ * since the markup it saves can hold blocks),
  * Divi 5's `<!-- wp:divi/ -->` blocks (a Divi 5 layout whose flags were
  * never written, as on imported content), Gutenberg's `<!-- wp: -->` block
  * comment markers in post_content, then a WPBakery `[vc_row]` or
@@ -118,6 +123,17 @@ class Builder_Detector
             return 'siteorigin';
         }
 
+        // Kirki's builder renders the page from its `kirki` row while this
+        // flag is set (it deletes it when the owner goes back to the
+        // WordPress editor).
+        if ('kirki' === get_post_meta($post_id, 'kirki_editor_mode', true)) {
+            return 'kirki';
+        }
+
+        if (self::has_visual_composer_document($post_id)) {
+            return 'visual-composer';
+        }
+
         $post = get_post($post_id);
         $content = $post ? (string) $post->post_content : '';
 
@@ -184,6 +200,23 @@ class Builder_Detector
         }
 
         return is_array($data) && [] !== $data;
+    }
+
+    /**
+     * Visual Composer's own test for a page it renders (isVcvPost(): a
+     * `vcv-pageContent` row, rawurlencode()d JSON, with elements), unless
+     * its `vcv-be-editor` row says the page went back to the block or
+     * classic editor.
+     */
+    private static function has_visual_composer_document(int $post_id): bool
+    {
+        $raw = get_post_meta($post_id, 'vcv-pageContent', true);
+        if (! is_string($raw) || '' === $raw || in_array((string) get_post_meta($post_id, 'vcv-be-editor', true), ['gutenberg', 'classic'], true)) {
+            return false;
+        }
+        $doc = json_decode(rawurldecode($raw), true);
+
+        return is_array($doc) && is_array($doc['elements'] ?? null) && [] !== $doc['elements'];
     }
 
     /**

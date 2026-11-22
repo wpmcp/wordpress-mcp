@@ -52,6 +52,9 @@ class WooObjectCapabilityTest extends \WP_UnitTestCase
         'webhooks.update:id'                  => 'a webhook row',
         'webhooks.pause:id'                   => 'a webhook row',
         'webhooks.delete:id'                  => 'a webhook row',
+        'taxes.rate:id'                       => 'a tax rate row',
+        'taxes.update:id'                     => 'a tax rate row',
+        'taxes.delete:id'                     => 'a tax rate row',
         'settings.options:group_id'           => 'a settings group id (a string)',
         'settings.update:group_id'            => 'a settings group id (a string)',
         'settings.update:id'                  => 'a setting id (a string)',
@@ -79,6 +82,8 @@ class WooObjectCapabilityTest extends \WP_UnitTestCase
         'orders.update' => [ 'customer_id', 'line_items.*.product_id', 'line_items.*.variation_id', 'line_items.*.id' ],
         'reviews.reply' => [ 'id' ],
         'reviews.list'  => [ 'product_id' ],
+        'cart.add-upsell'    => [ 'product_ids.*' ],
+        'cart.remove-upsell' => [ 'product_ids.*' ],
     ];
 
     private string $granted = '';

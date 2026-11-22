@@ -8,7 +8,8 @@ if (! defined('ABSPATH')) {
 
 /**
  * Read-only: return the raw builder structure for a post. Bricks returns
- * the decoded `_bricks_page_content_2` postmeta JSON as an array; Divi
+ * its stored element list, an outline of it by element id (what operations
+ * address), the hash writes are pinned to, the version and revisions; Divi
  * returns the post_content shortcode string plus the use-builder flag;
  * WPBakery returns the shortcode string, its parsed element tree (the dotted
  * paths update-builder-content operations address), its two meta rows and
@@ -29,6 +30,10 @@ if (! defined('ABSPATH')) {
  * the storage format, the hash writes are pinned to and whether the theme
  * is active; SiteOrigin Page Builder returns its panels_data, the path tree
  * over its rows, cells and widgets, its hash and whether the plugin is loaded.
+ * is active; Kirki returns its elements by id, an outline from the body,
+ * its hash and any unpublished version (see Kirki_Content).
+ * is active; Visual Composer returns its element tree (ids operations
+ * address), the stored elements, the hash and its editor link.
  * With `scope` set (design_system, templates or catalog) it reads a
  * builder's site-wide design data instead of one post; see Builder_Design.
  * Elementor/Gutenberg/classic posts are out of scope for this tool (use
@@ -56,11 +61,7 @@ class Get_Builder_Content
         $builder = Builder_Detector::detect($post_id);
 
         if ('bricks' === $builder) {
-            return [
-                'post_id' => $post_id,
-                'builder' => 'bricks',
-                'content' => Bricks_Content::get($post_id) ?? [],
-            ];
+            return Bricks_Page::read($post_id);
         }
 
         if ('divi' === $builder) {
@@ -108,13 +109,21 @@ class Get_Builder_Content
             return SiteOrigin_Content::read($post_id);
         }
 
+        if ('kirki' === $builder) {
+            return Kirki_Content::read($post_id);
+        }
+
+        if ('visual-composer' === $builder) {
+            return Visual_Composer_Content::read($post_id);
+        }
+
         if ('breakdance' === $builder || 'oxygen' === $builder) {
             return Breakdance_Content::read($post_id, $builder);
         }
 
         return new \WP_Error(
             'unsupported_builder',
-            "get-builder-content only supports 'bricks', 'divi', 'wpbakery', 'avada', 'beaver-builder', 'breakdance', 'oxygen', 'oxygen-classic', 'thrive', 'cornerstone', 'betheme' and 'siteorigin'; this post was detected as '{$builder}'."
+            "get-builder-content only supports 'bricks', 'divi', 'wpbakery', 'avada', 'beaver-builder', 'breakdance', 'oxygen', 'oxygen-classic', 'thrive', 'cornerstone', 'betheme' and 'siteorigin' and 'kirki' and 'visual-composer'; this post was detected as '{$builder}'."
         );
     }
 }

@@ -73,6 +73,21 @@ if (! defined('ABSPATH')) {
  * id} (one Component instance), and save_template, which saves a node or
  * the whole page as a new Component recorded for undo (see Oxygen_Page).
  *
+ * Bricks pages (issue #633) also take one operation addressed by element
+ * id (update attrs and element {label}, add with element {name, settings,
+ * label, children} or {template: id}, remove, move), publish, restore (path:
+ * a revision id) and save_template (an element or the page as a new section
+ * template). Operations need Bricks loaded (plugin_missing otherwise) and,
+ * on a page that has a layout, expected_hash, the read's hash; a whole
+ * content write checks expected_hash when one is given (see Bricks_Page and
+ * Bricks_Tree).
+ *
+ * Breakdance pages take the same (issue #634, see Breakdance_Page):
+ * Breakdance loaded, expected_hash once the page holds a layout, publish,
+ * restore, add with element {template: id} (a template, header, footer,
+ * Global Block, popup or part) and save_template, which saves a node or the
+ * page as a new Global Block recorded for undo.
+ *
  * BeTheme pages (issue #643) need BeTheme active (plugin_missing
  * otherwise) and expected_hash, the read's hash of the stored layout row, on
  * any write to a page that has a layout. Content is the whole layout as a
@@ -89,10 +104,28 @@ if (! defined('ABSPATH')) {
  * publish sets the page live. Stored through the plugin's own sanitizers
  * (see SiteOrigin_Content and SiteOrigin_Layout).
  *
+ * Kirki page builder pages (issue #641) need Kirki active (plugin_missing
+ * otherwise), expected_hash on a page that has a layout, and no unpublished
+ * Kirki version (its publish would overwrite the change). Content is the
+ * whole element map as a JSON object; operations address elements by id
+ * (update with attrs, text and element fields; add, also {symbol: id};
+ * remove; move) and publish sets the page live (see Kirki_Content and
+ * Kirki_Tree).
+ *
+ * Visual Composer pages (issue #642) need Visual Composer loaded
+ * (plugin_missing otherwise) and expected_hash, the read's hash. Its
+ * browser editor renders the page markup and CSS, so only what can be kept
+ * in step in both the editor's document and the saved markup is written:
+ * update (path: an element id) of an attribute that is the element's whole
+ * rendered content (text sets the Text Block output) or of the layer name,
+ * and publish. Anything else is refused with editor_render_required (see
+ * Visual_Composer_Content).
+ *
  * With `scope` 'design_system' the call edits one entry of the builder's
  * global design data instead of a post (issue #391): Bricks classes,
- * variables and palettes, Breakdance classes and palette colors, Avada
- * palette colors, typography sets and global options. See
+ * variables and palettes, Breakdance classes and palette colors, Oxygen 6
+ * selectors, variables and palette colors (issue #805), Avada palette
+ * colors, typography sets and global options. See
  * Builder_Design_Write and Avada_Design, which snapshot the one option they
  * change.
  *
@@ -138,7 +171,7 @@ class Update_Builder_Content
         }
 
         if ('bricks' === $builder) {
-            return $this->update_bricks($post_id, $content, $args);
+            return '' === (string) ($args['operation'] ?? '') ? $this->update_bricks($post_id, $content, $args) : $this->update_bricks_elements($post_id, $args);
         }
 
         if ('divi' === $builder) {
@@ -177,13 +210,21 @@ class Update_Builder_Content
             return $this->update_siteorigin($post_id, $args);
         }
 
+        if ('kirki' === $builder) {
+            return $this->update_kirki($post_id, $args);
+        }
+
+        if ('visual-composer' === $builder) {
+            return $this->update_visual_composer($post_id, $args);
+        }
+
         if ('breakdance' === $builder || 'oxygen' === $builder) {
             return $this->update_breakdance($post_id, $args, $builder);
         }
 
         return new \WP_Error(
             'unsupported_builder',
-            "update-builder-content only supports 'bricks', 'divi', 'wpbakery', 'avada', 'beaver-builder', 'breakdance', 'oxygen', 'oxygen-classic', 'thrive', 'cornerstone', 'betheme' and 'siteorigin'; got '{$builder}'."
+            "update-builder-content only supports 'bricks', 'divi', 'wpbakery', 'avada', 'beaver-builder', 'breakdance', 'oxygen', 'oxygen-classic', 'thrive', 'cornerstone', 'betheme' and 'siteorigin' and 'kirki' and 'visual-composer'; got '{$builder}'."
         );
     }
 
@@ -205,31 +246,31 @@ class Update_Builder_Content
             );
         }
 
-        $status = null;
-        if ('oxygen' === $builder) {
-            $refusal = $this->oxygen_refusal($post_id, $operation, $args);
+        // Both products (issues #634, #635): the product loaded, the read's
+        // hash on a page with a layout, and the page-level operations.
+        $status  = null;
+        $refusal = $this->breakdance_refusal($post_id, $operation, $args, $builder);
+        if (null !== $refusal) {
+            return $refusal;
+        }
+        if ('save_template' === $operation) {
+            return 'oxygen' === $builder ? Oxygen_Page::save_component($post_id, $args) : Breakdance_Page::save_block($post_id, $args, $builder, Breakdance_Tree::blank());
+        }
+        if ('publish' === $operation) {
+            $refusal = $this->publish_refusal($post_id, "invalid_{$builder}_request");
             if (null !== $refusal) {
                 return $refusal;
             }
-            if ('save_template' === $operation) {
-                return Oxygen_Page::save_component($post_id, $args);
-            }
-            if ('publish' === $operation) {
-                $refusal = $this->publish_refusal($post_id, 'invalid_oxygen_request');
-                if (null !== $refusal) {
-                    return $refusal;
-                }
-                $status = 'publish';
-            }
+            $status = 'publish';
         }
 
         $doc  = Breakdance_Content::get_document($post_id, $builder) ?? Breakdance_Tree::blank();
         $path = null;
         try {
-            if ('oxygen' === $builder && in_array($operation, ['publish', 'restore'], true)) {
-                $doc = 'restore' === $operation ? Oxygen_Page::revision_document($post_id, (string) ($args['path'] ?? '')) : $doc;
-            } elseif ('oxygen' === $builder && 'add' === $operation && $this->is_oxygen_insert($args['element'] ?? null)) {
-                [$doc, $path] = $this->apply_oxygen_insert($doc, $args);
+            if (in_array($operation, ['publish', 'restore'], true)) {
+                $doc = 'restore' === $operation ? Breakdance_Page::revision_document($post_id, (string) ($args['path'] ?? ''), $builder) : $doc;
+            } elseif ('add' === $operation && $this->is_breakdance_insert($args['element'] ?? null, $builder)) {
+                [$doc, $path] = $this->apply_breakdance_insert($doc, $args, $builder);
             } elseif ('' === $operation) {
                 $content = $args['content'] ?? null;
                 $list    = is_string($content) ? json_decode($content) : null;
@@ -263,9 +304,7 @@ class Update_Builder_Content
         );
 
         $result = ['operation_id' => $out['operation_id'], 'post_id' => $post_id, 'builder' => $builder];
-        if ('oxygen' === $builder) {
-            $result['hash'] = Oxygen_Page::hash($post_id);
-        }
+        $result['hash'] = Breakdance_Page::hash($post_id, $builder);
         if (null !== $path) {
             $result['path'] = $path;
         }
@@ -274,51 +313,59 @@ class Update_Builder_Content
     }
 
     /**
-     * Why an Oxygen 6 write must not run (issue #635), or null: Oxygen must
-     * be loaded, and a page that already holds a layout is changed only
-     * against the hash it was read with, since node ids of a page changed
-     * since could point elsewhere. Saving a Component writes no page, so it
-     * needs no hash.
+     * Why a Breakdance or Oxygen 6 write must not run (issues #634, #635),
+     * or null: the product must be loaded, and a page that already holds a
+     * layout is changed only against the hash it was read with, since node
+     * ids of a page changed since could point elsewhere. Saving a block
+     * writes no page, so it needs no hash.
      */
-    private function oxygen_refusal(int $post_id, string $operation, array $args): ?\WP_Error
+    private function breakdance_refusal(int $post_id, string $operation, array $args, string $builder): ?\WP_Error
     {
-        $unavailable = Oxygen_Page::unavailable();
+        $unavailable = Breakdance_Page::unavailable($builder);
         if (null !== $unavailable) {
             return $unavailable;
         }
-        if ('save_template' === $operation || ! Oxygen_Page::has_layout($post_id)) {
+        if ('save_template' === $operation || ! Breakdance_Page::has_layout($post_id, $builder)) {
             return null;
         }
 
+        $label    = 'oxygen' === $builder ? 'an Oxygen' : 'a Breakdance';
         $expected = (string) ($args['expected_hash'] ?? '');
         if ('' === $expected) {
-            return new \WP_Error('missing_expected_hash', 'expected_hash is required to change an Oxygen page: pass the hash get-builder-content returned for it.');
+            return new \WP_Error('missing_expected_hash', "expected_hash is required to change {$label} page: pass the hash get-builder-content returned for it.");
         }
-        if (! hash_equals(Oxygen_Page::hash($post_id), $expected)) {
+        if (! hash_equals(Breakdance_Page::hash($post_id, $builder), $expected)) {
             return new \WP_Error('stale_expected_hash', 'Stale expected_hash: the page changed since it was read. Nothing was written; read it again and retry.');
         }
 
         return null;
     }
 
-    /** @param mixed $element */
-    private function is_oxygen_insert($element): bool
+    /**
+     * Whether an add places library content: element {template: id} on
+     * both products, {component: id} on Oxygen 6.
+     *
+     * @param mixed $element
+     */
+    private function is_breakdance_insert($element, string $builder): bool
     {
-        return is_array($element) && (array_key_exists('template', $element) || array_key_exists('component', $element));
+        return is_array($element) && (array_key_exists('template', $element) || ('oxygen' === $builder && array_key_exists('component', $element)));
     }
 
     /**
-     * Oxygen's add from the library: element {template: id} copies that
-     * template's, Component's or part's elements in with new ids, and
-     * element {component: id} places one instance of a Component.
+     * Add from the library: element {template: id} copies that template's,
+     * header's, footer's, block's, popup's or part's elements in with new
+     * ids, and on Oxygen 6 element {component: id} places one instance of a
+     * Component.
      *
      * @return array{0:object,1:string}
      */
-    private function apply_oxygen_insert(object $doc, array $args): array
+    private function apply_breakdance_insert(object $doc, array $args, string $builder): array
     {
         $element = $args['element'];
         if (1 !== count($element)) {
-            throw new \InvalidArgumentException(esc_html('element takes either {template: <id>} or {component: <id>} alone.'));
+            $forms = 'oxygen' === $builder ? 'either {template: <id>} or {component: <id>}' : '{template: <id>}';
+            throw new \InvalidArgumentException(esc_html("element takes {$forms} alone."));
         }
         $to    = (string) ($args['to'] ?? '');
         $index = isset($args['index']) ? (int) $args['index'] : null;
@@ -328,7 +375,7 @@ class Update_Builder_Content
         }
 
         if (array_key_exists('template', $element)) {
-            return Oxygen_Page::insert_template($doc, $to, $index, (int) $id);
+            return Breakdance_Page::insert_template($doc, $to, $index, (int) $id, $builder);
         }
 
         return Breakdance_Tree::add($doc, $to, $index, Oxygen_Page::component_spec((int) $id));
@@ -368,10 +415,17 @@ class Update_Builder_Content
                 return [Breakdance_Tree::move($doc, $path, $to, $index), $path];
         }
 
-        $more = 'oxygen' === ($args['builder'] ?? '') ? ', move, publish, restore or save_template' : ' or move';
-        throw new \InvalidArgumentException(esc_html("Unknown operation {$operation}; use update, add, remove{$more}."));
+        throw new \InvalidArgumentException(esc_html("Unknown operation {$operation}; use update, add, remove, move, publish, restore or save_template."));
     }
 
+    /**
+     * Beaver Builder pages: a whole node tree or one node operation, plus
+     * (issue #638) publish, restore, add from a saved template and
+     * save_template, only on a page detected as Beaver Builder or a blank
+     * one, and only against the hash the page was read with once it holds
+     * a layout. A page with unpublished editor changes takes only publish,
+     * which puts that draft live.
+     */
     private function update_beaver_builder(int $post_id, array $args)
     {
         $operation = (string) ($args['operation'] ?? '');
@@ -385,16 +439,58 @@ class Update_Builder_Content
             );
         }
 
-        if (Beaver_Builder_Content::draft_pending($post_id)) {
+        if ('save_template' === $operation) {
+            return Beaver_Builder_Page::save_template($post_id, $args);
+        }
+
+        if (Beaver_Builder_Content::has_layout($post_id)) {
+            $expected = (string) ($args['expected_hash'] ?? '');
+            if ('' === $expected) {
+                return new \WP_Error('missing_expected_hash', 'expected_hash is required to change a Beaver Builder page: pass the hash get-builder-content returned for it.');
+            }
+            if (! hash_equals(Beaver_Builder_Content::hash($post_id), $expected)) {
+                return new \WP_Error('stale_expected_hash', 'Stale expected_hash: the page changed since it was read. Nothing was written; read it again and retry.');
+            }
+        }
+
+        $pending = Beaver_Builder_Content::draft_pending($post_id);
+        if ($pending && 'publish' !== $operation) {
             return new \WP_Error(
                 'beaver_builder_draft_pending',
-                'This page has unpublished Beaver Builder edits; publish or discard them in the editor first.'
+                'This page has unpublished Beaver Builder edits; publish them (operation publish) or discard them in the editor first.'
             );
         }
 
-        $path = null;
+        $path     = null;
+        $nodes    = null;
+        $settings = null;
+        $merge    = null;
+        $status   = null;
         try {
-            if ('' === $operation) {
+            $element = $args['element'] ?? null;
+            if ('publish' === $operation) {
+                if ('publish' !== get_post_status($post_id)) {
+                    $refusal = $this->publish_refusal($post_id, 'invalid_beaver_builder_request');
+                    if (null !== $refusal) {
+                        return $refusal;
+                    }
+                    $status = 'publish';
+                } elseif (! $pending) {
+                    return new \WP_Error('already_published', 'This page is already published and has no unpublished Beaver Builder edits.');
+                }
+                if ($pending) {
+                    $nodes    = Beaver_Builder_Content::get_nodes($post_id, Beaver_Builder_Content::DRAFT_META_KEY);
+                    $settings = Beaver_Builder_Content::get_settings($post_id, Beaver_Builder_Content::DRAFT_META_KEY);
+                }
+            } elseif ('restore' === $operation) {
+                [$nodes, $settings] = Beaver_Builder_Page::revision_layout($post_id, (string) ($args['path'] ?? ''));
+            } elseif ('add' === $operation && is_array($element) && array_key_exists('template', $element)) {
+                if (1 !== count($element) || ! is_scalar($element['template'])) {
+                    throw new \InvalidArgumentException(esc_html('element {template} takes only a template id.'));
+                }
+                $index = isset($args['index']) ? (int) $args['index'] : null;
+                [$nodes, $path, $merge] = Beaver_Builder_Page::insert_template(Beaver_Builder_Content::get_nodes($post_id), (string) ($args['to'] ?? ''), $index, $element['template']);
+            } elseif ('' === $operation) {
                 $content = $args['content'] ?? null;
                 $tree    = is_string($content) ? json_decode($content) : null;
                 if (! is_array($tree)) {
@@ -408,7 +504,8 @@ class Update_Builder_Content
             return new \WP_Error('invalid_beaver_builder_request', $e->getMessage());
         }
 
-        $out = Safe_Mutation::run(
+        $layout = in_array($operation, ['publish', 'restore'], true);
+        $out    = Safe_Mutation::run(
             [
                 'object_type' => 'post',
                 'object_id'   => $post_id,
@@ -416,13 +513,28 @@ class Update_Builder_Content
                 'tool_name'   => 'update-builder-content',
                 'args'        => $args,
             ],
-            function () use ($post_id, $nodes) {
-                Beaver_Builder_Content::save($post_id, $nodes);
+            function () use ($post_id, $nodes, $settings, $merge, $status, $layout) {
+                if (null !== $nodes) {
+                    if ($layout) {
+                        Beaver_Builder_Content::save_layout($post_id, $nodes, $settings);
+                    } else {
+                        Beaver_Builder_Content::merge_settings($post_id, $merge);
+                        Beaver_Builder_Content::save($post_id, $nodes);
+                    }
+                }
+                if (null !== $status) {
+                    Save_Filters::set_post_status($post_id, $status);
+                }
                 return true;
             }
         );
 
-        $result = ['operation_id' => $out['operation_id'], 'post_id' => $post_id, 'builder' => 'beaver-builder'];
+        $result = [
+            'operation_id' => $out['operation_id'],
+            'post_id'      => $post_id,
+            'builder'      => 'beaver-builder',
+            'hash'         => Beaver_Builder_Content::hash($post_id),
+        ];
         if (null !== $path) {
             $result['path'] = $path;
         }
@@ -465,7 +577,7 @@ class Update_Builder_Content
                 return [Beaver_Builder_Nodes::move($nodes, $path, $to, $index), $path];
         }
 
-        throw new \InvalidArgumentException(esc_html("Unknown operation {$operation}; use update, add, remove or move."));
+        throw new \InvalidArgumentException(esc_html("Unknown operation {$operation}; use update, add, remove, move, publish, restore or save_template."));
     }
 
     private function update_wpbakery(int $post_id, array $args)
@@ -1211,6 +1323,225 @@ class Update_Builder_Content
     }
 
     /**
+     * Kirki page builder pages (issue #641): only on a page Kirki renders
+     * or a blank one, while Kirki is active, against the read's hash once
+     * the page has a layout, and never over an unpublished Kirki version.
+     */
+    private function update_kirki(int $post_id, array $args)
+    {
+        $operation = (string) ($args['operation'] ?? '');
+        $detected  = Builder_Detector::detect($post_id);
+        $blank     = 'classic' === $detected && '' === trim((string) get_post($post_id)->post_content);
+        if ('kirki' !== $detected && ! $blank) {
+            return new \WP_Error('unsupported_builder', "This post was detected as '{$detected}', not a Kirki page.");
+        }
+        if (! Kirki_Content::plugin_active()) {
+            return Kirki_Content::unavailable();
+        }
+        if (Kirki_Content::has_layout($post_id)) {
+            $expected = (string) ($args['expected_hash'] ?? '');
+            if ('' === $expected) {
+                return new \WP_Error('missing_expected_hash', 'expected_hash is required to change a Kirki page: pass the hash get-builder-content returned for it.');
+            }
+            if (! hash_equals(Kirki_Content::hash($post_id), $expected)) {
+                return new \WP_Error('stale_expected_hash', 'Stale expected_hash: the page changed since it was read. Nothing was written; read it again and retry.');
+            }
+        }
+
+        $status = null;
+        $path   = null;
+        $blocks = null;
+        try {
+            if ('publish' === $operation) {
+                $refusal = $this->publish_refusal($post_id, 'invalid_kirki_request');
+                if (null !== $refusal) {
+                    return $refusal;
+                }
+                $status = 'publish';
+            } else {
+                $version = Kirki_Content::unpublished_version($post_id);
+                if (null !== $version) {
+                    return new \WP_Error(
+                        'kirki_unpublished_version',
+                        "This page has an unpublished Kirki version ({$version}). Publishing it in Kirki would overwrite a change made here, so nothing was written: publish or discard that version in the Kirki editor, then try again.",
+                        ['version' => $version]
+                    );
+                }
+                [$blocks, $path] = $this->apply_kirki_operation($post_id, $operation, $args);
+            }
+        } catch (\InvalidArgumentException $e) {
+            return new \WP_Error('invalid_kirki_request', $e->getMessage());
+        }
+
+        $out = Safe_Mutation::run(
+            [
+                'object_type' => 'post',
+                'object_id'   => $post_id,
+                'session_id'  => (string) ($args['session_id'] ?? 'default'),
+                'tool_name'   => 'update-builder-content',
+                'args'        => $args,
+            ],
+            function () use ($post_id, $blocks, $status) {
+                if (null !== $status) {
+                    Save_Filters::set_post_status($post_id, $status);
+                } else {
+                    Kirki_Content::save($post_id, (array) $blocks);
+                }
+                return true;
+            }
+        );
+
+        $result = [
+            'operation_id' => $out['operation_id'],
+            'post_id'      => $post_id,
+            'builder'      => 'kirki',
+            'hash'         => Kirki_Content::hash($post_id),
+        ];
+        if (null !== $path) {
+            $result['path'] = $path;
+        }
+
+        return $result;
+    }
+
+    /**
+     * The new element map for one Kirki operation, and the element id it
+     * names when it has one.
+     *
+     * @return array{0:array<string,array<string,mixed>>,1:?string}
+     * @throws \InvalidArgumentException
+     */
+    private function apply_kirki_operation(int $post_id, string $operation, array $args): array
+    {
+        if ('' === $operation) {
+            $content = $args['content'] ?? null;
+            $decoded = is_string($content) ? json_decode($content, true) : null;
+
+            return [Kirki_Tree::validate($decoded), null];
+        }
+
+        $blocks = Kirki_Content::blocks($post_id);
+        $id     = (string) ($args['path'] ?? '');
+        $to     = (string) ($args['to'] ?? '');
+        $index  = isset($args['index']) ? (int) $args['index'] : null;
+
+        switch ($operation) {
+            case 'update':
+                $attrs  = $args['attrs'] ?? [];
+                $fields = $args['element'] ?? [];
+                $text   = isset($args['text']) ? (string) $args['text'] : null;
+                if (! is_array($attrs) || ! is_array($fields) || ([] === $attrs && [] === $fields && null === $text)) {
+                    throw new \InvalidArgumentException(esc_html('update needs attrs (properties to merge; null removes one), text, or element (title, visibility, collapse, className, styleIds).'));
+                }
+                return [Kirki_Tree::update($blocks, $id, $attrs, $text, $fields), $id];
+
+            case 'add':
+                $element = $args['element'] ?? null;
+                if (! is_array($element)) {
+                    throw new \InvalidArgumentException(esc_html('add needs an element: {name, title, text, properties, styleIds, className, children} or {symbol: id}.'));
+                }
+                return Kirki_Tree::add($blocks, $to, $index, $element, [Kirki_Content::class, 'symbol_element']);
+
+            case 'remove':
+                return [Kirki_Tree::remove($blocks, $id), null];
+
+            case 'move':
+                return [Kirki_Tree::move($blocks, $id, $to, $index), $id];
+        }
+
+        throw new \InvalidArgumentException(esc_html("Unknown operation {$operation}; use update, add, remove, move or publish."));
+    }
+
+    /**
+     * Visual Composer pages (issue #642): update of an element's rendered
+     * content or layer name, or publish, on a page detected as Visual
+     * Composer, while the plugin is loaded and the page still has the hash
+     * the caller read. Every other change is refused before anything is
+     * written (see Visual_Composer_Content).
+     */
+    private function update_visual_composer(int $post_id, array $args)
+    {
+        $operation = (string) ($args['operation'] ?? '');
+        $detected  = Builder_Detector::detect($post_id);
+        if ('visual-composer' !== $detected) {
+            return new \WP_Error('unsupported_builder', "This post was detected as '{$detected}', not a Visual Composer page.");
+        }
+        if (! Visual_Composer_Content::plugin_active()) {
+            return Visual_Composer_Content::unavailable();
+        }
+        $expected = (string) ($args['expected_hash'] ?? '');
+        if ('' === $expected) {
+            return new \WP_Error('missing_expected_hash', 'expected_hash is required to change a Visual Composer page: pass the hash get-builder-content returned for it.');
+        }
+        if (! hash_equals(Visual_Composer_Content::hash($post_id), $expected)) {
+            return new \WP_Error('stale_expected_hash', 'Stale expected_hash: the page changed since it was read. Nothing was written; read it again and retry.');
+        }
+
+        $doc  = null;
+        $html = '';
+        $path = null;
+        if ('publish' === $operation) {
+            $refusal = $this->publish_refusal($post_id, 'invalid_visual_composer_request');
+            if (null !== $refusal) {
+                return $refusal;
+            }
+        } elseif ('update' === $operation) {
+            $path  = (string) ($args['path'] ?? '');
+            $attrs = $args['attrs'] ?? [];
+            if (! is_array($attrs)) {
+                return new \WP_Error('invalid_visual_composer_request', 'attrs must be an object of attribute => new value.');
+            }
+            if (isset($args['text'])) {
+                $attrs['output'] = (string) $args['text'];
+            }
+            try {
+                [$doc, $html] = Visual_Composer_Content::update($post_id, $path, $attrs);
+            } catch (\DomainException $e) {
+                return Visual_Composer_Content::render_required($post_id, $e->getMessage());
+            } catch (\InvalidArgumentException $e) {
+                return new \WP_Error('invalid_visual_composer_request', $e->getMessage());
+            }
+        } else {
+            $what = '' === $operation ? 'a whole document' : "the {$operation} operation";
+            if (! in_array($operation, ['', 'add', 'remove', 'move', 'restore', 'save_template'], true)) {
+                return new \WP_Error('invalid_visual_composer_request', "Unknown operation {$operation}; Visual Composer pages take update and publish.");
+            }
+
+            return Visual_Composer_Content::render_required($post_id, $what);
+        }
+
+        $out = Safe_Mutation::run(
+            [
+                'object_type' => 'post',
+                'object_id'   => $post_id,
+                'session_id'  => (string) ($args['session_id'] ?? 'default'),
+                'tool_name'   => 'update-builder-content',
+                'args'        => $args,
+            ],
+            function () use ($post_id, $doc, $html) {
+                if (null === $doc) {
+                    Save_Filters::set_post_status($post_id, 'publish');
+                } else {
+                    Visual_Composer_Content::save($post_id, $doc, $html);
+                }
+                return true;
+            }
+        );
+
+        $result = [
+            'operation_id' => $out['operation_id'],
+            'post_id'      => $post_id,
+            'builder'      => 'visual-composer',
+            'hash'         => Visual_Composer_Content::hash($post_id),
+        ];
+        if (null !== $path) {
+            $result['path'] = $path;
+        }
+
+        return $result;
+    }
+
+    /**
      * Classic Oxygen pages: a whole JSON tree or one element operation, only
      * on a page already detected as classic Oxygen and stored in the JSON
      * format, and only when both of its stores can be kept consistent.
@@ -1384,13 +1715,9 @@ class Update_Builder_Content
             return new \WP_Error('invalid_bricks_json', 'Bricks content must be well-formed JSON decoding to an array.');
         }
 
-        if (! Bricks_Cache::is_editable($post_id)) {
-            $type = (string) get_post_type($post_id);
-
-            return new \WP_Error(
-                'not_a_bricks_page',
-                sprintf('Post %d (type "%s") is not a Bricks page: Bricks edits only a Bricks template, a post type enabled under Bricks > Settings > General > Post types, or a post that already holds Bricks content. Enable the post type in Bricks first.', $post_id, $type)
-            );
+        $refusal = $this->bricks_refusal($post_id, $args, false);
+        if (null !== $refusal) {
+            return $refusal;
         }
 
         $out = Safe_Mutation::run(
@@ -1407,7 +1734,148 @@ class Update_Builder_Content
             }
         );
 
-        return ['operation_id' => $out['operation_id'], 'post_id' => $post_id, 'builder' => 'bricks'];
+        return ['operation_id' => $out['operation_id'], 'post_id' => $post_id, 'builder' => 'bricks', 'hash' => Bricks_Page::hash($post_id)];
+    }
+
+    /**
+     * Why a Bricks write must not run, or null: the post must be one Bricks
+     * edits, and a page holding a layout is changed only against the hash
+     * it was read with (required for operations, checked when given for a
+     * whole content write, which callers made before hashes existed).
+     */
+    private function bricks_refusal(int $post_id, array $args, bool $require_hash): ?\WP_Error
+    {
+        if (! Bricks_Cache::is_editable($post_id)) {
+            $type = (string) get_post_type($post_id);
+
+            return new \WP_Error(
+                'not_a_bricks_page',
+                sprintf('Post %d (type "%s") is not a Bricks page: Bricks edits only a Bricks template, a post type enabled under Bricks > Settings > General > Post types, or a post that already holds Bricks content. Enable the post type in Bricks first.', $post_id, $type)
+            );
+        }
+
+        $expected = (string) ($args['expected_hash'] ?? '');
+        if ('' === $expected && (! $require_hash || ! Bricks_Page::has_layout($post_id))) {
+            return null;
+        }
+        if ('' === $expected) {
+            return new \WP_Error('missing_expected_hash', 'expected_hash is required to change a Bricks page: pass the hash get-builder-content returned for it.');
+        }
+        if (! hash_equals(Bricks_Page::hash($post_id), $expected)) {
+            return new \WP_Error('stale_expected_hash', 'Stale expected_hash: the page changed since it was read. Nothing was written; read it again and retry.');
+        }
+
+        return null;
+    }
+
+    /**
+     * Bricks element operations (issue #633): one change by element id,
+     * publish, restore or save_template, while Bricks is loaded.
+     */
+    private function update_bricks_elements(int $post_id, array $args)
+    {
+        $operation   = (string) ($args['operation'] ?? '');
+        $unavailable = Bricks_Page::unavailable();
+        if (null !== $unavailable) {
+            return $unavailable;
+        }
+        $refusal = $this->bricks_refusal($post_id, $args, 'save_template' !== $operation);
+        if (null !== $refusal) {
+            return $refusal;
+        }
+        if ('save_template' === $operation) {
+            return Bricks_Page::save_template($post_id, $args);
+        }
+
+        $status   = null;
+        $path     = null;
+        $elements = null;
+        try {
+            if ('publish' === $operation) {
+                $refusal = $this->publish_refusal($post_id, 'invalid_bricks_request');
+                if (null !== $refusal) {
+                    return $refusal;
+                }
+                $status = 'publish';
+            } elseif ('restore' === $operation) {
+                $elements = Bricks_Page::revision_elements($post_id, (string) ($args['path'] ?? ''));
+            } else {
+                [$elements, $path] = $this->apply_bricks_operation(Bricks_Page::elements($post_id), $operation, $args);
+            }
+        } catch (\InvalidArgumentException $e) {
+            return new \WP_Error('invalid_bricks_request', $e->getMessage());
+        }
+
+        $out = Safe_Mutation::run(
+            [
+                'object_type' => 'post',
+                'object_id'   => $post_id,
+                'session_id'  => (string) ($args['session_id'] ?? 'default'),
+                'tool_name'   => 'update-builder-content',
+                'args'        => $args,
+            ],
+            function () use ($post_id, $elements, $status) {
+                if (null !== $status) {
+                    Save_Filters::set_post_status($post_id, $status);
+                } else {
+                    Bricks_Content::save($post_id, (array) $elements);
+                }
+                return true;
+            }
+        );
+
+        $result = ['operation_id' => $out['operation_id'], 'post_id' => $post_id, 'builder' => 'bricks', 'hash' => Bricks_Page::hash($post_id)];
+        if (null !== $path) {
+            $result['path'] = $path;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Apply one Bricks element operation; `path` and `to` are element ids.
+     *
+     * @param array<int|string,mixed> $elements
+     * @return array{0:array<int,array<string,mixed>>,1:?string}
+     * @throws \InvalidArgumentException
+     */
+    private function apply_bricks_operation(array $elements, string $operation, array $args): array
+    {
+        $path  = (string) ($args['path'] ?? '');
+        $to    = (string) ($args['to'] ?? '');
+        $index = isset($args['index']) ? (int) $args['index'] : null;
+
+        switch ($operation) {
+            case 'update':
+                $attrs  = $args['attrs'] ?? [];
+                $fields = $args['element'] ?? [];
+                if (! is_array($attrs) || ! is_array($fields) || ([] === $attrs && [] === $fields)) {
+                    throw new \InvalidArgumentException(esc_html('update needs attrs (settings to merge; null removes one) or element {label}.'));
+                }
+                return [Bricks_Tree::update($elements, $path, $attrs, $fields), $path];
+
+            case 'add':
+                $element = $args['element'] ?? null;
+                if (! is_array($element)) {
+                    throw new \InvalidArgumentException(esc_html('add needs an element: {name, settings?, label?, children?} or {template: id}.'));
+                }
+                if (array_key_exists('template', $element)) {
+                    $id = $element['template'];
+                    if (1 !== count($element) || ! (is_int($id) || (is_string($id) && ctype_digit($id)))) {
+                        throw new \InvalidArgumentException(esc_html('element {template} takes only a template post id.'));
+                    }
+                    return Bricks_Tree::insert_copy($elements, $to, $index, Bricks_Page::template_elements((int) $id));
+                }
+                return Bricks_Tree::add($elements, $to, $index, $element);
+
+            case 'remove':
+                return [Bricks_Tree::remove($elements, $path), null];
+
+            case 'move':
+                return [Bricks_Tree::move($elements, $path, $to, $index), $path];
+        }
+
+        throw new \InvalidArgumentException(esc_html("Unknown operation {$operation}; use update, add, remove, move, publish, restore or save_template."));
     }
 
     /**
