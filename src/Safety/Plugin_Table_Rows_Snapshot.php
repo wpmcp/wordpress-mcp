@@ -180,6 +180,13 @@ if (! defined('ABSPATH')) {
  * cached lookups of the table are retired (purge_edd_cache()), the way
  * BerlinDB's own writes do.
  *
+ * Depicter (issue #1091) keeps a document's published revisions as rows of
+ * depicter_documents whose parent is the document (kind depicter_revisions,
+ * keyed by parent) and its display rules as depicter_meta rows of the
+ * document (kind depicter_meta, keyed by relation_id), so a snapshot taken
+ * before a publish covers the revision it inserts. Restoring takes
+ * manage_options.
+ *
  * Restoring takes the capability the write itself needs: edit_post on each
  * captured post for a Pods row, a MemberPress rule's rows or a LearnPress
  * course's sections, edit_post on the course a LearnPress section belongs to
@@ -233,6 +240,8 @@ final class Plugin_Table_Rows_Snapshot
         'masterstudy_materials'    => 'stm_lms_',
         'wpml_strings'             => 'icl_',
         'edd'              => 'edd_',
+        'depicter_revisions' => 'depicter_',
+        'depicter_meta'      => 'depicter_',
     ];
 
     /**
@@ -254,6 +263,8 @@ final class Plugin_Table_Rows_Snapshot
         'pmpro_members'    => 'user_id',
         'wpdatatables_rows' => 'table_id',
         'jpcrm'            => 'ID',
+        'depicter_revisions' => 'parent',
+        'depicter_meta'      => 'relation_id',
         'learnpress_sections'      => 'section_course_id',
         'learnpress_section_items' => 'section_id',
         'masterstudy_sections'     => 'course_id',
@@ -320,6 +331,8 @@ final class Plugin_Table_Rows_Snapshot
         'masterstudy_materials'    => [ 'curriculum_materials' ],
         'wpml_strings'             => [ 'strings' ],
         'edd'              => [ 'adjustments' ],
+        'depicter_revisions' => [ 'documents' ],
+        'depicter_meta'      => [ 'meta' ],
     ];
 
     /** kind => suffix => the unprefixed table, for a kind whose one table is not prefix plus suffix. */
@@ -1026,6 +1039,12 @@ final class Plugin_Table_Rows_Snapshot
         if (isset(self::WORDFENCE_KINDS[ $kind ])) {
             if (! current_user_can(self::wordfence_capability())) {
                 throw new Mutation_Failed('Rollback refused: restoring Wordfence ' . ('wordfence_blocks' === $kind ? 'IP blocks' : 'scan issues') . ' requires the ' . esc_html(self::wordfence_capability()) . ' capability.');
+            }
+            return;
+        }
+        if (str_starts_with($kind, 'depicter_')) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring a Depicter document\'s revisions or display rules requires the manage_options capability.');
             }
             return;
         }

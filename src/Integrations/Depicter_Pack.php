@@ -27,9 +27,10 @@ if (! defined('ABSPATH')) {
  * (they hold visitor IPs and sessions; only counts leave), so nothing
  * needs masking.
  *
- * Writes are not part of this pack yet: Depicter publishes through
- * revisions of its builder JSON, so an undoable edit needs its own snapshot
- * kind first (follow-up to #898).
+ * Writes (issue #1091) are Depicter_Write_Operations': rename, publish and
+ * unpublish, and display rules, each undoable (the revisions and meta rows
+ * are captured by document, Plugin_Table_Rows_Snapshot kinds
+ * depicter_revisions and depicter_meta).
  *
  * Presence is filterable (wpmcp_depicter_active, default:
  * DEPICTER_PLUGIN_URL is defined).
@@ -81,7 +82,10 @@ final class Depicter_Pack
             'requires'   => static fn () => self::presence(),
         ];
 
-        return [
+        $db     = Typed::db();
+        $writes = null === $db ? [] : ( new Depicter_Write_Operations(new Depicter_Write_Store($db), static fn () => self::presence()) )->definitions();
+
+        return $writes + [
             'depicter-list-documents' => $base + [
                 'description'  => 'List Depicter sliders, popups and bars: id, name, type, status, sections, dates, views, impressions, clicks, submissions, shortcode. Filter by type, status, search. page, per_page (max 100)',
                 'input_schema' => [
