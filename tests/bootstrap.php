@@ -397,6 +397,17 @@ tests_add_filter( 'muplugins_loaded', function () {
         wpmcp_maybe_require_plugin( 'action-scheduler/action-scheduler.php' );
     }
 
+    // The live galleries and sliders job (issue #705, WPMCP_LIVE_GALLERIES=1)
+    // runs the gallery and slider ops against the real plugins from
+    // wordpress.org. Loaded only on request.
+    if ( getenv( 'WPMCP_LIVE_GALLERIES' ) ) {
+        wpmcp_maybe_require_plugin( 'ml-slider/ml-slider.php' );
+        wpmcp_maybe_require_plugin( 'modula-best-grid-gallery/Modula.php' );
+        wpmcp_maybe_require_plugin( 'envira-gallery-lite/envira-gallery-lite.php' );
+        wpmcp_maybe_require_plugin( 'nextgen-gallery/nggallery.php' );
+        wpmcp_maybe_require_plugin( 'smart-slider-3/smart-slider-3.php' );
+    }
+
     // The live site gate job (issue #903, WPMCP_LIVE_SITE_GATE=1) reads and
     // toggles the real coming soon and maintenance plugins, one per PHPUnit
     // run (WPMCP_SITE_GATE_PLUGIN names it): they all claim the front door.

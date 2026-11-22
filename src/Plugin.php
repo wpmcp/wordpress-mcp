@@ -566,6 +566,10 @@ final class Plugin
         // and mec_dates tables, derived from the event meta; an undo that
         // restores an event post rebuilds them as the write did (#677).
         [\WPMCP\Integrations\Modern_Events_Calendar_Writes::class, 'after_post_restored', 'wpmcp_rollback_post_restored'],
+        // The gallery and slider packs hook their refreshers on init: an undo
+        // flushes Envira, Smart Slider 3 and NextGEN caches, and a trash keeps
+        // Envira's trashed flag in step (#705).
+        [\WPMCP\Integrations\Gallery_Packs::class, 'attach_refreshers', 'init'],
     ];
 
     /**

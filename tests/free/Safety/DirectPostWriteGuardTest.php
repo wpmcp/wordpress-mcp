@@ -197,6 +197,18 @@ class DirectPostWriteGuardTest extends \WP_UnitTestCase
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new Popup Maker popup post.',
         ],
+        'Integrations/MetaSlider_Store.php'           => [
+            'calls'  => ['wp_insert_post' => 2],
+            'reason' => 'Creates a new MetaSlider slider or slide post (issue #705); every field is new. Slide changes go through Save_Filters.',
+        ],
+        'Integrations/Modula_Store.php'               => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Modula gallery post (issue #705); every field is new. Image changes are meta writes.',
+        ],
+        'Integrations/Envira_Store.php'               => [
+            'calls'  => ['wp_insert_post' => 1],
+            'reason' => 'Creates a new Envira gallery post (issue #705); every field is new. Image changes are meta writes.',
+        ],
         'Integrations/MemberPress_Pack.php'           => [
             'calls'  => ['wp_insert_post' => 1],
             'reason' => 'Creates a new MemberPress membership or rule post.',

@@ -42,6 +42,7 @@ live-crm	live-crm	free	default	-	crm-live	-	tests/pro/Integrations/CrmLiveTest.p
 live-helpdesk	live-helpdesk	free	default	-	helpdesk-live	-	tests/pro/Integrations/KnowledgeBaseSupportLiveTest.php
 live-activity-log	live-activity-log	free	default	-	activity-log-live	-	tests/free/Integrations/ActivityLogLiveTest.php
 live-action-scheduler	live-action-scheduler	free	default	-	action-scheduler-live	-	tests/free/Integrations/ActionSchedulerLiveTest.php
+live-galleries	live-galleries	free	default	-	galleries-live	-	tests/free/Integrations/MetaSliderLiveTest.php,tests/free/Integrations/ModulaLiveTest.php,tests/free/Integrations/EnviraLiveTest.php,tests/free/Integrations/SmartSliderLiveTest.php,tests/free/Integrations/NextGenLiveTest.php
 live-site-gate	live-site-gate	free	default	-	site-gate-live	-	tests/free/Integrations/SiteGateLiveTest.php
 live-email-log	live-email-log	free	default	-	email-log-live	-	tests/free/Integrations/EmailLogLiveTest.php
 live-amelia	live-amelia	free	default	-	amelia-live	-	tests/pro/Integrations/AmeliaLiveTest.php
