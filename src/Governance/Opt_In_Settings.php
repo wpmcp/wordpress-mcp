@@ -2,6 +2,9 @@
 
 namespace WPMCP\Governance;
 
+use WPMCP\Kernel\Registry_Rows;
+use WPMCP\Plugin;
+
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -56,7 +59,7 @@ final class Opt_In_Settings
     public static function all_groups(): array
     {
         $i = 'src/Integrations/';
-        return [
+        return Registry_Rows::merge([
             'wpmcp_woo_op_enabled'                 => [ 'owner' => 'src/Tools/WooCommerce/Catalog/Woo_Write.php', 'destructive' => true ],
             'wpmcp_enable_memberpress_write'       => [ 'owner' => $i . 'MemberPress_Pack.php', 'destructive' => false ],
             'wpmcp_enable_gamipress_write'         => [ 'owner' => $i . 'Gamipress_Pack.php', 'destructive' => true ],
@@ -142,7 +145,58 @@ final class Opt_In_Settings
             'wpmcp_enable_hardening_write'         => [ 'owner' => $i . 'Hardening_Pack.php', 'destructive' => false ],
             'wpmcp_enable_checkout_field_editor_write' => [ 'owner' => $i . 'Checkout_Field_Editor_Pack.php', 'destructive' => false ],
             'wpmcp_enable_pmpro_write'             => [ 'owner' => $i . 'Paid_Memberships_Pro_Pack.php', 'destructive' => true ],
-        ];
+        ], self::module_groups(), 'Opt-in group');
+    }
+
+    /**
+     * The groups modules declare with #[Opt_In_Gate], from the compiled
+     * registry. The owner is the declaring class's file, so the same
+     * is_file() check decides whether it ships.
+     *
+     * @return array<string, array{owner: string, destructive: bool}>
+     */
+    private static function module_groups(): array
+    {
+        $registry = Plugin::instance()->kernel()->registry();
+        $groups = [];
+        foreach ($registry->opt_in_gates() as $filter => $gate) {
+            $module = $registry->module(self::text($gate['module'] ?? null)) ?? [];
+            $namespace = self::text($module['namespace'] ?? null);
+            $class = self::text($gate['class'] ?? null);
+            $relative = str_starts_with($class, $namespace) ? substr($class, strlen($namespace)) : $class;
+            $groups[ $filter ] = [
+                'owner' => rtrim(self::text($module['dir'] ?? null), '/') . '/' . str_replace('\\', '/', $relative) . '.php',
+                'destructive' => true === ($gate['destructive'] ?? false),
+            ];
+        }
+        return $groups;
+    }
+
+    /** A registry value as a string ('' when it is not one). */
+    private static function text(mixed $value): string
+    {
+        return is_string($value) ? $value : '';
+    }
+
+    /**
+     * Screen labels of the module groups: each gate names a static method
+     * on its class returning filter => label.
+     *
+     * @return array<string, string>
+     */
+    private static function module_labels(): array
+    {
+        $labels = [];
+        foreach (Plugin::instance()->kernel()->registry()->opt_in_gates() as $filter => $gate) {
+            $method = self::text($gate['labels'] ?? null);
+            $callback = [ self::text($gate['class'] ?? null), $method ];
+            if ('' === $method || ! is_callable($callback)) {
+                continue;
+            }
+            $declared = (array) call_user_func($callback);
+            $labels[ $filter ] = is_string($declared[ $filter ] ?? null) ? $declared[ $filter ] : $filter;
+        }
+        return $labels;
     }
 
     /**
@@ -153,7 +207,7 @@ final class Opt_In_Settings
      */
     public static function labels(): array
     {
-        return [
+        return Registry_Rows::merge([
             'wpmcp_woo_op_enabled'                 => __('WooCommerce: destructive operations (delete, cancel, refund)', 'wpmcp'),
             'wpmcp_enable_memberpress_write'       => __('MemberPress: writes', 'wpmcp'),
             'wpmcp_enable_gamipress_write'         => __('GamiPress: points, achievement and rank writes', 'wpmcp'),
@@ -239,7 +293,7 @@ final class Opt_In_Settings
             'wpmcp_enable_hardening_write'         => __('Security hardening settings: writes', 'wpmcp'),
             'wpmcp_enable_checkout_field_editor_write' => __('Checkout Field Editor: checkout field writes', 'wpmcp'),
             'wpmcp_enable_pmpro_write'             => __('Paid Memberships Pro: level, member and discount code writes', 'wpmcp'),
-        ];
+        ], self::module_labels(), 'Opt-in label');
     }
 
     /**

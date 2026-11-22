@@ -381,7 +381,7 @@ final class FunnelKit_Funnel_Snapshot
 
     /**
      * The post ids a funnel row lists: each step, then its substeps, then the
-     * offers its upsell steps list (FunnelKit_Offer_Lists, issue #1021).
+     * offers its post-purchase offer steps list (FunnelKit_Offer_Lists, issue #1021).
      *
      * @return int[]
      */
