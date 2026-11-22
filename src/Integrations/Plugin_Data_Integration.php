@@ -31,12 +31,26 @@ if (! defined('ABSPATH')) {
  *    actions and email notifications, submissions listed with every value
  *    masked and read one at a time in full, and status changes and deletes
  *    (off until a site opts in), each under a db_rows before-image.
+ *    It also adds the Everest Forms ops (Everest_Forms_Pack) on the same
+ *    shape: forms, fields and email notifications, entries listed masked
+ *    and read one at a time, spam, starred and read changes and deletes
+ *    (off until wpmcp_enable_everest_forms_write), each undoable.
  *  - Issue #682 adds the link management ops: Pretty Links links
  *    (Pretty_Links_Pack, rows of its prli_links table) and ThirstyAffiliates
  *    links (Thirsty_Affiliates_Pack, thirstylink posts), read with click
  *    counts and masked visitor IPs, and created, changed and trashed (off
  *    until wpmcp_enable_pretty_links_write or
  *    wpmcp_enable_thirstyaffiliates_write), each write undoable.
+ *  - Issue #685 adds the Popup Maker and OptinMonster ops
+ *    (Popup_Maker_Pack, OptinMonster_Pack): popups listed, read, created as
+ *    drafts, changed, given triggers, enabled and disabled (off until
+ *    wpmcp_enable_popup_maker_write), and synced OptinMonster campaigns
+ *    listed, read and switched on or off on this site (off until
+ *    wpmcp_enable_optinmonster_write), each write under a post snapshot.
+ *  - Issue #678 adds the Events Manager ops (Events_Manager_Pack): events
+ *    listed and read, bookings listed (bookers masked), and events created
+ *    and changed through EM_Event::save() (off until
+ *    wpmcp_enable_events_manager_write), each write undoable.
  *  - Issue #688 adds the Advanced Ads ops (Advanced_Ads_Pack): ads and
  *    placements listed and read, ads created as drafts, changed, enabled
  *    and disabled, and placements pointed at an ad or group (off until
@@ -46,7 +60,7 @@ if (! defined('ABSPATH')) {
  *    summarised, and approved, unapproved, trashed or replied to (off until
  *    wpmcp_enable_site_reviews_write), each write under a post snapshot.
  *  - Issue #394 adds the paid-tier LMS ops (LMS_Pack): Tutor LMS,
- *    LifterLMS and LearnDash course, section, lesson and quiz trees with
+ *    LifterLMS, LearnDash and LearnPress course, section, lesson and quiz trees with
  *    snapshotted writes, and read-only enrollments (LearnDash also enrolls,
  *    unenrolls and resets progress, each snapshotted).
  *  - Issue #701 adds the paid-tier WP Offload Media ops
@@ -57,6 +71,11 @@ if (! defined('ABSPATH')) {
  *    lists) and forms, contacts created and changed through its own API
  *    (off until wpmcp_enable_jetpack_crm_write) under 'plugin_table_rows'
  *    images, and the HubSpot forms placed on the site.
+ *  - Issue #679 adds the paid-tier appointment booking ops (Booking_Pack):
+ *    Bookly, Simply Schedule Appointments, BookingPress and LatePoint
+ *    services, staff and bookings read with customers masked in lists, and
+ *    bookings cancelled (off until wpmcp_enable_booking_write), each cancel
+ *    undoable from a 'plugin_table_rows' before-image.
  *  - Issue #697 adds the paid-tier WPCode ops (WPCode_Pack): snippets and
  *    the global header and footer scripts read, snippets created inactive,
  *    changed, activated behind the PHP execution or code injection gate and
@@ -117,6 +136,13 @@ if (! defined('ABSPATH')) {
  *    and pending actions canceled (undoable, as an 'action_scheduler'
  *    snapshot) or run now (not undoable, confirm:true), both off until
  *    wpmcp_enable_action_scheduler_write.
+ *  - Issue #671 adds the forum ops beside bbPress's, named the same way:
+ *    wpForo forums, topics and replies read, topics closed, opened and
+ *    moved (WpForo_Pack), and Asgaros Forum forums, topics and replies
+ *    read, topics and replies posted, topics moderated and moved, and
+ *    replies deleted (Asgaros_Forum_Pack), every write off until
+ *    wpmcp_enable_wpforo_write or wpmcp_enable_asgaros_write and each
+ *    snapshotted as 'plugin_table_rows' images.
  *  - Issue #666 adds read-only WP Simple Pay payment forms (Simple_Pay_Pack:
  *    status, test or live mode, display type, prices) and Paid Member
  *    Subscriptions plans and members (Paid_Member_Subscriptions_Pack,
@@ -163,11 +189,12 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
 
     public function is_available(): bool
     {
-        return BbPress_Pack::active() || JetEngine_Pack::active() || Pods_Pack::active() || TranslatePress_Pack::active() || Code_Snippets_Pack::active() || WS_Form_Pack::active() || Activity_Log_Pack::active() || Action_Scheduler_Pack::active() || Email_Log_Pack::active() || Pretty_Links_Pack::active() || Thirsty_Affiliates_Pack::active() || Advanced_Ads_Pack::active() || Site_Reviews_Pack::active() || WPGraphQL_Pack::active() || Simple_Pay_Pack::active() || Paid_Member_Subscriptions_Pack::active() || Restrict_Content_Pack::active() || Ultimate_Member_Pack::active() || EDD_Pack::active() || BuddyPress_Pack::active()
+        return Events_Manager_Pack::active() || BbPress_Pack::active() || JetEngine_Pack::active() || Pods_Pack::active() || TranslatePress_Pack::active() || Code_Snippets_Pack::active() || WS_Form_Pack::active() || Everest_Forms_Pack::active() || Activity_Log_Pack::active() || Action_Scheduler_Pack::active() || Email_Log_Pack::active() || Pretty_Links_Pack::active() || Thirsty_Affiliates_Pack::active() || Advanced_Ads_Pack::active() || Popup_Maker_Pack::active() || OptinMonster_Pack::active() || Site_Reviews_Pack::active() || WPGraphQL_Pack::active() || Simple_Pay_Pack::active() || Paid_Member_Subscriptions_Pack::active() || WpForo_Pack::active() || Asgaros_Forum_Pack::active() || Restrict_Content_Pack::active() || Ultimate_Member_Pack::active() || EDD_Pack::active() || BuddyPress_Pack::active()
             || LMS_Pack::active()
             || Offload_Media_Pack::active()
             || Jetpack_Crm_Pack::active()
             || HubSpot_Pack::active()
+            || Booking_Pack::active()
             || WPCode_Pack::active()
             || TablePress_Pack::active()
             || CRM_Pack::active()
@@ -189,10 +216,11 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
 
     protected function summary(): string
     {
-        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores'
-            . ', Tutor LMS, LifterLMS and LearnDash courses, TablePress tables'
+        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores'
+            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS courses, TablePress tables'
             . ', WP Offload Media status'
             . ', Jetpack CRM contacts and forms, HubSpot forms'
+            . ', Bookly, Simply Schedule Appointments, BookingPress and LatePoint bookings'
             . ', WPCode snippets'
             . ', FluentCRM and MailPoet'
             . ', Amelia bookings, Polylang and WPML translations, MemberPress memberships, Elementor Pro forms'
@@ -220,18 +248,24 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             [ 'Code Snippets', false, Code_Snippets_Pack::operations() ],
             [ 'BuddyPress, BuddyBoss Platform', true, BuddyPress_Pack::operations() ],
             [ 'WS Form', false, WS_Form_Pack::operations() ],
+            [ 'Everest Forms', false, Everest_Forms_Pack::operations() ],
             [ 'WP Activity Log, Simple History', true, Activity_Log_Pack::operations() ],
             [ 'Action Scheduler', false, Action_Scheduler_Pack::operations() ],
             [ 'WP Mail Logging, Check and Log Email, Email Log', true, Email_Log_Pack::operations() ],
             [ 'Pretty Links', false, Pretty_Links_Pack::operations() ],
             [ 'ThirstyAffiliates', false, Thirsty_Affiliates_Pack::operations() ],
             [ 'Advanced Ads', false, Advanced_Ads_Pack::operations() ],
+            [ 'Popup Maker', false, Popup_Maker_Pack::operations() ],
+            [ 'OptinMonster', false, OptinMonster_Pack::operations() ],
             [ 'Site Reviews', false, Site_Reviews_Pack::operations() ],
             [ 'WP Simple Pay', false, Simple_Pay_Pack::operations() ],
             [ 'Paid Member Subscriptions', false, Paid_Member_Subscriptions_Pack::operations() ],
             [ 'WPGraphQL', false, WPGraphQL_Pack::operations() ],
+            [ 'wpForo', false, WpForo_Pack::operations() ],
+            [ 'Asgaros Forum', false, Asgaros_Forum_Pack::operations() ],
             [ 'Restrict Content', false, Restrict_Content_Pack::operations() ],
             [ 'Ultimate Member', false, Ultimate_Member_Pack::operations() ],
+            [ 'Events Manager', false, Events_Manager_Pack::operations() ],
             [ 'Easy Digital Downloads', false, EDD_Pack::operations() ],
         ];
         foreach (LMS_Pack::adapters() as $adapter) {
@@ -240,6 +274,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
         $groups[] = [ 'WP Offload Media', false, Offload_Media_Pack::operations() ];
         $groups[] = [ 'Jetpack CRM', false, Jetpack_Crm_Pack::operations() ];
         $groups[] = [ 'HubSpot', false, HubSpot_Pack::operations() ];
+        array_push($groups, ...Booking_Pack::host_groups());
         $groups[] = [ 'WPCode', false, WPCode_Pack::operations() ];
         $groups[] = [ 'TablePress', false, TablePress_Pack::operations() ];
         foreach (CRM_Pack::adapters() as $adapter) {
@@ -279,24 +314,31 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             TranslatePress_Pack::operations(),
             Code_Snippets_Pack::operations(),
             WS_Form_Pack::operations(),
+            Everest_Forms_Pack::operations(),
             Activity_Log_Pack::operations(),
             Action_Scheduler_Pack::operations(),
             Email_Log_Pack::operations(),
             Pretty_Links_Pack::operations(),
             Thirsty_Affiliates_Pack::operations(),
             Advanced_Ads_Pack::operations(),
+            Popup_Maker_Pack::operations(),
+            OptinMonster_Pack::operations(),
             Site_Reviews_Pack::operations(),
             Simple_Pay_Pack::operations(),
             Paid_Member_Subscriptions_Pack::operations(),
             WPGraphQL_Pack::operations(),
+            WpForo_Pack::operations(),
+            Asgaros_Forum_Pack::operations(),
             Restrict_Content_Pack::operations(),
             Ultimate_Member_Pack::operations(),
+            Events_Manager_Pack::operations(),
             EDD_Pack::operations(),
             BuddyPress_Pack::operations(),
             LMS_Pack::operations(),
             Offload_Media_Pack::operations(),
             Jetpack_Crm_Pack::operations(),
             HubSpot_Pack::operations(),
+            Booking_Pack::operations(),
             WPCode_Pack::operations(),
             TablePress_Pack::operations(),
             CRM_Pack::operations(),

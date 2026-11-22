@@ -54,6 +54,11 @@ class Give_Integration extends Integration_Dispatcher
         return post_type_exists(self::POST_TYPE);
     }
 
+    protected function host_plugin_file(): string
+    {
+        return 'give/give.php';
+    }
+
     protected function summary(): string
     {
         return 'GiveWP (donation forms, donations, donors, campaigns)';

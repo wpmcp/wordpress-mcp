@@ -166,6 +166,14 @@ class Run_Restore_Job
                 'safety_archive' => $report['safety_archive'] ?? null,
                 'maintenance'    => $report['maintenance'] ?? null,
             ];
+        } catch (Restore_Lock_Lost $e) {
+            // Issue #1124: this run lost the restore lock with its database
+            // connection. The job store is being rebuilt by whichever
+            // restore holds the lock now, so nothing is written to it; the
+            // stale sweep reports this job from the progress file and its
+            // free run lock.
+            unset($e);
+            return;
         } catch (\Throwable $e) {
             $fields = [
                 'status'      => 'failed',

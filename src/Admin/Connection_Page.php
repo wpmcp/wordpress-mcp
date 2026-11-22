@@ -737,6 +737,7 @@ class Connection_Page
         <?php endif; ?>
 
         <h3><?php echo esc_html__('Custom connector (Claude Desktop and claude.ai)', 'wpmcp'); ?></h3>
+        <?php $this->render_public_address_warning($connector['public_address_warning']); ?>
         <p><?php echo esc_html__('To add the connector:', 'wpmcp'); ?></p>
         <ol>
             <?php foreach ($connector['steps'] as $step) : ?>
@@ -745,6 +746,7 @@ class Connection_Page
         </ol>
 
         <h3><?php echo esc_html__('ChatGPT', 'wpmcp'); ?></h3>
+        <?php $this->render_public_address_warning($chatgpt['public_address_warning']); ?>
         <p><?php echo esc_html__('Server URL to paste:', 'wpmcp'); ?> <code><?php echo esc_html($chatgpt['url']); ?></code></p>
         <p><?php echo esc_html__('Custom MCP connectors need ChatGPT\'s Developer mode, on the plans that offer it; in a workspace, an admin may have to allow it. ChatGPT\'s menu names change from time to time: if a step does not match, look for Developer mode under Settings.', 'wpmcp'); ?></p>
         <p><?php echo esc_html__('To add WP MCP to ChatGPT:', 'wpmcp'); ?></p>
@@ -754,6 +756,15 @@ class Connection_Page
             <?php endforeach; ?>
         </ol>
         <?php
+    }
+
+    /** Issue #1149: the card's warning that its URL is not a public HTTPS address. */
+    private function render_public_address_warning(?string $warning): void
+    {
+        if (null === $warning) {
+            return;
+        }
+        printf('<div class="notice notice-warning inline wpmcp-public-address-warning"><p>%s</p></div>', esc_html($warning));
     }
 
     /**

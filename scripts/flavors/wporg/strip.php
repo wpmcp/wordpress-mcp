@@ -1546,6 +1546,22 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
     [ "        \$groups[] = [ 'HubSpot', false, HubSpot_Pack::operations() ];\n", '', 1 ],
     [ "            Jetpack_Crm_Pack::operations(),\n", '', 1 ],
     [ "            HubSpot_Pack::operations(),\n", '', 1 ],
+    // The appointment booking ops (issue #679) are the paid add-on's,
+    // removed by policy.php. Their lines go first, so every edit below
+    // matches the file as it was before them.
+    [
+        " *  - Issue #679 adds the paid-tier appointment booking ops (Booking_Pack):\n"
+            . " *    Bookly, Simply Schedule Appointments, BookingPress and LatePoint\n"
+            . " *    services, staff and bookings read with customers masked in lists, and\n"
+            . " *    bookings cancelled (off until wpmcp_enable_booking_write), each cancel\n"
+            . " *    undoable from a 'plugin_table_rows' before-image.\n",
+        '',
+        1,
+    ],
+    [ "            || Booking_Pack::active()\n", '', 1 ],
+    [ "            . ', Bookly, Simply Schedule Appointments, BookingPress and LatePoint bookings'\n", '', 1 ],
+    [ "        array_push(\$groups, ...Booking_Pack::host_groups());\n", '', 1 ],
+    [ "            Booking_Pack::operations(),\n", '', 1 ],
     // The SureCart ops (issue #665) are the paid add-on's too, removed by
     // policy.php; their lines go first, so the Checkout Field Editor edits
     // below still match. SureCart_Api and SureCart_Snapshot stay: the
@@ -1833,9 +1849,9 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
         1,
     ],
     [
-        "            . ', Tutor LMS, LifterLMS and LearnDash courses, TablePress tables'\n"
+        "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS courses, TablePress tables'\n"
             . "            . ', FluentCRM and MailPoet';\n",
-        "            . ', Tutor LMS, LifterLMS and LearnDash courses, TablePress tables';\n",
+        "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS courses, TablePress tables';\n",
         1,
     ],
     [
@@ -1846,7 +1862,7 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
     ],
     [
         " *  - Issue #394 adds the paid-tier LMS ops (LMS_Pack): Tutor LMS,\n"
-            . " *    LifterLMS and LearnDash course, section, lesson and quiz trees with\n"
+            . " *    LifterLMS, LearnDash and LearnPress course, section, lesson and quiz trees with\n"
             . " *    snapshotted writes, and read-only enrollments (LearnDash also enrolls,\n"
             . " *    unenrolls and resets progress, each snapshotted).\n"
             . " *  - Issue #481 adds the paid-tier TablePress ops (TablePress_Pack): tables\n"
@@ -1869,9 +1885,9 @@ $edits['src/Integrations/Plugin_Data_Integration.php'] = [
         1,
     ],
     [
-        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores'\n"
-            . "            . ', Tutor LMS, LifterLMS and LearnDash courses, TablePress tables';\n",
-        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores';\n",
+        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores'\n"
+            . "            . ', Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS courses, TablePress tables';\n",
+        "        return 'JetEngine and Pods fields, TranslatePress strings, Code Snippets, BuddyPress and BuddyBoss Platform community data, bbPress forums, WS Form and Everest Forms forms, WP Activity Log and Simple History logs, Pretty Links and ThirstyAffiliates links, Advanced Ads ads and placements, Popup Maker popups, OptinMonster campaigns, Events Manager events and bookings, Action Scheduler queues, Site Reviews reviews, WP Mail Logging, Check and Log Email and Email Log emails, WPGraphQL queries, WP Simple Pay forms, Paid Member Subscriptions plans, wpForo and Asgaros Forum forums, Restrict Content and Restrict Content Pro memberships, Ultimate Member roles and forms, Easy Digital Downloads stores';\n",
         1,
     ],
     [

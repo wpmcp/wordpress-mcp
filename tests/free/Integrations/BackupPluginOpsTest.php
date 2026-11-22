@@ -210,6 +210,34 @@ class BackupPluginOpsTest extends \WP_UnitTestCase
         $this->assertSame([], $this->queued());
     }
 
+    /** Issue #1163: All-in-One WP Migration installed but off is reported as inactive, not missing. */
+    public function test_aio_wp_migration_refusal_tells_inactive_from_missing(): void
+    {
+        remove_all_filters('wpmcp_aio_wp_migration_active');
+        add_filter('wpmcp_aio_wp_migration_active', '__return_false');
+        $file = 'all-in-one-wp-migration/all-in-one-wp-migration.php';
+        $path = WP_PLUGIN_DIR . '/' . $file;
+        $this->assertFileDoesNotExist($path, 'fixture expects the plugin not to be installed');
+
+        $missing = $this->call('read', 'list-aio-wp-migration-backups')['error'] ?? [];
+        $this->assertSame('aio_wp_migration_inactive', $missing['code'] ?? null);
+        $this->assertSame('missing', $missing['data']['state'] ?? null);
+        $this->assertStringContainsString('is not installed', $missing['message']);
+        $this->assertSame('https://wordpress.org/plugins/all-in-one-wp-migration/', $missing['data']['install_url'] ?? null);
+
+        wp_mkdir_p(dirname($path));
+        file_put_contents($path, "<?php\n");
+        try {
+            $inactive = $this->call('read', 'list-aio-wp-migration-backups')['error'] ?? [];
+        } finally {
+            unlink($path);
+            rmdir(dirname($path));
+        }
+        $this->assertSame('inactive', $inactive['data']['state'] ?? null);
+        $this->assertSame($file, $inactive['data']['required_plugin'] ?? null);
+        $this->assertStringContainsString('All-in-One WP Migration is installed but not active', $inactive['message']);
+    }
+
     public function test_inactive_plugins_are_refused_by_name(): void
     {
         remove_all_filters('wpmcp_updraftplus_active');
