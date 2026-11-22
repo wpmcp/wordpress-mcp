@@ -210,6 +210,7 @@ return [
         'src/Integrations/Theme_Layouts_GeneratePress.php',
         'src/Integrations/Theme_Layouts_Hfe.php',
         'src/Integrations/Theme_Layouts_Target_Rules.php',
+        'src/Integrations/Theme_Layouts_Blocksy.php',
         // The Blocksy Companion extension ops (issue #650), paid-tier.
         // strip.php takes out the merge and the rollback refresh in
         // Theme_Framework_Pack.
