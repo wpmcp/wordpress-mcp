@@ -95,6 +95,8 @@ tests_add_filter( 'muplugins_loaded', function () {
         wpmcp_maybe_require_plugin( 'fluentform/fluentform.php' );
         wpmcp_maybe_require_plugin( 'forminator/forminator.php' );
         wpmcp_maybe_require_plugin( 'sureforms/sureforms.php' );
+        // Issue #676: the Everest Forms ops on the plugin-data pair.
+        wpmcp_maybe_require_plugin( 'everest-forms/everest-forms.php' );
     }
 
     // The live blocks job (issue #287, WPMCP_LIVE_BLOCKS=1) renders blocks
@@ -126,6 +128,14 @@ tests_add_filter( 'muplugins_loaded', function () {
     // bbPress tests register its post types themselves.
     if ( getenv( 'WPMCP_LIVE_BBPRESS' ) ) {
         wpmcp_maybe_require_plugin( 'bbpress/bbpress.php' );
+    }
+
+    // The optional GamiPress live test (issue #833) runs the GamiPress ops
+    // against a local GamiPress copy named by WPMCP_GAMIPRESS_SRC (the free
+    // plugin from wordpress.org works). Loaded only on request: the
+    // stub-backed GamiPress tests define its functions themselves.
+    if ( getenv( 'WPMCP_GAMIPRESS_SRC' ) && is_file( rtrim( (string) getenv( 'WPMCP_GAMIPRESS_SRC' ), '/' ) . '/gamipress.php' ) ) {
+        require rtrim( (string) getenv( 'WPMCP_GAMIPRESS_SRC' ), '/' ) . '/gamipress.php';
     }
 
     // The live Breakdance job (issue #457, WPMCP_LIVE_BREAKDANCE=1) runs the
@@ -328,6 +338,9 @@ tests_add_filter( 'muplugins_loaded', function () {
         }, 10, 3 );
         wpmcp_maybe_require_plugin( 'fluent-crm/fluent-crm.php' );
         wpmcp_maybe_require_plugin( 'mailpoet/mailpoet.php' );
+        // Newsletter (issue #683) builds its own tables on init when its
+        // version option is behind, before any test transaction starts.
+        wpmcp_maybe_require_plugin( 'newsletter/plugin.php' );
     }
 
     // The live knowledge base and support desk job (issue #708,
@@ -672,6 +685,30 @@ tests_add_filter( 'init', function () {
     }
 }, 20 );
 
+// The GamiPress live test's tables and settings, built by GamiPress's own
+// installer and table classes once per run, before any test transaction
+// starts. A no-op everywhere else.
+tests_add_filter( 'init', function () {
+    if ( getenv( 'WPMCP_GAMIPRESS_SRC' ) && defined( 'GAMIPRESS_DIR' ) && function_exists( 'ct_setup_table' ) ) {
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        require_once GAMIPRESS_DIR . 'includes/install.php';
+        gamipress_install();
+        // A fresh install records its own version as done, as GamiPress's
+        // upgrade routine does on a site with no earlier version.
+        update_option( 'gamipress_version', GAMIPRESS_VER );
+        foreach ( [ 'gamipress_user_earnings', 'gamipress_logs' ] as $table ) {
+            $ct = ct_setup_table( $table );
+            if ( is_object( $ct ) ) {
+                $ct->db->maybe_upgrade();
+                if ( isset( $ct->meta ) && is_object( $ct->meta ) ) {
+                    $ct->meta->db->maybe_upgrade();
+                }
+            }
+            ct_reset_setup_table();
+        }
+    }
+}, 20 );
+
 // The live Code Snippets job's table, built by Code Snippets' own DB class
 // once per run, before any test transaction starts. A no-op everywhere else.
 tests_add_filter( 'init', function () {
@@ -814,6 +851,16 @@ tests_add_filter( 'init', function () {
 tests_add_filter( 'pre_http_request', function ( $pre, $args, $url ) {
     if ( false === $pre && 0 === strpos( (string) $url, 'https://my.elementor.com/api/' ) ) {
         return new WP_Error( 'http_request_failed', 'Elementor remote API is mocked as unreachable in the test suite.' );
+    }
+    return $pre;
+}, 10, 3 );
+
+// The backup folder self-check (issue #846) requests a canary file from the
+// site's own URL, which in the test suite is a host on the internet. Answer
+// it as not served unless a test mocks it first (at a lower priority).
+tests_add_filter( 'pre_http_request', function ( $pre, $args, $url ) {
+    if ( false === $pre && false !== strpos( (string) $url, '/wpmcp-canary-' ) ) {
+        return [ 'headers' => [], 'body' => '', 'response' => [ 'code' => 404, 'message' => 'Not Found' ], 'cookies' => [], 'filename' => null ];
     }
     return $pre;
 }, 10, 3 );

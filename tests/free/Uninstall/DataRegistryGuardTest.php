@@ -12,6 +12,7 @@ use WPMCP\Tools\Export\Export_Dir;
 use WPMCP\Tools\Filesystem\Filesystem_Guard;
 use WPMCP\Tools\Redirects\Redirect_Store;
 use WPMCP\Tools\Search\Search_Index_Store;
+use WPMCP\Tools\Security\File_Quarantine;
 use WPMCP\Tools\WidgetBuilder\Compiler\Compiled_Widget_Manifest;
 
 /**
@@ -74,10 +75,26 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             'show_on_front',
             'page_on_front',
             'page_for_posts',
-            // The SeedProd and Under Construction gate settings, toggled by
-            // the Site_Gate_Pack ops on the theme pair (issue #903).
+            // The SeedProd, Under Construction, WP Maintenance Mode,
+            // Maintenance and CMP gate settings, toggled by the
+            // Site_Gate_Pack ops on the theme pair (issue #903).
             'seedprod_settings',
             'ucp_options',
+            'wpmm_settings',
+            'mtnc-options',
+            'niteoCS_status',
+            'niteoCS_activation',
+            // WPS Hide Login's login and redirect slugs, written by the
+            // Login_Url_Pack ops on the theme pair (issue #896).
+            'whl_page',
+            'whl_redirect_admin',
+            // FunnelKit Cart's settings, written by cart.update-settings on
+            // the woo-write pair (issue #832).
+            'fkcart_settings',
+            // Otter Blocks' feature switches and disabled blocks, set by
+            // update-otter-settings on the block-suites pair (issue #647).
+            'themeisle_blocks_settings_*',
+            'themeisle_disabled_blocks',
             // Avada's global options, written by the Avada design_system
             // scope on the builder pair (issue #637).
             'fusion_options',
@@ -99,18 +116,54 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             // Max Mega Menu's global and per-location settings, changed by
             // the megamenu-update-location and -update-settings ops (#908).
             'megamenu_settings',
+            // Easy Table of Contents' settings, whose placement keys the
+            // easy-toc-update-settings op changes (issue #904).
+            'ez-toc-settings',
+            // Klaviyo's and Kit's settings, whose checkout signup and default
+            // forms the email marketing ops change (issue #900).
+            'klaviyo_settings',
+            '_wp_convertkit_settings',
+            // GTM4WP's settings and Microsoft Clarity's project id, changed
+            // by gtm4wp-set-settings and clarity-set-project-id (issue #899).
+            'gtm4wp-options',
+            'clarity_project_id',
+            // Custom Post Type UI's post types and taxonomies, written by
+            // the cpt-create and cpt-update ops (issue #710).
+            'cptui_post_types',
+            'cptui_taxonomies',
+            // Cookie Notice's settings, whose banner texts the
+            // update-consent-banner-texts op changes (issue #686).
+            'cookie_notice_options',
+            // WPCode's global header, body and footer scripts, replaced by
+            // the wpcode-set-header-footer op (issue #697).
+            'ihaf_insert_header',
+            'ihaf_insert_body',
+            'ihaf_insert_footer',
             // FiboSearch's settings, changed by update-fibosearch-settings
             // on the theme pair (issue #700).
             'dgwt_wcas_settings',
             // Relevanssi's own settings, one option per name, changed by
             // update-relevanssi-settings on the theme pair (issue #700).
             'relevanssi_*',
+            // FileBird's folder colours, keyed by folder id, which
+            // filebird-delete-folder drops for the folders it deletes
+            // (issue #906).
+            'fbv_folder_colors',
+            // Thrive Theme Builder's logo link, favicon and default featured
+            // image, changed by update-thrive-theme-settings (issue #824).
+            'thrive-theme-logo-url',
+            'thrive-theme-favicon',
+            'thrive-theme-default-featured-image',
             // Checkout Field Editor's checkout sections, whose fields the
             // update-checkout-fields op changes (issue #660).
             'wc_fields_*',
         ],
         'transient'      => [
             'scrape_key_*',
+            // Custom Post Type UI's own flush-on-next-admin-load flag, set
+            // after a cpt-create or cpt-update op the way its save sets it
+            // (issue #710).
+            'cptui_flush_rewrite_rules',
         ],
         'site_transient' => [],
         'site_option'    => [
@@ -273,7 +326,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
             array_map(static fn ($t) => $wpdb->prefix . $t, Data_Registry::TABLES)
         );
         $this->assertSame(
-            [ File_Backup::BACKUP_DIR, Site_Backup_Dir::DIR_NAME, Export_Dir::DIR_NAME, Content_Mirror::DIR_NAME, Filesystem_Guard::BACKUP_DIR ],
+            [ File_Backup::BACKUP_DIR, Site_Backup_Dir::DIR_NAME, Export_Dir::DIR_NAME, Content_Mirror::DIR_NAME, Filesystem_Guard::BACKUP_DIR, File_Quarantine::DIR ],
             Data_Registry::UPLOADS_DIRS
         );
         $this->assertSame(

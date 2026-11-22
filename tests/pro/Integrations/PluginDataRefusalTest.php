@@ -28,6 +28,7 @@ class PluginDataRefusalTest extends \WP_UnitTestCase
         'wpmcp_lifterlms_active', 'wpmcp_mailpoet_active', 'wpmcp_memberpress_active', 'wpmcp_multilingual_active',
         'wpmcp_pods_active', 'wpmcp_tablepress_active', 'wpmcp_translatepress_active', 'wpmcp_tutor_active',
         'wpmcp_ws_form_active',
+        'wpmcp_everest_forms_active',
         'wpmcp_wp_activity_log_active',
         'wpmcp_simple_history_active',
         'wpmcp_action_scheduler_active',
@@ -35,8 +36,32 @@ class PluginDataRefusalTest extends \WP_UnitTestCase
         'wpmcp_check_email_active',
         'wpmcp_email_log_active',
         'wpmcp_weglot_active',
+        'wpmcp_wpforo_active',
+        'wpmcp_asgaros_active',
         'wpmcp_gtranslate_active',
+        'wpmcp_easy_toc_active',
+        'wpmcp_mailerlite_active',
+        'wpmcp_klaviyo_active',
+        'wpmcp_kit_active',
+        'wpmcp_omnisend_active',
+        'wpmcp_activecampaign_active',
+        'wpmcp_thrive_automator_active',
+        'wpmcp_thrive_ovation_active',
+        'wpmcp_newsletter_active',
+        'wpmcp_groundhogg_active',
+        'wpmcp_mc4wp_active',
+        'wpmcp_brevo_active',
+        'wpmcp_loco_active',
+        'wpmcp_surecart_active',
         'wpmcp_wpgraphql_active',
+        'wpmcp_wp_all_import_active',
+        'wpmcp_wp_all_export_active',
+        'wpmcp_gtm4wp_active',
+        'wpmcp_pixelyoursite_active',
+        'wpmcp_meta_pixel_active',
+        'wpmcp_clarity_active',
+        'wpmcp_search_replace_active',
+        'wpmcp_funnelkit_automations_active',
         'wpmcp_checkout_field_editor_active',
     ];
 
@@ -92,9 +117,13 @@ class PluginDataRefusalTest extends \WP_UnitTestCase
             'MemberPress is not active on this site, so op "memberpress-list-memberships" of wpmcp/plugin-data-read cannot run. Install and activate MemberPress (' . admin_url('plugins.php') . '), then reconnect the MCP client so it reloads its tool list.',
             $result->get_error_message()
         );
+        $data = $result->get_error_data();
+        // Issue #627: the refusal also carries the unavailability contract.
+        $this->assertSame('plugin_missing', $data['unavailable']['reason']);
+        unset($data['unavailable']);
         $this->assertSame(
             [ 'plugin' => 'MemberPress', 'operation' => 'memberpress-list-memberships', 'plugins_url' => admin_url('plugins.php') ],
-            $result->get_error_data()
+            $data
         );
     }
 

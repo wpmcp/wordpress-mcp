@@ -23,18 +23,27 @@ class Security_Scanner
 
     private const ALL_CHECKS = ['malware', 'integrity', 'hardening', 'software'];
 
+    /**
+     * Every check name a caller may ask for. "compromise" (issue #845) runs
+     * only when asked: it makes loopback requests and walks plugins and
+     * themes, so a default scan keeps its time, its requests and its score.
+     */
+    private const VALID_CHECKS = ['malware', 'integrity', 'hardening', 'software', 'compromise'];
+
     private Malware_Audit $malware;
     private Integrity_Audit $integrity;
     private Hardening_Audit $hardening;
     private Software_Audit $software;
     private Vulnerability_Audit $vulnerabilities;
+    private Compromise_Audit $compromise;
 
     public function __construct(
         ?Malware_Audit $malware = null,
         ?Integrity_Audit $integrity = null,
         ?Hardening_Audit $hardening = null,
         ?Software_Audit $software = null,
-        ?Vulnerability_Audit $vulnerabilities = null
+        ?Vulnerability_Audit $vulnerabilities = null,
+        ?Compromise_Audit $compromise = null
     ) {
         $this->malware   = $malware ?: new Malware_Audit();
         $this->integrity = $integrity ?: new Integrity_Audit();
@@ -42,12 +51,13 @@ class Security_Scanner
         $this->software  = $software ?: new Software_Audit();
 
         $this->vulnerabilities = $vulnerabilities ?: new Vulnerability_Audit();
+        $this->compromise      = $compromise ?: new Compromise_Audit();
     }
 
     /**
      * Live: run the requested audits and assemble the scored report.
      *
-     * @param array $input { checks?, deep?, max_files?, max_seconds?, vulnerabilities? }
+     * @param array $input { checks?, deep?, max_files?, max_seconds?, vulnerabilities?, cursor? }
      * @return array { summary, sections, scan_meta, top_recommendations, vulnerabilities? }
      */
     public function scan(array $input): array
@@ -96,6 +106,14 @@ class Security_Scanner
         if (in_array('software', $checks, true)) {
             $findings = array_merge($findings, $this->software->run());
         }
+        if (in_array('compromise', $checks, true)) {
+            // A truncated compromise walk returns next_cursor; passing it
+            // back as cursor continues the walk (issue #1151).
+            $cursor                  = isset($input['cursor']) && is_string($input['cursor']) && '' !== $input['cursor'] ? $input['cursor'] : null;
+            $compromise              = $this->compromise->run($max_files, $max_seconds, $cursor);
+            $findings                = array_merge($findings, $compromise['findings']);
+            $scan_meta['compromise'] = $compromise['stats'];
+        }
 
         // Issue #413: the only outbound lookup here that is opt-in. Nothing is
         // sent to the vulnerability database unless the caller asks.
@@ -142,7 +160,7 @@ class Security_Scanner
             return self::ALL_CHECKS;
         }
         $valid = [];
-        foreach (self::ALL_CHECKS as $check) {
+        foreach (self::VALID_CHECKS as $check) {
             if (in_array($check, $requested, true)) {
                 $valid[] = $check;
             }
