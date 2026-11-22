@@ -490,9 +490,10 @@ svn add --force trunk
 svn status | grep '^!' | awk '{print $2}' | xargs -r svn rm
 
 # assets/ is the listing artwork; it lives beside trunk, not inside it, and is
-# never part of the plugin zip
+# never part of the plugin zip. The files are kept in the repo under
+# .wordpress-org/ (copy them with: cp .wordpress-org/* /tmp/wpmcp-svn/assets/)
 #   assets/banner-1544x500.png, assets/banner-772x250.png
-#   assets/icon-256x256.png, assets/icon-128x128.png
+#   assets/icon-256x256.png, assets/icon-128x128.png, assets/icon.svg
 #   assets/screenshot-1.png ... matching the readme's == Screenshots == order
 
 svn ci -m "Release <version>"
