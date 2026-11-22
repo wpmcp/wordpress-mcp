@@ -29,7 +29,6 @@ class EverestFormsLiveTest extends \WP_UnitTestCase
         if (class_exists('EVF_Install')) {
             // DDL (dbDelta), outside any test transaction.
             $create = new \ReflectionMethod('EVF_Install', 'create_tables');
-            $create->setAccessible(true);
             $create->invoke(null);
         }
     }
