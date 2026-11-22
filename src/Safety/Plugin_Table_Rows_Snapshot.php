@@ -68,6 +68,15 @@ if (! defined('ABSPATH')) {
  * membership restore PMPro's cached levels of each captured user are
  * dropped, so its next read sees the restored rows.
  *
+ * Forum rows (issue #671) come from two forum plugins' own tables. wpForo
+ * keeps its main board in {prefix}wpforo_forums, _topics, _posts and
+ * _postmeta, keyed by forumid and topicid (posts and postmeta captured by
+ * the topic they belong to, so a moved topic's rows all go back). Asgaros
+ * Forum keeps {prefix}forum_topics and forum_posts keyed by id, and a
+ * topic's posts by their parent_id. Each kind allows only its one table.
+ * After a wpForo restore its own cache is cleaned (wpforo_clean_cache), as
+ * its screens do after a change.
+ *
  * Restrict Content membership levels (issue #669, the
  * `restrict_content_pro` table the plugin names its levels table, so kind
  * rcp_levels with the prefix "restrict_content_" and the one suffix
@@ -96,7 +105,7 @@ if (! defined('ABSPATH')) {
  * captured post for a Pods row, a MemberPress rule's rows or a LearnPress
  * course's sections, edit_post on the course a LearnPress section belongs to
  * for that section's items, manage_options
- * for a dictionary row, a Pretty Links link, a Restrict Content level or an EDD discount, and Wordfence's own admin capability (manage_options,
+ * for a dictionary row, a Pretty Links link, a Restrict Content level, an EDD discount or a forum row, and Wordfence's own admin capability (manage_options,
  * manage_network on a multisite network) for a Wordfence row.
  */
 final class Plugin_Table_Rows_Snapshot
@@ -110,6 +119,13 @@ final class Plugin_Table_Rows_Snapshot
         'mepr_rule_access' => 'mepr_rule_access_',
         'rank_math'        => 'rank_math_',
         'prli'             => 'prli_',
+        'wpforo_forum'          => 'wpforo_',
+        'wpforo_topic'          => 'wpforo_',
+        'wpforo_topic_posts'    => 'wpforo_',
+        'wpforo_topic_postmeta' => 'wpforo_',
+        'asgaros_topic'         => 'forum_',
+        'asgaros_post'          => 'forum_',
+        'asgaros_topic_posts'   => 'forum_',
         'pmpro_levels'     => 'pmpro_',
         'pmpro_members'    => 'pmpro_',
         'pmpro_codes'      => 'pmpro_',
@@ -135,12 +151,21 @@ final class Plugin_Table_Rows_Snapshot
         'pmpro_members'    => 'user_id',
         'learnpress_sections'      => 'section_course_id',
         'learnpress_section_items' => 'section_id',
+        'wpforo_forum'          => 'forumid',
+        'wpforo_topic'          => 'topicid',
+        'wpforo_topic_posts'    => 'topicid',
+        'wpforo_topic_postmeta' => 'topicid',
+        'asgaros_topic_posts'   => 'parent_id',
     ];
 
-    /** kind => its primary key, for a kind whose table has no `id` column. */
-    private const ROW_KEYS = [
+    /** kind => the column its rows are read in order of, for a table with no `id` column. */
+    private const ORDER_COLUMNS = [
         'learnpress_sections'      => 'section_id',
         'learnpress_section_items' => 'section_item_id',
+        'wpforo_forum'          => 'forumid',
+        'wpforo_topic'          => 'topicid',
+        'wpforo_topic_posts'    => 'postid',
+        'wpforo_topic_postmeta' => 'metaid',
     ];
 
     /** kind => the only suffixes it allows, for a kind with a fixed table. */
@@ -148,6 +173,13 @@ final class Plugin_Table_Rows_Snapshot
         'mepr_rule_access' => [ 'conditions' ],
         'rank_math'        => [ 'redirections' ],
         'prli'             => [ 'links' ],
+        'wpforo_forum'          => [ 'forums' ],
+        'wpforo_topic'          => [ 'topics' ],
+        'wpforo_topic_posts'    => [ 'posts' ],
+        'wpforo_topic_postmeta' => [ 'postmeta' ],
+        'asgaros_topic'         => [ 'topics' ],
+        'asgaros_post'          => [ 'posts' ],
+        'asgaros_topic_posts'   => [ 'posts' ],
         'pmpro_levels'     => [ 'membership_levels' ],
         'pmpro_members'    => [ 'memberships_users' ],
         'pmpro_codes'      => [ 'discount_codes' ],
@@ -481,6 +513,9 @@ final class Plugin_Table_Rows_Snapshot
         if ('pmpro_members' === $kind) {
             self::clear_pmpro_user_cache($ids);
         }
+        if (str_starts_with($kind, 'wpforo_') && function_exists('wpforo_clean_cache')) {
+            wpforo_clean_cache();
+        }
         if ('rcp_levels' === $kind) {
             self::flush_rcp_level_cache($ids);
         }
@@ -623,7 +658,7 @@ final class Plugin_Table_Rows_Snapshot
     private static function kind_rows(string $kind, string $table, array $ids): array
     {
         if (! isset(self::BINARY_COLUMNS[ $kind ])) {
-            return self::rows($table, $ids, self::key_column($kind), self::ROW_KEYS[ $kind ] ?? 'id');
+            return self::rows($table, $ids, self::key_column($kind), self::ORDER_COLUMNS[ $kind ] ?? 'id');
         }
         if ([] === $ids) {
             return [];
@@ -753,6 +788,12 @@ final class Plugin_Table_Rows_Snapshot
         if ('prli' === $kind) {
             if (! current_user_can('manage_options')) {
                 throw new Mutation_Failed('Rollback refused: restoring Pretty Links links requires the manage_options capability.');
+            }
+            return;
+        }
+        if (str_starts_with($kind, 'wpforo_') || str_starts_with($kind, 'asgaros_')) {
+            if (! current_user_can('manage_options')) {
+                throw new Mutation_Failed('Rollback refused: restoring forum rows requires the manage_options capability.');
             }
             return;
         }

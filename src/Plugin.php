@@ -787,6 +787,8 @@ final class Plugin
             Management_Access::register();
             add_action('admin_menu', [$this, 'register_admin_menu']);
             Management_Access::add_handler('wp_ajax_wpmcp_restore', [new Restore_Controller(), 'handle']);
+            // The Audit Log's Undo session button (issue #1150).
+            Management_Access::add_handler('wp_ajax_' . Restore_Controller::SESSION_ACTION, [new Restore_Controller(), 'handle_session']);
             // Redacted CSV export of the filtered request log (issue #303).
             Management_Access::add_handler('admin_post_' . Audit_Log_Page::EXPORT_ACTION, [new Audit_Log_Page(), 'export_requests']);
             // Integrations that derive state from options rebuild it after a
@@ -2836,6 +2838,8 @@ final class Plugin
                     'max_files'       => [ 'type' => 'integer' ],
                     'max_seconds'     => [ 'type' => 'integer' ],
                     'vulnerabilities' => [ 'type' => 'boolean' ],
+                    // Issue #1151: scan_meta.compromise.next_cursor of a truncated compromise scan.
+                    'cursor'          => [ 'type' => 'string' ],
                 ],
             ],
             [$scan_security, 'handle'],
