@@ -73,6 +73,15 @@
       <file>tests/free/Release/TestPluginRefreshTest.php</file>
       <file>tests/free/WporgStripTest.php</file>
     </testsuite>
+    <!-- WPMCP 2.0: kernel, registry generator and gate rule tests, and every
+         module's unit and fast conformance tests. Directories, so adding a
+         module never edits this file. -->
+    <testsuite name="kernel">
+      <directory>tests/kernel</directory>
+    </testsuite>
+    <testsuite name="modules">
+      <directory>tests/modules</directory>
+    </testsuite>
   </testsuites>
   <php>
     <const name="WPMCP_TESTING" value="true"/>
