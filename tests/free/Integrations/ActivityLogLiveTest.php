@@ -122,6 +122,33 @@ class ActivityLogLiveTest extends \WP_UnitTestCase
         $this->assertStringNotContainsString('Melapress', $message);
     }
 
+    /** Issue #1139: a plugin deactivated event reads its PluginData like the Log viewer. */
+    public function test_a_wp_activity_log_plugin_event_shows_the_plugin_name_and_version(): void
+    {
+        \WSAL\Entities\Occurrences_Entity::store_record(
+            [
+                'Username'      => 'ada',
+                'CurrentUserID' => 2,
+                'ClientIP'      => '203.0.113.7',
+                'Severity'      => 300,
+                'Object'        => 'plugin',
+                'EventType'     => 'deactivated',
+                'PluginFile'    => WP_PLUGIN_DIR . '/pretty-link/pretty-link.php',
+                'PluginData'    => (object) [ 'Name' => 'Pretty Links', 'PluginURI' => '', 'PluginRepoUrl' => 'https://wordpress.org/plugins/pretty-link/', 'Version' => '3.6.2', 'Author' => '', 'Network' => 'False' ],
+            ],
+            5002,
+            microtime(true),
+            get_current_blog_id()
+        );
+
+        $list    = $this->read('activitylog-list-activity', [ 'source' => 'wp-activity-log', 'event' => '5002' ]);
+        $message = $list['events'][0]['message'] ?? '';
+        $this->assertStringContainsString('Deactivated the plugin Pretty Links.', $message, (string) wp_json_encode($list));
+        $this->assertStringContainsString('Version: 3.6.2', $message);
+        $this->assertStringNotContainsString('NULL', $message);
+        $this->assertDoesNotMatchRegularExpression('/%[A-Za-z>-]+%/', $message);
+    }
+
     /** Issue #948: Simple History's failed-login username is masked in a list, full alone. */
     public function test_a_simple_history_failed_login_username_is_masked_in_a_list(): void
     {

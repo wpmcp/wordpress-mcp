@@ -975,7 +975,7 @@ msgid "Pro keeps every snapshot, and builds Elementor pages too."
 msgstr ""
 
 #: Admin/Pro_Banner.php:252
-msgid "Unlimited snapshot history and session restore"
+msgid "Unlimited snapshot history while your licence is active"
 msgstr ""
 
 #: Admin/Pro_Banner.php:253

@@ -32,6 +32,10 @@ class AnyStatusQueryGuardTest extends \WP_UnitTestCase
             'count'  => 1,
             'reason' => 'The helper itself: it defaults post_status to any and adds the read filter.',
         ],
+        'Integrations/Core_Fonts_Pack.php::faces'                          => [
+            'count'  => 1,
+            'reason' => 'Font faces of one family (issue #712): every op that lists them takes edit_theme_options, which core\'s wp_font_face type maps every read capability to, and the delete must back up every face.',
+        ],
         'Integrations/LMS_Adapter.php::child_posts'                        => [
             'count'  => 1,
             'reason' => 'Write path only: a reorder or insert renumbers every sibling, and edit_refusal() refuses the call when a sibling the caller may not edit would change.',
@@ -39,6 +43,10 @@ class AnyStatusQueryGuardTest extends \WP_UnitTestCase
         'Integrations/LMS_LearnDash.php::children_linked'                  => [
             'count'  => 1,
             'reason' => 'Unfiltered only with every_row, which only write paths pass: sibling_ids() for a reorder or insert (edit_refusal() refuses when a sibling the caller may not edit would change) and the course steps rebuild, which writes post ids only.',
+        ],
+        'Integrations/LMS_Sensei.php::course_lessons'                      => [
+            'count'  => 1,
+            'reason' => 'Unfiltered only with every_row, which only write paths pass (as LMS_Adapter::child_posts): a reorder or insert renumbers every sibling under edit_refusal(), and the course _lesson_order rebuild writes post ids only.',
         ],
         'Integrations/FunnelKit_Pack.php::offer_rows'                      => [
             'count'  => 1,

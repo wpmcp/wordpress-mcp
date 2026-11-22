@@ -95,6 +95,8 @@ tests_add_filter( 'muplugins_loaded', function () {
         wpmcp_maybe_require_plugin( 'fluentform/fluentform.php' );
         wpmcp_maybe_require_plugin( 'forminator/forminator.php' );
         wpmcp_maybe_require_plugin( 'sureforms/sureforms.php' );
+        // Issue #676: the Everest Forms ops on the plugin-data pair.
+        wpmcp_maybe_require_plugin( 'everest-forms/everest-forms.php' );
     }
 
     // The live blocks job (issue #287, WPMCP_LIVE_BLOCKS=1) renders blocks
@@ -106,6 +108,8 @@ tests_add_filter( 'muplugins_loaded', function () {
         wpmcp_maybe_require_plugin( 'generateblocks/plugin.php' );
         wpmcp_maybe_require_plugin( 'ultimate-addons-for-gutenberg/ultimate-addons-for-gutenberg.php' );
         wpmcp_maybe_require_plugin( 'otter-blocks/otter-blocks.php' );
+        wpmcp_maybe_require_plugin( 'stackable-ultimate-gutenberg-blocks/plugin.php' );
+        wpmcp_maybe_require_plugin( 'ultimate-blocks/ultimate-blocks.php' );
     }
 
     // The live BuddyPress job (issue #363, WPMCP_LIVE_BUDDYPRESS=1) runs the
@@ -326,6 +330,9 @@ tests_add_filter( 'muplugins_loaded', function () {
         }, 10, 3 );
         wpmcp_maybe_require_plugin( 'fluent-crm/fluent-crm.php' );
         wpmcp_maybe_require_plugin( 'mailpoet/mailpoet.php' );
+        // Newsletter (issue #683) builds its own tables on init when its
+        // version option is behind, before any test transaction starts.
+        wpmcp_maybe_require_plugin( 'newsletter/plugin.php' );
     }
 
     // The live knowledge base and support desk job (issue #708,
@@ -812,6 +819,16 @@ tests_add_filter( 'init', function () {
 tests_add_filter( 'pre_http_request', function ( $pre, $args, $url ) {
     if ( false === $pre && 0 === strpos( (string) $url, 'https://my.elementor.com/api/' ) ) {
         return new WP_Error( 'http_request_failed', 'Elementor remote API is mocked as unreachable in the test suite.' );
+    }
+    return $pre;
+}, 10, 3 );
+
+// The backup folder self-check (issue #846) requests a canary file from the
+// site's own URL, which in the test suite is a host on the internet. Answer
+// it as not served unless a test mocks it first (at a lower priority).
+tests_add_filter( 'pre_http_request', function ( $pre, $args, $url ) {
+    if ( false === $pre && false !== strpos( (string) $url, '/wpmcp-canary-' ) ) {
+        return [ 'headers' => [], 'body' => '', 'response' => [ 'code' => 404, 'message' => 'Not Found' ], 'cookies' => [], 'filename' => null ];
     }
     return $pre;
 }, 10, 3 );

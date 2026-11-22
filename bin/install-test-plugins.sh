@@ -7,8 +7,8 @@
 # Polylang from the wordpress.org plugin repository or, with WPMCP_LIVE_FORMS=1,
 # Contact Form 7, Flamingo and the free WPForms, Formidable, Ninja Forms,
 # Fluent Forms, Forminator and SureForms only (bin/test-local.sh --live-forms), or, with
-# WPMCP_LIVE_BLOCKS=1, Kadence Blocks, GenerateBlocks, Spectra and Otter Blocks
-# only (bin/test-local.sh --live-blocks), or, with WPMCP_LIVE_BUDDYPRESS=1,
+# WPMCP_LIVE_BLOCKS=1, Kadence Blocks, GenerateBlocks, Spectra, Otter Blocks,
+# Stackable and Ultimate Blocks only (bin/test-local.sh --live-blocks), or, with WPMCP_LIVE_BUDDYPRESS=1,
 # BuddyPress only (bin/test-local.sh --live-buddypress), or, with
 # WPMCP_LIVE_BBPRESS=1, bbPress only (bin/test-local.sh --live-bbpress), or, with
 # WPMCP_LIVE_TABLEPRESS=1, TablePress only (bin/test-local.sh --live-tablepress), or,
@@ -17,7 +17,7 @@
 # (bin/test-local.sh --live-site-reviews), or,
 # with WPMCP_LIVE_CODE_SNIPPETS=1, Code Snippets only (bin/test-local.sh
 # --live-code-snippets), or,
-# with WPMCP_LIVE_CRM=1, FluentCRM and MailPoet only (bin/test-local.sh
+# with WPMCP_LIVE_CRM=1, FluentCRM, MailPoet and Newsletter only (bin/test-local.sh
 # --live-crm), or, with WPMCP_LIVE_HELPDESK=1, BetterDocs, Fluent Support
 # and Awesome Support only (bin/test-local.sh --live-helpdesk), or, with
 # WPMCP_LIVE_ACTIVITY_LOG=1, WP Activity Log and Simple History only
@@ -130,6 +130,8 @@ if [ "${WPMCP_LIVE_FORMS:-}" = "1" ]; then
 		"fluentform:fluentform.php"
 		"forminator:forminator.php"
 		"sureforms:sureforms.php"
+		# Issue #676: the Everest Forms ops on the plugin-data pair.
+		"everest-forms:everest-forms.php"
 	)
 fi
 
@@ -144,6 +146,8 @@ if [ "${WPMCP_LIVE_BLOCKS:-}" = "1" ]; then
 		"generateblocks:plugin.php"
 		"ultimate-addons-for-gutenberg:ultimate-addons-for-gutenberg.php"
 		"otter-blocks:otter-blocks.php"
+		"stackable-ultimate-gutenberg-blocks:plugin.php"
+		"ultimate-blocks:ultimate-blocks.php"
 	)
 fi
 
@@ -261,6 +265,7 @@ if [ "${WPMCP_LIVE_CRM:-}" = "1" ]; then
 	PLUGINS=(
 		"fluent-crm:fluent-crm.php"
 		"mailpoet:mailpoet.php"
+		"newsletter:plugin.php"
 	)
 fi
 
