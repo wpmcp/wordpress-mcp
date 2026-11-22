@@ -45,7 +45,12 @@ final class Request_Context
         $uri = isset($_SERVER['REQUEST_URI']) ? (string) wp_unslash($_SERVER['REQUEST_URI']) : '/'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- only matched against fixed routes, never output or stored.
         $home = function_exists('home_url') ? (string) wp_parse_url(home_url('/'), PHP_URL_PATH) : '';
         $prefix = function_exists('rest_get_url_prefix') ? rest_get_url_prefix() : 'wp-json';
-        $query = isset($_GET['rest_route']) ? ['rest_route' => (string) wp_unslash($_GET['rest_route'])] : []; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- routing only: matched against a fixed route, never stored or output.
+        // WordPress takes rest_route from the query string, else from a form POST body.
+        $rest_route = isset($_GET['rest_route']) ? wp_unslash($_GET['rest_route']) : null; // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- routing only: matched against a fixed route, never stored or output.
+        if (null === $rest_route && isset($_POST['rest_route'])) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- routing only, as above.
+            $rest_route = wp_unslash($_POST['rest_route']); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- routing only: matched against a fixed route, never stored or output.
+        }
+        $query = is_string($rest_route) ? ['rest_route' => $rest_route] : [];
 
         return new self(
             uri: $uri,
@@ -109,6 +114,10 @@ final class Request_Context
             if ('' !== $home_path && str_starts_with($path, $home_path . '/')) {
                 $path = substr($path, strlen($home_path));
             }
+            // PATHINFO permalinks: WordPress registers the REST rewrite under /index.php too.
+            if (str_starts_with($path, '/index.php/')) {
+                $path = substr($path, strlen('/index.php'));
+            }
             $prefix = '/' . trim($rest_prefix, '/');
             if ($path === $prefix || str_starts_with($path, $prefix . '/')) {
                 $route = '/' . ltrim(substr($path, strlen($prefix)), '/');
@@ -116,7 +125,9 @@ final class Request_Context
         }
 
         if (null !== $route) {
-            $route = rtrim($route, '/');
+            // WordPress matches REST routes case-insensitively.
+            $route = strtolower(rtrim($route, '/'));
+            $mcp_route = strtolower($mcp_route);
             return ($route === $mcp_route || str_starts_with($route, $mcp_route . '/')) ? Context::Mcp : Context::Rest;
         }
 
