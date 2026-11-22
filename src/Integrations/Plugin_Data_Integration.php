@@ -209,7 +209,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
 
     public function is_available(): bool
     {
-        return Events_Manager_Pack::active() || BbPress_Pack::active() || JetEngine_Pack::active() || Pods_Pack::active() || TranslatePress_Pack::active() || Code_Snippets_Pack::active() || WS_Form_Pack::active() || Everest_Forms_Pack::active() || Activity_Log_Pack::active() || Action_Scheduler_Pack::active() || Email_Log_Pack::active() || Pretty_Links_Pack::active() || Thirsty_Affiliates_Pack::active() || Advanced_Ads_Pack::active() || Popup_Maker_Pack::active() || OptinMonster_Pack::active() || Site_Reviews_Pack::active() || WPGraphQL_Pack::active() || Simple_Pay_Pack::active() || Paid_Member_Subscriptions_Pack::active() || FooGallery_Pack::active() || JetFormBuilder_Pack::active() || Kadence_Forms_Pack::active() || WpForo_Pack::active() || Asgaros_Forum_Pack::active() || Restrict_Content_Pack::active() || Ultimate_Member_Pack::active() || PublishPress_Pack::active() || Listings_Pack::active() || EDD_Pack::active() || BuddyPress_Pack::active()
+        return Events_Manager_Pack::active() || BbPress_Pack::active() || JetEngine_Pack::active() || Pods_Pack::active() || TranslatePress_Pack::active() || Code_Snippets_Pack::active() || WS_Form_Pack::active() || Everest_Forms_Pack::active() || Activity_Log_Pack::active() || Action_Scheduler_Pack::active() || Email_Log_Pack::active() || Pretty_Links_Pack::active() || Thirsty_Affiliates_Pack::active() || Advanced_Ads_Pack::active() || Popup_Maker_Pack::active() || OptinMonster_Pack::active() || Site_Reviews_Pack::active() || WPGraphQL_Pack::active() || Simple_Pay_Pack::active() || Paid_Member_Subscriptions_Pack::active() || FooGallery_Pack::active() || JetFormBuilder_Pack::active() || Kadence_Forms_Pack::active() || Jetpack_Forms_Pack::active() || WpForo_Pack::active() || Asgaros_Forum_Pack::active() || Restrict_Content_Pack::active() || Ultimate_Member_Pack::active() || PublishPress_Pack::active() || Listings_Pack::active() || EDD_Pack::active() || BuddyPress_Pack::active()
             || LMS_Pack::active()
             || Offload_Media_Pack::active()
             || Jetpack_Crm_Pack::active()
@@ -242,6 +242,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             . ', FooGallery galleries'
             . ', JetFormBuilder forms'
             . ', Kadence Blocks forms'
+            . ', Jetpack Forms responses'
             . ', Tutor LMS, LifterLMS, LearnDash, LearnPress and Sensei LMS courses, TablePress tables'
             . ', wpDataTables and Ninja Tables tables'
             . ', WP Offload Media status'
@@ -291,6 +292,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             [ 'FooGallery', false, FooGallery_Pack::operations() ],
             [ 'JetFormBuilder', false, JetFormBuilder_Pack::operations() ],
             [ 'Kadence Blocks forms', false, Kadence_Forms_Pack::operations() ],
+            [ 'Jetpack Forms', false, Jetpack_Forms_Pack::operations() ],
             [ 'wpForo', false, WpForo_Pack::operations() ],
             [ 'Asgaros Forum', false, Asgaros_Forum_Pack::operations() ],
             [ 'Restrict Content', false, Restrict_Content_Pack::operations() ],
@@ -371,6 +373,7 @@ final class Plugin_Data_Integration extends Integration_Dispatcher
             FooGallery_Pack::operations(),
             JetFormBuilder_Pack::operations(),
             Kadence_Forms_Pack::operations(),
+            Jetpack_Forms_Pack::operations(),
             WpForo_Pack::operations(),
             Asgaros_Forum_Pack::operations(),
             Restrict_Content_Pack::operations(),
