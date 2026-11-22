@@ -40422,7 +40422,13 @@
       "rankmath-list-schema-templates",
       "yoast-get-schema-defaults",
       "list-dynamic-sources",
-      "preview-dynamic-template"
+      "preview-dynamic-template",
+      "list-acfe-items",
+      "get-acfe-item",
+      "get-acfe-field-group-settings",
+      "list-cmb2-boxes",
+      "get-cmb2-values",
+      "get-site-gate-settings"
     ],
     "write_operations": [
       "set-mods",
@@ -40528,7 +40534,10 @@
       "yoast-update-redirect",
       "yoast-delete-redirect",
       "create-dynamic-template",
-      "update-dynamic-template"
+      "update-dynamic-template",
+      "set-cmb2-value",
+      "set-site-gate-content",
+      "set-site-gate-bypass"
     ],
     "list_operations": {
       "integration": "theme",
@@ -46751,6 +46760,327 @@
                 "template_id"
               ]
             }
+          },
+          {
+            "name": "list-acfe-items",
+            "mode": "read",
+            "description": "List ACF Extended options pages, dynamic forms or block types (kind): name, title, active, where it is stored (database or local file), and per kind the menu and post_id of an options page, the field groups and action types of a form, or the category, post types and template of a block type. Options pages include ACF's own UI options pages",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "options_page",
+                    "form",
+                    "block_type"
+                  ],
+                  "description": "options_page (ACF Extended and ACF UI options pages), form (dynamic forms) or block_type (dynamic block types)"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            }
+          },
+          {
+            "name": "get-acfe-item",
+            "mode": "read",
+            "description": "Read one ACF Extended options page, form or block type by kind and name: its whole configuration (a form's actions, settings and messages, say), keys, tokens and passwords hidden",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "options_page",
+                    "form",
+                    "block_type"
+                  ],
+                  "description": "options_page (ACF Extended and ACF UI options pages), form (dynamic forms) or block_type (dynamic block types)"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "kind",
+                "name"
+              ]
+            }
+          },
+          {
+            "name": "get-acfe-field-group-settings",
+            "mode": "read",
+            "description": "Read an ACF field group's settings by key with the ones ACF Extended adds: its acfe settings (display title, permissions, note, custom meta, autosync), older acfe_* keys and field group categories, secrets hidden. The fields themselves: acf-read get-field-group",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "key"
+              ]
+            }
+          },
+          {
+            "name": "list-cmb2-boxes",
+            "mode": "read",
+            "description": "List the CMB2 boxes registered in code (those registered on cmb2_admin_init too): id, title, object type (post, options-page, term, user, comment), post types or option keys, and each field's id, type, label and whether set-cmb2-value can write it",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "object_type": {
+                  "type": "string",
+                  "enum": [
+                    "post",
+                    "options-page",
+                    "term",
+                    "user",
+                    "comment"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "get-cmb2-values",
+            "mode": "read",
+            "description": "Read a CMB2 box's field values for one post (post_id) or for its options page: id, type, label, value (an unsaved field reads as its default, is_default:true), the options of a choice field and whether set-cmb2-value can write it. Keys, tokens, licences and password fields are never read out. Narrow with fields (field ids)",
+            "capability": "edit_posts",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "box": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The box id (list-cmb2-boxes)"
+                },
+                "post_id": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "The post, for a post box"
+                },
+                "option_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "For an options page box with more than one option key"
+                },
+                "fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 200
+                }
+              },
+              "required": [
+                "box"
+              ]
+            }
+          },
+          {
+            "name": "set-cmb2-value",
+            "mode": "write",
+            "description": "Set ONE existing field of a CMB2 box, for a post (post_id) or its options page, through the field's own CMB2 save and sanitization. The value is checked for the field's type first: text, textarea and wysiwyg (a string; empty clears), email, url (http or https), colorpicker (hex), checkbox (true/false), select and radio (one of the field's options), multicheck (a list of them). Unknown field ids, secrets, groups, files, repeatable fields and other types are refused. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_cmb2_write filter)",
+            "capability": "edit_posts",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": false,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "box": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The box id (list-cmb2-boxes)"
+                },
+                "post_id": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "The post, for a post box"
+                },
+                "option_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "For an options page box with more than one option key"
+                },
+                "field": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "number",
+                    "integer",
+                    "boolean",
+                    "array"
+                  ]
+                }
+              },
+              "required": [
+                "box",
+                "field",
+                "value"
+              ]
+            }
+          },
+          {
+            "name": "get-site-gate-settings",
+            "mode": "read",
+            "description": "One gate plugin's page content (headline, message, logo, countdown) and who bypasses it (roles, users, IP and link as counts and booleans; addresses and links are never returned), with the fields set-site-gate-content and set-site-gate-bypass can edit there",
+            "capability": "manage_options",
+            "enabled": true,
+            "requires_confirm": false,
+            "dependency_met": true,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "plugin": {
+                  "type": "string",
+                  "enum": [
+                    "auto",
+                    "coming-soon",
+                    "under-construction-page",
+                    "wp-maintenance-mode",
+                    "maintenance",
+                    "cmp-coming-soon-maintenance"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "set-site-gate-content",
+            "mode": "write",
+            "description": "Edit the gate page headline, message (HTML), logo (attachment id, 0 removes) or countdown (ISO date, null turns it off) where the plugin stores them as settings: Under Construction, WP Maintenance Mode classic page, Maintenance designer modules, CMP. SeedProd is refused (edit in its builder). Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_site_gate_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": false,
+            "dependency_met": true,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "plugin": {
+                  "type": "string",
+                  "enum": [
+                    "auto",
+                    "coming-soon",
+                    "under-construction-page",
+                    "wp-maintenance-mode",
+                    "maintenance",
+                    "cmp-coming-soon-maintenance"
+                  ]
+                },
+                "headline": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "message": {
+                  "type": "string",
+                  "maxLength": 20000
+                },
+                "logo": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "countdown": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 40
+                }
+              }
+            }
+          },
+          {
+            "name": "set-site-gate-bypass",
+            "mode": "destructive",
+            "description": "Edit who bypasses the gate: roles, backend_roles (WP Maintenance Mode), users (Under Construction), ip_allowlist (Maintenance, WP Maintenance Mode), bypass_link (Maintenance, CMP; \"\" turns it off) and logged_in_bypass (Maintenance). Refuses a change that would gate you out while the gate is on. Needs confirm:true; addresses and links are never returned. Snapshotted; undo: rollback-operation. Disabled by default (wpmcp_enable_site_gate_write filter)",
+            "capability": "manage_options",
+            "enabled": false,
+            "requires_confirm": true,
+            "dependency_met": true,
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "plugin": {
+                  "type": "string",
+                  "enum": [
+                    "auto",
+                    "coming-soon",
+                    "under-construction-page",
+                    "wp-maintenance-mode",
+                    "maintenance",
+                    "cmp-coming-soon-maintenance"
+                  ]
+                },
+                "roles": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "maxItems": 50
+                },
+                "backend_roles": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 64
+                  },
+                  "maxItems": 50
+                },
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "maxItems": 100
+                },
+                "ip_allowlist": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 45
+                  },
+                  "maxItems": 100
+                },
+                "bypass_link": {
+                  "type": "string",
+                  "pattern": "^([A-Za-z0-9_-]{8,64})?$"
+                },
+                "logged_in_bypass": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         ]
       }
@@ -49063,6 +49393,98 @@
           "WPMCP\\Tools\\ThemeBuilder\\Dynamic\\Dynamic_Template_Ops",
           "update"
         ]
+      },
+      "list-acfe-items": {
+        "mode": "read",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "handler": "<closure>"
+      },
+      "get-acfe-item": {
+        "mode": "read",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "get-acfe-field-group-settings": {
+        "mode": "read",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "list-cmb2-boxes": {
+        "mode": "read",
+        "capability": "edit_posts",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "requires": "<closure>",
+        "handler": "<closure>"
+      },
+      "get-cmb2-values": {
+        "mode": "read",
+        "capability": "edit_posts",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "objects": {
+          "post_id": "post"
+        },
+        "requires": "<closure>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "set-cmb2-value": {
+        "mode": "write",
+        "capability": "edit_posts",
+        "description": "<as listed>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_cmb2_write",
+        "input_schema": "<as listed>",
+        "objects": {
+          "post_id": "post"
+        },
+        "requires": "<closure>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "get-site-gate-settings": {
+        "mode": "read",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "handler": "<closure>"
+      },
+      "set-site-gate-content": {
+        "mode": "write",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_site_gate_write",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
+      },
+      "set-site-gate-bypass": {
+        "mode": "destructive",
+        "capability": "manage_options",
+        "description": "<as listed>",
+        "enabled_by_default": false,
+        "opt_in_filter": "wpmcp_enable_site_gate_write",
+        "input_schema": "<as listed>",
+        "validate": "<closure>",
+        "confirm_preview": "<closure>",
+        "snapshot": "<closure>",
+        "handler": "<closure>"
       }
     }
   },

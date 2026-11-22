@@ -1108,6 +1108,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cart_abandonment_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_cartflows_write": [
         [
           -9223372036854775808,
@@ -1116,6 +1123,13 @@
         ]
       ],
       "wpmcp_enable_checkout_field_editor_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_cmb2_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1171,6 +1185,13 @@
           1
         ]
       ],
+      "wpmcp_enable_depicter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
@@ -1193,6 +1214,13 @@
         ]
       ],
       "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_envira_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1270,6 +1298,13 @@
         ]
       ],
       "wpmcp_enable_helpdesk_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hustle_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1388,7 +1423,28 @@
           1
         ]
       ],
+      "wpmcp_enable_metaslider_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_modula_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_newsletter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_nextgen_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1438,6 +1494,13 @@
         ]
       ],
       "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_product_feed_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1494,6 +1557,13 @@
         ]
       ],
       "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smartslider_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1612,6 +1682,13 @@
           1
         ]
       ],
+      "wpmcp_enable_variation_swatches_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_wpcode_write": [
         [
           -9223372036854775808,
@@ -1724,6 +1801,11 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
@@ -3070,6 +3152,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cart_abandonment_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_cartflows_write": [
         [
           -9223372036854775808,
@@ -3078,6 +3167,13 @@
         ]
       ],
       "wpmcp_enable_checkout_field_editor_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_cmb2_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3133,6 +3229,13 @@
           1
         ]
       ],
+      "wpmcp_enable_depicter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
@@ -3155,6 +3258,13 @@
         ]
       ],
       "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_envira_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3232,6 +3342,13 @@
         ]
       ],
       "wpmcp_enable_helpdesk_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hustle_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3350,7 +3467,28 @@
           1
         ]
       ],
+      "wpmcp_enable_metaslider_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_modula_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_newsletter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_nextgen_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3400,6 +3538,13 @@
         ]
       ],
       "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_product_feed_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3456,6 +3601,13 @@
         ]
       ],
       "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smartslider_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3574,6 +3726,13 @@
           1
         ]
       ],
+      "wpmcp_enable_variation_swatches_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_wpcode_write": [
         [
           -9223372036854775808,
@@ -3686,6 +3845,11 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
@@ -5024,6 +5188,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cart_abandonment_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_cartflows_write": [
         [
           -9223372036854775808,
@@ -5032,6 +5203,13 @@
         ]
       ],
       "wpmcp_enable_checkout_field_editor_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_cmb2_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5087,6 +5265,13 @@
           1
         ]
       ],
+      "wpmcp_enable_depicter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
@@ -5109,6 +5294,13 @@
         ]
       ],
       "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_envira_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5186,6 +5378,13 @@
         ]
       ],
       "wpmcp_enable_helpdesk_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hustle_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5304,7 +5503,28 @@
           1
         ]
       ],
+      "wpmcp_enable_metaslider_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_modula_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_newsletter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_nextgen_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5354,6 +5574,13 @@
         ]
       ],
       "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_product_feed_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5410,6 +5637,13 @@
         ]
       ],
       "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smartslider_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5528,6 +5762,13 @@
           1
         ]
       ],
+      "wpmcp_enable_variation_swatches_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_wpcode_write": [
         [
           -9223372036854775808,
@@ -5640,6 +5881,11 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
@@ -6949,6 +7195,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cart_abandonment_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_cartflows_write": [
         [
           -9223372036854775808,
@@ -6957,6 +7210,13 @@
         ]
       ],
       "wpmcp_enable_checkout_field_editor_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_cmb2_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -7012,6 +7272,13 @@
           1
         ]
       ],
+      "wpmcp_enable_depicter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
@@ -7034,6 +7301,13 @@
         ]
       ],
       "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_envira_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -7111,6 +7385,13 @@
         ]
       ],
       "wpmcp_enable_helpdesk_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hustle_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -7229,7 +7510,28 @@
           1
         ]
       ],
+      "wpmcp_enable_metaslider_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_modula_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_newsletter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_nextgen_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -7279,6 +7581,13 @@
         ]
       ],
       "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_product_feed_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -7335,6 +7644,13 @@
         ]
       ],
       "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smartslider_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -7453,6 +7769,13 @@
           1
         ]
       ],
+      "wpmcp_enable_variation_swatches_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_wpcode_write": [
         [
           -9223372036854775808,
@@ -7565,6 +7888,11 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
@@ -8874,6 +9202,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cart_abandonment_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_cartflows_write": [
         [
           -9223372036854775808,
@@ -8882,6 +9217,13 @@
         ]
       ],
       "wpmcp_enable_checkout_field_editor_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_cmb2_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -8937,6 +9279,13 @@
           1
         ]
       ],
+      "wpmcp_enable_depicter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
@@ -8959,6 +9308,13 @@
         ]
       ],
       "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_envira_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9036,6 +9392,13 @@
         ]
       ],
       "wpmcp_enable_helpdesk_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hustle_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9154,7 +9517,28 @@
           1
         ]
       ],
+      "wpmcp_enable_metaslider_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_modula_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_newsletter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_nextgen_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9204,6 +9588,13 @@
         ]
       ],
       "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_product_feed_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9260,6 +9651,13 @@
         ]
       ],
       "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smartslider_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9378,6 +9776,13 @@
           1
         ]
       ],
+      "wpmcp_enable_variation_swatches_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_wpcode_write": [
         [
           -9223372036854775808,
@@ -9490,6 +9895,11 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
@@ -10799,6 +11209,13 @@
           1
         ]
       ],
+      "wpmcp_enable_cart_abandonment_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_cartflows_write": [
         [
           -9223372036854775808,
@@ -10807,6 +11224,13 @@
         ]
       ],
       "wpmcp_enable_checkout_field_editor_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_cmb2_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -10862,6 +11286,13 @@
           1
         ]
       ],
+      "wpmcp_enable_depicter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_discount_rules_write": [
         [
           -9223372036854775808,
@@ -10884,6 +11315,13 @@
         ]
       ],
       "wpmcp_enable_email_marketing_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_envira_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -10961,6 +11399,13 @@
         ]
       ],
       "wpmcp_enable_helpdesk_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_hustle_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -11079,7 +11524,28 @@
           1
         ]
       ],
+      "wpmcp_enable_metaslider_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_modula_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_newsletter_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_nextgen_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -11129,6 +11595,13 @@
         ]
       ],
       "wpmcp_enable_pretty_links_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_product_feed_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -11185,6 +11658,13 @@
         ]
       ],
       "wpmcp_enable_site_reviews_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_smartslider_write": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -11303,6 +11783,13 @@
           1
         ]
       ],
+      "wpmcp_enable_variation_swatches_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_wpcode_write": [
         [
           -9223372036854775808,
@@ -11415,6 +11902,11 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
+          2
+        ],
+        [
+          10,
+          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
