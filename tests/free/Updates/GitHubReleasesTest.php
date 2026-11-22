@@ -2,6 +2,7 @@
 
 namespace WPMCP\Tests\Free\Updates;
 
+use WPMCP\Plugin;
 use WPMCP\Pro\Gate;
 use WPMCP\Updates\GitHub_Releases;
 
@@ -175,13 +176,45 @@ class GitHubReleasesTest extends \WP_UnitTestCase
         $this->assertFalse($this->ask('9.1.0'));
     }
 
-    public function test_licensed_site_is_left_to_the_licensing_sdk(): void
+    /**
+     * Issue #1180: the licensing SDK never starts its updater for this build
+     * (is_premium is false and there is no wpmcp-pro folder), so a licensed
+     * site takes its updates from the release too: wpmcp.zip is the same
+     * full build the SDK would ship.
+     */
+    public function test_licensed_site_is_offered_a_newer_release(): void
     {
         Gate::set_pro_for_tests(true);
 
+        $this->assertTrue(GitHub_Releases::active());
+        $offer = $this->ask();
+        $this->assertIsArray($offer);
+        $this->assertSame('9.0.0', $offer['new_version']);
+        $this->assertSame('https://github.com/wpmcp/wordpress-mcp/releases/download/v9.0.0/wpmcp-9.0.0.zip', $offer['package']);
+    }
+
+    public function test_the_filter_turns_it_off_for_a_licensed_site_too(): void
+    {
+        Gate::set_pro_for_tests(true);
+        remove_filter('wpmcp_github_updates_enabled', '__return_true');
+        add_filter('wpmcp_github_updates_enabled', '__return_false');
+
         $this->assertFalse($this->ask());
-        $this->assertSame([], $this->requests, 'a licensed site never asks GitHub');
-        $this->assertFalse(GitHub_Releases::active());
+        $this->assertSame([], $this->requests);
+    }
+
+    public function test_a_build_other_than_the_full_one_is_never_offered_wpmcp_zip(): void
+    {
+        foreach ([ 'woocommerce', 'elementor' ] as $flavor) {
+            Plugin::set_flavor_for_tests($flavor);
+            try {
+                $this->assertFalse(GitHub_Releases::active(), $flavor);
+                $this->assertFalse($this->ask(), $flavor);
+            } finally {
+                Plugin::set_flavor_for_tests(null);
+            }
+        }
+        $this->assertSame([], $this->requests);
     }
 
     public function test_the_filter_turns_it_off(): void
@@ -345,8 +378,9 @@ class GitHubReleasesTest extends \WP_UnitTestCase
     {
         $this->assertFalse(apply_filters('plugins_api', false, 'plugin_information', (object) [ 'slug' => 'wpmcp' ]), 'outside the dialog');
         $this->assertFalse($this->details('akismet'));
-        Gate::set_pro_for_tests(true);
-        $this->assertFalse($this->details());
+        remove_filter('wpmcp_github_updates_enabled', '__return_true');
+        add_filter('wpmcp_github_updates_enabled', '__return_false');
+        $this->assertFalse($this->details(), 'turned off');
         $this->assertSame([], $this->requests);
     }
 
@@ -422,9 +456,9 @@ class GitHubReleasesTest extends \WP_UnitTestCase
             // Other plugins' updates are never touched.
             $this->assertSame($root . '/wpmcp-9.0.0/', apply_filters('upgrader_source_selection', $root . '/wpmcp-9.0.0/', $root, null, [ 'plugin' => 'akismet/akismet.php' ]));
 
-            // Nor is a licensed site's (the licensing SDK runs its update).
+            // A licensed site's update is checked the same way (issue #1180).
             Gate::set_pro_for_tests(true);
-            $this->assertSame($root . '/wpmcp-9.0.0/', apply_filters('upgrader_source_selection', $root . '/wpmcp-9.0.0/', $root, null, [ 'plugin' => $this->basename() ]));
+            $this->assertWPError(apply_filters('upgrader_source_selection', $root . '/wpmcp-9.0.0/', $root, null, [ 'plugin' => $this->basename() ]));
         } finally {
             $this->cleanup($root, $previous);
         }
