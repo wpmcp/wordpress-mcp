@@ -118,6 +118,26 @@ class BackWPupOpsTest extends \WP_UnitTestCase
         add_filter(BackWPup_Status::RUN_FILTER, '__return_true');
     }
 
+    /**
+     * Issue #1161: BackWPup writes lastrun as current_time('timestamp'), a
+     * local-time timestamp, so last_run takes the site's UTC offset off.
+     */
+    public function test_last_run_is_utc_on_a_site_with_a_positive_offset(): void
+    {
+        update_option('timezone_string', '');
+        update_option('gmt_offset', 5);
+        $jobs                   = get_site_option('backwpup_jobs');
+        $jobs[1]['lastrun']     = 1795228536; // Local Asia/Karachi time of a run started at 1795210536 UTC.
+        update_site_option('backwpup_jobs', $jobs);
+
+        $job = $this->call('read', 'list-backwpup-backups')['result']['jobs'][0];
+        $this->assertSame(gmdate('Y-m-d\TH:i:s\Z', 1795210536), $job['last_run']);
+
+        update_option('gmt_offset', 0);
+        $job = $this->call('read', 'list-backwpup-backups')['result']['jobs'][0];
+        $this->assertSame(gmdate('Y-m-d\TH:i:s\Z', 1795228536), $job['last_run'], 'unchanged on a UTC site');
+    }
+
     private function seed_archives(): void
     {
         file_put_contents($this->dir . '/2026-09-01_03-00-00_AAAAAA01.zip', str_repeat('a', 10));
