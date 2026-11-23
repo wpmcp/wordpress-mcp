@@ -49,6 +49,18 @@ class ConnectionAssetsTest extends \WP_UnitTestCase
         }
     }
 
+    /** The hook Connection_Page registers checks the screen before it loads Connection_Assets. */
+    public function test_the_page_hook_enqueues_on_its_screen_only(): void
+    {
+        $page = new \WPMCP\Admin\Connection_Page();
+
+        $page->enqueue_assets('index.php');
+        $this->assertFalse(wp_script_is(Connection_Assets::HANDLE, 'enqueued'));
+
+        $page->enqueue_assets('wpmcp-2_page_wpmcp-connection');
+        $this->assertTrue(wp_script_is(Connection_Assets::HANDLE, 'enqueued'));
+    }
+
     public function test_the_files_ship_beside_the_class(): void
     {
         $dir = dirname(__DIR__, 4) . '/src/Admin/Connection/assets/';

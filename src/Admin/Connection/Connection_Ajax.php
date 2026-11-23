@@ -23,8 +23,8 @@ if (! defined('ABSPATH')) {
  */
 final class Connection_Ajax
 {
-    public const CREATE = 'wpmcp_connection_create';
-    public const CHECK  = 'wpmcp_connection_check';
+    public const CREATE = Connection_Page::AJAX_CREATE;
+    public const CHECK  = Connection_Page::AJAX_CHECK;
 
     public function __construct(
         private readonly Connection_Page $page,

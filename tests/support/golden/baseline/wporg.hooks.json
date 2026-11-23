@@ -32,7 +32,7 @@
       "admin_enqueue_scripts": [
         [
           10,
-          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          "WPMCP\\Admin\\Connection_Page->enqueue_assets",
           1
         ]
       ],
@@ -1265,7 +1265,7 @@
       "admin_enqueue_scripts": [
         [
           10,
-          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          "WPMCP\\Admin\\Connection_Page->enqueue_assets",
           1
         ]
       ],
@@ -2498,7 +2498,7 @@
       "admin_enqueue_scripts": [
         [
           10,
-          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          "WPMCP\\Admin\\Connection_Page->enqueue_assets",
           1
         ]
       ],
@@ -3731,7 +3731,7 @@
       "admin_enqueue_scripts": [
         [
           10,
-          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          "WPMCP\\Admin\\Connection_Page->enqueue_assets",
           1
         ]
       ],
@@ -4964,7 +4964,7 @@
       "admin_enqueue_scripts": [
         [
           10,
-          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          "WPMCP\\Admin\\Connection_Page->enqueue_assets",
           1
         ]
       ],
@@ -6197,7 +6197,7 @@
       "admin_enqueue_scripts": [
         [
           10,
-          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          "WPMCP\\Admin\\Connection_Page->enqueue_assets",
           1
         ]
       ],

@@ -72,6 +72,10 @@ class Connection_Page
     /** The last self-test result, shown under Settings, Advanced (issue #1127): { ok, message, at }. */
     public const SELF_TEST_OPTION = 'wpmcp_connection_last_self_test';
 
+    /** The Connect tab's AJAX actions (Connection_Ajax). Named here so registering them loads no class. */
+    public const AJAX_CREATE = 'wpmcp_connection_create';
+    public const AJAX_CHECK  = 'wpmcp_connection_check';
+
     /** Prefix of the hour-long transient that remembers a create form's request id. */
     private const REQUEST_PREFIX = 'wpmcp_conn_req_';
 
@@ -359,17 +363,46 @@ class Connection_Page
     /**
      * The screen's handlers, each behind the management guard: the desktop
      * bundle download, the two AJAX actions of the Connect tab, and the
-     * stylesheet and script, which load on this screen only.
+     * stylesheet and script, which load on this screen only. Registering
+     * loads no class: the views and the AJAX handler are built when an
+     * action runs, so other admin screens keep their footprint
+     * (FootprintTest).
      */
     public function register_handlers(): void
     {
         Management_Access::add_handler('admin_post_wpmcp_download_bundle', [$this, 'download_bundle']);
+        Management_Access::add_handler('wp_ajax_' . self::AJAX_CREATE, [$this, 'ajax_create']);
+        Management_Access::add_handler('wp_ajax_' . self::AJAX_CHECK, [$this, 'ajax_check']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
+    }
+
+    /** admin-ajax: create a connection (Connection_Ajax::create()). */
+    public function ajax_create(): void
+    {
+        $this->ajax()->create();
+    }
+
+    /** admin-ajax: check a connection (Connection_Ajax::check()). */
+    public function ajax_check(): void
+    {
+        $this->ajax()->check();
+    }
+
+    /** admin_enqueue_scripts: the screen's stylesheet and script, on this screen only. */
+    public function enqueue_assets(string $hook_suffix): void
+    {
+        if (! str_ends_with($hook_suffix, '_page_' . self::SLUG)) {
+            return;
+        }
+        (new Connection_Assets())->enqueue($hook_suffix);
+    }
+
+    private function ajax(): Connection_Ajax
+    {
         $labels = new App_Labels();
         $checks = new Check_View($labels);
-        $ajax   = new Connection_Ajax($this, self::connect_view($labels, $checks), $checks);
-        Management_Access::add_handler('wp_ajax_' . Connection_Ajax::CREATE, [$ajax, 'create']);
-        Management_Access::add_handler('wp_ajax_' . Connection_Ajax::CHECK, [$ajax, 'check']);
-        add_action('admin_enqueue_scripts', [new Connection_Assets(), 'enqueue']);
+
+        return new Connection_Ajax($this, self::connect_view($labels, $checks), $checks);
     }
 
     private static function connect_view(App_Labels $labels, Check_View $checks): Connect_View
