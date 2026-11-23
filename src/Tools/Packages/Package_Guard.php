@@ -19,11 +19,8 @@ class Package_Guard
     /** Plugin file paths (relative to the plugins dir) that may never be deactivated or deleted. */
     private const PROTECTED_PLUGINS = [
         'wpmcp/wpmcp.php',
-        // The premium zip's own root folder (scripts/build-release.sh --premium).
+        // The licensed build installs to its own folder (the licensing SDK slug).
         'wpmcp-pro/wpmcp.php',
-        // The folder the licensing service installs and updates Pro in (the
-        // product's premium slug there): where paying sites have it.
-        'wpmcp-premium/wpmcp.php',
         'elementor/elementor.php',
         'elementor-pro/elementor-pro.php',
     ];
@@ -36,8 +33,19 @@ class Package_Guard
 
         // The running copy, whatever folder it was installed in.
         $self = defined('WPMCP_FILE') ? constant('WPMCP_FILE') : null;
+        if (is_string($self) && plugin_basename($self) === $plugin_file) {
+            return true;
+        }
 
-        return is_string($self) && plugin_basename($self) === $plugin_file;
+        // Any other WP MCP copy, in whatever folder it sits: the licensing
+        // service installs the premium plugin in a folder of its own, and
+        // every build's main file declares a WPMCP Flavor header. Only a
+        // folder/file.php inside the plugins folder is read.
+        if (0 !== validate_file($plugin_file) || ! str_contains($plugin_file, '/') || ! function_exists('wpmcp_flavor_of')) {
+            return false;
+        }
+
+        return '' !== wpmcp_flavor_of(WP_PLUGIN_DIR . '/' . $plugin_file);
     }
 
     /**
