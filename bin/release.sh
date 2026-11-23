@@ -278,10 +278,16 @@ phase_tag() {
 next_steps() {
 	cat <<EOF
 [release] Left to do by hand (secrets stay on this Mac):
-  1. Build: scripts/build-release.sh, scripts/build-woo-release.sh, scripts/build-wporg-release.sh,
-     then scripts/release-assets.sh stage $VER (copies dist/wpmcp.zip and
-     dist/safe-mcp-for-woocommerce.zip, checks every zip, prints the upload list).
-  2. Freemius: deploy dist/wpmcp-$VER.zip with the freemius-deploy-local.sh pattern, then mark it released.
+  1. Build: git submodule update --init pro, then scripts/build-release.sh,
+     scripts/build-release.sh --premium, scripts/build-woo-release.sh and
+     scripts/build-wporg-release.sh, then scripts/release-assets.sh stage $VER
+     (copies dist/wpmcp.zip and dist/safe-mcp-for-woocommerce.zip, checks every
+     zip, prints the upload list).
+  2. Freemius: deploy the PREMIUM zip, dist/wpmcp-pro-$VER.zip, never
+     dist/wpmcp-$VER.zip: licensed sites update to the package Freemius makes
+     from the upload, and the free zip has no pro/. Upload it as pending, check
+     the premium package Freemius generates (pro/, the .wpmcp-pro marker), then
+     beta, then released.
   3. Publish the GitHub release v$VER (after Freemius has the version) with every file
      the stage step listed; put scripts/release-assets.sh notes $VER at the end of the notes.
   4. scripts/release-assets.sh verify v$VER (fails if wpmcp.zip or
