@@ -2,6 +2,7 @@
 
 namespace WPMCP\Integrations;
 
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Post_Creation_Snapshot;
 use WPMCP\Safety\Rollback_Service;
 use WPMCP\Safety\Safe_Mutation;
@@ -186,6 +187,19 @@ final class Core_Patterns_Pack
     private static function refusal(string $code, string $message, array $data = []): array
     {
         return [ 'code' => $code, 'message' => $message, 'data' => $data ];
+    }
+
+    /**
+     * What the save's kses will remove from pattern content for this user
+     * (issue #1243), for the response: patterns are block content, which
+     * WordPress sanitizes as the editor does.
+     *
+     * @param mixed $content The content argument as passed (open JSON input).
+     * @return array{sanitized?: true, removed?: list<string>}
+     */
+    private static function kses_report(int $id, mixed $content): array
+    {
+        return is_scalar($content) ? (new Kses_Safety())->sanitization($id, (string) $content) : [];
     }
 
     private static function is_synced(int $id): bool
@@ -417,7 +431,7 @@ final class Core_Patterns_Pack
         }
         clean_post_cache($post_id);
 
-        return [ 'result' => [ 'pattern' => self::get_pattern($post_id) ], 'operation_ids' => [ $op ] ];
+        return [ 'result' => [ 'pattern' => self::get_pattern($post_id) ] + self::kses_report($post_id, $args['content'] ?? null), 'operation_ids' => [ $op ] ];
     }
 
     // ------------------------------------------------------------ update
@@ -452,6 +466,8 @@ final class Core_Patterns_Pack
     {
         $id     = (int) $args['id'];
         $fields = [ 'ID' => $id ];
+
+        $sanitized = isset($args['content']) ? self::kses_report($id, $args['content']) : [];
         if (isset($args['title'])) {
             $fields['post_title'] = wp_slash((string) $args['title']);
         }
@@ -471,7 +487,7 @@ final class Core_Patterns_Pack
         }
         clean_post_cache($id);
 
-        return self::get_pattern($id);
+        return self::get_pattern($id) + $sanitized;
     }
 
     // ------------------------------------------------------------ detach
@@ -578,6 +594,26 @@ final class Core_Patterns_Pack
         $ids            = [];
 
         $targets = self::detach_targets($args);
+
+        // Every rewritten page is re-saved whole: refuse before the first one
+        // when kses would rewrite any of them (#1243).
+        $kses = new Kses_Safety();
+        foreach ($targets['ids'] ?? [] as $post_id) {
+            $post = get_post($post_id);
+            if (! $post instanceof \WP_Post) {
+                continue;
+            }
+            $blocks = parse_blocks($post->post_content);
+            if (self::count_placements($blocks, $pattern_id) < 1) {
+                continue;
+            }
+            // @phpstan-ignore argument.type (replace_placements() returns the parse_blocks() tree it was given, edited.)
+            $planned = serialize_blocks(self::replace_placements($blocks, $pattern_id, $pattern_blocks));
+            $refusal = $kses->content_refusal($post->ID, $planned, $kses->subject($post->post_type));
+            if (null !== $refusal) {
+                throw Operation_Refused::from_error($refusal);
+            }
+        }
 
         foreach ($targets['ids'] as $post_id) {
             $content = (string) get_post($post_id)->post_content;

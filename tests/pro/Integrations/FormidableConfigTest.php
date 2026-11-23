@@ -263,8 +263,18 @@ class FormidableConfigTest extends \WP_UnitTestCase
     public function test_shortcode_and_named_recipients_are_accepted(): void
     {
         add_filter('wpmcp_enable_forms_write', '__return_true');
+        // Without Formidable's own save the settings JSON runs through kses
+        // for a user without unfiltered_html (a site admin on a network),
+        // which would strip a named recipient's <address>: that is refused
+        // rather than stored mangled (issue #1243).
+        $kses_strips = ! current_user_can('unfiltered_html') && ! class_exists('FrmDb');
         foreach ([ '[admin_email]', '[25]', 'Boss <boss@example.test>, [25]', 'Site <[admin_email]>' ] as $to) {
-            $this->assertArrayNotHasKey('error', $this->write('set-notification-recipients', [ 'form_id' => 5, 'notification_id' => $this->email, 'to' => $to ], true), $to);
+            $out = $this->write('set-notification-recipients', [ 'form_id' => 5, 'notification_id' => $this->email, 'to' => $to ], true);
+            if ($kses_strips && str_contains($to, '<')) {
+                $this->assertSame('unfiltered_html_required', $out['error']['code'] ?? null, $to);
+                continue;
+            }
+            $this->assertArrayNotHasKey('error', $out, $to);
         }
         foreach ([ '[admin_email', 'a b@example.test', '[x y]' ] as $bad) {
             $this->assertSame('invalid_recipients', $this->write('set-notification-recipients', [ 'form_id' => 5, 'notification_id' => $this->email, 'to' => $bad ], true)['error']['code'], $bad);

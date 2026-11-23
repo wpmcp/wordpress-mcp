@@ -449,6 +449,7 @@ final class EDD_Pack
 
     private static function create_download(array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         $id = wp_insert_post([
             'post_type'    => self::DOWNLOAD_TYPE,
             'post_title'   => wp_slash((string) $args['title']),
@@ -463,13 +464,14 @@ final class EDD_Pack
         $id = (int) $id;
         $op = Post_Creation_Snapshot::record((string) $context['tool_name'], [ $id ], [ 'operation' => $context['operation'], 'args' => $args ], (string) $context['session_id']);
         self::write_download_meta($id, $args + [ 'price' => 0 ]);
-        return [ 'result' => [ 'download' => self::download_view($id, true) ], 'operation_ids' => [ $op ] ];
+        return [ 'result' => [ 'download' => self::download_view($id, true) ] + $sanitized, 'operation_ids' => [ $op ] ];
     }
 
     /** Edit one download (the dispatcher snapshots the post, meta included, first). */
     private static function update_download(array $args): array
     {
         $id     = (int) $args['download_id'];
+        $sanitized = Kses_Check::report($id, $args['content'] ?? null);
         $fields = [ 'ID' => $id ];
         foreach ([ 'title' => 'post_title', 'content' => 'post_content', 'excerpt' => 'post_excerpt', 'status' => 'post_status' ] as $arg => $column) {
             if (array_key_exists($arg, $args)) {
@@ -484,7 +486,7 @@ final class EDD_Pack
         }
         self::write_download_meta($id, $args);
         clean_post_cache($id);
-        return [ 'download' => self::download_view($id, true) ];
+        return [ 'download' => self::download_view($id, true) ] + $sanitized;
     }
 
     // ------------------------------------------------------------------

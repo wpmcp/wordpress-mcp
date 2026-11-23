@@ -34,6 +34,17 @@ class Operation_Refused extends \RuntimeException
         $this->error_data = $data;
     }
 
+    /** The refusal a WP_Error describes (a Kses_Safety refusal, say), raised as this exception. */
+    public static function from_error(\WP_Error $error): self
+    {
+        $data = [];
+        foreach ((array) $error->get_error_data() as $key => $value) {
+            $data[ (string) $key ] = $value;
+        }
+
+        return new self((string) $error->get_error_code(), $error->get_error_message(), $data);
+    }
+
     public function error_code(): string
     {
         return $this->error_code;

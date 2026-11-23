@@ -203,8 +203,11 @@ class StatusWriteFilterTest extends \WP_UnitTestCase
         $id     = $this->authored_post($author);
         $this->act_as($author);
 
-        (new Update_Post())->handle(['post_id' => $id, 'content' => self::raw_markup()]);
+        $out = (new Update_Post())->handle(['post_id' => $id, 'content' => self::raw_markup()]);
 
+        // Reported, not silent (issue #1243).
+        $this->assertTrue($out['sanitized'] ?? false);
+        $this->assertContains('<script> element', $out['removed']);
         clean_post_cache($id);
         $content = get_post($id)->post_content;
         $this->assertStringNotContainsString('<iframe', $content);
@@ -277,10 +280,13 @@ class StatusWriteFilterTest extends \WP_UnitTestCase
         $id = $this->attachment();
         $this->act_as($this->author());
 
-        (new Update_Media())->handle(['media_id' => $id, 'description' => self::raw_markup()]);
+        $out = (new Update_Media())->handle(['media_id' => $id, 'description' => self::raw_markup()]);
 
         clean_post_cache($id);
         $this->assertStringNotContainsString('<iframe', get_post($id)->post_content);
+        // Reported, not silent (issue #1243).
+        $this->assertTrue($out['sanitized'] ?? false);
+        $this->assertContains('<iframe> element', $out['removed']);
         $this->assert_raw($id, ['post_excerpt', 'post_title']);
     }
 }

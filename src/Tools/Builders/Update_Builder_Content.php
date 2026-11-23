@@ -2,6 +2,7 @@
 
 namespace WPMCP\Tools\Builders;
 
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Post_Write_Refused;
 use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Save_Filters;
@@ -98,6 +99,10 @@ if (! defined('ABSPATH')) {
  */
 class Update_Builder_Content
 {
+    public function __construct(private readonly Kses_Safety $kses = new Kses_Safety())
+    {
+    }
+
     public function handle(array $args)
     {
         $scope = (string) ($args['scope'] ?? '');
@@ -231,6 +236,21 @@ class Update_Builder_Content
             return new \WP_Error("invalid_{$builder}_request", $e->getMessage());
         }
 
+        // Post meta skips kses: a new value it would change is refused before
+        // the snapshot. A restore and a template insert carry stored values.
+        $known = null;
+        if (null === $status) {
+            if ('restore' === $operation) {
+                $known = $doc;
+            } elseif ('add' === $operation && is_array($args['element'] ?? null) && is_numeric($args['element']['template'] ?? null)) {
+                $known = Breakdance_Content::get_document((int) $args['element']['template'], $builder);
+            }
+            $refusal = Breakdance_Content::kses_refusal($post_id, $doc, $builder, $known);
+            if (null !== $refusal) {
+                return $refusal;
+            }
+        }
+
         $out = Safe_Mutation::run(
             [
                 'object_type' => 'post',
@@ -239,12 +259,12 @@ class Update_Builder_Content
                 'tool_name'   => 'update-builder-content',
                 'args'        => $args,
             ],
-            function () use ($post_id, $doc, $builder, $status) {
+            function () use ($post_id, $doc, $builder, $status, $known) {
                 if (null !== $status) {
                     Save_Filters::set_post_status($post_id, $status);
                     return true;
                 }
-                Breakdance_Content::save($post_id, $doc, $builder);
+                Breakdance_Content::save($post_id, $doc, $builder, $known);
                 return true;
             }
         );
@@ -393,6 +413,13 @@ class Update_Builder_Content
             }
         } catch (\InvalidArgumentException $e) {
             return new \WP_Error('invalid_beaver_builder_request', $e->getMessage());
+        }
+
+        // Post meta skips kses: a new value it would change is refused before
+        // the snapshot.
+        $refusal = Beaver_Builder_Content::kses_refusal($post_id, $nodes);
+        if (null !== $refusal) {
+            return $refusal;
         }
 
         $out = Safe_Mutation::run(
@@ -818,6 +845,14 @@ class Update_Builder_Content
                 return $refusal;
             }
         }
+        // Cornerstone's own save runs kses over the values for a user without
+        // unfiltered_html: refuse a new value it would change (#1243).
+        if (null === $status) {
+            $refusal = $this->kses->values_refusal(Cornerstone_Content::elements($post_id), $elements, 'Cornerstone page');
+            if (null !== $refusal) {
+                return $refusal;
+            }
+        }
 
         try {
             $out = Safe_Mutation::run(
@@ -1095,6 +1130,13 @@ class Update_Builder_Content
             return new \WP_Error('invalid_oxygen_classic_request', $e->getMessage());
         }
 
+        // Post meta skips kses: a new value it would change is refused before
+        // the snapshot.
+        $refusal = Oxygen_Classic_Content::kses_refusal($post_id, $json);
+        if (null !== $refusal) {
+            return $refusal;
+        }
+
         $shortcodes = null;
         if ($json !== $old) {
             try {
@@ -1232,6 +1274,13 @@ class Update_Builder_Content
                 'not_a_bricks_page',
                 sprintf('Post %d (type "%s") is not a Bricks page: Bricks edits only a Bricks template, a post type enabled under Bricks > Settings > General > Post types, or a post that already holds Bricks content. Enable the post type in Bricks first.', $post_id, $type)
             );
+        }
+
+        // Post meta skips kses: a new value it would change is refused before
+        // the snapshot.
+        $refusal = Bricks_Content::kses_refusal($post_id, $decoded);
+        if (null !== $refusal) {
+            return $refusal;
         }
 
         $out = Safe_Mutation::run(

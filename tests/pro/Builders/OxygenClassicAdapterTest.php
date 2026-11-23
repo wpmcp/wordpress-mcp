@@ -281,6 +281,30 @@ namespace WPMCP\Tests\Pro\Builders {
             $this->assertArrayNotHasKey($post_id, get_option('oxygen_vsb_css_files_state'));
         }
 
+        public function test_a_value_kses_would_change_is_refused_for_a_user_without_unfiltered_html(): void
+        {
+            $post_id = $this->oxygen_page(false);
+            $before  = $this->meta($post_id);
+            $user    = self::factory()->user->create(['role' => 'administrator']);
+            $deny    = static fn (array $caps, string $cap): array => 'unfiltered_html' === $cap ? ['do_not_allow'] : $caps;
+            if (! is_multisite()) {
+                add_filter('map_meta_cap', $deny, 10, 2);
+            }
+            wp_set_current_user($user);
+            $this->assertFalse(current_user_can('unfiltered_html'));
+
+            $out = $this->update($post_id, ['operation' => 'update', 'path' => '0.0.0', 'text' => '<p>Kept</p><script>alert(1)</script>']);
+
+            $this->assertWPError($out);
+            $this->assertSame('unfiltered_html_required', $out->get_error_code());
+            $this->assertSame(403, $out->get_error_data()['status']);
+            $this->assertSame($before, $this->meta($post_id));
+            $this->assertSame(0, Snapshot_Store::row_count());
+
+            $this->assertIsArray($this->update($post_id, ['operation' => 'update', 'path' => '0.0.0', 'text' => 'Plain title']));
+            remove_filter('map_meta_cap', $deny, 10);
+        }
+
         public function test_a_page_with_a_shortcode_copy_needs_oxygen_loaded(): void
         {
             $post_id = $this->oxygen_page();

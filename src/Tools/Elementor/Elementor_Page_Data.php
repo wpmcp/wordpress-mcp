@@ -2,6 +2,7 @@
 
 namespace WPMCP\Tools\Elementor;
 
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Tools\Builders\Elementor_Cache;
 
 if (! defined('ABSPATH')) {
@@ -37,6 +38,11 @@ class Elementor_Page_Data
 
     public static function save(int $post_id, array $elements): void
     {
+        // Elementor's own save runs kses over every string for a user without
+        // unfiltered_html; writing the meta directly would skip that. A new
+        // string kses would change is refused, nothing written (#1243).
+        (new Kses_Safety())->assert_values(self::get($post_id), $elements, 'Elementor page');
+
         // wp_slash before the write: update_post_meta runs wp_unslash on the
         // value, which would strip the backslashes JSON adds to escape any
         // embedded double quote (e.g. a dynamic-tag "[elementor-tag id=\"..\"]"

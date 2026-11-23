@@ -484,6 +484,7 @@ final class Advanced_Ads_Pack
     /** @return array<string, mixed> */
     private static function create(array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         $post = [
             'post_type'      => self::AD,
             'post_title'     => wp_slash((string) $args['title']),
@@ -505,13 +506,15 @@ final class Advanced_Ads_Pack
         }
         clean_post_cache($id);
 
-        return [ 'result' => [ 'ad' => self::view_ad(get_post($id), true) ], 'operation_ids' => [ $op ] ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'ad' => self::view_ad(get_post($id), true) ] + $sanitized, 'operation_ids' => [ $op ] ];
     }
 
     /** @return array<string, mixed> */
     private static function update(array $args): array
     {
         $id     = (int) $args['id'];
+        $sanitized = Kses_Check::report($id, $args['content'] ?? null);
         $fields = [ 'ID' => $id ];
         if (array_key_exists('title', $args)) {
             $fields['post_title'] = wp_slash((string) $args['title']);
@@ -528,7 +531,8 @@ final class Advanced_Ads_Pack
         self::save_options($id, $args);
         clean_post_cache($id);
 
-        return [ 'ad' => self::view_ad(get_post($id), true) ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'ad' => self::view_ad(get_post($id), true) ] + $sanitized;
     }
 
     /** @return array<string, mixed> */

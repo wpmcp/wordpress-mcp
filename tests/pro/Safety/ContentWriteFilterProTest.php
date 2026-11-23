@@ -59,6 +59,9 @@ class ContentWriteFilterProTest extends \WP_UnitTestCase
         $content = (string) get_post($id)->post_content;
         $this->assertStringContainsString('How To Service A Bicycle Chain</a>', $content);
         $this->assertStringNotContainsString('<script', $content, 'The written content is still filtered.');
+        // And the response says so (issue #1243).
+        $this->assertTrue($out['sanitized'] ?? false);
+        $this->assertContains('<script> element', $out['removed']);
         $this->assert_post_save_filters_hooked();
     }
 
@@ -98,6 +101,7 @@ class ContentWriteFilterProTest extends \WP_UnitTestCase
         $content = (string) get_post($id)->post_content;
         $this->assertStringContainsString('wp-image-' . (int) $out['media_id'], $content);
         $this->assertStringNotContainsString('<script', $content, 'The written content is still filtered.');
+        $this->assertTrue($out['sanitized'] ?? false, 'The response reports the filtering (issue #1243).');
         $this->assert_post_save_filters_hooked();
     }
 }

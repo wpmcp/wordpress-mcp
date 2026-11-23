@@ -725,4 +725,37 @@ class MemberPressPackTest extends \WP_UnitTestCase
         $this->ok($this->write('memberpress-update-membership', [ 'id' => $gold, 'price' => 2 ]));
         $this->assertFalse(metadata_exists('post', $gold, '_mepr_product_pricing_title'), 'an update fills in no defaults');
     }
+
+    /**
+     * A membership's description is plain post content: for a user without
+     * unfiltered_html WordPress sanitizes it as the editor does, and the
+     * result says what kses removed (issue #1243).
+     */
+    public function test_membership_writes_report_what_kses_removed_for_a_user_without_unfiltered_html(): void
+    {
+        add_filter('map_meta_cap', [ self::class, 'deny_unfiltered_html_1243' ], 10, 2);
+        wp_set_current_user(get_current_user_id());
+        kses_init();
+        $this->assertFalse(current_user_can('unfiltered_html'));
+
+        $out = $this->write('memberpress-create-membership', [ 'title' => 'Gold', 'content' => '<p>Perks</p><script>x()</script>' ]);
+        $this->assertArrayNotHasKey('error', $out, (string) wp_json_encode($out));
+        $this->assertTrue($out['result']['sanitized'] ?? false, (string) wp_json_encode($out));
+        $this->assertContains('<script> element', $out['result']['removed']);
+
+        $id  = (int) $out['result']['membership']['id'];
+        $out = $this->write('memberpress-update-membership', [ 'id' => $id, 'content' => '<p>More</p><script>y()</script>' ]);
+        $this->assertArrayNotHasKey('error', $out, (string) wp_json_encode($out));
+        $this->assertTrue($out['result']['sanitized'] ?? false, (string) wp_json_encode($out));
+        $this->assertStringNotContainsString('<script', get_post($id)->post_content);
+    }
+
+    /**
+     * @param string[] $caps
+     * @return string[]
+     */
+    public static function deny_unfiltered_html_1243(array $caps, string $cap): array
+    {
+        return 'unfiltered_html' === $cap ? [ 'do_not_allow' ] : $caps;
+    }
 }

@@ -141,21 +141,19 @@ final class I18n_Page_Text
             $columns['post_excerpt'] = $texts['excerpt'];
         }
 
-        $content = [];
-        $tree    = [];
-        $seo     = [];
+        $tree = [];
+        $seo  = [];
         foreach ($texts as $key => $text) {
-            if (0 === strpos($key, 'content:')) {
-                $content[ (int) substr($key, 8) ] = $text;
-            } elseif (0 === strpos($key, 'el:')) {
+            if (0 === strpos($key, 'el:')) {
                 $tree[ $key ] = self::filtered($text);
             } elseif (0 === strpos($key, 'seo.')) {
                 $seo[ substr($key, 4) ] = self::filtered($text);
             }
         }
 
-        if ([] !== $content) {
-            $columns['post_content'] = self::replace_runs((string) $post->post_content, $content);
+        $planned = self::planned_content($post, $texts);
+        if (null !== $planned) {
+            $columns['post_content'] = $planned;
         }
         if ([] !== $columns) {
             // Only the columns written run through their save filters; the rest
@@ -175,6 +173,25 @@ final class I18n_Page_Text
         }
 
         return count($texts);
+    }
+
+    /**
+     * The post_content apply() would write for $texts, or null when they
+     * change none of its runs. The whole content is re-saved, so the save's
+     * kses runs over the markup around the runs too (issue #1243).
+     *
+     * @param array<string, string> $texts
+     */
+    public static function planned_content(\WP_Post $post, array $texts): ?string
+    {
+        $content = [];
+        foreach ($texts as $key => $text) {
+            if (0 === strpos($key, 'content:')) {
+                $content[ (int) substr($key, 8) ] = $text;
+            }
+        }
+
+        return [] === $content ? null : self::replace_runs($post->post_content, $content);
     }
 
     /** @return array{key: string, kind: string, text: string, where: string} */

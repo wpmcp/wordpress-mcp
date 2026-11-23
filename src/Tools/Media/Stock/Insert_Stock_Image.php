@@ -3,6 +3,7 @@
 namespace WPMCP\Tools\Media\Stock;
 
 use WPMCP\Pro\Gate;
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Save_Filters;
 
@@ -34,6 +35,10 @@ class Insert_Stock_Image
         if (! $post || 'attachment' === $post->post_type) {
             throw new \InvalidArgumentException('Post not found');
         }
+
+        // The block is appended and the whole post re-saved, sanitized for
+        // this user as the editor would; what kses removes is reported (#1243).
+        $sanitized = (new Kses_Safety())->sanitization($post_id, (string) $post->post_content);
 
         $import   = (new Import_Stock_Image())->handle($args);
         $media_id = (int) $import['media_id'];
@@ -74,6 +79,6 @@ class Insert_Stock_Image
             'url'                 => $import['url'],
             'import_operation_id' => $import['operation_id'],
             'insert_operation_id' => $out['operation_id'],
-        ];
+        ] + $sanitized;
     }
 }

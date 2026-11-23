@@ -2,6 +2,7 @@
 
 namespace WPMCP\Tools\Analysis;
 
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Save_Filters;
 
@@ -101,6 +102,9 @@ final class Fix_Pass
         }
 
         $content = Markup_Scanner::splice((string) $post->post_content, $edits);
+        // The whole post is re-saved and sanitized for this user as the
+        // editor would; what kses removes is reported (#1243).
+        $sanitized = (new Kses_Safety())->sanitization($post_id, $content);
 
         $result = Safe_Mutation::run(
             [
@@ -123,6 +127,7 @@ final class Fix_Pass
             }
         );
 
+        $out                 = $out + $sanitized;
         $out['applied']      = true;
         $out['operation_id'] = $result['operation_id'];
         $out['note']         = 'Applied under one snapshot. wpmcp/rollback-operation with this operation_id reverts the entire pass.';

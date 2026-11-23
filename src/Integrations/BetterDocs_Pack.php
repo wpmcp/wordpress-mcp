@@ -331,6 +331,7 @@ final class BetterDocs_Pack
 
     private static function create_doc(array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         $id = wp_insert_post([
             'post_type'    => self::POST_TYPE,
             'post_title'   => wp_slash((string) $args['title']),
@@ -346,12 +347,14 @@ final class BetterDocs_Pack
         $op = Post_Creation_Snapshot::record((string) $context['tool_name'], [ $id ], [ 'operation' => $context['operation'], 'args' => $args ], (string) $context['session_id']);
         self::set_terms($id, $args);
         clean_post_cache($id);
-        return [ 'result' => [ 'doc' => self::doc(get_post($id), false) ], 'operation_ids' => [ $op ] ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'doc' => self::doc(get_post($id), false) ] + $sanitized, 'operation_ids' => [ $op ] ];
     }
 
     private static function update_doc(array $args): array
     {
         $id     = (int) $args['id'];
+        $sanitized = Kses_Check::report($id, $args['content'] ?? null);
         $fields = [ 'ID' => $id ];
         foreach ([ 'title' => 'post_title', 'content' => 'post_content', 'excerpt' => 'post_excerpt', 'status' => 'post_status' ] as $arg => $column) {
             if (array_key_exists($arg, $args)) {
@@ -366,6 +369,7 @@ final class BetterDocs_Pack
         }
         self::set_terms($id, $args);
         clean_post_cache($id);
-        return [ 'doc' => self::doc(get_post($id), false) ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'doc' => self::doc(get_post($id), false) ] + $sanitized;
     }
 }

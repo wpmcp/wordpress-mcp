@@ -2,6 +2,7 @@
 
 namespace WPMCP\Tools\Builders;
 
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Post_Creation_Snapshot;
 
 if (! defined('ABSPATH')) {
@@ -210,6 +211,12 @@ final class Avada_Library
         $type_object = get_post_type_object($type);
         if ($type_object && ! current_user_can($type_object->cap->edit_posts)) {
             return new \WP_Error('forbidden', "Saving to the Avada library needs the capability to create {$type} posts.");
+        }
+
+        // Nothing is created when kses would rewrite the copied markup (#1243).
+        $refusal = (new Kses_Safety())->content_refusal(0, $markup, 'Avada library item');
+        if (null !== $refusal) {
+            return $refusal;
         }
 
         $id = wp_insert_post(wp_slash([

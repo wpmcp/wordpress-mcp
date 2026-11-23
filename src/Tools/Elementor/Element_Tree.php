@@ -2,6 +2,7 @@
 
 namespace WPMCP\Tools\Elementor;
 
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Mutation_Failed;
 use WPMCP\Safety\Rollback_Service;
 use WPMCP\Safety\Safe_Mutation;
@@ -157,6 +158,13 @@ class Element_Tree
         if ($refusal) {
             return $refusal;
         }
+        // Elementor's save runs kses over every string for a user without
+        // unfiltered_html: refuse a new string it would change before the
+        // snapshot, rather than roll back after (#1243).
+        $refusal = (new Kses_Safety())->values_refusal(Elementor_Page_Data::get($post_id), $elements, 'Elementor page');
+        if (null !== $refusal) {
+            return $refusal;
+        }
 
         $operation_id = wp_generate_uuid4();
         $intended     = self::normalize($elements);
@@ -211,6 +219,10 @@ class Element_Tree
      */
     public static function write_settings(int $post_id, array $settings, string $tool_name, array $args)
     {
+        $refusal = (new Kses_Safety())->values_refusal(self::page_settings($post_id), $settings, 'Elementor page');
+        if (null !== $refusal) {
+            return $refusal;
+        }
         $operation_id = wp_generate_uuid4();
 
         try {

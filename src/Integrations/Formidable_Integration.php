@@ -2,6 +2,7 @@
 
 namespace WPMCP\Integrations;
 
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Tools\Database\Database_Guard;
 
 if (! defined('ABSPATH')) {
@@ -330,7 +331,14 @@ class Formidable_Integration extends Forms_Integration
         if (class_exists('FrmDb') && method_exists('FrmDb', 'save_settings')) {
             $result = \FrmDb::save_settings($record, 'frm_actions');
         } else {
-            $record['post_content'] = wp_slash(wp_json_encode($settings));
+            // Without Formidable's own save the JSON runs through the post
+            // save filters: refuse any change kses would make to it (#1243).
+            $json    = (string) wp_json_encode($settings);
+            $refusal = (new Kses_Safety())->exact_refusal((int) $post->ID, $json, 'form action');
+            if (null !== $refusal) {
+                throw new Operation_Error((string) $refusal->get_error_code(), $refusal->get_error_message(), [ 'status' => 403, 'action_id' => (int) $post->ID ]);
+            }
+            $record['post_content'] = wp_slash($json);
             $result                 = \WPMCP\Safety\Save_Filters::update_post($record, true);
         }
         if (is_wp_error($result) || ! $result) {

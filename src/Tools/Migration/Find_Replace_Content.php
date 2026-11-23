@@ -2,6 +2,7 @@
 
 namespace WPMCP\Tools\Migration;
 
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Mutation_Failed;
 use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Save_Filters;
@@ -75,6 +76,10 @@ class Find_Replace_Content
     private string $pattern = '';
     private bool $regex     = false;
     private string $replace = '';
+
+    public function __construct(private readonly Kses_Safety $kses = new Kses_Safety())
+    {
+    }
 
     public function handle(array $args): array
     {
@@ -644,6 +649,15 @@ class Find_Replace_Content
     private function apply_post(int $post_id, array $writes, string $session_id, array $args): array
     {
         global $wpdb;
+
+        if (isset($writes['post']['post_content'])) {
+            // Reported per post before the snapshot when kses would rewrite
+            // the replaced content (#1243).
+            $refusal = $this->kses->content_refusal($post_id, $writes['post']['post_content']['to'], $this->kses->subject((string) get_post_type($post_id)));
+            if (null !== $refusal) {
+                return ['error' => $refusal->get_error_message()];
+            }
+        }
 
         $operation_id = wp_generate_uuid4();
         try {

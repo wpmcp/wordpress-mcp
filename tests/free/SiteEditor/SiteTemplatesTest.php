@@ -424,9 +424,11 @@ class SiteTemplatesTest extends \WP_UnitTestCase
         foreach ([['navigation', $nav, $link], ['template_part', 'footer', $part]] as [$entity, $id, $kept]) {
             try {
                 $this->write->handle(['entity' => $entity, 'id' => $id, 'content' => $kept . '<script>alert(1)</script>']);
-                $this->fail("Expected kses stripping the $entity save to be refused.");
+                $this->fail("Expected the $entity save kses would strip to be refused.");
             } catch (Mutation_Failed $e) {
-                $this->assertStringContainsString('Verification failed', $e->getMessage());
+                // Refused before the snapshot (issue #1243).
+                $this->assertInstanceOf(\WPMCP\Safety\Post_Write_Refused::class, $e);
+                $this->assertSame('unfiltered_html_required', $e->error()->get_error_code());
             }
         }
         $this->assertSame($link, get_post($nav)->post_content);

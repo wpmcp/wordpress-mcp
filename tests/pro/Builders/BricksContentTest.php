@@ -68,6 +68,12 @@ class BricksContentTest extends \WP_UnitTestCase
     {
         $id       = $this->page();
         $elements = [['id' => 'h', 'name' => 'heading', 'settings' => ['text' => 'A \\ B "quote" & <tag>']]];
+        // A value kses would change is stored only for a user with unfiltered_html.
+        $user = self::factory()->user->create(['role' => 'administrator']);
+        if (is_multisite()) {
+            grant_super_admin($user);
+        }
+        wp_set_current_user($user);
 
         Bricks_Content::save($id, $elements);
 
