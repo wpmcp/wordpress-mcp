@@ -865,6 +865,9 @@
         },
         "alt": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       }
     },
@@ -1966,6 +1969,9 @@
         },
         "network_wide": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -2118,6 +2124,9 @@
         },
         "activate": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -3273,6 +3282,9 @@
         },
         "stock_quantity": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -3741,6 +3753,9 @@
         },
         "stock_status": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4003,6 +4018,9 @@
           }
         },
         "status": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -4308,6 +4326,9 @@
           "type": "integer"
         },
         "class": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -5977,6 +5998,9 @@
         },
         "cursor": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       }
     },
@@ -7527,6 +7551,9 @@
         },
         "post_id": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       }
     },
@@ -8606,6 +8633,9 @@
       "properties": {
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -8657,6 +8687,9 @@
       "properties": {
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [

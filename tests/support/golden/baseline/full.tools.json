@@ -721,6 +721,9 @@
         },
         "alt": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       }
     },
@@ -1660,6 +1663,9 @@
         },
         "network_wide": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -1792,6 +1798,9 @@
         },
         "activate": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -2824,6 +2833,9 @@
         },
         "stock_quantity": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -3220,6 +3232,9 @@
         },
         "stock_status": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -3452,6 +3467,9 @@
           }
         },
         "status": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -3727,6 +3745,9 @@
           "type": "integer"
         },
         "class": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -4394,6 +4415,9 @@
         },
         "settings": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4437,6 +4461,9 @@
         },
         "settings": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4471,6 +4498,9 @@
         },
         "params": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4499,6 +4529,9 @@
           "type": "integer"
         },
         "element_id": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -4529,6 +4562,9 @@
           "type": "string"
         },
         "parent_id": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -4567,6 +4603,9 @@
         },
         "seed": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4598,6 +4637,9 @@
         },
         "custom_colors": {
           "type": "array"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4627,6 +4669,9 @@
         },
         "custom_typography": {
           "type": "array"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4653,6 +4698,9 @@
         },
         "system_colors": {
           "type": "array"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4680,6 +4728,9 @@
         },
         "system_typography": {
           "type": "array"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4748,6 +4799,9 @@
         "state": {
           "type": "string",
           "description": "Optional state for this variant (hover, active, focus, focus-visible, checked, e--selected, e--disabled). Omit for the normal state."
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4806,6 +4860,9 @@
         },
         "replace_variant": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4836,6 +4893,9 @@
         },
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4866,6 +4926,9 @@
           "items": {
             "type": "string"
           }
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4921,6 +4984,9 @@
         },
         "value": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4965,6 +5031,9 @@
             "size",
             "custom-size"
           ]
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4995,6 +5064,9 @@
         },
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5036,7 +5108,7 @@
   },
   {
     "name": "wpmcp-save-as-template",
-    "description": "Save a page's Elementor content as a reusable elementor_library template of template_type (page, section, container, header, footer, single, archive, popup, ...; default page). Not snapshotted (creates only); remove with delete-post",
+    "description": "Save a page's Elementor content as a reusable elementor_library template of template_type (page, section, container, header, footer, single, archive, popup, ...; default page). Undo: rollback-operation (trashes it)",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5047,6 +5119,9 @@
           "type": "string"
         },
         "template_type": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -5087,6 +5162,9 @@
         },
         "position": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5106,7 +5184,7 @@
   },
   {
     "name": "wpmcp-import-template",
-    "description": "Create an elementor_library template from an export-page or export-template envelope, also across sites. Element ids are regenerated; the envelope's page_settings and display conditions apply when present. Not snapshotted (creates only); remove with delete-post",
+    "description": "Create an elementor_library template from an export-page or export-template envelope, also across sites. Element ids are regenerated; the envelope's page_settings and display conditions apply when present. Undo: rollback-operation (trashes it)",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5117,6 +5195,9 @@
           "type": "string"
         },
         "template_type": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -5158,7 +5239,7 @@
   },
   {
     "name": "wpmcp-create-theme-template",
-    "description": "Create an Elementor theme-builder template: a header, footer, single, archive, loop-item, search-results or error-404 elementor_library post, optionally seeded with elements and display conditions. Not snapshotted (creates only); remove with delete-theme-template",
+    "description": "Create an Elementor theme-builder template: a header, footer, single, archive, loop-item, search-results or error-404 elementor_library post, optionally seeded with elements and display conditions. Undo: rollback-operation (trashes it)",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5173,6 +5254,9 @@
         },
         "conditions": {
           "type": "array"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5200,6 +5284,9 @@
         },
         "conditions": {
           "type": "array"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5292,12 +5379,15 @@
   },
   {
     "name": "wpmcp-delete-theme-template",
-    "description": "Delete an Elementor library template by moving it to the trash (reversible through WordPress trash / restore-post), mirroring the default delete-post path",
+    "description": "Delete an Elementor library template by moving it to the trash, snapshot first. Undo: rollback-operation or restore-post",
     "inputSchema": {
       "type": "object",
       "properties": {
         "post_id": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5352,6 +5442,9 @@
         },
         "style": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5391,6 +5484,9 @@
         },
         "style": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5436,6 +5532,9 @@
         },
         "style": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5476,6 +5575,9 @@
         },
         "style": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5495,7 +5597,7 @@
   },
   {
     "name": "wpmcp-create-popup",
-    "description": "Create an Elementor popup (elementor_library post, type popup), optionally seeded with elements and trigger/display settings. Not snapshotted (creates only); configure further with set-popup-settings, remove with delete-post",
+    "description": "Create an Elementor popup (elementor_library post, type popup), optionally seeded with elements and trigger/display settings. Configure further with set-popup-settings. Undo: rollback-operation (trashes it)",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5507,6 +5609,9 @@
         },
         "settings": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5533,6 +5638,9 @@
         },
         "settings": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5592,6 +5700,9 @@
         },
         "tag_settings": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5622,6 +5733,9 @@
         },
         "replace": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5655,7 +5769,7 @@
   },
   {
     "name": "wpmcp-create-code-snippet",
-    "description": "Create an Elementor Custom Code snippet. location: wp_head, wp_body_open or wp_footer. Off by default: needs wpmcp_allow_js_injection + unfiltered_html. Renders via Elementor Pro Custom Code. Undo: delete-code-snippet",
+    "description": "Create an Elementor Custom Code snippet. location: wp_head, wp_body_open or wp_footer. Off by default: needs wpmcp_allow_js_injection + unfiltered_html. Renders via Elementor Pro Custom Code. Undo: rollback-operation (trashes it)",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -5672,6 +5786,9 @@
           "type": "integer"
         },
         "status": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -5711,12 +5828,15 @@
   },
   {
     "name": "wpmcp-delete-code-snippet",
-    "description": "Delete an Elementor Custom Code snippet by moving it to the trash (reversible through WordPress trash / restore-post), mirroring the default delete-post path",
+    "description": "Delete an Elementor Custom Code snippet by moving it to the trash, snapshot first. Undo: rollback-operation or restore-post",
     "inputSchema": {
       "type": "object",
       "properties": {
         "snippet_id": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5760,6 +5880,9 @@
         },
         "position": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5793,6 +5916,9 @@
         },
         "settings": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5840,6 +5966,9 @@
               "settings"
             ]
           }
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5877,6 +6006,9 @@
           "items": {
             "type": "string"
           }
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5907,6 +6039,9 @@
           "type": "string"
         },
         "element_id": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -5941,6 +6076,9 @@
           "type": "string"
         },
         "label": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -6012,6 +6150,9 @@
         },
         "settings": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -6099,6 +6240,9 @@
         },
         "include_logo": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -6227,6 +6371,9 @@
         },
         "element": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -7301,6 +7448,9 @@
           "type": "boolean"
         },
         "cursor": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       }
@@ -8659,6 +8809,9 @@
         },
         "post_id": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       }
     },
@@ -12325,6 +12478,9 @@
         },
         "priority": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -12520,6 +12676,9 @@
         },
         "priority": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -12550,6 +12709,9 @@
             "publish",
             "draft"
           ]
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -12574,6 +12736,9 @@
       "properties": {
         "template_id": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -12810,6 +12975,9 @@
         },
         "upload": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -12850,6 +13018,9 @@
       "properties": {
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -12889,6 +13060,9 @@
       "properties": {
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
