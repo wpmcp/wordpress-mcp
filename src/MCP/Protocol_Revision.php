@@ -30,6 +30,8 @@ final class Protocol_Revision
 
     public const META_PROTOCOL_VERSION    = 'io.modelcontextprotocol/protocolVersion';
     public const META_CLIENT_CAPABILITIES = 'io.modelcontextprotocol/clientCapabilities';
+    /** The client's name and version, sent with every request in place of initialize's clientInfo. */
+    public const META_CLIENT_INFO         = 'io.modelcontextprotocol/clientInfo';
     public const META_SERVER_INFO         = 'io.modelcontextprotocol/serverInfo';
 
     public const INVALID_REQUEST     = -32600;

@@ -21,11 +21,15 @@ if (! defined('ABSPATH')) {
  *
  *  - core's last_used and last_ip of an application password (written on the
  *    first authenticated request, then at most once a day);
- *  - the MCP adapter's sessions of the user (user meta mcp_adapter_sessions,
- *    mcp_adapter_sessions_{blog_id} on multisite), with the client's
- *    self-reported clientInfo. That storage is private to the adapter, so
- *    every row is shape-checked and a missing or changed shape reads as no
- *    session;
+ *  - the MCP requests the route answered for that password, with the name
+ *    the client gave (Activity_Store, issue #1258). They are kept per
+ *    password and for either protocol revision, so a password app is judged
+ *    by them alone, never by a session of the same user;
+ *  - for an OAuth app, the MCP adapter's sessions of the users who approved
+ *    it (user meta mcp_adapter_sessions, mcp_adapter_sessions_{blog_id} on
+ *    multisite), with the client's self-reported clientInfo. That storage is
+ *    private to the adapter, so every row is shape-checked and a missing or
+ *    changed shape reads as no session;
  *  - the first request-log row of the user after the password was made;
  *  - the OAuth clients of an app, the newest token each holds and the
  *    consent behind it.
@@ -34,8 +38,13 @@ final class Wp_Evidence_Source implements Evidence_Source
 {
     private const SESSION_META = 'mcp_adapter_sessions';
 
-    /** Longest client name or version kept from what a client reports. */
+    /** Longest OAuth client name kept from what a client registered. */
     private const TEXT_MAX = 64;
+
+    public function __construct(
+        private readonly Activity_Store $activity,
+    ) {
+    }
 
     public function for_password(int $user_id, string $uuid, int $since): Connection_Evidence
     {
@@ -46,9 +55,10 @@ final class Wp_Evidence_Source implements Evidence_Source
         return new Connection_Evidence(
             $last_used,
             null === $last_used ? null : $last_ip,
-            $this->sessions($user_id),
+            [],
             $this->first_tool_call($user_id, $since),
-            []
+            [],
+            $this->activity->find($user_id, $uuid)
         );
     }
 
@@ -101,13 +111,10 @@ final class Wp_Evidence_Source implements Evidence_Source
                 continue;
             }
 
-            $params = $row['client_params'] ?? null;
-            $info   = is_array($params) ? ($params['clientInfo'] ?? null) : null;
-            $info   = is_array($info) ? $info : [];
-
+            $client     = Mcp_Client::from_initialize_params($row['client_params'] ?? null);
             $sessions[] = new Session_Evidence(
-                $this->plain($info['name'] ?? null),
-                $this->plain($info['version'] ?? null),
+                $client->name,
+                $client->version,
                 (int) $row['created_at'],
                 is_numeric($row['last_activity'] ?? null) ? (int) $row['last_activity'] : (int) $row['created_at']
             );
@@ -218,7 +225,7 @@ final class Wp_Evidence_Source implements Evidence_Source
     }
 
     /**
-     * Untrusted client text as short plain text.
+     * An OAuth client's registered name as short plain text.
      *
      * @param mixed $value Whatever a client sent or a store kept: only scalars become text.
      */

@@ -11,34 +11,44 @@ if (! defined('ABSPATH')) {
 /**
  * "Check connection": a verdict from what WordPress recorded, never more.
  *
- * For an application password: Connected when the password was used (core
- * records the first use at once, later uses at most daily) and an MCP session
- * of its user opened after the password was made; PasswordOnly when it was
- * used but no session followed; NotSeen when it was never used. A session of
- * the same user is never credited to a password that WordPress has not seen
- * used, because it can come from another password.
+ * For an application password: Connected once the MCP route answered a
+ * request made with that very password (Activity_Recorder, issue #1258):
+ * any request, so an initialize on MCP 2025-11-25 and earlier and a
+ * tools/list or tools/call on 2026-07-28, which has no initialize, both
+ * count. PasswordOnly when WordPress accepted the password (core records the
+ * first use at once, later uses at most daily) but the route answered no MCP
+ * request made with it; NotSeen when it was never used. Requests and
+ * sessions of the same user made with another password are never credited
+ * to this one.
  *
  * For an OAuth app: OauthSignedIn when one of its clients holds a token,
  * OauthWaiting when one waits for approval, NotSeen otherwise.
  */
 final class Connection_Check
 {
-    public function for_password(Connection_Evidence $evidence, int $since, bool $mcp_on): Check_Result
+    public function for_password(Connection_Evidence $evidence, bool $mcp_on): Check_Result
     {
-        if (null === $evidence->password_last_used) {
-            return new Check_Result(Verdict::NotSeen, $mcp_on, null, 0, null, null, null, null);
+        if (null !== $evidence->activity) {
+            return new Check_Result(
+                Verdict::Connected,
+                $mcp_on,
+                null,
+                $evidence->password_last_used,
+                $evidence->password_last_ip,
+                $evidence->tool_call,
+                null,
+                $evidence->activity
+            );
         }
 
-        $after = $this->newest_first(array_values(array_filter(
-            $evidence->sessions,
-            static fn (Session_Evidence $session): bool => $session->created_at >= $since
-        )));
+        if (null === $evidence->password_last_used) {
+            return new Check_Result(Verdict::NotSeen, $mcp_on, null, null, null, null, null);
+        }
 
         return new Check_Result(
-            [] === $after ? Verdict::PasswordOnly : Verdict::Connected,
+            Verdict::PasswordOnly,
             $mcp_on,
-            $after[0] ?? null,
-            count($after),
+            null,
             $evidence->password_last_used,
             $evidence->password_last_ip,
             $evidence->tool_call,
@@ -57,16 +67,16 @@ final class Connection_Check
         if ([] !== $signed_in) {
             $sessions = $this->newest_first($evidence->sessions);
 
-            return new Check_Result(Verdict::OauthSignedIn, $mcp_on, $sessions[0] ?? null, count($sessions), null, null, $evidence->tool_call, $signed_in[0]);
+            return new Check_Result(Verdict::OauthSignedIn, $mcp_on, $sessions[0] ?? null, null, null, $evidence->tool_call, $signed_in[0]);
         }
 
         foreach ($evidence->grants as $grant) {
             if ($grant->is_pending()) {
-                return new Check_Result(Verdict::OauthWaiting, $mcp_on, null, 0, null, null, null, $grant);
+                return new Check_Result(Verdict::OauthWaiting, $mcp_on, null, null, null, null, $grant);
             }
         }
 
-        return new Check_Result(Verdict::NotSeen, $mcp_on, null, 0, null, null, null, null);
+        return new Check_Result(Verdict::NotSeen, $mcp_on, null, null, null, null, null);
     }
 
     /**

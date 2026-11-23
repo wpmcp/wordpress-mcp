@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace WPMCP\Tests\Free\Admin\Connection;
 
+use WPMCP\Admin\Connection\Mcp_Activity;
+use WPMCP\Admin\Connection\Mcp_Client;
+use WPMCP\Admin\Connection\Wp_Activity_Store;
 use WPMCP\Admin\Connection_Page;
 use WPMCP\Auth\Client_Store;
 use WPMCP\Auth\Refresh_Token_Store;
@@ -173,22 +176,49 @@ class ConnectionAjaxTest extends \WP_Ajax_UnitTestCase
         $_SERVER['REMOTE_ADDR'] = '203.0.113.24';
         \WP_Application_Passwords::record_application_password_usage($this->admin, (string) $record['uuid']);
         unset($_SERVER['REMOTE_ADDR']);
+        // A session of the same user may come from another password: not evidence (issue #1258).
         update_user_meta($this->admin, is_multisite() ? 'mcp_adapter_sessions_' . get_current_blog_id() : 'mcp_adapter_sessions', [
-            's' => [ 'created_at' => time() + 1, 'last_activity' => time() + 1, 'client_params' => [ 'clientInfo' => [ 'name' => 'claude-code', 'version' => '2.1.4' ] ] ],
+            's' => [ 'created_at' => time() + 1, 'last_activity' => time() + 1, 'client_params' => [ 'clientInfo' => [ 'name' => 'cursor', 'version' => '1.0' ] ] ],
         ]);
+
+        $accepted = $this->ajax('wpmcp_connection_check', $post);
+        $this->assertSame('password_only', $accepted['data']['verdict']);
+        $this->assertFalse($accepted['data']['done']);
+        $this->assertStringContainsString('Password accepted, no MCP request yet', (string) $accepted['data']['html']);
+        $this->assertStringNotContainsString('MCP session', (string) $accepted['data']['html']);
+
+        // What the route records once it answered a request made with the
+        // password, such as a 2026-07-28 tools/list (ConnectionActivityHttpTest).
+        (new Wp_Activity_Store())->save($this->admin, (string) $record['uuid'], new Mcp_Activity(Mcp_Client::of('claude-code', '2.1.330'), time(), time()));
 
         $after = $this->ajax('wpmcp_connection_check', $post);
         $this->assertSame('connected', $after['data']['verdict']);
         $this->assertTrue($after['data']['done']);
-        $this->assertStringContainsString('claude-code', (string) $after['data']['html']);
-        $this->assertStringContainsString('203.0.113.24', (string) $after['data']['html']);
+        $html = (string) $after['data']['html'];
+        $this->assertStringContainsString('claude-code 2.1.330 signed in', $html);
+        $this->assertStringContainsString('MCP requests answered', $html);
+        $this->assertStringContainsString('203.0.113.24', $html);
+        $this->assertStringNotContainsString('cursor', $html, 'the other session is not shown');
+        $this->assertStringNotContainsString('MCP session', $html);
 
-        foreach ([ $before, $after ] as $out) {
+        foreach ([ $before, $accepted, $after ] as $out) {
             $text = (string) wp_json_encode($out);
             $this->assertStringNotContainsString($password, $text);
             $this->assertStringNotContainsString(base64_encode('baker:' . $password), $text);
             $this->assertStringNotContainsString('Basic ', $text);
         }
+    }
+
+    public function test_a_client_that_sends_no_name_is_connected_under_a_neutral_label(): void
+    {
+        [ , $record ] = $this->issue();
+        (new Wp_Activity_Store())->save($this->admin, (string) $record['uuid'], new Mcp_Activity(Mcp_Client::unnamed(), time(), time()));
+
+        $out = $this->ajax('wpmcp_connection_check', [ '_wpnonce' => $this->nonce(), 'client' => 'claude-code', 'uuid' => (string) $record['uuid'] ]);
+
+        $this->assertSame('connected', $out['data']['verdict']);
+        $this->assertStringContainsString('An MCP client signed in', (string) $out['data']['html']);
+        $this->assertStringContainsString('By an MCP client that sent no name.', (string) $out['data']['html']);
     }
 
     public function test_check_only_reads_passwords_wp_mcp_issued(): void

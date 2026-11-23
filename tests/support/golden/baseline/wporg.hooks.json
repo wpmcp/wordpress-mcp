@@ -342,6 +342,11 @@
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
           3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
+          3
         ]
       ],
       "rest_pre_dispatch": [
@@ -1574,6 +1579,11 @@
         [
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
           3
         ]
       ],
@@ -2808,6 +2818,11 @@
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
           3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
+          3
         ]
       ],
       "rest_pre_dispatch": [
@@ -4040,6 +4055,11 @@
         [
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
           3
         ]
       ],
@@ -5274,6 +5294,11 @@
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
           3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
+          3
         ]
       ],
       "rest_pre_dispatch": [
@@ -6506,6 +6531,11 @@
         [
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
           3
         ]
       ],
