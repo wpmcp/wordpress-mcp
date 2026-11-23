@@ -23,14 +23,14 @@ WP MCP is a free, self-hosted WordPress MCP plugin for Claude, ChatGPT, Cursor a
 [![PHP](https://img.shields.io/badge/PHP-%3E%3D8.1-8892BF.svg)](https://php.net)
 [![WordPress](https://img.shields.io/badge/WordPress-%3E%3D6.9-21759B.svg)](https://wordpress.org)
 
-### [Download wpmcp.zip](https://github.com/wpmcp/wordpress-mcp/releases/latest/download/wpmcp.zip)
+### [Download wpmcp.zip](https://wpmcp-pro.com/download?utm_source=github&utm_medium=referral&utm_campaign=readme&utm_content=hero)
 
 </div>
 
 **Thrive Theme Builder (Pro).** While Thrive Theme Builder is the active theme, the theme tools list and read its templates (what each renders, layout, header, footer and sections), its headers, footers and shared sections, and the theme settings (logo link, favicon, default featured image). Writes change a template's title, layout, header or footer, give a post or page a template of its own, edit a section's markup (pinned to the hash it was read with) and set those theme settings. Writes are off until the site enables theme writes, and every one is snapshotted so rollback undoes it.
 
 Because snapshots are taken at the WordPress data layer, rollback works the same for every builder in the table. Docs and Pro are at [wpmcp-pro.com](https://wpmcp-pro.com/).
-1. Download [wpmcp.zip](https://github.com/wpmcp/wordpress-mcp/releases/latest/download/wpmcp.zip).
+1. Download [wpmcp.zip](https://wpmcp-pro.com/download?utm_source=github&utm_medium=referral&utm_campaign=readme&utm_content=install).
 2. In wp-admin, go to **Plugins > Add New > Upload Plugin**, choose the zip, click **Install Now**, then **Activate**.
 3. Open **wpmcp > Connection**, create an application password, and paste the config it shows into your client (or use one of the blocks below).
 
