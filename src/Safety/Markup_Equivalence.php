@@ -18,8 +18,10 @@ if (! defined('ABSPATH')) {
  * means instead: the same tags with the same attribute values, the same
  * text once decoded, the same comments byte for byte, and block delimiters
  * with the same block name and the same attributes once their JSON is
- * decoded (kses re-serializes them; an attribute value it changes, such as
- * "A & B" becoming "A &amp; B", still counts as changed).
+ * decoded. kses re-serializes block delimiters: an empty block's opener and
+ * closer become one void delimiter, and a string attribute is compared the
+ * same way as markup, so the entities it re-encodes in a block's HTML
+ * value (Divi 5 keeps text as HTML in its attributes) count as the same.
  *
  * A pure function of its arguments, built on core's HTML tokenizer.
  */
@@ -168,8 +170,11 @@ final class Markup_Equivalence
         if (null !== $text) {
             $out[] = ['#text', $text];
         }
+        if ($processor->paused_at_incomplete_token()) {
+            return null;
+        }
 
-        return $processor->paused_at_incomplete_token() ? null : $out;
+        return self::void_empty_blocks($out);
     }
 
     /**
@@ -188,21 +193,51 @@ final class Markup_Equivalence
             return ['#comment', $text];
         }
 
-        return ['#block', $m[1] . $m[2] . (isset($m[4]) ? $m[4] : ''), true, ['json' => (string) wp_json_encode(self::sorted($attrs))]];
+        return ['#block', $m[1] . $m[2] . (isset($m[4]) ? $m[4] : ''), true, ['json' => (string) wp_json_encode(self::canonical($attrs))]];
     }
 
     /**
+     * An empty block written as an opener and a closer is the same block as
+     * its void delimiter.
+     *
+     * @param list<array{0: string, 1: string, 2?: bool, 3?: array<string, string|true>}> $tokens
+     * @return list<array{0: string, 1: string, 2?: bool, 3?: array<string, string|true>}>
+     */
+    private static function void_empty_blocks(array $tokens): array
+    {
+        $out   = [];
+        $count = count($tokens);
+        for ($i = 0; $i < $count; $i++) {
+            $token = $tokens[ $i ];
+            $next  = $tokens[ $i + 1 ] ?? null;
+            $name  = $token[1];
+            if ('#block' === $token[0] && null !== $next && '#block' === $next[0] && ! str_starts_with($name, '/') && ! str_ends_with($name, '/') && '/' . $name === $next[1]) {
+                $token[1] = $name . '/';
+                $i++;
+            }
+            $out[] = $token;
+        }
+
+        return $out;
+    }
+
+    /**
+     * Decoded block attributes with object keys sorted and every string
+     * replaced by its tokens, so values that parse the same compare equal.
+     *
      * @param array<mixed> $value
      * @return array<mixed>
      */
-    private static function sorted(array $value): array
+    private static function canonical(array $value): array
     {
         if (! array_is_list($value)) {
             ksort($value);
         }
         foreach ($value as $key => $item) {
             if (is_array($item)) {
-                $value[ $key ] = self::sorted($item);
+                $value[ $key ] = self::canonical($item);
+            } elseif (is_string($item)) {
+                $value[ $key ] = self::tokens($item) ?? $item;
             }
         }
 

@@ -3,6 +3,7 @@
 namespace WPMCP\Integrations;
 
 use WPMCP\MCP\Registrar;
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Post_Creation_Snapshot;
 use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Save_Filters;
@@ -1076,12 +1077,14 @@ final class TablePress_Pack
             $markup = $blocks ? "<!-- wp:shortcode -->\n" . $code . "\n<!-- /wp:shortcode -->" : $code;
         }
         $joined = '' === trim($content) ? $markup : ('start' === ($args['position'] ?? 'end') ? $markup . "\n\n" . $content : $content . "\n\n" . $markup);
+        // The whole page is re-saved: what kses removes is reported (#1243).
+        $sanitized = (new Kses_Safety())->sanitization($post_id, $joined);
         $saved  = Save_Filters::update_post([ 'ID' => $post_id, 'post_content' => wp_slash($joined) ], true);
         if (is_wp_error($saved)) {
             throw new Operation_Refused('update_failed', $saved->get_error_message());
         }
         clean_post_cache($post_id);
-        return [ 'post_id' => $post_id, 'table_id' => $table_id, 'as' => $as, 'markup' => $markup ];
+        return [ 'post_id' => $post_id, 'table_id' => $table_id, 'as' => $as, 'markup' => $markup ] + $sanitized;
     }
 
     // ------------------------------------------------------------------

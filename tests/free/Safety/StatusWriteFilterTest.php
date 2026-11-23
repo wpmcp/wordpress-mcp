@@ -280,10 +280,13 @@ class StatusWriteFilterTest extends \WP_UnitTestCase
         $id = $this->attachment();
         $this->act_as($this->author());
 
-        (new Update_Media())->handle(['media_id' => $id, 'description' => self::raw_markup()]);
+        $out = (new Update_Media())->handle(['media_id' => $id, 'description' => self::raw_markup()]);
 
         clean_post_cache($id);
         $this->assertStringNotContainsString('<iframe', get_post($id)->post_content);
+        // Reported, not silent (issue #1243).
+        $this->assertTrue($out['sanitized'] ?? false);
+        $this->assertContains('<iframe> element', $out['removed']);
         $this->assert_raw($id, ['post_excerpt', 'post_title']);
     }
 }

@@ -49,6 +49,10 @@ class KsesSafetyTest extends \WP_UnitTestCase
             "<!-- wp:separator -->\n<hr class=\"wp-block-separator has-alpha-channel-opacity\"/>\n<!-- /wp:separator -->",
             '<p>5 < 6</p>',
             '<a href=x>y</a>',
+            // An empty block kses turns into a void delimiter, and an
+            // attribute holding HTML whose entities it re-encodes.
+            '<!-- wp:divi/heading {"title":"Welcome"} --><!-- /wp:divi/heading -->',
+            '<!-- wp:paragraph {"content":"A & B"} --><p>A &amp; B</p><!-- /wp:paragraph -->',
             // Block attributes kses re-serializes without changing them.
             '<!-- wp:heading {"level": 2, "className": "intro"} --><h2 class="wp-block-heading">Hi</h2><!-- /wp:heading -->',
         ] as $markup) {
@@ -67,8 +71,8 @@ class KsesSafetyTest extends \WP_UnitTestCase
             '<button onclick="go()">Go</button>',
             '<a href="javascript:alert(1)">x</a>',
             '<img src="x.png" alt="a > b">',
-            // A block attribute kses re-encodes (A & B becomes A \u0026amp; B).
-            '<!-- wp:paragraph {"content":"A & B"} --><p>A &amp; B</p><!-- /wp:paragraph -->',
+            // A block attribute whose value kses changes, not only re-encodes.
+            '<!-- wp:paragraph {"content":"Hi <script>x</script>"} --><p>Hi</p><!-- /wp:paragraph -->',
         ] as $markup) {
             $this->assertWPError($this->kses->content_refusal(0, $markup, 'page'), $markup);
         }
