@@ -23,7 +23,8 @@ class BootstrapTest extends \WP_UnitTestCase
         // A checkout carries no .wpmcp-pro marker, so it runs as the free build.
         $this->assertFalse($config['is_premium']);
         $this->assertTrue($config['has_premium_version']);
-        $this->assertSame('wpmcp-pro', $config['premium_slug']);
+        // The folder the licensing service installs Pro into (its premium slug).
+        $this->assertSame('wpmcp-premium', $config['premium_slug']);
         $this->assertFalse($config['has_addons']);
         $this->assertTrue($config['has_paid_plans']);
         // Guideline 7: the stock default-off opt-in screen must show (#164).
@@ -44,7 +45,8 @@ class BootstrapTest extends \WP_UnitTestCase
         $this->assertSame(Bootstrap::is_premium_build(), $config['is_premium']);
         $this->assertSame(defined('WPMCP_PREMIUM_BUILD') && true === constant('WPMCP_PREMIUM_BUILD'), $config['is_premium']);
         $this->assertTrue($config['has_premium_version']);
-        $this->assertSame('wpmcp-pro', $config['premium_slug']);
+        // The folder the licensing service installs Pro into (its premium slug).
+        $this->assertSame('wpmcp-premium', $config['premium_slug']);
         $this->assertSame('Pro', $config['premium_suffix']);
     }
 
