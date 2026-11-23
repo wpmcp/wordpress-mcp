@@ -14,12 +14,12 @@ snapshot (before)  ->  apply the change  ->  verify  ->  ok?
  (keyed by operation + session)         + raise error
 ```
 
-1. **Snapshot.** Before any write, wpmcp captures the target's before-image (post content, title, status, and all meta) and stores it, compressed, in a dedicated table keyed by an operation id and an agent session id.
+1. **Snapshot.** Before each supported write, wpmcp captures the target's before-image (post content, title, status, and all meta) and stores it, compressed, in a dedicated table keyed by an operation id and the session id the agent passed with the write.
 2. **Apply.** The tool performs its edit.
 3. **Verify.** A lightweight check runs (for Gutenberg, the block markup must still parse). If it fails, the change is rolled back immediately and an error is raised.
 4. **Rollback, on demand.** Undo a single operation, or unwind an agent's entire session back to its pre-session state, including purging any meta the agent added.
 
-You can drive rollback from the AI (the `rollback-operation` and `rollback-session` tools) or from the **wpmcp** screen in wp-admin, where every agent operation is listed with a one-click Restore button.
+You can drive rollback from the AI (the `rollback-operation` and `rollback-session` tools) or from the **wpmcp** screen in wp-admin, which lists each recorded operation with one-click restore.
 
 **Audit Log** in wp-admin has two tabs. *Mutations* lists agent writes with Restore. *Requests* is the MCP request outcome log: one row per tool call, reads included, with the calling client, ok or the error code, how long it took, and, when the call took a snapshot, a link straight to that operation's undo point in History. It is a capped ring buffer (200 rows by default, `wpmcp_request_log_cap`), and tool arguments are not recorded unless you switch on the `wpmcp_request_log_capture_args` option or filter, which still redacts secret-looking values and truncates long ones.
 
