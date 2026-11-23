@@ -265,7 +265,8 @@ final class Breakdance_Page
             return $id;
         }
         $id = (int) $id;
-        Breakdance_Content::save($id, $doc, $builder);
+        // The block copies the page's stored values.
+        Breakdance_Content::save($id, $doc, $builder, $page);
 
         $operation_id = Post_Creation_Snapshot::record('update-builder-content', [$id], $args, (string) ($args['session_id'] ?? 'default'));
 

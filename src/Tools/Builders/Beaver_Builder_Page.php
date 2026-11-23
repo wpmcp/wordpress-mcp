@@ -218,7 +218,9 @@ final class Beaver_Builder_Page
         update_post_meta($id, '_fl_builder_template_id', Beaver_Builder_Nodes::fresh_id());
         update_post_meta($id, '_fl_builder_template_global', false);
         add_post_meta($id, Beaver_Builder_Content::DRAFT_META_KEY, []);
-        Beaver_Builder_Content::save_layout($id, $saved, self::template_settings($post_id, '' === $path));
+        // The template copies the page's stored nodes and layout settings.
+        $known = [$nodes, Beaver_Builder_Content::get_settings($post_id), Beaver_Builder_Content::get_settings($post_id, Beaver_Builder_Content::DRAFT_META_KEY)];
+        Beaver_Builder_Content::save_layout($id, $saved, self::template_settings($post_id, '' === $path), $known);
 
         $operation_id = Post_Creation_Snapshot::record('update-builder-content', [$id], $args, (string) ($args['session_id'] ?? 'default'));
 

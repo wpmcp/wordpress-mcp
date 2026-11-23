@@ -2,6 +2,9 @@
 
 namespace WPMCP\Tools\Builders;
 
+use WPMCP\Safety\Kses_Safety;
+use WPMCP\Safety\Post_Write_Refused;
+
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -39,6 +42,8 @@ class Beaver_Builder_Content
 
     /** Suffix of the layout settings (CSS/JS) row beside each node map row. */
     public const SETTINGS_SUFFIX = '_settings';
+
+    public const KSES_SUBJECT = 'Beaver Builder page';
 
     /**
      * The stored node map for a status, or [] when absent or unreadable.
@@ -121,15 +126,54 @@ class Beaver_Builder_Content
     }
 
     /**
+     * The refusal for nodes or layout settings holding a new value
+     * wp_kses_post would change, or null. Post meta skips kses, so a user
+     * without unfiltered_html could otherwise store a script on the page.
+     * Values in the page's published and draft rows, or in $known (the
+     * stored source a copy, a template insert or a restore takes them from),
+     * were stored by someone allowed to.
+     *
+     * @param mixed $value Nodes, settings, or a list of both.
+     * @param mixed $known Decoded data whose strings count as already stored.
+     */
+    public static function kses_refusal(int $post_id, mixed $value, mixed $known = null): ?\WP_Error
+    {
+        $stored = [$known];
+        foreach ([self::DATA_META_KEY, self::DRAFT_META_KEY] as $key) {
+            $stored[] = self::get_nodes($post_id, $key);
+            $stored[] = self::get_settings($post_id, $key);
+        }
+
+        return (new Kses_Safety())->values_refusal($stored, $value, self::KSES_SUBJECT);
+    }
+
+    /**
+     * @param mixed $value See kses_refusal().
+     * @param mixed $known See kses_refusal().
+     * @throws Post_Write_Refused When a new value would not survive kses.
+     */
+    private static function assert_kses(int $post_id, mixed $value, mixed $known): void
+    {
+        $refusal = self::kses_refusal($post_id, $value, $known);
+        if (null !== $refusal) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Post_Write_Refused escapes the message it is given.
+            throw new Post_Write_Refused($refusal);
+        }
+    }
+
+    /**
      * Put a whole layout live as Beaver Builder's restore_revision() and
      * publish do: the node map and its settings to the published rows and,
      * when the page has a draft, to the draft rows too; then enable the
      * builder and clear the asset cache.
      *
      * @param array<string,object> $nodes
+     * @param mixed                 $known See kses_refusal().
+     * @throws Post_Write_Refused When a new value would not survive kses; nothing is written.
      */
-    public static function save_layout(int $post_id, array $nodes, ?object $settings): void
+    public static function save_layout(int $post_id, array $nodes, ?object $settings, mixed $known = null): void
     {
+        self::assert_kses($post_id, [$nodes, $settings], $known);
         foreach ([self::DATA_META_KEY, self::DRAFT_META_KEY] as $key) {
             if (self::DRAFT_META_KEY === $key && ! metadata_exists('post', $post_id, $key)) {
                 continue;
@@ -139,19 +183,23 @@ class Beaver_Builder_Content
             }
         }
 
-        self::save($post_id, $nodes);
+        self::write($post_id, $nodes);
     }
 
     /**
      * Append a template's CSS and JS to the page's layout settings rows (the
      * published one, and the draft's when there is one) the way Beaver
      * Builder's merge_layout_settings() does: once, on a new line.
+     *
+     * @param mixed $known See kses_refusal().
+     * @throws Post_Write_Refused When a new value would not survive kses; nothing is written.
      */
-    public static function merge_settings(int $post_id, ?object $merge): void
+    public static function merge_settings(int $post_id, ?object $merge, mixed $known = null): void
     {
         if (null === $merge) {
             return;
         }
+        self::assert_kses($post_id, $merge, $known);
         foreach ([self::DATA_META_KEY, self::DRAFT_META_KEY] as $key) {
             if (self::DRAFT_META_KEY === $key && ! metadata_exists('post', $post_id, $key)) {
                 continue;
@@ -178,8 +226,21 @@ class Beaver_Builder_Content
      * exists), enable the builder, and clear the layout asset cache.
      *
      * @param array<string,object> $nodes
+     * @param mixed                 $known See kses_refusal().
+     * @throws Post_Write_Refused When a new value would not survive kses; nothing is written.
      */
-    public static function save(int $post_id, array $nodes): void
+    public static function save(int $post_id, array $nodes, mixed $known = null): void
+    {
+        self::assert_kses($post_id, $nodes, $known);
+        self::write($post_id, $nodes);
+    }
+
+    /**
+     * save() once its values are checked.
+     *
+     * @param array<string,object> $nodes
+     */
+    private static function write(int $post_id, array $nodes): void
     {
         update_post_meta($post_id, self::DATA_META_KEY, self::slash($nodes));
 
