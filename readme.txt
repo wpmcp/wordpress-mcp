@@ -88,7 +88,7 @@ The difference: **every supported write takes a snapshot first.** If the agent g
 * With Pro, Elementor addon packs: Essential Addons, Premium Addons, Ultimate Addons, JetElements, Happy Addons, Royal Elementor Addons and PowerPack Lite widgets listed with their controls, and each pack's modules switched on or off, every toggle undoable
 * With Pro, Ultimate Addons for Elementor header, footer and custom block templates: list, read, create, update and trash them and set their display rules, with a snapshot before each supported write
 * Media library plus stock image imports, and regeneration of the image sizes a new theme or plugin added (undoable)
-* REST passthrough for anything else, still snapshotted
+* REST passthrough for anything else: reads, and writes that are off until the site turns them on, need confirm:true and say in their result that they cannot be undone
 
 = Free vs Pro =
 

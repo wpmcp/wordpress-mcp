@@ -35,7 +35,7 @@ Around 180 abilities across content, structure, media and site management:
 * Store, custom field, and SEO plugin integrations, read and write
 * Forms, events, donations and memberships, read
 * Media library plus stock image search and import
-* REST passthrough for anything else, still snapshotted
+* REST passthrough for anything else: reads, and writes that are off until the site turns them on, need confirm:true and say in their result that they cannot be undone
 
 = Add-on =
 
