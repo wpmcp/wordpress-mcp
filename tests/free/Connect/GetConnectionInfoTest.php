@@ -102,7 +102,7 @@ class GetConnectionInfoTest extends \WP_UnitTestCase
         // are, never the result key enable_oauth.
         $this->assertStringNotContainsString('enable_oauth', $connector['note']);
         $this->assertStringContainsString("define('WPMCP_OAUTH_ENABLED', true);", $connector['note']);
-        $this->assertStringContainsString('To switch OAuth on', $connector['note']);
+        $this->assertStringContainsString('Settings tab', $connector['note'], 'the switch is on the Settings tab now');
     }
 
     /**
@@ -173,6 +173,24 @@ class GetConnectionInfoTest extends \WP_UnitTestCase
 
         $this->assertTrue($on['oauth_enabled']);
         $this->assertStringContainsString('OAuth is on', $on['note']);
+    }
+
+    /**
+     * Antigravity is connected the way the Connection screen walks it, with
+     * the same generic "mcpServers" block (checked on Antigravity 2.33.0).
+     */
+    public function test_antigravity_entry_has_the_config_file_and_the_route(): void
+    {
+        $out         = (new Get_Connection_Info())->handle([]);
+        $antigravity = $out['clients']['antigravity'] ?? null;
+
+        $this->assertIsArray($antigravity, 'get-connection-info must cover Antigravity.');
+        $this->assertSame('mcp_config.json', $antigravity['config_file']);
+        $this->assertStringContainsString('Copy Config File Path', $antigravity['note']);
+        $decoded = json_decode($antigravity['snippet'], true);
+        $this->assertSame($out['endpoint'], $decoded['mcpServers']['wpmcp']['url']);
+        $this->assertStringStartsWith('Basic ', $decoded['mcpServers']['wpmcp']['headers']['Authorization']);
+        $this->assertStringContainsString(\WPMCP\Connect\Client_Config_Generator::antigravity_note(), $antigravity['note']);
     }
 
     /** Issue #842: the switch is on the Connection screen, so the text says so. */

@@ -145,7 +145,7 @@ Privacy policy: https://policies.google.com/privacy
 == Installation ==
 
 1. Install and activate the plugin.
-2. Open the WP MCP admin menu and follow the connection wizard to pair your MCP client (Claude Code, Claude Desktop, Cursor, and others).
+2. Open WP MCP, Connection and follow its four steps to connect your AI app (Claude Code, Claude Desktop, ChatGPT, Cursor, Antigravity, and others).
 3. Ask your agent to build something. Check the History screen to see snapshots accumulate; restore any of them with one click.
 
 == Frequently Asked Questions ==
@@ -174,7 +174,7 @@ In wp-content/uploads/wpmcp-site-backups by default, behind a deny rule that Apa
 
 Any MCP client: Claude Code, Claude Desktop, ChatGPT, Cursor, Windsurf, and others. Authentication works via OAuth 2.1 or WordPress application passwords.
 
-OAuth is off by default. Clients configured with an application password (Claude Code, Cursor, the Claude Desktop bundle or config file) do not need it. The Claude Desktop and claude.ai "Add custom connector" option does: it can only sign in with OAuth, and on a site with OAuth off it fails with "Couldn't register with WP MCP's sign-in service". ChatGPT is the same: it signs in only with OAuth. To switch OAuth on, turn on "Allow OAuth sign-in" on the WP MCP Connection screen; developers can instead add define('WPMCP_OAUTH_ENABLED', true); to wp-config.php or return true from the wpmcp_oauth_enabled filter, and either one wins over the switch. The Connection screen shows whether OAuth is on and the steps to add the Claude connector and ChatGPT.
+OAuth is off by default. Clients configured with an application password (Claude Code, Cursor, the Claude Desktop bundle or config file) do not need it. The Claude Desktop and claude.ai "Add custom connector" option does: it can only sign in with OAuth, and on a site with OAuth off it fails with "Couldn't register with WP MCP's sign-in service". ChatGPT is the same: it signs in only with OAuth. To switch OAuth on, pick ChatGPT on the WP MCP Connection screen and click "Turn on OAuth sign-in", or turn on "Allow OAuth sign-in" on its Settings tab; developers can instead add define('WPMCP_OAUTH_ENABLED', true); to wp-config.php or return true from the wpmcp_oauth_enabled filter, and either one wins over the switch. The Connection screen shows whether OAuth is on and the steps to add the Claude connector and ChatGPT.
 
 = Is it really free? =
 

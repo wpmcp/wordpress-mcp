@@ -7279,7 +7279,7 @@
   },
   {
     "name": "wpmcp-get-connection-info",
-    "description": "How to connect an MCP client here: the MCP endpoint URL and ready-to-paste snippets for Claude Code, Cursor and Claude Desktop, each using an Application Password placeholder. Never returns a real credential. Read-only",
+    "description": "How to connect an MCP client here: the MCP endpoint URL, ready-to-paste snippets for Claude Code, Cursor, Claude Desktop and Antigravity with an Application Password placeholder, and the ChatGPT and Claude connector steps. Never returns a real credential. Read-only",
     "inputSchema": {
       "type": "object",
       "properties": {}

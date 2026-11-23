@@ -4,7 +4,7 @@ ChatGPT adds a remote MCP server by its URL and signs in with OAuth. It cannot s
 
 ## 1. Switch OAuth sign-in on
 
-In wp-admin, open **WP MCP, Connection**. Under **OAuth sign-in (ChatGPT and the Claude custom connector)**, click **Allow OAuth sign-in: turn on**. Only administrators who can manage WP MCP (the Management access list, #479) see the switch.
+In wp-admin, open **WP MCP, Connection** and pick **ChatGPT**. Step 2 asks for OAuth sign-in: click **Turn on OAuth sign-in**. The same switch, **Allow OAuth sign-in**, is on the Settings tab. Only administrators who can manage WP MCP (the Management access list, #479) see it.
 
 OAuth stays off on a fresh install until someone turns it on. Two developer seams keep working and win over the switch:
 
@@ -20,19 +20,19 @@ add_filter('wpmcp_oauth_enabled', '__return_true');
 
 While either one is set, the screen hides the switch and says which one fixes the value.
 
-Turning the switch off stops new sign-ins and refuses every OAuth token issued earlier on its next request. Turning it back on lets tokens that have not expired work again; to cut one connection off for good, revoke it in the OAuth connection list on the same screen.
+ChatGPT connects from the internet, so the site needs a public HTTPS address. On a local or plain HTTP site, step 2 says so and offers the apps that run on your computer instead (#1149).
+
+Turning the switch off stops new sign-ins and refuses every OAuth token issued earlier on its next request. Turning it back on lets tokens that have not expired work again; to cut one connection off for good, block it in the OAuth list on the Connections tab.
 
 ## 2. Add WP MCP to ChatGPT
 
 Custom MCP connectors need ChatGPT's Developer mode, on the plans that offer it. In a workspace, an admin may have to allow it. ChatGPT renames its menus from time to time; if a step does not match, look for Developer mode under Settings.
 
 1. On chatgpt.com, open Settings, then Apps & Connectors, open Advanced settings and turn on Developer mode.
-2. Back in Apps & Connectors, choose Create to add a connector and name it, for example "WP MCP".
-3. Enter the server URL, `https://your-site.com/wp-json/mcp/wpmcp-server` (the Connection screen shows the exact one), and choose OAuth as the authentication. Leave any client ID and secret empty: ChatGPT registers itself through dynamic client registration.
-4. Confirm that you trust the connector and click Create. Sign in to WordPress in the window that opens and approve the access. The consent page offers full, read-only or identity-only access (#454).
-5. In a chat, open the + menu, choose Developer mode and turn on the WP MCP connector. The desktop app uses the connectors added on the web.
+2. Back in Apps & Connectors, choose Create and name the connector, for example "WP MCP". Enter the server URL, `https://your-site.com/wp-json/mcp/wpmcp-server` (step 3 of the Connection screen shows the exact one, with a Copy button), and choose OAuth as the authentication. Leave any client ID and secret empty: ChatGPT registers itself through dynamic client registration.
+3. Confirm that you trust the connector and click Create, then sign in to WordPress in the window that opens and approve the access. The consent page offers full, read-only or identity-only access (#454). In a chat, open the + menu, choose Developer mode and turn on WP MCP for that chat. The desktop app uses the connectors added on the web.
 
-The `get-connection-info` tool returns the same steps under `clients.chatgpt`, with `oauth_enabled` showing the current state, so an agent can walk a user through it.
+Step 4, **Check connection**, then shows when ChatGPT registered, who approved it and when its token was issued. The `get-connection-info` tool returns the same steps under `clients.chatgpt`, with `oauth_enabled` showing the current state, so an agent can walk a user through it.
 
 ## What ChatGPT does on the wire
 

@@ -219,6 +219,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         'src/Tools/Backup/Restore_Session.php'               => 'puts back the restoring user\'s own session and meta',
         'src/Tools/Builders/Avada_Cache.php'                 => 'Avada cache options',
         'src/Tools/Media/Upload_Grant.php'                   => 'grant option built from OPTION_PREFIX (wpmcp_upload_grant_)',
+        'src/Admin/Connection_Page.php'                      => 'one-time create request transient, an hour long, built from REQUEST_PREFIX (wpmcp_conn_req_)',
         'src/Tools/Diagnostics/Mail_Check.php'               => 'rate-limit key built from LIMIT_KEY (wpmcp_mail_test_)',
         'src/Privacy/Personal_Data.php'                      => 'cursor and address keys built from CURSOR_PREFIX (wpmcp_privacy_cursor_) and IPS_PREFIX (wpmcp_privacy_ips_)',
         'src/Safety/Rollback_Service.php'                    => 'puts back recorded options and user meta',

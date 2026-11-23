@@ -32,7 +32,7 @@ WP MCP is a free, self-hosted WordPress MCP plugin for Claude, ChatGPT, Cursor a
 Because snapshots are taken at the WordPress data layer, rollback works the same for every builder in the table. Docs and Pro are at [wpmcp-pro.com](https://wpmcp-pro.com/).
 1. Download [wpmcp.zip](https://wpmcp-pro.com/download?utm_source=github&utm_medium=referral&utm_campaign=readme&utm_content=install).
 2. In wp-admin, go to **Plugins > Add New > Upload Plugin**, choose the zip, click **Install Now**, then **Activate**.
-3. Open **wpmcp > Connection**, create an application password, and paste the config it shows into your client (or use one of the blocks below).
+3. Open **wpmcp > Connection** and follow its four steps: pick your app, create the connection, add it to your app (the config is filled in for you, or use one of the blocks below), and check that it signed in.
 
 Requires WordPress 6.9+ and PHP 8.1+. Free installs update in one click from **Dashboard > Updates**.
 
@@ -40,7 +40,7 @@ The free plugin keeps your last 20 changes with no time limit. Pro keeps unlimit
 
 ## Copy-paste config
 
-The endpoint is `https://your-site.com/wp-json/mcp/wpmcp-server`. Each block below signs in with a WordPress application password sent as HTTP Basic auth. The **wpmcp > Connection** screen prints these same blocks with your site and credential already filled in, so pasting from there is the quickest route. To fill one in by hand, build the header value like this:
+The endpoint is `https://your-site.com/wp-json/mcp/wpmcp-server`. Each block below signs in with a WordPress application password sent as HTTP Basic auth. The **wpmcp > Connection** screen fills in the block for the app you pick, with your site and credential, so pasting from there is the quickest route. To fill one in by hand, build the header value like this:
 
 ```bash
 echo -n "your-username:xxxx xxxx xxxx xxxx xxxx xxxx" | base64
@@ -77,7 +77,7 @@ Or paste into `.mcp.json`:
 <details>
 <summary><strong>Claude Desktop</strong></summary>
 
-Easiest: on **wpmcp > Connection**, download `wpmcp.mcpb` and double-click it, then enter the username and application password when asked.
+Easiest: on **wpmcp > Connection**, pick Claude Desktop, click **Create connection**, download `wpmcp.mcpb` and double-click it, then enter the username and application password when asked.
 
 Or merge this into `claude_desktop_config.json`, then fully quit and reopen Claude Desktop. The config file only runs local servers, so this entry starts the `mcp-remote` bridge, which needs Node.js:
 
@@ -101,6 +101,27 @@ Keep `Authorization:${WPMCP_AUTH_HEADER}` without a space; the value with its sp
 <summary><strong>Cursor</strong></summary>
 
 Paste into `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global):
+
+```json
+{
+  "mcpServers": {
+    "wpmcp": {
+      "type": "http",
+      "url": "https://your-site.com/wp-json/mcp/wpmcp-server",
+      "headers": {
+        "Authorization": "Basic BASE64_OF_username:application-password"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>Antigravity</strong></summary>
+
+In Antigravity, open **Customizations > Installed**, scroll to **MCP Servers** and click **Copy Config File Path**. Paste this into that file (`mcp_config.json`) and save, then quit and reopen Antigravity and start a new conversation so the tools load:
 
 ```json
 {
@@ -173,9 +194,9 @@ Snapshots are taken at the WordPress data layer (post content, meta, terms, opti
 Each write returns an operation id: `rollback-operation` undoes one, `rollback-session` unwinds a whole agent run, and the History screen restores any single operation with one click.
 Free keeps the last 20 operations; Pro keeps every one while the licence is active. Read the full list of [what cannot be undone](docs/reference/safety-model.md#what-cannot-be-undone).
 
-## Connect your AI client: Claude Code, Claude Desktop, ChatGPT, Cursor
+## Connect your AI client: Claude Code, Claude Desktop, ChatGPT, Cursor, Antigravity
 
-Open **wpmcp > Connection** in wp-admin. It creates an application password and shows the config for your client, filled in and ready to paste (Claude Desktop gets a one-click `wpmcp.mcpb` bundle). The endpoint is `https://your-site.com/wp-json/mcp/wpmcp-server`.
+Open **wpmcp > Connection** in wp-admin and follow four steps: pick your app, create the connection, add it with the config filled in and ready to paste (Claude Desktop gets a one-click `wpmcp.mcpb` bundle), and check that it signed in. The endpoint is `https://your-site.com/wp-json/mcp/wpmcp-server`.
 
 Step-by-step guides: [Claude Desktop and claude.ai](https://wpmcp-pro.com/wordpress-mcp-claude) · [Claude Code](https://wpmcp-pro.com/wordpress-mcp-claude-code) · [ChatGPT](https://wpmcp-pro.com/wordpress-mcp-chatgpt) · [Cursor](https://wpmcp-pro.com/wordpress-mcp-cursor) · [All clients](https://wpmcp-pro.com/docs/connecting-clients)
 
