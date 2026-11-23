@@ -29,4 +29,26 @@ class PackageGuardTest extends \WP_UnitTestCase
         $this->assertTrue(\WPMCP\Tools\Packages\Package_Guard::is_protected_plugin('wpmcp-pro/wpmcp.php'));
         $this->assertTrue(\WPMCP\Tools\Packages\Package_Guard::is_protected_plugin('wpmcp/wpmcp.php'));
     }
+
+    /**
+     * The licensing service delivers the premium plugin in wpmcp-premium/
+     * (the product's premium slug there), and that is where every paying
+     * site has it, so that folder is protected like the other two.
+     */
+    public function test_the_folder_the_licensing_service_installs_pro_into_is_protected(): void
+    {
+        $this->assertTrue(Package_Guard::is_protected_plugin('wpmcp-premium/wpmcp.php'));
+    }
+
+    /**
+     * Whatever folder the running copy sits in, it never lets a tool
+     * deactivate, delete or update itself: a renamed install protects its own
+     * main file, as is_protected_plugin_dir() already does for its folder.
+     */
+    public function test_the_running_copy_is_protected_in_any_folder(): void
+    {
+        $self = plugin_basename(WPMCP_FILE);
+        $this->assertNotContains($self, ['wpmcp/wpmcp.php', 'wpmcp-pro/wpmcp.php', 'wpmcp-premium/wpmcp.php'], 'this checkout must not sit in a listed folder, or the test proves nothing');
+        $this->assertTrue(Package_Guard::is_protected_plugin($self));
+    }
 }

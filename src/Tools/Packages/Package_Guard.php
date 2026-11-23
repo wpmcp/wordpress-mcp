@@ -19,15 +19,25 @@ class Package_Guard
     /** Plugin file paths (relative to the plugins dir) that may never be deactivated or deleted. */
     private const PROTECTED_PLUGINS = [
         'wpmcp/wpmcp.php',
-        // The licensed build installs to its own folder (the licensing SDK slug).
+        // The premium zip's own root folder (scripts/build-release.sh --premium).
         'wpmcp-pro/wpmcp.php',
+        // The folder the licensing service installs and updates Pro in (the
+        // product's premium slug there): where paying sites have it.
+        'wpmcp-premium/wpmcp.php',
         'elementor/elementor.php',
         'elementor-pro/elementor-pro.php',
     ];
 
     public static function is_protected_plugin(string $plugin_file): bool
     {
-        return in_array($plugin_file, self::PROTECTED_PLUGINS, true);
+        if (in_array($plugin_file, self::PROTECTED_PLUGINS, true)) {
+            return true;
+        }
+
+        // The running copy, whatever folder it was installed in.
+        $self = defined('WPMCP_FILE') ? constant('WPMCP_FILE') : null;
+
+        return is_string($self) && plugin_basename($self) === $plugin_file;
     }
 
     /**
