@@ -4,7 +4,7 @@ Tags: mcp, ai, ai agent, automation, undo
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -146,6 +146,14 @@ OAuth is off by default. Clients configured with an application password (Claude
 Yes. The safety core and the MCP server are free and GPL. Pro adds convenience and depth (Elementor deep editing, builders, cloud sync), not safety. Snapshot retention is not part of that: it is the same flat, filterable number on every install.
 
 == Changelog ==
+
+= 1.2.2 =
+Security hardening for builder writes on multisite; update recommended.
+
+Fixes:
+* Security hardening for builder writes on multisite.
+* Builder layouts that WordPress would rewrite on save are now refused with a clear error instead of being stored changed, and plain content writes report what WordPress removed.
+* get-option masks one more stored SMTP password field (#1162).
 
 = 1.2.1 =
 The free plugin from GitHub is now the full plugin: install wpmcp.zip, use everything free, and add a licence later to unlock Pro in the same plugin. Free installs also get updates from Dashboard > Updates.
@@ -1086,6 +1094,9 @@ Admin and tooling:
 * Freemius licensing shows its stock, default-off opt-in screen on activation rather than deciding consent for you. Sites that ran a pre-release build under anonymous mode see that connect screen once after upgrading; Skip dismisses it and the plugin keeps working unchanged. The WordPress.org build ships no licensing SDK at all.
 
 == Upgrade Notice ==
+
+= 1.2.2 =
+Security hardening for builder writes on multisite; update recommended.
 
 = 1.2.1 =
 The GitHub wpmcp.zip is now the full plugin and updates itself from GitHub releases. If you installed the 1.2.0 wpmcp.zip from GitHub, upload 1.2.1 once by hand; later updates appear under Dashboard > Updates.
