@@ -9,7 +9,9 @@ use WPMCP\Tools\Connect\Get_Connection_Info;
 /**
  * Issue #1149: ChatGPT and the Claude custom connector connect from the
  * internet, so they need a public HTTPS address. When the endpoint is not
- * one, both cards and get-connection-info say so, and still show the URL.
+ * one, both get-connection-info entries say so and still show the URL. The
+ * Connection screen says it once, where it matters: a flag on the ChatGPT
+ * card, and the full warning in step 2 of the cloud app the reader picked.
  */
 class PublicAddressWarningTest extends \WP_UnitTestCase
 {
@@ -78,12 +80,31 @@ class PublicAddressWarningTest extends \WP_UnitTestCase
         $this->assertSame(Client_Config_Generator::chatgpt()['public_address_warning'], $info['clients']['chatgpt']['public_address_warning']);
         $this->assertNotNull($info['clients']['custom-connector']['public_address_warning']);
 
+        $picker = $this->render([]);
+        $this->assertSame(0, substr_count($picker, 'wpmcp-public-address-warning'), 'no warning before a cloud app is picked');
+        $this->assertSame(1, substr_count($picker, 'wpmcp-public-address-flag'), 'the ChatGPT card carries a flag');
+
+        foreach ([ [ 'client' => 'chatgpt' ], [ 'client' => 'claude-desktop', 'route' => 'connector' ] ] as $get) {
+            $html = $this->render($get);
+            $this->assertSame(1, substr_count($html, 'wpmcp-public-address-warning'), $get['client'] . ' warns once');
+            $this->assertStringContainsString('http://localhost:8080/wp-json/mcp/wpmcp-server', $html);
+            $this->assertStringContainsString('data-step="create" data-state="blocked"', $html);
+        }
+
+        $local = $this->render([ 'client' => 'claude-code' ]);
+        $this->assertStringNotContainsString('wpmcp-public-address-warning', $local, 'an app on this computer reaches a local site');
+    }
+
+    /** @param array<string, string> $get */
+    private function render(array $get): string
+    {
+        $_GET = $get;
         set_current_screen('admin_page_' . Connection_Page::SLUG);
         ob_start();
         (new Connection_Page())->render();
-        $html = (string) ob_get_clean();
-        $this->assertSame(2, substr_count($html, 'wpmcp-public-address-warning'), 'both cards warn');
-        $this->assertStringContainsString('http://localhost:8080/wp-json/mcp/wpmcp-server', $html);
+        $_GET = [];
+
+        return (string) ob_get_clean();
     }
 
     public function test_a_public_https_site_shows_no_warning(): void
@@ -96,9 +117,10 @@ class PublicAddressWarningTest extends \WP_UnitTestCase
         $this->assertNull($info['clients']['chatgpt']['public_address_warning']);
         $this->assertNull($info['clients']['custom-connector']['public_address_warning']);
 
-        set_current_screen('admin_page_' . Connection_Page::SLUG);
-        ob_start();
-        (new Connection_Page())->render();
-        $this->assertStringNotContainsString('wpmcp-public-address-warning', (string) ob_get_clean());
+        foreach ([ [], [ 'client' => 'chatgpt' ] ] as $get) {
+            $html = $this->render($get);
+            $this->assertStringNotContainsString('wpmcp-public-address-warning', $html);
+            $this->assertStringNotContainsString('wpmcp-public-address-flag', $html);
+        }
     }
 }

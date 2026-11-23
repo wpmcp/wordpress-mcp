@@ -14,6 +14,8 @@
 <phpunit bootstrap="tests/bootstrap-fast.php" colors="true" cacheResult="false">
   <testsuites>
     <testsuite name="fast">
+      <file>tests/free/Admin/Connection/ConnectFlowTest.php</file>
+      <file>tests/free/Admin/Connection/ConnectionCheckTest.php</file>
       <file>tests/free/Auth/PkceTest.php</file>
       <file>tests/free/Auth/ProtectedResourceMetadataTest.php</file>
       <file>tests/free/Code/PhpSnippetValidatorTest.php</file>

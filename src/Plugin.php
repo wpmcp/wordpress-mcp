@@ -908,9 +908,9 @@ final class Plugin
             // ability denies on the next request) and surfaces its state in
             // the admin bar for manage_options users.
             Exposure::register();
-            // Secret-free Claude Desktop bundle download from the Connection
-            // screen (nonce + management capability enforced inside the handler).
-            Management_Access::add_handler('admin_post_wpmcp_download_bundle', [new Connection_Page(), 'download_bundle']);
+            // The Connection screen's handlers: the secret-free desktop bundle,
+            // its create and check AJAX actions, and its assets (guarded).
+            (new Connection_Page())->register_handlers();
             // Cloud announcements feed (issue #138): dismissible dated
             // notices on wpmcp screens only, never site-wide. 24h transient
             // cache, per-user dismissal, silent on any cloud failure.
@@ -7110,7 +7110,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/get-connection-info',
             'free',
-            'How to connect an MCP client here: the MCP endpoint URL and ready-to-paste snippets for Claude Code, Cursor and Claude Desktop, each using an Application Password placeholder. Never returns a real credential. Read-only',
+            'How to connect an MCP client here: the MCP endpoint URL, ready-to-paste snippets for Claude Code, Cursor, Claude Desktop and Antigravity with an Application Password placeholder, and the ChatGPT and Claude connector steps. Never returns a real credential. Read-only',
             [
                 'type'       => 'object',
                 'properties' => [],

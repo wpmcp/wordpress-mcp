@@ -28,13 +28,17 @@ Generate the credential with:
 echo -n "your-username:xxxx xxxx xxxx xxxx xxxx xxxx" | base64
 ```
 
-The same endpoint works with Cursor and any MCP-compatible client that connects over HTTP. The wpmcp -> Connection screen in wp-admin creates the application password and shows every snippet filled in; the `get-connection-info` tool returns the same snippets with a placeholder.
+The same endpoint works with Cursor, Antigravity and any MCP-compatible client that connects over HTTP. The WP MCP, Connection screen in wp-admin walks four steps: pick your app, create the connection (the application password, shown once), add it to your app with that app's snippet filled in, and check that the app signed in. The `get-connection-info` tool returns the same snippets with a placeholder.
+
+### Check the connection
+
+Step 4 of the Connection screen, **Check connection**, reads what WordPress recorded and claims no more: the application password's first use and address (core records the first use at once, later uses at most once a day), the MCP session the app opened with the name and version the app reports, and its first tool call. For ChatGPT and the custom connector it reads the registered OAuth client, the approval and the token. After the app's steps appear it checks every 5 seconds for 2 minutes. When nothing shows up it runs the server self-test (a request from the site to its own endpoint), which cannot tell whether your computer reaches the site or whether the app loaded its settings.
 
 ### Claude Desktop
 
 Claude Desktop does not read `url` entries from `claude_desktop_config.json`: that file only runs local (stdio) servers, and an entry with `"type": "http"`, `"url"` or `"headers"` is skipped with "not valid MCP server configurations". Use one of these instead:
 
-- **Desktop bundle (easiest).** On wpmcp -> Connection, create an application password and download `wpmcp.mcpb`. Double-click it and enter the username and password when asked. The bundle contains no credentials and needs nothing else installed.
+- **Desktop bundle (easiest).** On WP MCP, Connection, pick Claude Desktop, click Create connection and download `wpmcp.mcpb`. Double-click it and enter the username and password when asked. The bundle contains no credentials and needs nothing else installed.
 - **Config file.** Add an `mcp-remote` bridge entry under `mcpServers` (needs Node.js), then fully quit and reopen Claude Desktop:
 
 ```json
@@ -59,7 +63,7 @@ Keep `Authorization:${WPMCP_AUTH_HEADER}` without a space; the value with its sp
 
 OAuth 2.1 (with dynamic client registration) is **off by default**, and stays off until the site owner opts in. Clients that use an application password do not need it. The Claude Desktop and claude.ai custom connector does: with OAuth off, the discovery addresses (`/.well-known/oauth-protected-resource/...`, `/.well-known/oauth-authorization-server`) return 404, the endpoint's 401 carries no `WWW-Authenticate` header, and the connector fails with "Couldn't register with WP MCP's sign-in service".
 
-Switch OAuth on from wp-admin: **WP MCP, Connection, Allow OAuth sign-in** (issue #842). Developers can also use either of these, which win over the switch:
+Switch OAuth on from wp-admin (issue #842): on **WP MCP, Connection**, pick ChatGPT (or Claude Desktop's custom connector route) and click **Turn on OAuth sign-in** in step 2, or use **Allow OAuth sign-in** on the Settings tab. Developers can also use either of these, which win over the switch:
 
 ```php
 // wp-config.php, above "That's all, stop editing!"
@@ -71,7 +75,7 @@ define('WPMCP_OAUTH_ENABLED', true);
 add_filter('wpmcp_oauth_enabled', '__return_true');
 ```
 
-Then add the connector: Settings -> Connectors (under Customize in current versions) -> "Add custom connector", enter `https://your-site.com/wp-json/mcp/wpmcp-server`, leave the OAuth Client ID and secret empty, click Connect, and approve the sign-in in the browser. The wpmcp -> Connection screen and the `get-connection-info` tool (`clients.custom-connector`) show whether OAuth is on and repeat these steps.
+Then add the connector: Settings -> Connectors (under Customize in current versions) -> "Add custom connector", enter `https://your-site.com/wp-json/mcp/wpmcp-server`, leave the OAuth Client ID and secret empty, click Connect, and approve the sign-in in the browser. The WP MCP, Connection screen and the `get-connection-info` tool (`clients.custom-connector`) show whether OAuth is on and repeat these steps.
 
 ChatGPT signs in the same way: switch OAuth on, then add the endpoint as a custom MCP connector in ChatGPT's Developer mode. See [docs/connect-chatgpt.md](../connect-chatgpt.md); `get-connection-info` returns the steps under `clients.chatgpt`.
 

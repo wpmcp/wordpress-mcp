@@ -20,6 +20,11 @@
           10,
           "Freemius->_enqueue_common_css",
           1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
         ]
       ],
       "admin_footer": [
@@ -711,6 +716,20 @@
         [
           10,
           "FS_DebugManager::_toggle_debug_mode",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],
@@ -1849,6 +1868,11 @@
           10,
           "Freemius->_enqueue_common_css",
           1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
         ]
       ],
       "admin_footer": [
@@ -2570,6 +2594,20 @@
         [
           10,
           "FS_DebugManager::_toggle_debug_mode",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],
@@ -3708,6 +3746,11 @@
           10,
           "Freemius->_enqueue_common_css",
           1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
         ]
       ],
       "admin_footer": [
@@ -4414,6 +4457,20 @@
         [
           10,
           "FS_DebugManager::_toggle_debug_mode",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],
@@ -5538,6 +5595,11 @@
           10,
           "Freemius->_enqueue_common_css",
           1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
         ]
       ],
       "admin_footer": [
@@ -6229,6 +6291,20 @@
         [
           10,
           "FS_DebugManager::_toggle_debug_mode",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],
@@ -7353,6 +7429,11 @@
           10,
           "Freemius->_enqueue_common_css",
           1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
         ]
       ],
       "admin_footer": [
@@ -8044,6 +8125,20 @@
         [
           10,
           "FS_DebugManager::_toggle_debug_mode",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],
@@ -9168,6 +9263,11 @@
           10,
           "Freemius->_enqueue_common_css",
           1
+        ],
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
         ]
       ],
       "admin_footer": [
@@ -9859,6 +9959,20 @@
         [
           10,
           "FS_DebugManager::_toggle_debug_mode",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],

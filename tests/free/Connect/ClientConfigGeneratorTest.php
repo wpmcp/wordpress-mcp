@@ -35,7 +35,7 @@ class ClientConfigGeneratorTest extends \WP_UnitTestCase
         $configs = (new Client_Config_Generator())->configs('alice', 'secret-pass');
         $encoded = base64_encode('alice:secret-pass');
 
-        foreach (['claude-code', 'claude-desktop', 'cursor', 'vscode', 'generic'] as $id) {
+        foreach (['claude-code', 'claude-desktop', 'cursor', 'antigravity', 'vscode', 'generic'] as $id) {
             $this->assertArrayHasKey($id, $configs, "Missing config for client '$id'.");
             $client = $configs[$id];
             $this->assertNotEmpty($client['label']);
@@ -57,6 +57,7 @@ class ClientConfigGeneratorTest extends \WP_UnitTestCase
         $this->assertArrayHasKey('mcpServers', json_decode($configs['claude-code']['snippet'], true));
         $this->assertArrayHasKey('mcpServers', json_decode($configs['claude-desktop']['snippet'], true));
         $this->assertArrayHasKey('mcpServers', json_decode($configs['cursor']['snippet'], true));
+        $this->assertArrayHasKey('mcpServers', json_decode($configs['antigravity']['snippet'], true), 'Antigravity reads the generic shape from mcp_config.json.');
         $this->assertArrayHasKey(
             'servers',
             json_decode($configs['vscode']['snippet'], true),

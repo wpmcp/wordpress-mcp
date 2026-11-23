@@ -29,6 +29,13 @@
           1
         ]
       ],
+      "admin_enqueue_scripts": [
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
+        ]
+      ],
       "admin_init": [
         [
           10,
@@ -537,6 +544,20 @@
         [
           9223372036854775807,
           "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],
@@ -1241,6 +1262,13 @@
           1
         ]
       ],
+      "admin_enqueue_scripts": [
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
+        ]
+      ],
       "admin_init": [
         [
           10,
@@ -1749,6 +1777,20 @@
         [
           9223372036854775807,
           "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],
@@ -2453,6 +2495,13 @@
           1
         ]
       ],
+      "admin_enqueue_scripts": [
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
+        ]
+      ],
       "admin_init": [
         [
           10,
@@ -2961,6 +3010,20 @@
         [
           9223372036854775807,
           "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],
@@ -3665,6 +3728,13 @@
           1
         ]
       ],
+      "admin_enqueue_scripts": [
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
+        ]
+      ],
       "admin_init": [
         [
           10,
@@ -4173,6 +4243,20 @@
         [
           9223372036854775807,
           "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],
@@ -4877,6 +4961,13 @@
           1
         ]
       ],
+      "admin_enqueue_scripts": [
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
+        ]
+      ],
       "admin_init": [
         [
           10,
@@ -5385,6 +5476,20 @@
         [
           9223372036854775807,
           "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],
@@ -6089,6 +6194,13 @@
           1
         ]
       ],
+      "admin_enqueue_scripts": [
+        [
+          10,
+          "WPMCP\\Admin\\Connection\\Connection_Assets->enqueue",
+          1
+        ]
+      ],
       "admin_init": [
         [
           10,
@@ -6597,6 +6709,20 @@
         [
           9223372036854775807,
           "WPMCP\\Governance\\Site_Wide_Governance::after_execute",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_check": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
+          1
+        ]
+      ],
+      "wp_ajax_wpmcp_connection_create": [
+        [
+          10,
+          "WPMCP\\Admin\\Guarded_Handler->__invoke",
           1
         ]
       ],

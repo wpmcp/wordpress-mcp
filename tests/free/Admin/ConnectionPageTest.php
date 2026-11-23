@@ -191,10 +191,12 @@ class ConnectionPageTest extends \WP_UnitTestCase
     public function test_render_shows_endpoint_exposure_state_and_least_privilege_guidance(): void
     {
         set_current_screen('admin_page_' . Connection_Page::SLUG);
+        $_GET['client'] = 'claude-code';
 
         ob_start();
         (new Connection_Page())->render();
         $html = ob_get_clean();
+        unset($_GET['client']);
 
         $this->assertStringContainsString('/wp-json/mcp/wpmcp-server', $html);
         $this->assertStringContainsString('least privilege', strtolower($html));
@@ -215,7 +217,7 @@ class ConnectionPageTest extends \WP_UnitTestCase
         (new Connection_Page())->render();
         $html = ob_get_clean();
 
-        $this->assertStringContainsString('Custom connector', $html);
+        $this->assertStringContainsStringIgnoringCase('custom connector', $html);
         $this->assertStringContainsString('OAuth is off', $html);
         $this->assertStringContainsString(esc_html("define('WPMCP_OAUTH_ENABLED', true);"), $html);
         $this->assertStringContainsString('wp-config.php', $html);
@@ -368,7 +370,20 @@ class ConnectionPageTest extends \WP_UnitTestCase
         $this->assertStringContainsString('Allow OAuth sign-in', $html);
         $this->assertStringContainsString('value="oauth_enabled"', $html);
         $this->assertStringContainsString('ChatGPT', $html);
-        $this->assertStringContainsString('Developer mode', $html);
+
+        // The ChatGPT steps, once it is picked and OAuth is on (on a public
+        // HTTPS address, which ChatGPT needs: issue #1149).
+        \WPMCP\Auth\OAuth_Config::set_enabled(true);
+        $public = static fn (string $url): string => (string) preg_replace('#^https?://[^/]+#', 'https://example.com', $url);
+        add_filter('home_url', $public);
+        $_GET['client'] = 'chatgpt';
+        ob_start();
+        (new Connection_Page())->render();
+        $chatgpt = ob_get_clean();
+        unset($_GET['client']);
+        remove_filter('home_url', $public);
+        delete_option(\WPMCP\Auth\OAuth_Config::OPTION);
+        $this->assertStringContainsString('Developer mode', $chatgpt);
 
         add_filter('wpmcp_oauth_enabled', '__return_true');
         ob_start();
