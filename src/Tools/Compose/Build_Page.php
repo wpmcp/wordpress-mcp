@@ -3,6 +3,7 @@
 namespace WPMCP\Tools\Compose;
 
 use WPMCP\Pro\Gate;
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Snapshot_Store;
 use WPMCP\Tools\Content\Post_Status_Guard;
 use WPMCP\Tools\Elementor\Atomic_Prop_Schema;
@@ -51,6 +52,10 @@ if (! defined('ABSPATH')) {
  */
 class Build_Page
 {
+    public function __construct(private readonly Kses_Safety $kses = new Kses_Safety())
+    {
+    }
+
     /** Element count above which a one-shot page build is worth a warning (issue #137). */
     public const LARGE_PAGE_ELEMENTS = 150;
 
@@ -80,6 +85,9 @@ class Build_Page
             $composed = Block_Composer::compose($spec['content']);
             $content  = $composed['markup'];
         }
+
+        // What kses will remove from the composed page is reported (#1243).
+        $sanitized = $this->kses->sanitization(0, $content);
 
         $operation_id  = wp_generate_uuid4();
         $post_id       = 0;
@@ -144,7 +152,7 @@ class Build_Page
             $out['warnings'] = array_values($composed['warnings']);
         }
 
-        return $out;
+        return $out + $sanitized;
     }
 
     /**
