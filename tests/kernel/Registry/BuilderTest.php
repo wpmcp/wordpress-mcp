@@ -241,6 +241,43 @@ final class BuilderTest extends TestCase
         self::assertStringContainsString('surface.lock.php for module demo is stale', $errors[0]);
     }
 
+    /**
+     * The free zip carries no Pro code, so it knows the Pro tools by name
+     * only: build/registry/pro-tools.php, generated from the ability
+     * manifest (issue #628). Only a flavor that ships every tier gets it; the
+     * directory flavors name no Pro tool.
+     */
+    public function test_the_full_flavor_lists_the_pro_tool_names_from_the_manifest(): void
+    {
+        $manifest = $this->out . '/ability-manifest.php';
+        if (! is_dir($this->out)) {
+            mkdir($this->out, 0777, true);
+        }
+        file_put_contents($manifest, "<?php\nreturn ['total' => 3, 'free' => 1, 'pro' => 2, 'abilities' => ['wpmcp/zeta-pro' => 'pro', 'wpmcp/free-one' => 'free', 'wpmcp/alpha-pro' => 'pro']];\n");
+
+        self::assertSame([], $this->build(['manifest' => $manifest])->errors);
+        self::assertSame(['wpmcp/alpha-pro', 'wpmcp/zeta-pro'], $this->read('pro-tools.php'));
+
+        foreach (['wporg', 'woocommerce'] as $flavor) {
+            self::assertSame([], $this->build(['manifest' => $manifest, 'flavor' => $flavor])->errors);
+            self::assertFileDoesNotExist($this->out . '/registry/pro-tools.php', $flavor);
+        }
+
+        self::assertSame([], $this->build(['manifest' => $this->out . '/no-such-manifest.php'])->errors);
+        self::assertFileDoesNotExist($this->out . '/registry/pro-tools.php', 'no manifest, no list');
+    }
+
+    public function test_the_repository_manifest_feeds_the_pro_tool_names(): void
+    {
+        $this->build();
+        $manifest = require dirname(__DIR__, 3) . '/tests/support/ability-manifest.php';
+        $pro = array_keys(array_filter($manifest['abilities'], static fn (string $tier): bool => 'pro' === $tier));
+        sort($pro);
+
+        self::assertSame($pro, $this->read('pro-tools.php'));
+        self::assertCount($manifest['pro'], $this->read('pro-tools.php'));
+    }
+
     public function test_check_mode_writes_no_aggregates(): void
     {
         $this->build(['check' => true]);

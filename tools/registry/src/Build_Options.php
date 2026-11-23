@@ -10,6 +10,8 @@ namespace WPMCP\Registry;
  * gets the repo-only artifacts; locks go next to each Module class unless
  * $locks_root is set (tests). $check compares locks and writes nothing.
  * $auto skips quietly when no module exists (the post-autoload-dump hook).
+ * $manifest is the ability manifest the Pro tool names come from (default:
+ * tests/support/ability-manifest.php under $repo_root).
  */
 final class Build_Options
 {
@@ -32,6 +34,7 @@ final class Build_Options
         public readonly ?int $tools_list_budget = null,
         public readonly array $config = [],
         public readonly bool $locks = true,
+        public readonly ?string $manifest = null,
     ) {
     }
 }

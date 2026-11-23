@@ -66,6 +66,14 @@ final class Pro_Refusal
         return sprintf(' Or upgrade at %s (code %s takes %d%% off).', $offer['url'], $offer['coupon'], $offer['percent']);
     }
 
+    /** The upgrade link alone, for a refusal's data, or null when this build carries no offer. */
+    public static function upgrade_url(): ?string
+    {
+        $offer = self::offer();
+
+        return null === $offer ? null : $offer['url'];
+    }
+
     /** @return array{coupon: string, percent: int, url: string}|null */
     private static function offer(): ?array
     {
