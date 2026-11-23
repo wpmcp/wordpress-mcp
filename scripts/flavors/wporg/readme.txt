@@ -31,7 +31,7 @@ Around 180 abilities across content, structure, media and site management:
 
 * Posts, pages, custom post types, taxonomies, menus, users, options
 * Block editor: surgical block edits and full page composition
-* Elementor widget inspection and global class reads
+* Elementor widget inspection and global settings reads
 * Store, custom field, and SEO plugin integrations, read and write
 * Forms, events, donations and memberships, read
 * Media library plus stock image search and import

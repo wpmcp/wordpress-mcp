@@ -42,7 +42,7 @@ It has no tool to read, list, search, write, edit, delete or quarantine files, r
 
 = Looking for more? =
 
-This plugin is complete for WooCommerce stores. The full WP MCP plugin adds page-builder depth (Elementor, Bricks, Divi), more integrations, and custom widget/block building: https://wpmcp-pro.com
+This plugin is complete for WooCommerce stores. The full WP MCP plugin adds more integrations, and WP MCP Pro adds page-builder editing (Elementor, Bricks, Divi) and custom widget and block building: https://wpmcp-pro.com
 
 = Privacy =
 
@@ -138,7 +138,7 @@ In wp-content/uploads/wpmcp-site-backups by default, behind a deny rule that Apa
 
 = How is this different from the full WP MCP plugin? =
 
-Same safety core, same snapshot engine, scoped to what a WooCommerce store needs. If you later want page-builder depth or more integrations, the full plugin replaces this one in place.
+Same safety core, same snapshot engine, scoped to what a WooCommerce store needs. If you later want more integrations, the full plugin replaces this one in place; page-builder editing (Elementor, Bricks, Divi) is part of WP MCP Pro.
 
 == Changelog ==
 
