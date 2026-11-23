@@ -51,6 +51,7 @@
       <file>tests/free/Proxy/ProxyGatewayRoutingTest.php</file>
       <file>tests/free/Proxy/ProxyProtocolTest.php</file>
       <file>tests/free/Proxy/ProxySiteResolutionTest.php</file>
+      <file>tests/free/Release/StandardGateTest.php</file>
       <file>tests/free/Release/TestGateTest.php</file>
       <file>tests/free/Safety/AnyStatusQueryGuardTest.php</file>
       <file>tests/free/Safety/DirectPostWriteGuardTest.php</file>
