@@ -165,7 +165,7 @@ rm -f "$ZIP"
 
 # Gate: the compiled module registry ships (D11); without it the plugin boots
 # with no modules, their integrations and opt-in switches gone.
-zip_includes "$ZIP" "wpmcp/build/registry/boot.php" || { echo "gate: $ZIP has no build/registry" >&2; exit 1; }
+zip_includes "$ZIP" "$FOLDER/build/registry/boot.php" || { echo "gate: $ZIP has no build/registry" >&2; exit 1; }
 
 # Gate: every assets/ path that src/ resolves against WPMCP_DIR must be in the
 # zip, or the Freemius connect screen renders a 404 icon (#164).
