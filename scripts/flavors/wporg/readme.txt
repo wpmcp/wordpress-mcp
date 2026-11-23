@@ -31,11 +31,11 @@ Around 180 abilities across content, structure, media and site management:
 
 * Posts, pages, custom post types, taxonomies, menus, users, options
 * Block editor: surgical block edits and full page composition
-* Elementor widget inspection and global class reads
+* Elementor widget inspection and global settings reads
 * Store, custom field, and SEO plugin integrations, read and write
 * Forms, events, donations and memberships, read
 * Media library plus stock image search and import
-* REST passthrough for anything else, still snapshotted
+* REST passthrough for anything else: reads, and writes that are off until the site turns them on, need confirm:true and say in their result that they cannot be undone
 
 = Add-on =
 
@@ -273,7 +273,7 @@ Privacy policy: https://wpmcp-pro.com/privacy.html
 
 1. Install and activate the plugin.
 2. Open the WP MCP menu and follow the connection wizard to pair your MCP client.
-3. Ask your agent to build something, then open the History screen to see the snapshots and restore any of them.
+3. Ask your agent to build something, then open the History screen: it lists the snapshot taken before each supported write, with one-click restore.
 
 == Frequently Asked Questions ==
 
@@ -283,7 +283,7 @@ The Model Context Protocol is an open standard that lets AI assistants use tools
 
 = Can an agent destroy my site? =
 
-Every mutating tool snapshots the data it is about to change, and you can restore any snapshot or roll back a whole agent session. This build contains no code-execution tools at all. It can store PHP snippets as text for review (inactive, never run), but nothing in this build executes or activates them.
+It takes a snapshot before each supported write, with one-click restore from History, and you can roll back the supported writes of a whole agent session. This build contains no code-execution tools at all. It can store PHP snippets as text for review (inactive, never run), but nothing in this build executes or activates them.
 
 = What if my AI client skips permission prompts? =
 

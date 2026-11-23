@@ -30,13 +30,13 @@ The difference: **every supported write takes a snapshot first.** If the agent g
 274 abilities in the free plugin (133 more with Pro) across content, structure, media, and site management. Abilities for optional plugins register only where that plugin is active:
 
 * Posts, pages, custom post types, taxonomies, menus, users, options
-* Gutenberg: surgical block edits, custom block building, full page composition, and block theme templates, template parts and navigation
-* Elementor: widgets, templates, theme builder, popups, global styles, custom widget building
-* Bricks and Divi structural editing
-* WooCommerce, ACF, Meta Box, JetEngine, Pods, TranslatePress, Yoast, Rank Math, SEOPress, The SEO Framework, SureRank, Slim SEO, Redirection; with Pro, All in One SEO
+* Gutenberg: surgical block edits, full page composition, and block theme templates, template parts and navigation; with Pro, custom block building
+* Elementor: the widget list, widget schemas and global settings (read), and CSS regeneration; with Pro, reading and editing the page element tree (widgets, containers, batch updates), templates, theme builder, popups, global styles and custom widget building
+* With Pro, Bricks and Divi structural editing
+* WooCommerce, ACF, Meta Box, JetEngine, Pods, TranslatePress, Yoast, Rank Math, SEOPress, The SEO Framework, SureRank, Slim SEO, Redirection; with Pro, All in One SEO, WooCommerce REST operations (woo-ops, woo-read, woo-write), ACF batch field updates, and the social, term, schema and meta tag SEO tools
 * Forms: Contact Form 7 (forms, fields, notifications, and Flamingo-stored entries), Forminator, SureForms, MetForm, WS Form (forms, fields, actions and notifications, submissions listed with values masked and read one at a time, undoable status changes and deletes off until the site turns them on), Everest Forms (forms, fields and notifications, entries listed masked and read one at a time, undoable spam, star and read changes and deletes off until the site turns them on), JetFormBuilder (forms and fields, records listed masked and read one at a time, undoable read changes and deletes off until the site turns them on), Kadence Blocks forms (forms, fields and email notifications, undoable notification changes off until the site turns them on), Jetpack Forms (responses listed masked and read one at a time, undoable inbox, spam, trash and read changes and deletes off until the site turns them on); with Pro, the forms adapter pack for Gravity Forms, WPForms, Formidable, Ninja Forms and Fluent Forms
 * WooCommerce add-ons: Variation Swatches for WooCommerce (attribute swatch types read with each term's colour and image, undoable type changes off until the site turns them on), Product Feed Pro (feeds with status, last run, products in the file and products left out per reason, hand-excluded products, and a feed refresh that asks for confirmation and is not undoable, off until the site turns it on)
-* Events, donations, memberships (read)
+* Events, donations and membership levels (read); with Pro, Paid Memberships Pro members, orders and discount codes, and changes to its levels, member levels and discount codes
 * GiveWP: donations, donors and campaigns listed with donor names and emails masked and read one at a time in full, a donation summary by status and currency, donation form title, status, amount and goal edits (undoable) and donation status changes (asks for confirmation, totals and emails not undoable); both writes are off until the site turns them on
 * BuddyPress and BuddyBoss Platform: groups (with their linked forums), group members, activity moderation and extended profile fields; BuddyBoss forums through the bbPress tools
 * Restrict Content and Restrict Content Pro: membership levels with member counts, memberships listed with names and emails masked, and undoable level changes (off until the site turns them on)
@@ -55,9 +55,7 @@ The difference: **every supported write takes a snapshot first.** If the agent g
 * WPGraphQL (read): run GraphQL queries as the signed-in user, with mutations refused and emails, phones and IPs masked, and summarise the schema
 * Search and replace (Better Search Replace, Search Regex): tables and saved presets listed, a mandatory dry run with match counts and masked samples, and a serialization-safe run across chosen tables that skips users, salts and keys, snapshots every changed row and is undone in one step; off until the site turns it on
 * WP Mail SMTP: the active mailer and from identity with credentials never returned, the Pro email log, a test send to your own address, and an undoable from name and address change
-* With Pro, FunnelKit funnels and their steps, with linked pages, products and step counts, and changes to funnels, steps and checkout products through FunnelKit itself (free Funnel Builder), each one undoable
 * With Pro, WPFunnels funnels with their steps in order and checkout products, and undoable funnel create, rename, publish or draft and checkout product changes (off until the site turns them on)
-* With Pro, Tutor LMS, LifterLMS and LearnDash: courses, sections, lessons and quizzes (read and undoable writes) and enrollments (read); LearnDash also lists a learner's courses with progress and can enroll, unenroll or reset progress (off until the site turns them on), each undoable
 * With Pro, Thrive Apprentice: courses as a tree of modules, chapters, lessons and assessments (read), and undoable course creates and edits, lesson creates and edits, and reordering (off until the site turns them on)
 * Directory and job board listings: WP Job Manager, GeoDirectory and Directorist listings and their categories read (contact emails and phones masked in lists), and undoable listing creates, edits and status changes (off until the site turns them on)
 * Cookie consent banners for Complianz, CookieYes and Cookie Notice: banner status, consent settings with keys never returned, the cookies a scan found, undoable banner text changes shown before and after, and a Complianz scan restart (off until the site turns them on)
@@ -90,13 +88,13 @@ The difference: **every supported write takes a snapshot first.** If the agent g
 * With Pro, Elementor addon packs: Essential Addons, Premium Addons, Ultimate Addons, JetElements, Happy Addons, Royal Elementor Addons and PowerPack Lite widgets listed with their controls, and each pack's modules switched on or off, every toggle undoable
 * With Pro, Ultimate Addons for Elementor header, footer and custom block templates: list, read, create, update and trash them and set their display rules, with a snapshot before each supported write
 * Media library plus stock image imports, and regeneration of the image sizes a new theme or plugin added (undoable)
-* REST passthrough for anything else, still snapshotted
+* REST passthrough for anything else: reads, and writes that are off until the site turns them on, need confirm:true and say in their result that they cannot be undone
 
 = Free vs Pro =
 
-The free plugin is fully functional: the MCP server, the safety core, snapshots and rollback, Gutenberg building, and the integration read tools. Snapshot history keeps the last 20 operations by default, and the `wpmcp_snapshot_history_limit` filter raises or lowers that number on any site at no cost. Pro keeps unlimited history while the licence is active. A bulk run recorded under one session is kept or dropped as a whole: the most recent run stays fully undoable with rollback-session however large it is, and a run that has been dropped is refused with a reason instead of being undone in part.
+The free plugin is fully functional: the MCP server, the safety core, snapshots and rollback, Gutenberg building, and every integration above except the parts marked with Pro. Snapshot history keeps the last 20 operations by default, and the `wpmcp_snapshot_history_limit` filter raises or lowers that number on any site at no cost. Pro keeps unlimited history while the licence is active. A bulk run recorded under one session is kept or dropped as a whole: the most recent run stays fully undoable with rollback-session however large it is, and a run that has been dropped is refused with a reason instead of being undone in part.
 
-WP MCP Pro adds deep Elementor editing and building, custom widget/block builders, the forms adapter pack (Gravity Forms, WPForms, Formidable, Ninja Forms, Fluent Forms: forms, fields, notifications, entries and entry status), cloud sync for your widget and block specs, and priority support. See https://wpmcp-pro.com/pricing.html
+WP MCP Pro adds deep Elementor editing and building, Bricks and Divi editing, custom widget/block builders, the forms adapter pack (Gravity Forms, WPForms, Formidable, Ninja Forms, Fluent Forms: forms, fields, notifications, entries and entry status), the integration parts marked with Pro above, cloud sync for your widget and block specs, and priority support. It is a separate plugin from the Freemius checkout, and activating it deactivates this one. See https://wpmcp-pro.com/pricing.html
 
 = Privacy =
 
@@ -146,7 +144,7 @@ Privacy policy: https://policies.google.com/privacy
 
 1. Install and activate the plugin.
 2. Open WP MCP, Connection and follow its four steps to connect your AI app (Claude Code, Claude Desktop, ChatGPT, Cursor, Antigravity, and others).
-3. Ask your agent to build something. Check the History screen to see snapshots accumulate; restore any of them with one click.
+3. Ask your agent to build something. The History screen lists the snapshot taken before each supported write, with one-click restore.
 
 == Frequently Asked Questions ==
 
@@ -156,7 +154,7 @@ The Model Context Protocol is an open standard that lets AI assistants use tools
 
 = Can the AI destroy my site? =
 
-Every supported write snapshots the affected data first, the few that cannot be snapshotted are off by default or need confirmation and say so in their result, and destructive escape hatches (WP-CLI, PHP execution) ship disabled by default and only run in development environments. You can restore any snapshot, or roll back an entire agent session.
+Every supported write snapshots the affected data first, the few that cannot be snapshotted are off by default or need confirmation and say so in their result, and destructive escape hatches (WP-CLI, PHP execution) ship disabled by default and only run in development environments. History gives one-click restore, and you can roll back the supported writes of an entire agent session.
 
 = What if my AI client skips permission prompts? =
 
