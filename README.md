@@ -27,7 +27,7 @@ WP MCP is a free, self-hosted WordPress MCP plugin for Claude, ChatGPT, Cursor a
 
 </div>
 
-**Thrive Theme Builder (Pro).** While Thrive Theme Builder is the active theme, the theme tools list and read its templates (what each renders, layout, header, footer and sections), its headers, footers and shared sections, and the theme settings (logo link, favicon, default featured image). Writes change a template's title, layout, header or footer, give a post or page a template of its own, edit a section's markup (pinned to the hash it was read with) and set those theme settings. Writes are off until the site enables theme writes, and every one is snapshotted so rollback undoes it.
+**Thrive Theme Builder (Pro).** While Thrive Theme Builder is the active theme, the theme tools list and read its templates (what each renders, layout, header, footer and sections), its headers, footers and shared sections, and the theme settings (logo link, favicon, default featured image). Writes change a template's title, layout, header or footer, give a post or page a template of its own, edit a section's markup (pinned to the hash it was read with) and set those theme settings. Writes are off until the site enables theme writes, and each supported write is snapshotted so rollback undoes it.
 
 Because snapshots are taken at the WordPress data layer, rollback works the same for every builder in the table. Docs and Pro are at [wpmcp-pro.com](https://wpmcp-pro.com/).
 1. Download [wpmcp.zip](https://github.com/wpmcp/wordpress-mcp/releases/latest/download/wpmcp.zip).
@@ -141,7 +141,7 @@ Then refresh the MCP servers list in Windsurf.
 
 ChatGPT, VS Code and other clients: see [Connect your AI client](#connect-your-ai-client-claude-code-claude-desktop-chatgpt-cursor) below.
 
-> **WP MCP Pro, 10% off for GitHub users:** use code `WPMCPGIT` at [wpmcp-pro.com/pricing](https://wpmcp-pro.com/pricing?coupon=WPMCPGIT&utm_source=github&utm_medium=readme)
+> **WP MCP Pro, 10% off for GitHub users:** use code `WPMCPGIT` at [wpmcp-pro.com/pricing](https://wpmcp-pro.com/pricing?coupon=WPMCPGIT&utm_source=github&utm_medium=referral&utm_content=readme)
 
 ## What the WordPress MCP server does
 
@@ -193,8 +193,8 @@ Paste-once blueprints in [prompts/](prompts/), each ending with an undo step:
 ## Free vs Pro
 
 The free plugin is complete on its own: the safety engine and undo, Gutenberg editing, site management and the WooCommerce store tools.
-Pro unlocks in the same plugin when you add a licence: unlimited undo history, Elementor deep editing, the other page builders, WooCommerce Subscriptions, Bookings and Memberships, agent project memory and priority support.
-There is nothing else to install. Plans are on the [pricing page](https://wpmcp-pro.com/pricing), and the detail is in [Free vs Pro](docs/reference/free-vs-pro.md).
+Pro adds unlimited undo history, Elementor deep editing, the other page builders, WooCommerce Subscriptions, Bookings and Memberships, agent project memory and priority support.
+Pro comes from the Freemius checkout on the [pricing page](https://wpmcp-pro.com/pricing): after checkout you get the licence key and the Pro download, which also stay in your Freemius account. GitHub releases carry the free plugin only. The detail is in [Free vs Pro](docs/reference/free-vs-pro.md).
 
 ## Developer docs
 

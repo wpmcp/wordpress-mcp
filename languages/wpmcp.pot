@@ -1357,7 +1357,7 @@ msgstr ""
 
 #: MCP/Discovery_Documents.php:163
 #: MCP/Server.php:114
-msgid "AI builds and edits your WordPress site, and physically cannot wreck it."
+msgid "AI builds and edits your WordPress site, with a snapshot before each supported write."
 msgstr ""
 
 #. translators: 1: Ability name, 2: Exception message.

@@ -116,7 +116,7 @@ class Server
             self::NAMESPACE,
             self::SERVER_ID,
             self::SERVER_NAME,
-            __('AI builds and edits your WordPress site, and physically cannot wreck it.', 'wpmcp'),
+            __('AI builds and edits your WordPress site, with a snapshot before each supported write.', 'wpmcp'),
             defined('WPMCP_VERSION') ? WPMCP_VERSION : '0.0.0',
             [ HttpTransport::class ],
             ErrorLogMcpErrorHandler::class,

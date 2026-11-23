@@ -14,7 +14,7 @@ AI agents run your WooCommerce store over MCP, from products and orders to conte
 
 Safe MCP for WooCommerce turns your store into an MCP (Model Context Protocol) server, built on the official WordPress Abilities API. Connect Claude, Cursor, or any MCP client and let an AI agent manage products, look after orders, and edit your store's pages and content.
 
-The difference: **every mutating operation takes a snapshot first.** A wrong bulk price update, a bad product edit, a page the agent got wrong: each is one click from undone in the History screen. The agent physically cannot make an unrecoverable change.
+The difference: **a snapshot before each supported write.** A wrong bulk price update, a bad product edit, a page the agent got wrong: each is one click from undone in the History screen. The few changes that cannot be undone are listed, and each says so in its response.
 
 = Safety model =
 

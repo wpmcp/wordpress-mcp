@@ -160,7 +160,7 @@ class Discovery_Documents
             '$schema'     => self::SERVER_CARD_SCHEMA,
             'name'        => self::card_name(),
             'title'       => self::clip(self::site_name()),
-            'description' => self::clip(__('AI builds and edits your WordPress site, and physically cannot wreck it.', 'wpmcp')),
+            'description' => self::clip(__('AI builds and edits your WordPress site, with a snapshot before each supported write.', 'wpmcp')),
             'version'     => defined('WPMCP_VERSION') ? WPMCP_VERSION : '0.0.0',
             'websiteUrl'  => home_url('/'),
             'remotes'     => [ $remote ],

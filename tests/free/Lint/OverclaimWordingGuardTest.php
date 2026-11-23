@@ -7,8 +7,9 @@ use PHPUnit\Framework\TestCase;
 /**
  * Keeps overclaims about snapshots, undo and safety out of shipped
  * user-facing text: admin screens, tool and skill descriptions, the .mcpb
- * manifest, the readmes (main and per flavor), the prompts, the .pot and the
- * Pro sources when the submodule is checked out.
+ * manifest, the readmes (main and per flavor), the prompts, the .pot, the
+ * docs/ tree, the plugin header and the Pro sources when the submodule is
+ * checked out.
  *
  * Not every write is snapshotted (some are refused, some report that undo is
  * partial, some are not reversible at all), so the copy says "a snapshot
@@ -32,6 +33,14 @@ class OverclaimWordingGuardTest extends TestCase
         '/\balways (?:restorable|reversible|undoable)\b/i',
         '/\b100 ?% (?:safe|reversible|undoable|restorable|recoverable)\b/i',
         '/\bthe only (?:wordpress )?(?:mcp (?:server|plugin)|mcp with|plugin (?:that|with)|server (?:that|with)|safe|undoable)\b/i',
+        '/\b(?:can(?:\'|\x{2019})?t|cannot|can not|never) (?:wreck|ruin|destroy)\b/iu',
+        '/\bphysically (?:can(?:\'|\x{2019})?t|cannot|can not|unable)\b/iu',
+        '/\bevery (?:write|change|edit|mutation)s? (?:takes|gets|creates|makes) a snapshot\b/i',
+        '/\bevery (?:write|change|edit|mutation) snapshots\b/i',
+        '/\bevery one (?:is|gets) snapshotted\b/i',
+        '/\b(?:snapshot|before-image)s? (?:ahead of|in front of) (?:every|all|any) (?:write|change|edit|mutation)s?\b/i',
+        '/\b(?:any|every) change can be (?:rolled back|undone|reverted|restored)\b/i',
+        '/\broll (?:any|every) change back\b/i',
     ];
 
     /** Roots scanned, relative to the repository root. Missing ones are skipped. */
@@ -44,6 +53,8 @@ class OverclaimWordingGuardTest extends TestCase
         'scripts/flavors',
         'readme.txt',
         'README.md',
+        'docs',
+        'wpmcp.php',
     ];
 
     /** Build tooling under a scanned root that never ships as text a user reads. */
@@ -89,6 +100,14 @@ class OverclaimWordingGuardTest extends TestCase
             'This release makes every change reversible across all of them.',
             'The only WordPress MCP with undo.',
             'Your content is always restorable.',
+            "AI builds and edits your WordPress site, and physically can't wreck it.",
+            'AI builds and edits your WordPress site, and physically cannot wreck it.',
+            'Every write takes a snapshot first, so any change can be rolled back.',
+            'so you can roll any change back from the History screen.',
+            'Every write is snapshotted: `rollback-operation` deletes a created booking.',
+            'Every write snapshots the whole subscription, its schedule included.',
+            'and every one is snapshotted so rollback undoes it.',
+            'wpmcp writes a before-image ahead of every mutation.',
         ];
         foreach ($bad as $line) {
             $this->assertNotNull($this->match($line), 'Not caught: ' . $line);
@@ -102,6 +121,10 @@ class OverclaimWordingGuardTest extends TestCase
             'unsubscribe it (status: unsubscribed, the only status a write sets)',
             'and undo is free.',
             'on stores where the only MCP adapter loaded is the older copy',
+            'AI builds and edits your WordPress site, with a snapshot before each supported write.',
+            'Each supported write is snapshotted: `rollback-operation` deletes a created booking.',
+            'Use one session_id for every write in this task.',
+            'the deny rule would deny every write on the site.',
         ];
         foreach ($good as $line) {
             $this->assertNull($this->match($line), 'Flagged honest text: ' . $line);
