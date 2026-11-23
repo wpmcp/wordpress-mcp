@@ -1073,6 +1073,9 @@
       "properties": {
         "settings": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -3769,6 +3772,9 @@
         },
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -6915,6 +6921,9 @@
         },
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -7345,6 +7354,9 @@
         },
         "auto_enable_new_tools": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       }
     },
