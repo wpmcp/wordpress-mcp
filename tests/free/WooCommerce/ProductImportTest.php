@@ -4,7 +4,9 @@ namespace WPMCP\Tests\Free\WooCommerce;
 
 use WPMCP\Governance\Governance;
 use WPMCP\Safety\Snapshot_Store;
+use WPMCP\Tests\Free\Platform\RegisteredAbilities;
 use WPMCP\Tools\Rollback_Session;
+use WPMCP\Tools\Settings\Update_Settings;
 use WPMCP\Tools\WooCommerce\Apply_Product_Import;
 use WPMCP\Tools\WooCommerce\Plan_Product_Import;
 
@@ -560,6 +562,102 @@ class ProductImportTest extends \WP_UnitTestCase
 
         $this->assertSame('9.00', wc_get_product($mug)->get_regular_price());
         $this->assertSame(0, wc_get_product_id_by_sku('NEW-1'));
+    }
+
+    public function test_an_import_given_a_session_joins_it_and_returns_it(): void
+    {
+        $properties = $this->advertised('wpmcp/apply-product-import');
+        $this->assertArrayHasKey('session_id', $properties, 'apply-product-import does not declare session_id');
+
+        $blogname = get_option('blogname');
+        $tagline  = get_option('blogdescription');
+        $mug      = $this->simple('MUG-1', '9.00', 3);
+        $rows     = [
+            ['sku' => 'MUG-1', 'regular_price' => '11.00'],
+            ['sku' => 'NEW-1', 'name' => 'Bowl', 'regular_price' => '3.00'],
+        ];
+        $plan = $this->plan($rows);
+
+        try {
+            (new Update_Settings())->handle(['settings' => ['blogname' => 'Chat A store'], 'session_id' => 'chat-a']);
+            $out = $this->apply($rows, $plan['plan_hash'], ['session_id' => 'chat-a']);
+            (new Update_Settings())->handle(['settings' => ['blogdescription' => 'Chat B tagline'], 'session_id' => 'chat-b']);
+
+            $this->assertSame('chat-a', $out['session_id'], 'The import reports the session it recorded under');
+            $this->assertSame(count(Snapshot_Store::list_by_session('chat-a')) - 1, $out['undo_points'], 'Only the import\'s own undo points are counted, not the chat\'s other writes');
+            $this->assertSame('11.00', wc_get_product($mug)->get_regular_price());
+
+            (new Rollback_Session())->handle(['session_id' => 'chat-a']);
+
+            $this->assertSame('9.00', wc_get_product($mug)->get_regular_price(), 'The import is undone with its chat');
+            $this->assertSame(0, wc_get_product_id_by_sku('NEW-1'));
+            $this->assertSame($blogname, get_option('blogname'), 'So is the chat\'s earlier write');
+            $this->assertSame('Chat B tagline', get_option('blogdescription'), 'Chat B is untouched');
+        } finally {
+            update_option('blogname', $blogname);
+            update_option('blogdescription', $tagline);
+        }
+    }
+
+    public function test_an_import_without_a_session_makes_and_returns_its_own(): void
+    {
+        $this->simple('MUG-1', '9.00', 3);
+        $rows = [['sku' => 'MUG-1', 'regular_price' => '11.00']];
+        $plan = $this->plan($rows);
+
+        $out = $this->apply($rows, $plan['plan_hash']);
+
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', (string) $out['session_id']);
+        $this->assertSame($out['undo_points'], count(Snapshot_Store::list_by_session((string) $out['session_id'])));
+    }
+
+    public function test_a_failing_import_in_a_given_session_undoes_only_its_own_writes(): void
+    {
+        $blogname = get_option('blogname');
+        $mug      = $this->simple('MUG-1', '9.00', 3);
+        $rows     = [
+            ['sku' => 'MUG-1', 'regular_price' => '11.00'],
+            ['sku' => 'NEW-1', 'name' => 'Bowl', 'images' => ['https://images.pexels.com/photos/4/bowl.jpg']],
+        ];
+        $plan = $this->plan($rows);
+        (new Update_Settings())->handle(['settings' => ['blogname' => 'Chat A store'], 'session_id' => 'chat-a']);
+
+        $fail = static fn () => ['response' => ['code' => 500, 'message' => 'err'], 'headers' => [], 'body' => '', 'cookies' => []];
+        remove_filter('pre_http_request', [$this, 'serve_image'], 10);
+        add_filter('pre_http_request', $fail);
+        try {
+            $this->apply($rows, $plan['plan_hash'], ['session_id' => 'chat-a']);
+            $this->fail('A failed image download must fail the import.');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('rolled back', $e->getMessage());
+        } finally {
+            remove_filter('pre_http_request', $fail);
+        }
+
+        try {
+            $this->assertSame('9.00', wc_get_product($mug)->get_regular_price(), 'The import\'s own writes are undone');
+            $this->assertSame(0, wc_get_product_id_by_sku('NEW-1'));
+            $this->assertSame('Chat A store', get_option('blogname'), 'The chat\'s earlier write is kept');
+            $live = array_filter(Snapshot_Store::list_by_session('chat-a'), static fn (array $row): bool => null === Snapshot_Store::rolled_back_at($row));
+            $this->assertCount(1, $live, 'Only the earlier write is still live in the chat\'s session; the import\'s own undo points are marked undone');
+
+            (new Rollback_Session())->handle(['session_id' => 'chat-a']);
+            $this->assertSame($blogname, get_option('blogname'), 'The chat still rolls back whole after the failed import');
+        } finally {
+            update_option('blogname', $blogname);
+        }
+    }
+
+    /** @return array<string, mixed> the input schema properties a client sees */
+    private function advertised(string $name): array
+    {
+        foreach (RegisteredAbilities::all() as $ability) {
+            if ($ability->name === $name) {
+                $properties = $ability->input_schema['properties'] ?? [];
+                return is_array($properties) ? $properties : [];
+            }
+        }
+        $this->fail($name . ' is not registered');
     }
 
     public function test_global_attribute_terms_must_exist_and_variations_use_their_slugs(): void

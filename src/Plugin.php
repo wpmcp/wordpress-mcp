@@ -1898,6 +1898,7 @@ final class Plugin
                 'type'       => 'object',
                 'properties' => [
                     'settings' => [ 'type' => 'object' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'settings' ],
             ],
@@ -4888,6 +4889,7 @@ final class Plugin
                     'max_matches'    => [ 'type' => 'integer' ],
                     'dry_run'        => [ 'type' => 'boolean' ],
                     'confirm'        => [ 'type' => 'boolean' ],
+                    'session_id'     => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'search', 'replace' ],
             ],
@@ -5029,6 +5031,7 @@ final class Plugin
                     'operation' => [ 'type' => 'object' ],
                     'site_wide' => [ 'type' => 'string', 'enum' => [ 'off', 'audit', 'enforce' ] ],
                     'auto_enable_new_tools' => [ 'type' => 'boolean' ],
+                    'session_id'            => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
             ],
             [$update_governance_settings, 'handle'],
@@ -6329,6 +6332,7 @@ final class Plugin
                     'mode' => [ 'type' => 'string', 'enum' => [ 'upsert', 'create', 'update' ] ],
                     'plan_hash' => [ 'type' => 'string' ],
                     'confirm' => [ 'type' => 'boolean' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'rows', 'plan_hash' ],
             ],
