@@ -336,7 +336,7 @@ class Formidable_Integration extends Forms_Integration
             $json    = (string) wp_json_encode($settings);
             $refusal = (new Kses_Safety())->exact_refusal((int) $post->ID, $json, 'form action');
             if (null !== $refusal) {
-                throw new Operation_Error((string) $refusal->get_error_code(), $refusal->get_error_message(), [ 'status' => 403, 'action_id' => (int) $post->ID ]);
+                throw new Operation_Error(esc_html((string) $refusal->get_error_code()), esc_html($refusal->get_error_message()), [ 'status' => 403, 'action_id' => (int) $post->ID ]);
             }
             $record['post_content'] = wp_slash($json);
             $result                 = \WPMCP\Safety\Save_Filters::update_post($record, true);
