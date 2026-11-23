@@ -13,7 +13,6 @@ use WPMCP\MCP\Registrar;
 use WPMCP\MCP\Stdio_Transport;
 use WPMCP\MCP\Tool_Exposure;
 use WPMCP\MCP\Unavailable;
-use WPMCP\Plugin;
 use WPMCP\Pro\Gate;
 use WPMCP\RateLimit\Rate_Limiter;
 use WPMCP\Safety\Snapshot_Store;
@@ -32,16 +31,8 @@ use WPMCP\Tests\Free\Safety\Kses\Without_Unfiltered_Html;
  */
 final class RefusalEnvelopeWireTest extends \WP_UnitTestCase
 {
+    use Mcp_Wire;
     use Without_Unfiltered_Html;
-
-    private const ROUTE = '/mcp/wpmcp-server';
-
-    private ?string $session = null;
-
-    private ?Registrar $original = null;
-
-    /** @var list<string> */
-    private array $fixtures = [];
 
     public static function wpSetUpBeforeClass(): void
     {
@@ -65,14 +56,7 @@ final class RefusalEnvelopeWireTest extends \WP_UnitTestCase
 
     protected function tearDown(): void
     {
-        foreach ($this->fixtures as $name) {
-            if (wp_has_ability($name)) {
-                wp_unregister_ability($name);
-            }
-        }
-        if (null !== $this->original) {
-            (new \ReflectionProperty(Plugin::class, 'registrar'))->setValue(Plugin::instance(), $this->original);
-        }
+        $this->restore_wire();
         Gate::set_pro_for_tests(null);
         remove_all_filters('wpmcp_rate_limit');
         Rate_Limiter::set_clock_override(null);
@@ -80,8 +64,6 @@ final class RefusalEnvelopeWireTest extends \WP_UnitTestCase
         Governance::reset_for_tests();
         delete_option(Identity_Store::OPTION);
         delete_option(Tool_Exposure::OPTION);
-        global $wp_rest_server;
-        $wp_rest_server = null;
         parent::tearDown();
     }
 
@@ -92,31 +74,7 @@ final class RefusalEnvelopeWireTest extends \WP_UnitTestCase
             grant_super_admin($id);
         }
         wp_set_current_user($id);
-        $this->session = null;
-    }
-
-    /**
-     * Swaps in a fresh Registrar and declares abilities on it in a private
-     * wp_abilities_api_init, so the fixtures reach the live registry without
-     * touching the shared one. tearDown() puts the real one back.
-     *
-     * @param callable(Registrar): void $declare
-     * @param list<string>              $names   the fixtures that get registered, for tearDown()
-     */
-    private function declare(callable $declare, array $names): void
-    {
-        $plugin   = Plugin::instance();
-        $property = new \ReflectionProperty(Plugin::class, 'registrar');
-        $this->original ??= $property->getValue($plugin);
-        $fresh = new Registrar();
-        $property->setValue($plugin, $fresh);
-        $this->fixtures = array_merge($this->fixtures, $names);
-
-        remove_all_actions('wp_abilities_api_init');
-        add_action('wp_abilities_api_init', static function () use ($declare, $fresh): void {
-            $declare($fresh);
-        });
-        do_action('wp_abilities_api_init');
+        $this->forget_session();
     }
 
     private static function fixture(string $name, callable $handler, string $tier = 'free'): Ability
@@ -127,132 +85,6 @@ final class RefusalEnvelopeWireTest extends \WP_UnitTestCase
     private static function fixture_name(string $reason): string
     {
         return 'wpmcp/fixture-628-' . str_replace('_', '-', $reason);
-    }
-
-    /** Mounts the HTTP route on a fresh REST server, as the other transport suites do. */
-    private function mount(): void
-    {
-        global $wp_rest_server;
-
-        $adapter    = \WP\MCP\Core\McpAdapter::instance();
-        $reflection = new \ReflectionClass($adapter);
-        if ($reflection->hasProperty('servers')) {
-            $reflection->getProperty('servers')->setValue($adapter, []);
-        }
-        if ($reflection->hasProperty('initialized')) {
-            $reflection->getProperty('initialized')->setValue(null, false);
-        }
-        add_action('rest_api_init', [ $adapter, 'init' ], 15);
-
-        $wp_rest_server = new \WP_REST_Server();
-        do_action('rest_api_init', $wp_rest_server);
-        $this->session = null;
-    }
-
-    /**
-     * @param array<string, mixed>  $message
-     * @param array<string, string> $headers
-     * @return array{0: int, 1: array<string, mixed>, 2: array<string, string>}
-     */
-    private function post(array $message, array $headers = []): array
-    {
-        global $wp_rest_server;
-
-        $request = new \WP_REST_Request('POST', self::ROUTE);
-        $request->set_header('Content-Type', 'application/json');
-        $request->set_header('Accept', 'application/json, text/event-stream');
-        foreach ($headers as $name => $value) {
-            $request->set_header($name, $value);
-        }
-        $request->set_body((string) wp_json_encode($message));
-
-        $response = rest_do_request($request);
-        $response = apply_filters('rest_post_dispatch', rest_ensure_response($response), $wp_rest_server, $request);
-
-        return [ $response->get_status(), (array) json_decode((string) wp_json_encode($response->get_data()), true), $response->get_headers() ];
-    }
-
-    /** The 2025-11-25 session of the current user, opened once. */
-    private function session(): string
-    {
-        if (null === $this->session) {
-            [ $status, $body, $headers ] = $this->post([
-                'jsonrpc' => '2.0',
-                'id'      => 1,
-                'method'  => 'initialize',
-                'params'  => [ 'protocolVersion' => '2025-11-25', 'capabilities' => new \stdClass(), 'clientInfo' => [ 'name' => 'contract-628', 'version' => '0' ] ],
-            ]);
-            $this->assertSame(200, $status, (string) wp_json_encode($body));
-            $this->session = (string) ($headers['Mcp-Session-Id'] ?? '');
-            $this->assertNotSame('', $this->session);
-        }
-
-        return $this->session;
-    }
-
-    /** @return array<string, mixed> */
-    private static function modern_meta(): array
-    {
-        return [
-            'io.modelcontextprotocol/protocolVersion'    => '2026-07-28',
-            'io.modelcontextprotocol/clientCapabilities' => new \stdClass(),
-        ];
-    }
-
-    /**
-     * One tools/call over HTTP, decoded.
-     *
-     * @param array<string, mixed> $arguments
-     * @return array{0: int, 1: array<string, mixed>}
-     */
-    private function http(string $tool, array $arguments = [], bool $modern = false): array
-    {
-        $params = [ 'name' => $tool, 'arguments' => $arguments ];
-        if ($modern) {
-            $params['_meta'] = self::modern_meta();
-            $headers         = [ 'MCP-Protocol-Version' => '2026-07-28', 'Mcp-Method' => 'tools/call', 'Mcp-Name' => $tool ];
-        } else {
-            $headers = [ 'Mcp-Session-Id' => $this->session(), 'MCP-Protocol-Version' => '2025-11-25' ];
-        }
-        [ $status, $body ] = $this->post([ 'jsonrpc' => '2.0', 'id' => 7, 'method' => 'tools/call', 'params' => $params ], $headers);
-
-        return [ $status, $body ];
-    }
-
-    /**
-     * One tools/call over stdio, decoded the way the client reads it.
-     *
-     * @param array<string, mixed> $arguments
-     * @return array<string, mixed>
-     */
-    private function stdio(string $tool, array $arguments = [], bool $modern = false): array
-    {
-        $params = [ 'name' => $tool, 'arguments' => $arguments ];
-        if ($modern) {
-            $params['_meta'] = self::modern_meta();
-        }
-        $response = (new Stdio_Transport())->handle_request([ 'jsonrpc' => '2.0', 'id' => 7, 'method' => 'tools/call', 'params' => $params ]);
-
-        return (array) json_decode((string) wp_json_encode($response), true);
-    }
-
-    /**
-     * The same call on both transports, on one revision: the two results,
-     * after asserting they are identical.
-     *
-     * @param array<string, mixed> $arguments
-     * @return array<string, mixed> the result
-     */
-    private function on_both(string $tool, array $arguments = [], bool $modern = false): array
-    {
-        $stdio = $this->stdio($tool, $arguments, $modern);
-        [ $status, $http ] = $this->http($tool, $arguments, $modern);
-
-        $this->assertArrayHasKey('result', $stdio, $tool . ' over stdio: ' . wp_json_encode($stdio));
-        $this->assertSame(200, $status, $tool . ' over HTTP: ' . wp_json_encode($http));
-        $this->assertSame($stdio['result'], $http['result'] ?? null, $tool . ($modern ? ' (2026-07-28)' : ' (2025-11-25)') . ': HTTP and stdio differ');
-
-        return $stdio['result'];
     }
 
     /**
@@ -273,7 +105,7 @@ final class RefusalEnvelopeWireTest extends \WP_UnitTestCase
     public function test_every_reason_code_reaches_both_transports_as_one_envelope(): void
     {
         $reasons = array_keys(Unavailable::REASONS);
-        $this->declare(static function (Registrar $registrar) use ($reasons): void {
+        $this->register_on(new Registrar(), static function (Registrar $registrar) use ($reasons): void {
             foreach ($reasons as $reason) {
                 $overrides = 'rate_limited' === $reason ? [ 'retry_after' => 30 ] : [];
                 $registrar->register(self::fixture(
@@ -375,7 +207,7 @@ final class RefusalEnvelopeWireTest extends \WP_UnitTestCase
         $page    = (int) self::factory()->post->create([ 'post_type' => 'page' ]);
         $this->store_raw($page, $content);
         $this->log_in_without_unfiltered_html();
-        $this->session = null;
+        $this->forget_session();
         $this->mount();
 
         $edit   = [ 'id' => $page, 'expected_hash' => hash('sha256', $content), 'path' => [ 2 ], 'inner_html' => "\n<p>World</p>\n" ];
@@ -416,7 +248,7 @@ final class RefusalEnvelopeWireTest extends \WP_UnitTestCase
     {
         Gate::set_pro_for_tests(false);
         Governance::set_ability_toggle('wpmcp/fixture-628-governed', false);
-        $this->declare(static function (Registrar $registrar): void {
+        $this->register_on(new Registrar(), static function (Registrar $registrar): void {
             $registrar->register(self::fixture('wpmcp/fixture-628-pro', static fn (): array => [], 'pro'));
             $registrar->register(self::fixture('wpmcp/fixture-628-governed', static fn (): array => []));
             $registrar->hold_for_plugin(self::fixture('wpmcp/fixture-628-held', static fn (): array => []), 'Fixture Plugin 628');

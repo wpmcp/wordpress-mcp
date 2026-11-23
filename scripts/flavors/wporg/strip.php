@@ -242,23 +242,31 @@ $edits['src/MCP/Registrar.php'] = [
      * tool and this install has no active license (issue #631), or null
      * when that is not the reason. Lets the meta-tools say "needs WP MCP
      * Pro" instead of "no tool by that name", with the same upgrade offer
-     * the admin banner carries (Pro_Refusal). Grants nothing: the tool is
-     * still unregistered and unreachable.
+     * the admin banner carries (Pro_Refusal). On the free zip, which carries
+     * no Pro code, a Pro tool is not declared at all and is known by name
+     * from the build (Pro_Catalog, issue #628), so it says WP MCP Pro is not
+     * installed. Grants nothing: the tool is still unregistered and
+     * unreachable.
      */
     public function pro_required(string $name): ?\WP_Error
     {
         $declared = $this->declared[ $name ] ?? $this->held_for_plugin[ $name ]['ability'] ?? null;
-        if (null === $declared || isset($this->abilities[ $name ]) || self::tier_permitted($declared->tier)) {
+        $not_here = null === $declared && ! isset($this->abilities[ $name ]) && $this->pro_catalog()->has($name);
+        if (! $not_here && (null === $declared || isset($this->abilities[ $name ]) || self::tier_permitted($declared->tier))) {
             return null;
         }
 
+        $upgrade     = Pro_Refusal::upgrade_url();
         $unavailable = new Unavailable('pro_required', '', 'The account owner switches this site to an edition of WP MCP that includes it.', [ 'admin_url' => admin_url('admin.php?page=wpmcp') ]);
         return $unavailable->attach(new \WP_Error(
             'pro_required',
             sprintf(
-                '"%s" is a WP MCP Pro tool, and this site has no active WP MCP Pro license, so the tool is not available here. Activate a WP MCP Pro license on this site to use it.',
+                $not_here
+                    ? '"%s" is a WP MCP Pro tool, and WP MCP Pro is not installed on this site, so the tool is not available here. Install WP MCP Pro on this site to use it.'
+                    : '"%s" is a WP MCP Pro tool, and this site has no active WP MCP Pro license, so the tool is not available here. Activate a WP MCP Pro license on this site to use it.',
                 $name
-            ) . Pro_Refusal::upgrade_sentence()
+            ) . Pro_Refusal::upgrade_sentence(),
+            null === $upgrade ? [] : [ 'upgrade_url' => $upgrade ]
         ));
     }
 SRC . "\n\n",
