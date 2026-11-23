@@ -469,6 +469,7 @@ final class LMS_MasterStudy extends LMS_Adapter
 
     private function add_item(string $kind, array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         $section = (int) $args['parent_id'];
         $list    = $this->material_ids($section);
         $pos     = min((int) ($args['position'] ?? count($list)), count($list));
@@ -494,7 +495,8 @@ final class LMS_MasterStudy extends LMS_Adapter
             $this->store->renumber_materials($section, $list);
         });
 
-        return [ 'result' => [ 'item' => $this->node(get_post($created), $kind) ], 'operation_ids' => $ids ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'item' => $this->node(get_post($created), $kind) ] + $sanitized, 'operation_ids' => $ids ];
     }
 
     private function update_section(array $args): array

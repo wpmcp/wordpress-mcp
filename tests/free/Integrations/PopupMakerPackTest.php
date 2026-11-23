@@ -295,6 +295,9 @@ class PopupMakerPackTest extends \WP_UnitTestCase
         try {
             $out = $this->ok($this->write('popupmaker-create-popup', [ 'title' => 'x', 'content' => '<p>Hi</p><script>steal()</script>' ]));
             $this->assertStringNotContainsString('<script', get_post($out['result']['popup']['id'])->post_content);
+            // And the result says so (issue #1243).
+            $this->assertTrue($out['result']['sanitized'] ?? false);
+            $this->assertContains('<script> element', $out['result']['removed']);
             $id  = $this->popup();
             $this->ok($this->write('popupmaker-update-popup', [ 'id' => $id, 'content' => '<p>Ok</p><script>steal()</script>' ]));
             $this->assertStringNotContainsString('<script', get_post($id)->post_content);

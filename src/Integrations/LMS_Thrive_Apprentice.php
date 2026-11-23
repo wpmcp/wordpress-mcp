@@ -727,6 +727,7 @@ final class LMS_Thrive_Apprentice
     /** Add a lesson at a position, renumbering the siblings after it. */
     private function create_lesson(array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         $course   = (int) $args['course_id'];
         $parent   = (int) ($args['parent_id'] ?? 0);
         $siblings = $this->child_ids($course, $parent);
@@ -764,13 +765,15 @@ final class LMS_Thrive_Apprentice
         }
         $ids = array_merge($ids, $this->review_status($course, $parent, $context, $args));
 
-        return [ 'result' => [ 'lesson' => self::node(get_post($created)) ], 'operation_ids' => $ids ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'lesson' => self::node(get_post($created)) ] + $sanitized, 'operation_ids' => $ids ];
     }
 
     /** Edit one lesson, chapter or module; a status change reviews its parents. */
     private function update_lesson(array $args, array $context): array
     {
         $id     = (int) $args['id'];
+        $sanitized = Kses_Check::report($id, $args['content'] ?? null);
         $fields = [ 'ID' => $id ];
         foreach ([ 'title' => 'post_title', 'content' => 'post_content', 'excerpt' => 'post_excerpt', 'status' => 'post_status' ] as $arg => $column) {
             if (array_key_exists($arg, $args)) {
@@ -790,7 +793,8 @@ final class LMS_Thrive_Apprentice
             $ids = array_merge($ids, $this->review_status($this->course_of($id), (int) wp_get_post_parent_id($id), $context, $args));
         }
 
-        return [ 'result' => [ 'item' => self::node(get_post($id)) ], 'operation_ids' => $ids ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'item' => self::node(get_post($id)) ] + $sanitized, 'operation_ids' => $ids ];
     }
 
     /** Write the planned order strings, each post under its own snapshot. */

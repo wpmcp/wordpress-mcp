@@ -1082,6 +1082,7 @@ final class Maps_Pack
                 continue;
             }
 
+            $sanitized = Kses_Check::report(null === $existing ? 0 : $existing->ID, $row['description'] ?? null);
             try {
                 if (null === $existing) {
                     [$id, $operation] = self::create_store($row, $status, $meta, $terms, $context);
@@ -1094,7 +1095,8 @@ final class Maps_Pack
                 continue;
             }
             $ids[]     = $operation;
-            $results[] = [ 'index' => $index, 'ok' => true, 'created' => null === $existing, 'geocoded' => $meta['geocoded'], 'store' => self::view_store(get_post($id), false), 'operation_id' => $operation ];
+            // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+            $results[] = [ 'index' => $index, 'ok' => true, 'created' => null === $existing, 'geocoded' => $meta['geocoded'], 'store' => self::view_store(get_post($id), false), 'operation_id' => $operation ] + $sanitized;
         }
         if ([] !== $ids) {
             self::flush_store_cache();

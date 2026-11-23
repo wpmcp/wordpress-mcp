@@ -1114,6 +1114,7 @@ final class MemberPress_Pack
 
     private static function create_membership(array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         [$id, $op] = self::insert(self::MEMBERSHIP_TYPE, $args, $context, (string) $args['title'], (string) ($args['content'] ?? ''));
         self::write_meta($id, self::MEMBERSHIP_FIELDS + self::MEMBERSHIP_STORED, $args, true);
         foreach (self::admin_defaults($args) as $arg => $value) {
@@ -1123,17 +1124,19 @@ final class MemberPress_Pack
             }
         }
         self::refresh_caches();
-        return [ 'result' => [ 'membership' => self::membership($id) ], 'operation_ids' => [ $op ] ];
+        return [ 'result' => [ 'membership' => self::membership(is_int($id) ? $id : 0) ] + $sanitized, 'operation_ids' => [ $op ] ];
     }
 
     /** Edit one membership (the dispatcher snapshots the post, meta included, first). */
     private static function update_membership(array $args): array
     {
         $id = (int) $args['id'];
+
+        $sanitized = Kses_Check::report($id, $args['content'] ?? null);
         self::update_post_fields($id, $args);
         self::write_meta($id, self::MEMBERSHIP_FIELDS, $args, false);
         self::refresh_caches();
-        return [ 'membership' => self::membership($id) ];
+        return [ 'membership' => self::membership($id) ] + $sanitized;
     }
 
     /** Replace every access condition of a rule, the way the rule screen saves them. */
