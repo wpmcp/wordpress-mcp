@@ -20,7 +20,7 @@ Every memory denial is written to the governance audit log with the blocking ent
 
 Honest limitation, stated rather than hidden: `post_id` and `post_type` targets can only match arguments the server can see, so a tool that addresses content some other way (a slug-only API, a bulk operation with no id list) is not caught by those two forms. `tool:` targets have no such gap and are the airtight form.
 
-Session summaries are a deterministic rollup of the session's snapshot rows, not an LLM summarization pass. wpmcp writes a before-image ahead of every mutation, so the rows are a complete server-side record of what actually changed; the digest is computed from them, which makes it reproducible, offline, free, and impossible for a summary to over- or under-claim.
+Session summaries are a deterministic rollup of the session's snapshot rows, not an LLM summarization pass. wpmcp writes a before-image ahead of each supported write, so the rows are a server-side record of what those writes changed; the digest is computed from them, which makes it reproducible, offline, free, and impossible for a summary to over- or under-claim.
 
 The three tools are Pro tier and off by default (`wpmcp_enable_memory`, default `false`). Enforcement is deliberately **not** gated on either: it is on by default (`wpmcp_memory_enforce`) and keeps working after the tools are switched off or a license lapses, because a guardrail that quietly stops guarding is worse than no guardrail. Pending proposals surface as a count bubble on the wpmcp admin menu.
 
