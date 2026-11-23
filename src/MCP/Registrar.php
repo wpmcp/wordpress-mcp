@@ -672,13 +672,14 @@ class Registrar
             return null;
         }
 
-        return new \WP_Error(
+        $unavailable = new Unavailable('pro_required', '', 'The account owner switches this site to an edition of WP MCP that includes it.', [ 'admin_url' => admin_url('admin.php?page=wpmcp') ]);
+        return $unavailable->attach(new \WP_Error(
             'pro_required',
             sprintf(
                 '"%s" is a WP MCP Pro tool, and this site has no active WP MCP Pro license, so the tool is not available here. Activate a WP MCP Pro license on this site to use it.',
                 $name
             ) . Pro_Refusal::upgrade_sentence()
-        );
+        ));
     }
 
     /**
@@ -802,6 +803,29 @@ class Registrar
             if (Stdio_Transport::tool_name($name) === $tool_name) {
                 return $this->plugin_inactive($name, $arguments);
             }
+        }
+        return null;
+    }
+
+    /**
+     * The refusal for an advertised MCP tool name that this site declares
+     * but does not register for this connection (issue #628): a tool outside
+     * the edition this site runs, one governance switched off, or one held
+     * back because its plugin is not active. Null when nothing declares the
+     * name, or it is registered. The transports answer a direct call with
+     * it as a tool error, so only a name nothing declares is unknown. Grants
+     * nothing.
+     *
+     * @param array<mixed> $arguments the call's arguments, if any
+     */
+    public function hidden_for_tool(string $tool_name, array $arguments = []): ?\WP_Error
+    {
+        $arguments = array_filter($arguments, 'is_string', ARRAY_FILTER_USE_KEY);
+        foreach (array_keys($this->declared + $this->held_for_plugin) as $name) {
+            if (isset($this->abilities[ $name ]) || Stdio_Transport::tool_name($name) !== $tool_name) {
+                continue;
+            }
+            return $this->pro_required($name) ?? $this->governance_disabled($name) ?? $this->plugin_inactive($name, $arguments);
         }
         return null;
     }
@@ -993,7 +1017,9 @@ class Registrar
      * "callback threw an exception" prefix made a clear refusal read like a
      * crash. A PHP engine error (\Error, such as a TypeError) is a real
      * crash, so it keeps the prefix. An Opt_In_Required refusal gets the
-     * opt_in_required code; everything else keeps ability_callback_exception.
+     * opt_in_required code, with its filter in the data and the
+     * unavailability contract (issue #628); everything else keeps
+     * ability_callback_exception.
      */
     private static function exception_error(Ability $a, \Throwable $e): \WP_Error
     {
@@ -1011,10 +1037,11 @@ class Registrar
             );
         }
 
-        return new \WP_Error(
-            $e instanceof Opt_In_Required ? 'opt_in_required' : 'ability_callback_exception',
-            $message
-        );
+        if ($e instanceof Opt_In_Required) {
+            return $e->refusal($message);
+        }
+
+        return new \WP_Error('ability_callback_exception', $message);
     }
 
     /**

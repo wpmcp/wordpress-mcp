@@ -28,7 +28,10 @@ if (! defined('ABSPATH')) {
  *    does;
  *  - a request naming a revision nobody serves gets the -32022 error with
  *    the supported list, which is what 0.7.0 answers too;
- *  - every 2025-11-25 request passes through to the adapter untouched.
+ *  - a 2025-11-25 tools/call for a tool this site declares, on a session
+ *    the adapter accepts, is answered here by Http_Tool_Call (issue #628),
+ *    so a refusal keeps its code and data on this revision too;
+ *  - every other 2025-11-25 request passes through to the adapter untouched.
  *
  * It hooks rest_dispatch_request, which core applies after the route's
  * permission_callback has passed, so the adapter's transport permission
@@ -89,7 +92,10 @@ final class Modern_Http_Bridge
         $named     = $body ?? $header;
 
         if (! self::answers_here($method, $is_modern, $named, Protocol_Revision::adapter_speaks_modern())) {
-            return $result;
+            // A 2025-11-25 tools/call is answered here too, so a refusal
+            // keeps its code and data (issue #628); anything else, and a
+            // call Http_Tool_Call does not take, stays the adapter's.
+            return ( new Http_Tool_Call(new Adapter_Mcp_Session(), new Stdio_Transport()) )->answer($request, $message);
         }
 
         $id = $message['id'] ?? null;

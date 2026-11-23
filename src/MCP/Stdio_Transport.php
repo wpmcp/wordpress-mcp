@@ -64,7 +64,7 @@ if (! defined('ABSPATH')) {
  * the rate-limit budget. A mid-process revocation therefore still denies at
  * execute, which is the half that matters for safety.
  */
-class Stdio_Transport
+final class Stdio_Transport implements Tool_Call_Handler
 {
     private const JSONRPC = '2.0';
 
@@ -590,22 +590,17 @@ class Stdio_Transport
         $ability_name = self::ability_for_tool($tool_name);
 
         if (null === $ability_name) {
-            // A dispatcher pair held back because no plugin it covers is
-            // active (issue #876): a direct call is told which to activate.
-            if (class_exists('\\WPMCP\\Plugin')) {
-                $arguments = is_array($params['arguments'] ?? null) ? $params['arguments'] : [];
-                $inactive  = \WPMCP\Plugin::instance()->registrar()->plugin_inactive_for_tool($tool_name, $arguments);
-                if (null !== $inactive) {
-                    return self::result_response($id, Hidden_Tool_Refusal::result($inactive));
-                }
+            // A tool this site declares but does not register for this
+            // connection (a pair held back for its plugin, issue #876; one
+            // governance switched off, #772; one outside this edition, #631)
+            // answers with its refusal as a tool error, like any refusal
+            // (issue #628). Only a name nothing declares is unknown.
+            $hidden = self::hidden_refusal($tool_name, is_array($params['arguments'] ?? null) ? $params['arguments'] : []);
+            if (null !== $hidden) {
+                return self::result_response($id, Refusal_Result::for_error($hidden));
             }
 
-            // A declared Pro tool is not registered on an unlicensed install
-            // (Registrar::tier_permitted), so the client would otherwise be
-            // told it does not exist. Answer with call-tool's refusal, which
-            // names the plan and the upgrade (issue #631).
-            $refusal = self::pro_refusal($tool_name);
-            return self::error_response($id, -32602, $refusal ?? sprintf('Unknown tool: %s', $tool_name));
+            return self::error_response($id, -32602, sprintf('Unknown tool: %s', $tool_name));
         }
 
         // wp_has_ability() first: wp_get_ability() on an unknown name raises
@@ -752,11 +747,13 @@ class Stdio_Transport
             ];
         }
 
-        if (is_wp_error($outcome)) {
-            return [
-                'isError' => true,
-                'content' => [ [ 'type' => 'text', 'text' => $outcome->get_error_message() ] ],
-            ];
+        // A refusal (a WP_Error, or the error envelope a dispatcher pair or
+        // the WooCommerce catalog answers with) is a tool error that keeps
+        // its code and data (issue #628), built in the one place every
+        // transport uses.
+        $refusal = Refusal_Result::for_outcome($outcome);
+        if (null !== $refusal) {
+            return $refusal;
         }
 
         // Same wire normalization the HTTP route gets from Structured_Result
@@ -868,22 +865,29 @@ class Stdio_Transport
     }
 
     /**
-     * The pro_required refusal for a tool name that maps to a declared Pro
-     * ability this install did not register, or null.
+     * The refusal for a tool name this site declares but does not register
+     * for this connection, or null (Registrar::hidden_for_tool()).
+     *
+     * @param array<mixed> $arguments the call's arguments
      */
-    private static function pro_refusal(string $tool_name): ?string
+    private static function hidden_refusal(string $tool_name, array $arguments): ?\WP_Error
     {
         if ('' === $tool_name || ! class_exists('\\WPMCP\\Plugin')) {
             return null;
         }
-        $plugin = \WPMCP\Plugin::instance();
-        foreach ($plugin->declared_abilities() as $ability) {
-            if (self::tool_name($ability->name) === $tool_name) {
-                $error = $plugin->registrar()->pro_required($ability->name);
-                return null === $error ? null : $error->get_error_message();
-            }
-        }
-        return null;
+
+        return \WPMCP\Plugin::instance()->registrar()->hidden_for_tool($tool_name, $arguments);
+    }
+
+    /**
+     * Whether a tools/call for $tool_name is this server's to answer: a
+     * registered wpmcp tool, or one declared but not registered for this
+     * connection, which answers with its refusal. Http_Tool_Call asks, so a
+     * name nothing declares stays the adapter's "Tool not found".
+     */
+    public function knows_tool(string $tool_name): bool
+    {
+        return null !== self::ability_for_tool($tool_name) || null !== self::hidden_refusal($tool_name, []);
     }
 
     /**
