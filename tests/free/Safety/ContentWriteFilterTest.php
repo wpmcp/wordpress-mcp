@@ -23,7 +23,10 @@ use WPMCP\Tools\Update_Blocks;
  * text columns) re-saved the whole row through wp_update_post(), so for a
  * user without unfiltered_html kses rewrote the title and excerpt they never
  * touched. Each must leave the columns it does not change byte for byte, and
- * still filter the content it does write exactly as before.
+ * still filter the content it does write exactly as before. Since issue
+ * #1243 that filtering is reported: the write's response carries
+ * sanitized:true and what kses removed. Builder layouts and find-replace
+ * refuse content kses would rewrite instead.
  */
 class ContentWriteFilterTest extends \WP_UnitTestCase
 {
@@ -107,6 +110,14 @@ class ContentWriteFilterTest extends \WP_UnitTestCase
         $this->assert_post_save_filters_hooked();
     }
 
+    /** The write reports what kses removed from its content (issue #1243). @param array<string, mixed> $out */
+    private function assert_reports_kses(array $out): void
+    {
+        $this->assertTrue($out['sanitized'] ?? false, (string) wp_json_encode($out));
+        $this->assertContains('<script> element', $out['removed']);
+        $this->assertContains('<iframe> element', $out['removed']);
+    }
+
     private function authored_post(int $author, string $content = '', string $type = 'post'): int
     {
         $id = (int) self::factory()->post->create(['post_author' => $author, 'post_type' => $type, 'post_status' => 'publish']);
@@ -125,8 +136,9 @@ class ContentWriteFilterTest extends \WP_UnitTestCase
         $id     = $this->authored_post($author);
         $this->act_as($author);
 
-        (new Update_Blocks())->handle(['id' => $id, 'blocks' => self::raw_markup() . "\n<!-- wp:paragraph --><p>Updated</p><!-- /wp:paragraph -->"]);
+        $out = (new Update_Blocks())->handle(['id' => $id, 'blocks' => self::raw_markup() . "\n<!-- wp:paragraph --><p>Updated</p><!-- /wp:paragraph -->"]);
 
+        $this->assert_reports_kses($out);
         $this->assert_raw($id, ['post_title', 'post_excerpt']);
         $this->assertStringContainsString('Updated', get_post($id)->post_content);
         $this->assert_kses_stripped($id);
@@ -201,7 +213,9 @@ class ContentWriteFilterTest extends \WP_UnitTestCase
         $this->assert_raw($clean, ['post_title', 'post_excerpt']);
 
         $this->assertSame([$unsafe], array_column($out['failed'], 'post_id'));
-        $this->assertStringContainsString('filters altered', $out['failed'][0]['reason']);
+        // Refused before the snapshot (issue #1243), as the verify step
+        // rolled it back before.
+        $this->assertStringContainsString('unfiltered_html', $out['failed'][0]['reason']);
         $this->assert_raw($unsafe);
         $this->assert_content_filtered();
     }
@@ -219,6 +233,7 @@ class ContentWriteFilterTest extends \WP_UnitTestCase
         $out = (new Import_Content())->handle(['mirror' => true, 'post_id' => $id]);
 
         $this->assertNotEmpty($out['operation_id']);
+        $this->assert_reports_kses($out);
         $this->assert_raw($id, ['post_title', 'post_excerpt']);
         $this->assert_kses_stripped($id);
     }
@@ -313,7 +328,8 @@ class ContentWriteFilterTest extends \WP_UnitTestCase
         clean_post_cache($stage);
 
         $this->act_as($this->admin_without_unfiltered_html());
-        (new Duplicate_Post())->handle(['publish_stage' => $stage]);
+        $out = (new Duplicate_Post())->handle(['publish_stage' => $stage]);
+        $this->assert_reports_kses($out);
 
         $this->assert_raw($original, ['post_title', 'post_excerpt']);
         $this->assertStringContainsString('<p>staged</p>', get_post($original)->post_content);
