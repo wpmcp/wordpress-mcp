@@ -400,6 +400,10 @@ final class Core_Fonts_Pack
 
     private static function insert(array $fields): int
     {
+        // The settings are JSON in post_content: refuse any change the
+        // save's kses would make to them (#1243).
+        $settings = $fields['post_content'] ?? '';
+        Kses_Check::assert_exact(0, is_string($settings) ? $settings : '', 'font');
         $id = wp_insert_post(wp_slash($fields + [ 'post_status' => 'publish' ]), true);
         if (is_wp_error($id) || 0 === (int) $id) {
             throw new Operation_Refused('insert_failed', is_wp_error($id) ? $id->get_error_message() : 'WordPress could not save the font.');

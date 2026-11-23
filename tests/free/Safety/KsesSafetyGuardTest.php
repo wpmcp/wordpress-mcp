@@ -9,8 +9,8 @@ use WPMCP\Tests\Support\Edition_Tree;
  * without unfiltered_html has kses run over it, which can rewrite the live
  * page while the write reports success. Every source file that writes a
  * post row with a post_content column either runs WPMCP\Safety\Kses_Safety
- * before the write, or is listed below with the reason it needs no check
- * and the test that shows it.
+ * (or the packs' Kses_Check) before the write, or is listed below with
+ * the reason it needs no check and the test that shows it.
  *
  * A writer is a file with a wp_insert_post(), wp_update_post() or
  * Save_Filters::update_post() call that names 'post_content'. This half
@@ -29,21 +29,14 @@ class KsesSafetyGuardTest extends \WP_UnitTestCase
      */
     public const RECORDED = [
         'Tools/SiteEditor/Global_Styles.php'        => 'The styles are JSON, not markup: its verify step compares the stored document with the planned one and rolls back with an error when the save\'s filters removed a value (GlobalStylesTest).',
+        'Integrations/Event_Calendar_Writes.php'    => 'The shared insert and update helpers of the event packs; their callers (The_Events_Calendar_Writes, Modern_Events_Calendar_Writes) report what kses removes (PacksKsesTest).',
+        'Integrations/I18n_Page_Text.php'           => 'Writes the page text I18n_Pack::apply_page_text() planned; that op reports what kses removes (PacksKsesTest).',
         'Safety/Save_Filters.php'                   => 'The write helper itself; its callers run the check before they call it.',
-        'Integrations/Advanced_Ads_Pack.php'        => self::PENDING,
-        'Integrations/BetterDocs_Pack.php'          => self::PENDING,
-        'Integrations/CartFlows_Pack.php'           => self::PENDING,
-        'Integrations/Core_Fonts_Pack.php'          => self::PENDING,
-        'Integrations/Cpt_Builder_Pack.php'         => self::PENDING,
-        'Integrations/EDD_Pack.php'                 => self::PENDING,
-        'Integrations/Event_Calendar_Writes.php'    => self::PENDING,
-        'Integrations/Gamipress_Pack.php'           => self::PENDING,
-        'Integrations/I18n_Page_Text.php'           => self::PENDING,
+        'Integrations/CartFlows_Pack.php'           => 'Creates flow and step posts with an empty post_content; their settings are post meta (PacksKsesTest).',
         'Integrations/LMS_Adapter.php'              => self::PENDING,
         'Integrations/LMS_LearnPress.php'           => self::PENDING,
         'Integrations/LMS_MasterStudy.php'          => self::PENDING,
         'Integrations/LMS_Thrive_Apprentice.php'    => self::PENDING,
-        'Integrations/Listings_Pack.php'            => self::PENDING,
         'Integrations/Maps_Pack.php'                => self::PENDING,
         'Integrations/MemberPress_Pack.php'         => self::PENDING,
         'Integrations/Popup_Builder_Pack.php'       => self::PENDING,
@@ -81,7 +74,7 @@ class KsesSafetyGuardTest extends \WP_UnitTestCase
                 if (T_CONSTANT_ENCAPSED_STRING === $token[0] && in_array($token[1], ["'post_content'", '"post_content"'], true)) {
                     $content = true;
                 }
-                if (in_array($token[0], [T_STRING, T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED], true) && str_ends_with($name, 'Kses_Safety')) {
+                if (in_array($token[0], [T_STRING, T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED], true) && (str_ends_with($name, 'Kses_Safety') || str_ends_with($name, 'Kses_Check'))) {
                     $guarded = true;
                 }
                 if ('(' !== ($tokens[ $i + 1 ] ?? null) || ! in_array($token[0], [T_STRING, T_NAME_FULLY_QUALIFIED], true)) {

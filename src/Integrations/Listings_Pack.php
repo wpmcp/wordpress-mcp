@@ -685,6 +685,7 @@ final class Listings_Pack
 
     private static function create_listing(string $prefix, array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         $type = (string) ($args['post_type'] ?? self::default_type($prefix));
         $id   = wp_insert_post([
             'post_type'    => $type,
@@ -708,7 +709,8 @@ final class Listings_Pack
         self::set_terms($prefix, $id, $type, $args);
         self::set_fields($prefix, $id, (array) ($args['fields'] ?? []));
         self::after_write($prefix, $id);
-        return [ 'result' => [ 'listing' => self::listing($prefix, get_post($id), false, false) ], 'operation_ids' => [ $op ] ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'listing' => self::listing($prefix, get_post($id), false, false) ] + $sanitized, 'operation_ids' => [ $op ] ];
     }
 
     /** A new Directorist listing joins a directory type (the one asked for, else the site's default) and gets its expiry date, as Directorist's own importer does. */
@@ -731,6 +733,7 @@ final class Listings_Pack
     private static function update_listing(string $prefix, array $args): array
     {
         $id     = (int) $args['id'];
+        $sanitized = Kses_Check::report($id, $args['content'] ?? null);
         $fields = [ 'ID' => $id ];
         foreach ([ 'title' => 'post_title', 'content' => 'post_content', 'excerpt' => 'post_excerpt', 'status' => 'post_status' ] as $arg => $column) {
             if (array_key_exists($arg, $args)) {
@@ -746,7 +749,8 @@ final class Listings_Pack
         self::set_terms($prefix, $id, (string) get_post_type($id), $args);
         self::set_fields($prefix, $id, (array) ($args['fields'] ?? []));
         self::after_write($prefix, $id);
-        return [ 'listing' => self::listing($prefix, get_post($id), false, false) ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'listing' => self::listing($prefix, get_post($id), false, false) ] + $sanitized;
     }
 
     private static function after_write(string $prefix, int $id): void

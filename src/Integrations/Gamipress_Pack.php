@@ -567,6 +567,7 @@ final class Gamipress_Pack
     /** @return array<string, mixed> */
     private static function create(array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         $id = wp_insert_post([
             'post_type'    => (string) $args['type'],
             'post_title'   => wp_slash((string) $args['title']),
@@ -582,13 +583,15 @@ final class Gamipress_Pack
         self::save_meta($id, $args + [ 'points' => 0, 'earned_by' => 'admin', 'maximum_earnings' => 1, 'hidden' => false ]);
         clean_post_cache($id);
 
-        return [ 'result' => [ 'achievement' => self::view_achievement(get_post($id)) ], 'operation_ids' => [ $op ] ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'achievement' => self::view_achievement(get_post($id)) ] + $sanitized, 'operation_ids' => [ $op ] ];
     }
 
     /** @return array<string, mixed> */
     private static function update(array $args): array
     {
         $id     = (int) $args['id'];
+        $sanitized = Kses_Check::report($id, $args['content'] ?? null);
         $fields = [ 'ID' => $id ];
         if (array_key_exists('title', $args)) {
             $fields['post_title'] = wp_slash((string) $args['title']);
@@ -611,7 +614,8 @@ final class Gamipress_Pack
         self::save_meta($id, $args);
         clean_post_cache($id);
 
-        return [ 'achievement' => self::view_achievement(get_post($id)) ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'achievement' => self::view_achievement(get_post($id)) ] + $sanitized;
     }
 
     private static function require_fn(string $fn): void
