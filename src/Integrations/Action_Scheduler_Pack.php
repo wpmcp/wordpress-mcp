@@ -458,6 +458,7 @@ final class Action_Scheduler_Pack
     private static function run(int $id): array
     {
         $before = count((array) \ActionScheduler::logger()->get_logs($id));
+        // @phpstan-ignore class.notFound, method.nonObject (Action Scheduler is not in the analysis stubs, as on the line above.)
         \ActionScheduler::runner()->process_action($id, 'WPMCP');
         $status = (string) Action_Scheduler_Snapshot::status($id);
         $logs   = array_slice((array) \ActionScheduler::logger()->get_logs($id), $before);

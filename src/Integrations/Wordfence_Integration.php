@@ -526,6 +526,7 @@ final class Wordfence_Integration
     {
         $ip       = (string) $args['ip'];
         $duration = (int) ($args['duration'] ?? 0);
+        // @phpstan-ignore method.notFound, cast.string (Wordfence's API object is untyped; reason is the schema's optional string.)
         self::api()->block_ip($ip, sanitize_text_field((string) ($args['reason'] ?? 'Blocked via WPMCP')), $duration);
         return [
             'ip'       => $ip,

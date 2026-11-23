@@ -308,6 +308,7 @@ final class Management_Access
             \WP_CLI::error($result->get_error_message());
             return;
         }
+        // @phpstan-ignore class.notFound (WP-CLI is not in the analysis stubs; this runs only under WP-CLI, like the error() call above.)
         \WP_CLI::success('Every administrator can manage WPMCP again.');
     }
 

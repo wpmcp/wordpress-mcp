@@ -229,6 +229,10 @@ final class Hardening_Pack
         return array_keys(array_filter($active));
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return array{code: string, message: string, data: array<string, mixed>}
+     */
     private static function error(string $code, string $message, array $data = []): array
     {
         return [ 'code' => $code, 'message' => $message, 'data' => $data ];
