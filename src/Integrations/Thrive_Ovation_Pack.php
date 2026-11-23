@@ -451,6 +451,7 @@ final class Thrive_Ovation_Pack
 
     private static function create(array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, isset($args['content']) && is_scalar($args['content']) ? self::content((string) $args['content']) : null);
         $id = wp_insert_post([
             'post_type'    => self::POST_TYPE,
             'post_title'   => wp_slash(sanitize_text_field((string) ($args['title'] ?? ''))),
@@ -469,12 +470,14 @@ final class Thrive_Ovation_Pack
         update_post_meta($id, self::SOURCE_META, self::SOURCE_MANUAL);
         self::attach($id, (array) ($args['tags'] ?? []));
         clean_post_cache($id);
-        return [ 'result' => [ 'testimonial' => self::testimonial(get_post($id), false) ], 'operation_ids' => [ $op ] ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'testimonial' => self::testimonial(get_post($id), false) ] + $sanitized, 'operation_ids' => [ $op ] ];
     }
 
     private static function update(array $args): array
     {
         $id     = (int) $args['id'];
+        $sanitized = Kses_Check::report($id, isset($args['content']) && is_scalar($args['content']) ? self::content((string) $args['content']) : null);
         $fields = [ 'ID' => $id ];
         if (array_key_exists('title', $args)) {
             $fields['post_title'] = wp_slash(sanitize_text_field((string) $args['title']));
@@ -492,7 +495,8 @@ final class Thrive_Ovation_Pack
             update_post_meta($id, self::ATTRIBUTES, self::merge_attributes(self::attributes($id), $args));
         }
         clean_post_cache($id);
-        return [ 'testimonial' => self::testimonial(get_post($id), false) ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'testimonial' => self::testimonial(get_post($id), false) ] + $sanitized;
     }
 
     private static function set_status(array $args): array

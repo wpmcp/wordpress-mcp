@@ -437,6 +437,7 @@ final class Popup_Builder_Pack
     private static function update(array $args): array
     {
         $id     = (int) $args['id'];
+        $sanitized = Kses_Check::report($id, $args['content'] ?? null);
         $fields = [ 'ID' => $id ];
         if (array_key_exists('title', $args)) {
             $fields['post_title'] = wp_slash((string) $args['title']);
@@ -459,7 +460,8 @@ final class Popup_Builder_Pack
         }
         clean_post_cache($id);
 
-        return [ 'popup' => self::view(get_post($id), true) ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'popup' => self::view(get_post($id), true) ] + $sanitized;
     }
 
     /** @return array<string, mixed> */

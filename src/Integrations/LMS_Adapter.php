@@ -744,6 +744,7 @@ abstract class LMS_Adapter
     /** Create a $kind node under $parent (0 for a course). */
     protected function add(string $kind, int $parent, array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         $ordered  = 'course' !== $kind && ('quiz' !== $kind || 'section' === $this->parent_kind('quiz'));
         $siblings = $ordered ? $this->sibling_ids($kind, $parent) : [];
         $pos      = min((int) ($args['position'] ?? count($siblings)), count($siblings));
@@ -782,7 +783,8 @@ abstract class LMS_Adapter
             $ids = array_merge($ids, $this->update_course($course, $context, $args));
         }
 
-        return [ 'result' => [ 'item' => $this->node(get_post($created), $kind) ], 'operation_ids' => $ids ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'item' => $this->node(get_post($created), $kind) ] + $sanitized, 'operation_ids' => $ids ];
     }
 
     /** Edit one node's fields (the dispatcher snapshots it first). */
@@ -790,6 +792,7 @@ abstract class LMS_Adapter
     {
         $id     = (int) $args['id'];
         $kind   = (string) $this->kind_of($id);
+        $sanitized = Kses_Check::report($id, $args['content'] ?? null);
         $fields = [ 'ID' => $id ];
         foreach ([ 'title' => 'post_title', 'content' => 'post_content', 'excerpt' => 'post_excerpt', 'status' => 'post_status' ] as $arg => $column) {
             if (array_key_exists($arg, $args)) {
@@ -801,7 +804,8 @@ abstract class LMS_Adapter
             throw new Operation_Refused('update_failed', $out->get_error_message());
         }
         clean_post_cache($id);
-        return [ 'item' => $this->node(get_post($id), $kind) ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'item' => $this->node(get_post($id), $kind) ] + $sanitized;
     }
 
     /** Move a section or item as planned, snapshotting every post it changes. */

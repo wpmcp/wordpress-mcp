@@ -19,9 +19,6 @@ use WPMCP\Tests\Support\Edition_Tree;
  */
 class KsesSafetyGuardTest extends \WP_UnitTestCase
 {
-    /** Writers the issue #1243 sweep has not reached yet; the entries go as each batch lands. */
-    public const PENDING = 'Pending: the issue #1243 sweep adds the check in a later batch.';
-
     /**
      * Public file (relative to src/) => why it needs no Kses_Safety check.
      *
@@ -33,17 +30,7 @@ class KsesSafetyGuardTest extends \WP_UnitTestCase
         'Integrations/I18n_Page_Text.php'           => 'Writes the page text I18n_Pack::apply_page_text() planned; that op reports what kses removes (PacksKsesTest).',
         'Safety/Save_Filters.php'                   => 'The write helper itself; its callers run the check before they call it.',
         'Integrations/CartFlows_Pack.php'           => 'Creates flow and step posts with an empty post_content; their settings are post meta (PacksKsesTest).',
-        'Integrations/LMS_Adapter.php'              => self::PENDING,
-        'Integrations/LMS_LearnPress.php'           => self::PENDING,
-        'Integrations/LMS_MasterStudy.php'          => self::PENDING,
-        'Integrations/LMS_Thrive_Apprentice.php'    => self::PENDING,
-        'Integrations/Maps_Pack.php'                => self::PENDING,
-        'Integrations/MemberPress_Pack.php'         => self::PENDING,
-        'Integrations/Popup_Builder_Pack.php'       => self::PENDING,
-        'Integrations/Popup_Maker_Pack.php'         => self::PENDING,
-        'Integrations/Theme_Layouts_Pack.php'       => self::PENDING,
-        'Integrations/Thrive_Ovation_Pack.php'      => self::PENDING,
-        'Memory/Memory_Store.php'                   => self::PENDING,
+        'Memory/Memory_Store.php'                   => 'Agent memory entries are plain text: Memory_Entry::clean_text() strips every tag before the write, so kses has no markup left to remove (MorePacksKsesTest).',
         'Tools/ThemeBuilder/Template_Store.php'     => 'Runs wp_kses_post over template content for every user before the write, so the save has nothing left to change (BuilderAndSiteKsesTest).',
     ];
 

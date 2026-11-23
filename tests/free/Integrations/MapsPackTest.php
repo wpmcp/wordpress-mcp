@@ -497,4 +497,35 @@ class MapsPackTest extends \WP_UnitTestCase
         $this->assertSame([ 'Clinic South' ], array_column($this->read('wpmaps-list-locations', [ 'search' => 'South' ])['locations'], 'title'));
         $this->assertSame('map_not_found', $this->read('wpmaps-list-locations', [ 'map_id' => 999 ])['error']['code'] ?? null);
     }
+
+    /**
+     * A store's description is plain post content: for a user without
+     * unfiltered_html WordPress sanitizes it as the editor does, and the
+     * store's result says what kses removed (issue #1243).
+     */
+    public function test_save_stores_reports_what_kses_removed_from_a_description(): void
+    {
+        $id = $this->store();
+        add_filter('map_meta_cap', [ self::class, 'deny_unfiltered_html_1243' ], 10, 2);
+        wp_set_current_user(get_current_user_id());
+        kses_init();
+        $this->assertFalse(current_user_can('unfiltered_html'));
+
+        $out = $this->ok($this->write('wpsl-save-stores', [ 'stores' => [ [ 'id' => $id, 'description' => '<p>Open late</p><script>x()</script>' ] ] ]));
+
+        $row = $out['result']['results'][0];
+        $this->assertTrue($row['ok'], (string) wp_json_encode($row));
+        $this->assertTrue($row['sanitized'] ?? false, (string) wp_json_encode($row));
+        $this->assertContains('<script> element', $row['removed']);
+        $this->assertStringNotContainsString('<script', get_post($id)->post_content);
+    }
+
+    /**
+     * @param string[] $caps
+     * @return string[]
+     */
+    public static function deny_unfiltered_html_1243(array $caps, string $cap): array
+    {
+        return 'unfiltered_html' === $cap ? [ 'do_not_allow' ] : $caps;
+    }
 }

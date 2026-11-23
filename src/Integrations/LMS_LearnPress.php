@@ -615,6 +615,7 @@ final class LMS_LearnPress extends LMS_Adapter
 
     private function add_item(string $kind, array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         $section = (int) $args['parent_id'];
         $course  = (int) $this->section_row($section)['section_course_id'];
         $list    = $this->item_ids($section);
@@ -644,7 +645,8 @@ final class LMS_LearnPress extends LMS_Adapter
         });
         Plugin_Table_Rows_Snapshot::refresh_learnpress_courses([ $course ]);
 
-        return [ 'result' => [ 'item' => $this->node(get_post($created), $kind) ], 'operation_ids' => $ids ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'item' => $this->node(get_post($created), $kind) ] + $sanitized, 'operation_ids' => $ids ];
     }
 
     private function update_section(array $args): array

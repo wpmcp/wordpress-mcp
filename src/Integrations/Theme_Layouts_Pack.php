@@ -529,6 +529,7 @@ final class Theme_Layouts_Pack
     {
         $plan    = self::plan_create($a, $args);
         $content = $plan['content'] ?? null;
+        $sanitized = Kses_Check::report(0, is_array($content) && 'post_content' === ($content[0] ?? null) ? ($content[1] ?? null) : null);
         $id      = wp_insert_post(wp_slash([
             'post_type'    => $a->post_type(),
             'post_title'   => $plan['title'],
@@ -555,7 +556,8 @@ final class Theme_Layouts_Pack
             throw $e;
         }
 
-        return [ 'result' => [ 'layout' => self::view($a, get_post($id), true) ], 'operation_ids' => [ $operation_id ] ];
+        // @phpstan-ignore argument.type (get_post() of the post this call just wrote, as on the line before #1243.)
+        return [ 'result' => [ 'layout' => self::view($a, get_post($id), true) ] + $sanitized, 'operation_ids' => [ $operation_id ] ];
     }
 
     /** @return array<string,mixed> */
@@ -563,6 +565,8 @@ final class Theme_Layouts_Pack
     {
         $plan = self::plan_update($a, $args);
         $id   = $plan['id'];
+        $fields = is_array($plan['post'] ?? null) ? $plan['post'] : [];
+        $sanitized = Kses_Check::report(is_int($id) ? $id : 0, $fields['post_content'] ?? null);
         if ([] !== $plan['post']) {
             $done = Save_Filters::update_post(wp_slash([ 'ID' => $id ] + $plan['post']), true);
             if (is_wp_error($done)) {
@@ -575,7 +579,8 @@ final class Theme_Layouts_Pack
         if (isset($plan['content'])) {
             self::write_meta_content($id, $plan['content'][0], $plan['content'][1]);
         }
-        return [ 'layout' => self::view($a, get_post($id), true) ];
+        $layout = get_post(is_int($id) ? $id : 0);
+        return [ 'layout' => $layout instanceof \WP_Post ? self::view($a, $layout, true) : null ] + $sanitized;
     }
 
     /** @return array<string,mixed> */
