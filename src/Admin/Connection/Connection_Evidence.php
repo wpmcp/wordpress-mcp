@@ -10,9 +10,10 @@ if (! defined('ABSPATH')) {
 
 /**
  * Everything WordPress recorded that can show an app connected: the
- * password's last use and address (core), the MCP sessions of its user (the
- * MCP adapter), the first tool call after the password was made (the request
- * log) and, for an OAuth app, its grants.
+ * password's last use and address (core), the MCP requests the route
+ * answered for that password (Activity_Recorder), the first tool call after
+ * the password was made (the request log) and, for an OAuth app, its grants
+ * and the MCP sessions of the users who approved it (the MCP adapter).
  */
 final class Connection_Evidence
 {
@@ -26,6 +27,7 @@ final class Connection_Evidence
         public readonly array $sessions,
         public readonly ?Tool_Call $tool_call,
         public readonly array $grants,
+        public readonly ?Mcp_Activity $activity = null,
     ) {
     }
 }

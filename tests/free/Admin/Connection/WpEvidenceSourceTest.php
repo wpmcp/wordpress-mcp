@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace WPMCP\Tests\Free\Admin\Connection;
 
 use WPMCP\Admin\Connection\Client_App;
+use WPMCP\Admin\Connection\Mcp_Activity;
+use WPMCP\Admin\Connection\Mcp_Client;
+use WPMCP\Admin\Connection\Wp_Activity_Store;
 use WPMCP\Admin\Connection\Wp_Evidence_Source;
 use WPMCP\Auth\Client_Access;
 use WPMCP\Auth\Client_Metadata_Document;
@@ -14,7 +17,8 @@ use WPMCP\Auth\Token_Store;
 use WPMCP\MCP\Request_Log;
 
 /**
- * The WordPress side of "Check connection": what core, the MCP adapter, the
+ * The WordPress side of "Check connection": what core, WP MCP's record of
+ * the MCP requests answered per password (issue #1258), the MCP adapter, the
  * request log and the OAuth stores recorded, read without changing any of
  * it. On multisite the adapter keys sessions per site, so the reader does
  * too.
@@ -42,6 +46,20 @@ class WpEvidenceSourceTest extends \WP_UnitTestCase
         parent::tearDown();
     }
 
+    private function source(): Wp_Evidence_Source
+    {
+        return new Wp_Evidence_Source(new Wp_Activity_Store());
+    }
+
+    /** A ChatGPT OAuth client with a token issued to the test user, so for_oauth() reads that user's sessions. */
+    private function chatgpt_signed_in(int $issued_at = 300): void
+    {
+        $registered = Client_Store::create([ 'ChatGPT' ], [ 'https://chatgpt.com/connector_platform_oauth_redirect' ]);
+        update_option(Token_Store::OPTION, [
+            't1' => [ 'client_id' => (string) $registered['client_id'], 'user_id' => $this->user, 'scope' => Client_Access::SCOPE_FULL, 'issued_at' => $issued_at ],
+        ]);
+    }
+
     /** The meta key the MCP adapter stores sessions under on this install. */
     private function session_key(?int $blog_id = null): string
     {
@@ -51,7 +69,7 @@ class WpEvidenceSourceTest extends \WP_UnitTestCase
     public function test_it_reads_the_first_use_core_records_for_the_password(): void
     {
         [, $item] = \WP_Application_Passwords::create_new_application_password($this->user, [ 'name' => 'Claude Code' ]);
-        $source   = new Wp_Evidence_Source();
+        $source   = $this->source();
 
         $before = $source->for_password($this->user, $item['uuid'], (int) $item['created']);
         $this->assertNull($before->password_last_used);
@@ -68,10 +86,37 @@ class WpEvidenceSourceTest extends \WP_UnitTestCase
 
     public function test_an_unknown_password_has_no_use(): void
     {
-        $evidence = (new Wp_Evidence_Source())->for_password($this->user, 'no-such-uuid', 0);
+        $evidence = $this->source()->for_password($this->user, 'no-such-uuid', 0);
 
         $this->assertNull($evidence->password_last_used);
+        $this->assertNull($evidence->activity);
         $this->assertSame([], $evidence->grants);
+    }
+
+    public function test_it_reads_the_mcp_requests_answered_for_that_password_only(): void
+    {
+        [, $item]  = \WP_Application_Passwords::create_new_application_password($this->user, [ 'name' => 'Claude Code' ]);
+        [, $other] = \WP_Application_Passwords::create_new_application_password($this->user, [ 'name' => 'Cursor' ]);
+        (new Wp_Activity_Store())->save($this->user, (string) $other['uuid'], new Mcp_Activity(Mcp_Client::of('cursor', '1.7.2'), 100, 160));
+
+        $this->assertNull($this->source()->for_password($this->user, (string) $item['uuid'], 0)->activity, 'another password\'s requests are not this one\'s');
+
+        (new Wp_Activity_Store())->save($this->user, (string) $item['uuid'], new Mcp_Activity(Mcp_Client::of('claude-code', '2.1.330'), 200, 260));
+        $activity = $this->source()->for_password($this->user, (string) $item['uuid'], 0)->activity;
+
+        $this->assertNotNull($activity);
+        $this->assertSame('claude-code 2.1.330', $activity->client->label());
+        $this->assertSame(200, $activity->first_at);
+        $this->assertSame(260, $activity->last_at);
+    }
+
+    public function test_a_session_of_the_same_user_is_no_evidence_for_a_password(): void
+    {
+        update_user_meta($this->user, $this->session_key(), [
+            'a' => [ 'created_at' => 100, 'last_activity' => 160, 'client_params' => [ 'clientInfo' => [ 'name' => 'claude-code', 'version' => '2.1.4' ] ] ],
+        ]);
+
+        $this->assertSame([], $this->source()->for_password($this->user, 'x', 0)->sessions, 'it can come from another password');
     }
 
     public function test_it_reads_the_adapter_sessions_and_skips_malformed_rows(): void
@@ -83,7 +128,8 @@ class WpEvidenceSourceTest extends \WP_UnitTestCase
             'd' => [ 'created_at' => 'yesterday' ],
         ]);
 
-        $sessions = (new Wp_Evidence_Source())->for_password($this->user, 'x', 0)->sessions;
+        $this->chatgpt_signed_in();
+        $sessions = $this->source()->for_oauth(Client_App::Chatgpt)->sessions;
 
         $this->assertCount(2, $sessions);
         $by_time = [];
@@ -102,7 +148,8 @@ class WpEvidenceSourceTest extends \WP_UnitTestCase
             'a' => [ 'created_at' => 100, 'last_activity' => 100, 'client_params' => [ 'clientInfo' => [ 'name' => '<b>' . str_repeat('x', 300), 'version' => [ 'nested' ] ] ] ],
         ]);
 
-        $session = (new Wp_Evidence_Source())->for_password($this->user, 'x', 0)->sessions[0];
+        $this->chatgpt_signed_in();
+        $session = $this->source()->for_oauth(Client_App::Chatgpt)->sessions[0];
 
         $this->assertStringNotContainsString('<', $session->client_name);
         $this->assertLessThanOrEqual(64, strlen($session->client_name));
@@ -119,7 +166,8 @@ class WpEvidenceSourceTest extends \WP_UnitTestCase
             'a' => [ 'created_at' => 100, 'last_activity' => 100, 'client_params' => [] ],
         ]);
 
-        $this->assertSame([], (new Wp_Evidence_Source())->for_password($this->user, 'x', 0)->sessions);
+        $this->chatgpt_signed_in();
+        $this->assertSame([], $this->source()->for_oauth(Client_App::Chatgpt)->sessions);
     }
 
     public function test_it_finds_the_first_tool_call_of_the_user_after_the_password_was_made(): void
@@ -137,7 +185,7 @@ class WpEvidenceSourceTest extends \WP_UnitTestCase
         Request_Log::set_clock_for_tests(110);
         Request_Log::record([ 'tool' => 'wpmcp/someone-else', 'client' => 'user:' . $other, 'ok' => true ]);
 
-        $call = (new Wp_Evidence_Source())->for_password($this->user, 'x', 100)->tool_call;
+        $call = $this->source()->for_password($this->user, 'x', 100)->tool_call;
 
         $this->assertNotNull($call);
         $this->assertSame('wpmcp/get-connection-info', $call->tool);
@@ -158,7 +206,7 @@ class WpEvidenceSourceTest extends \WP_UnitTestCase
         Client_Access::set($client_id, $this->user, Client_Access::READ);
         Client_Metadata_Document::admit([ 'client_id' => 'https://claude.ai/oauth/mcp-client-metadata', 'client_name' => 'Claude', 'redirect_uris' => [ 'https://claude.ai/api/mcp/auth_callback' ] ]);
 
-        $chatgpt = (new Wp_Evidence_Source())->for_oauth(Client_App::Chatgpt)->grants;
+        $chatgpt = $this->source()->for_oauth(Client_App::Chatgpt)->grants;
 
         $this->assertCount(1, $chatgpt, 'one grant per client, the Claude client is not ChatGPT');
         $this->assertSame('ChatGPT', $chatgpt[0]->client_name);
@@ -168,7 +216,7 @@ class WpEvidenceSourceTest extends \WP_UnitTestCase
         $this->assertGreaterThan(0, $chatgpt[0]->approved_at);
         $this->assertGreaterThan(0, $chatgpt[0]->registered_at);
 
-        $claude = (new Wp_Evidence_Source())->for_oauth(Client_App::ClaudeDesktop)->grants;
+        $claude = $this->source()->for_oauth(Client_App::ClaudeDesktop)->grants;
         $this->assertCount(1, $claude);
         $this->assertSame('Claude', $claude[0]->client_name);
         $this->assertSame(0, $claude[0]->token_issued_at, 'registered but not signed in yet');
@@ -184,7 +232,7 @@ class WpEvidenceSourceTest extends \WP_UnitTestCase
             'a' => [ 'created_at' => 310, 'last_activity' => 320, 'client_params' => [ 'clientInfo' => [ 'name' => 'openai-mcp', 'version' => '1.0.0' ] ] ],
         ]);
 
-        $evidence = (new Wp_Evidence_Source())->for_oauth(Client_App::Chatgpt);
+        $evidence = $this->source()->for_oauth(Client_App::Chatgpt);
 
         $this->assertSame(300, $evidence->grants[0]->token_issued_at);
         $this->assertCount(1, $evidence->sessions);

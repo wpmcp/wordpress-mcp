@@ -1227,7 +1227,7 @@
 	height: 16px;
 	font-size: 16px;
 }
-.wpmcp-table .is-gone .wpmcp-help {
+.wpmcp-table .wpmcp-help {
 	display: block;
 }
 .wpmcp-connection .button.delete {
