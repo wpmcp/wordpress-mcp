@@ -198,6 +198,36 @@ final class Kses_Safety
         );
     }
 
+    /**
+     * The refusal for a meta value that would store PHP serialized data (an
+     * array or object in PHP's storage format) the stored value did not
+     * already hold in the same shape, or null. WordPress unserializes such a
+     * string when the value is read, so it is rebuilt as whatever it
+     * describes; arrays sent as arrays go through update_post_meta(), which
+     * serializes them itself, and are not judged here.
+     *
+     * @param mixed $before The stored value: raw, or as get_post_meta() returns it.
+     * @param mixed $after  The value about to be written.
+     */
+    public function serialized_refusal(mixed $before, mixed $after, string $subject): ?\WP_Error
+    {
+        if (current_user_can('unfiltered_html')) {
+            return null;
+        }
+        $known = array_fill_keys(array_map([Serialized_Values::class, 'shape'], Serialized_Values::in($before)), true);
+        foreach (Serialized_Values::in($after) as $serialized) {
+            if (! isset($known[ Serialized_Values::shape($serialized) ])) {
+                return new \WP_Error(
+                    self::CODE,
+                    "This {$subject} would store PHP serialized data (an array or object in PHP's storage format) that only users with the unfiltered_html capability (on a network, super admins) may write as raw meta, so nothing was written. Send an array as an array, or ask a user with unfiltered_html to make this change.",
+                    ['status' => 403]
+                );
+            }
+        }
+
+        return null;
+    }
+
     /** The refusal for new code (see Code_Fields), with the same code and status. */
     public function code_refusal(string $subject): \WP_Error
     {

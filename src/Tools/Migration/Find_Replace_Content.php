@@ -4,6 +4,7 @@ namespace WPMCP\Tools\Migration;
 
 use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Mutation_Failed;
+use WPMCP\Safety\Post_Write_Refused;
 use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Save_Filters;
 use WPMCP\Safety\Session_Id;
@@ -461,6 +462,13 @@ class Find_Replace_Content
             if (null !== $plan['skip']) {
                 $skipped[] = $this->skip($post_id, $label, $plan['skip']);
                 continue;
+            }
+            // The row is written raw, and a value that is serialized data is
+            // unserialized when it is read.
+            $refusal = $this->kses->serialized_refusal($m['value'], $plan['to'], 'replacement');
+            if (null !== $refusal) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Post_Write_Refused escapes the message it is given.
+                throw new Post_Write_Refused($refusal);
             }
             $writes['meta'][ $m['id'] ] = ['from' => $m['value'], 'to' => $plan['to']];
         }
