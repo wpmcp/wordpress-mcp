@@ -60,8 +60,9 @@ class Bricks_Content
 
     /**
      * The refusal for a layout holding a new value wp_kses_post would change,
-     * or null. Bricks' own save filters the values of a user without
-     * unfiltered_html, and post meta skips kses, so the check runs here.
+     * or new code (see Bricks_Code_Fields), or null. Bricks' own save filters
+     * the values of a user without unfiltered_html, and post meta skips
+     * kses, so the check runs here.
      * Values the page already holds, or $known holds (the stored source a
      * copy or a restore takes them from), were stored by someone allowed to.
      *
@@ -70,7 +71,7 @@ class Bricks_Content
      */
     public static function kses_refusal(int $post_id, array $elements, mixed $known = null): ?\WP_Error
     {
-        return (new Kses_Safety())->values_refusal([self::get($post_id), $known], $elements, self::KSES_SUBJECT);
+        return (new Kses_Safety())->values_refusal([self::get($post_id), $known], $elements, self::KSES_SUBJECT, new Bricks_Code_Fields());
     }
 
     /**

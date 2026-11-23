@@ -3,6 +3,7 @@
 namespace WPMCP\Tools\Meta;
 
 use WPMCP\Safety\Safe_Mutation;
+use WPMCP\Tools\Builders\Builder_Meta_Keys;
 use WPMCP\Tools\Content\Code_Posts;
 use WPMCP\Tools\Content\Content_Guard;
 
@@ -24,6 +25,10 @@ if (! defined('ABSPATH')) {
  */
 class Set_Post_Meta
 {
+    public function __construct(private readonly Builder_Meta_Keys $builder_keys = new Builder_Meta_Keys())
+    {
+    }
+
     public function handle(array $args): array
     {
         $post_id = (int) ($args['post_id'] ?? 0);
@@ -44,6 +49,7 @@ class Set_Post_Meta
             throw new \InvalidArgumentException($guard);
         }
         Code_Posts::assert_meta_writable((string) $post->post_type, [$key], $post_id);
+        $this->builder_keys->assert_writable([$key], $post_id);
 
         $out = Safe_Mutation::run(
             [

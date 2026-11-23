@@ -22,7 +22,9 @@ if (! defined('ABSPATH')) {
  *   (content_refusal(), values_refusal());
  * - plain classic and block content is sanitized as WordPress's editor
  *   sanitizes it (the #440 decision), and the write reports that it was and
- *   what was removed (sanitization()).
+ *   what was removed (sanitization());
+ * - code a builder runs or prints as is, which kses leaves alone (see
+ *   Code_Fields), may only be kept as stored (values_refusal()).
  *
  * Stateless: every answer depends on the arguments, the current user and
  * the save filters registered at the time of the call, so one instance can
@@ -121,16 +123,29 @@ final class Kses_Safety
      * already in $before were stored by someone allowed to, so they are not
      * judged again. Null when every new string survives as is.
      *
+     * With the builder's $code fields, code kses cannot judge is refused
+     * unless $before holds it in the same kind of place (code_refusal()),
+     * and the attributes the builder assembles are judged as markup too.
+     *
      * @param mixed $before The stored value, decoded (open data: JSON trees and arrays of any shape).
      * @param mixed $after  The value about to be stored, decoded.
      */
-    public function values_refusal(mixed $before, mixed $after, string $subject): ?\WP_Error
+    public function values_refusal(mixed $before, mixed $after, string $subject, ?Code_Fields $code = null): ?\WP_Error
     {
         if (current_user_can('unfiltered_html')) {
             return null;
         }
-        $known = array_fill_keys(self::strings($before), true);
-        foreach (self::strings($after) as $value) {
+        if (null !== $code) {
+            $stored = array_fill_keys($code->code($before), true);
+            foreach ($code->code($after) as $value) {
+                if (! isset($stored[ $value ])) {
+                    return $this->code_refusal($subject);
+                }
+            }
+        }
+        $markup = null === $code ? [[], []] : [$code->markup($before), $code->markup($after)];
+        $known  = array_fill_keys([...Decoded_Tree::strings($before), ...$markup[0]], true);
+        foreach ([...Decoded_Tree::strings($after), ...$markup[1]] as $value) {
             if (! isset($known[ $value ]) && ! Markup_Equivalence::same($value, wp_kses_post($value))) {
                 return $this->refusal($subject);
             }
@@ -144,11 +159,11 @@ final class Kses_Safety
      *
      * @param mixed $before The stored value, decoded.
      * @param mixed $after  The value about to be stored, decoded.
-     * @throws Post_Write_Refused When a new string would not survive wp_kses_post.
+     * @throws Post_Write_Refused When a new string would not survive wp_kses_post, or new code would be stored.
      */
-    public function assert_values(mixed $before, mixed $after, string $subject): void
+    public function assert_values(mixed $before, mixed $after, string $subject, ?Code_Fields $code = null): void
     {
-        $refusal = $this->values_refusal($before, $after, $subject);
+        $refusal = $this->values_refusal($before, $after, $subject, $code);
         if (null !== $refusal) {
             // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Post_Write_Refused escapes the message it is given.
             throw new Post_Write_Refused($refusal);
@@ -183,27 +198,13 @@ final class Kses_Safety
         );
     }
 
-    /**
-     * Every string in a decoded value, objects and arrays walked.
-     *
-     * @return list<string>
-     */
-    private static function strings(mixed $value): array
+    /** The refusal for new code (see Code_Fields), with the same code and status. */
+    public function code_refusal(string $subject): \WP_Error
     {
-        if (is_string($value)) {
-            return [$value];
-        }
-        if (is_object($value)) {
-            $value = get_object_vars($value);
-        }
-        if (! is_array($value)) {
-            return [];
-        }
-        $out = [];
-        foreach ($value as $item) {
-            array_push($out, ...self::strings($item));
-        }
-
-        return $out;
+        return new \WP_Error(
+            self::CODE,
+            "This {$subject} holds new code, such as a script, PHP or a code element, that only users with the unfiltered_html capability (on a network, super admins) may add or change, so nothing was written. Ask a user with unfiltered_html to make this change.",
+            ['status' => 403]
+        );
     }
 }

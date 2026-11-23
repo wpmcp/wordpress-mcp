@@ -5,6 +5,7 @@ namespace WPMCP\Tools\Content;
 use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Save_Filters;
+use WPMCP\Tools\Builders\Builder_Meta_Keys;
 use WPMCP\Tools\Redirects\Redirect_Store;
 use WPMCP\Tools\Redirects\Redirect_Suggestions;
 
@@ -16,8 +17,10 @@ class Update_Post
 {
     private const VALID_STATUSES = ['draft', 'publish', 'pending', 'private', 'future'];
 
-    public function __construct(private readonly Kses_Safety $kses = new Kses_Safety())
-    {
+    public function __construct(
+        private readonly Kses_Safety $kses = new Kses_Safety(),
+        private readonly Builder_Meta_Keys $builder_keys = new Builder_Meta_Keys()
+    ) {
     }
 
     /**
@@ -84,6 +87,7 @@ class Update_Post
         }
         if (isset($args['meta']) && is_array($args['meta'])) {
             Code_Posts::assert_meta_writable((string) $post->post_type, array_map('strval', array_keys($args['meta'])), $post_id);
+            $this->builder_keys->assert_writable(array_map('strval', array_keys($args['meta'])), $post_id);
         }
         if (array_key_exists('content', $args)) {
             // Refused before the snapshot, so nothing is left to undo (#893).
