@@ -28,7 +28,7 @@ WPMCP_UPDATE_URI='https://wpmcp-pro.com/'
 # The versioned asset is <prefix>-<version>.zip.
 release_asset_table() {
 	cat <<'TABLE'
-wpmcp|wpmcp/wpmcp.php|self-hosted|wpmcp.zip|the WP MCP plugin. Free to use; upload it under Plugins > Add New > Upload Plugin. Pro unlocks in the same plugin when you add a licence.
+wpmcp|wpmcp/wpmcp.php|self-hosted|wpmcp.zip|the free WP MCP plugin; upload it under Plugins > Add New > Upload Plugin. GitHub releases carry the free plugin only: WP MCP Pro is a separate download from the Freemius checkout (https://wpmcp-pro.com/pricing), and stays in your Freemius account.
 safe-mcp-for-woocommerce|safe-mcp-for-woocommerce/safe-mcp-for-woocommerce.php|wporg|safe-mcp-for-woocommerce.zip|Safe MCP for WooCommerce, store tools and the safety core only.
 wpmcp-directory|wpmcp/wpmcp.php|wporg|-|the wordpress.org directory edition, without the licensing SDK or Pro features.
 TABLE

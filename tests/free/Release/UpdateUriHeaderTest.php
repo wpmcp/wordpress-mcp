@@ -56,6 +56,11 @@ class UpdateUriHeaderTest extends TestCase
         $this->assertNotEmpty($rows);
         $first = explode('|', reset($rows));
         $this->assertSame([ 'wpmcp', 'wpmcp/wpmcp.php', 'self-hosted', 'wpmcp.zip' ], array_slice($first, 0, 4), 'the headline asset is the self-hosted wpmcp.zip');
+        // Since 2.0 the Pro code ships only in the premium zip from the
+        // licensing checkout, so the headline download is the free plugin and
+        // its release-notes line must not promise Pro inside it.
+        $this->assertDoesNotMatchRegularExpression('/unlocks in (the same plugin|place)/i', $first[4], 'the free zip does not carry Pro');
+        $this->assertStringContainsString('free plugin only', $first[4]);
         $stable = [];
         foreach ($rows as $row) {
             $cols = explode('|', $row);
