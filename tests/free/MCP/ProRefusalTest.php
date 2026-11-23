@@ -72,8 +72,15 @@ class ProRefusalTest extends \WP_UnitTestCase
                 'params'  => [ 'name' => 'wpmcp-test-pro-only', 'arguments' => [] ],
             ]);
 
-            $this->assertSame(-32602, $response['error']['code']);
-            $this->assertSame($registrar->pro_required('wpmcp/test-pro-only')->get_error_message(), $response['error']['message']);
+            // A tool error carrying the refusal, not a protocol error (issue #628).
+            $this->assertArrayNotHasKey('error', $response);
+            $this->assertTrue($response['result']['isError']);
+            $message = $registrar->pro_required('wpmcp/test-pro-only')->get_error_message();
+            $this->assertStringStartsWith('Unavailable (pro_required): ' . $message, $response['result']['content'][0]['text']);
+            $envelope = $response['result']['_meta'][ \WPMCP\MCP\Refusal_Result::META_KEY ];
+            $this->assertSame('pro_required', $envelope['code']);
+            $this->assertSame('account_owner', $envelope['action']['who']);
+            $this->assertTrue($envelope['hidden']);
 
             $unknown = (new Stdio_Transport())->handle_request([
                 'jsonrpc' => '2.0',
