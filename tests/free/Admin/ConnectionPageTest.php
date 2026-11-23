@@ -163,6 +163,34 @@ class ConnectionPageTest extends \WP_UnitTestCase
         $this->assertSame([], get_option(Connection_Page::OPTION));
     }
 
+    /**
+     * A password deleted elsewhere (the user's profile screen, another
+     * plugin, the user deleted) leaves its ledger entry behind. Revoking it
+     * then succeeds and clears the entry instead of failing for good.
+     */
+    public function test_revoke_succeeds_and_clears_the_entry_when_the_password_is_already_gone(): void
+    {
+        $page = new Connection_Page();
+        $made = $page->handle_request(
+            $this->post('provision', ['user_id' => $this->admin_id, 'name' => 'Deleted elsewhere'])
+        );
+        \WP_Application_Passwords::delete_application_password($this->admin_id, $made['uuid']);
+
+        $result = $page->handle_request(
+            $this->post('revoke', ['user_id' => $this->admin_id, 'uuid' => $made['uuid']])
+        );
+
+        $this->assertArrayNotHasKey('error', $result);
+        $this->assertSame('revoke', $result['action']);
+        $this->assertTrue($result['already_gone']);
+        $this->assertSame([], get_option(Connection_Page::OPTION));
+
+        // Revoking a live password still says it disconnected the client.
+        $live = $page->handle_request($this->post('provision', ['user_id' => $this->admin_id, 'name' => 'Live']));
+        $done = $page->handle_request($this->post('revoke', ['user_id' => $this->admin_id, 'uuid' => $live['uuid']]));
+        $this->assertFalse($done['already_gone']);
+    }
+
     public function test_toggle_flips_the_master_exposure_switch(): void
     {
         $page = new Connection_Page();

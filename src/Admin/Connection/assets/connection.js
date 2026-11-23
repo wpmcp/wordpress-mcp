@@ -116,6 +116,14 @@
 		select(link.getAttribute('href').slice('#wpmcp-tab-'.length), true);
 	});
 
+	// Back, forward and links to a tab on the same page change only the hash.
+	window.addEventListener('hashchange', function () {
+		var hash = window.location.hash;
+		if (0 === hash.indexOf('#wpmcp-tab-')) {
+			show(hash.slice('#wpmcp-tab-'.length));
+		}
+	});
+
 	(function openFromHash() {
 		var hash = window.location.hash;
 		if (0 === hash.indexOf('#wpmcp-tab-')) {
@@ -123,12 +131,25 @@
 			return;
 		}
 		show('connect');
-		if (0 === hash.indexOf('#wpmcp-step-')) {
+		if (0 !== hash.indexOf('#wpmcp-step-')) {
+			return;
+		}
+		// The browser scrolls to the fragment after the page loads, which
+		// moves focus back to the body, so the step's heading takes focus
+		// once that is done.
+		var focusStep = function () {
 			var heading = document.getElementById(hash.slice(1) + '-title');
 			if (heading) {
 				heading.focus({ preventScroll: true });
 				heading.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' });
 			}
+		};
+		if ('complete' === document.readyState) {
+			window.setTimeout(focusStep, 0);
+		} else {
+			window.addEventListener('load', function () {
+				window.setTimeout(focusStep, 0);
+			});
 		}
 	}());
 

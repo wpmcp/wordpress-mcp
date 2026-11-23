@@ -69,8 +69,11 @@ class Connection_Page
     public const NONCE_ACTION = 'wpmcp_connection';
     public const OPTION       = 'wpmcp_connection_passwords';
 
-    /** The last self-test result shown on the status card (issue #1127): { ok, message, at }. */
+    /** The last self-test result, shown under Settings, Advanced (issue #1127): { ok, message, at }. */
     public const SELF_TEST_OPTION = 'wpmcp_connection_last_self_test';
+
+    /** Prefix of the hour-long transient that remembers a create form's request id. */
+    private const REQUEST_PREFIX = 'wpmcp_conn_req_';
 
     /**
      * Dispatch a posted screen action. Returns null when no action was
@@ -298,9 +301,11 @@ class Connection_Page
         $uuid    = sanitize_text_field(self::str($post['uuid'] ?? ''));
 
         $deleted = \WP_Application_Passwords::delete_application_password($user_id, $uuid);
-        // Deleted elsewhere (the user's profile screen): nothing to revoke,
-        // so the record just leaves the list.
-        if (is_wp_error($deleted) && 'application_password_not_found' !== $deleted->get_error_code()) {
+        // Deleted elsewhere (the user's profile screen, another plugin, the
+        // user deleted): nothing is left to revoke, so the record just
+        // leaves the list and the revoke still succeeds.
+        $already_gone = is_wp_error($deleted) && 'application_password_not_found' === $deleted->get_error_code();
+        if (is_wp_error($deleted) && ! $already_gone) {
             return ['error' => $deleted->get_error_message()];
         }
 
@@ -310,7 +315,7 @@ class Connection_Page
         ));
         update_option(self::OPTION, $records, false);
 
-        return ['action' => 'revoke', 'uuid' => $uuid];
+        return ['action' => 'revoke', 'uuid' => $uuid, 'already_gone' => $already_gone];
     }
 
     /**
@@ -342,7 +347,7 @@ class Connection_Page
     {
         $request_id = sanitize_key($request_id);
 
-        return '' === $request_id ? '' : 'wpmcp_conn_req_' . md5($user_id . '|' . $request_id);
+        return '' === $request_id ? '' : self::REQUEST_PREFIX . md5($user_id . '|' . $request_id);
     }
 
     /** A connection's default name: the app and today's date, such as "Claude Code (November 23, 2026)". */
@@ -630,7 +635,7 @@ class Connection_Page
         $exposed  = Exposure::is_enabled();
         $labels   = new App_Labels();
         $icons    = new App_Icons();
-        $count    = count($this->records()) + count(Client_Access::connections());
+        $count    = count(array_filter($this->records(), static fn (array $record): bool => null !== \WP_Application_Passwords::get_user_application_password($record['user_id'], $record['uuid']))) + count(Client_Access::connections());
         $badge    = $count > 0 ? sprintf(' <span class="wpmcp-count">%d</span>', $count) : '';
         ?>
         <div class="wrap wpmcp-connection">
@@ -706,7 +711,9 @@ class Connection_Page
         if (is_array($result) && is_string($result['error'] ?? null)) {
             printf('<div class="notice notice-error"><p>%s</p></div>', esc_html($result['error']));
         } elseif ('revoke' === $action) {
-            printf('<div class="notice notice-success"><p>%s</p></div>', esc_html__('Application password revoked. The client it was issued to is disconnected.', 'wpmcp'));
+            printf('<div class="notice notice-success"><p>%s</p></div>', esc_html(true === ($result['already_gone'] ?? null)
+                ? __('Removed from the list. Its application password had already been deleted in WordPress, so nothing could sign in with it.', 'wpmcp')
+                : __('Application password revoked. The client it was issued to is disconnected.', 'wpmcp')));
         } elseif ('oauth_enabled' === $action) {
             printf('<div class="notice notice-success"><p>%s</p></div>', esc_html(true === ($result['enabled'] ?? null)
                 ? __('OAuth sign-in is on. ChatGPT and the Claude custom connector can now sign in.', 'wpmcp')
@@ -807,12 +814,13 @@ class Connection_Page
         $user_id   = $record['user_id'];
         $user      = get_userdata($user_id);
         $item      = \WP_Application_Passwords::get_user_application_password($user_id, $record['uuid']);
+        $gone      = null === $item;
         $last_used = null === $item ? 0 : (int) $item['last_used'];
         $app       = Client_App::from_request($record['client'] ?? '');
         $date      = self::str(get_option('date_format'));
         $app_name  = null === $app ? '' : '<span>' . esc_html($labels->label($app)) . '</span>';
         ?>
-        <tr>
+        <tr data-uuid="<?php echo esc_attr($record['uuid']); ?>"<?php echo $gone ? ' class="is-gone"' : ''; ?>>
             <td>
                 <div class="wpmcp-who">
                     <?php echo wp_kses($icons->tile($app ?? Client_App::Other), $icons->allowed_html()); ?>
@@ -821,18 +829,35 @@ class Connection_Page
             </td>
             <td><?php echo esc_html($user instanceof \WP_User ? $user->user_login : '#' . $user_id); ?></td>
             <td><?php echo esc_html((string) wp_date($date, $record['created'])); ?></td>
-            <td><?php echo esc_html($last_used > 0 ? (string) wp_date($date, $last_used) : __('Not used yet', 'wpmcp')); ?></td>
+            <td>
+                <?php if ($gone) : ?>
+                    <span class="wpmcp-status is-gone"><span class="dashicons dashicons-warning" aria-hidden="true"></span><?php echo esc_html__('Removed outside WP MCP', 'wpmcp'); ?></span>
+                    <span class="wpmcp-help"><?php echo esc_html__('Its application password was deleted in WordPress, so nothing can sign in with it.', 'wpmcp'); ?></span>
+                <?php else : ?>
+                    <?php echo esc_html($last_used > 0 ? (string) wp_date($date, $last_used) : __('Not used yet', 'wpmcp')); ?>
+                <?php endif; ?>
+            </td>
             <td class="wpmcp-actions-cell">
                 <form method="post" action="#wpmcp-tab-connections">
                     <input type="hidden" name="wpmcp_connection_action" value="revoke">
                     <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
                     <input type="hidden" name="user_id" value="<?php echo esc_attr((string) $user_id); ?>">
                     <input type="hidden" name="uuid" value="<?php echo esc_attr($record['uuid']); ?>">
-                    <?php submit_button(__('Revoke', 'wpmcp'), 'delete', 'submit', false, [ 'aria-label' => sprintf(
-                        /* translators: %s: connection name */
-                        __('Revoke %s', 'wpmcp'),
-                        $record['name']
-                    ) ]); ?>
+                    <?php
+                    if ($gone) {
+                        submit_button(__('Remove from list', 'wpmcp'), 'secondary', 'submit', false, [ 'aria-label' => sprintf(
+                            /* translators: %s: connection name */
+                            __('Remove %s from the list', 'wpmcp'),
+                            $record['name']
+                        ) ]);
+                    } else {
+                        submit_button(__('Revoke', 'wpmcp'), 'delete', 'submit', false, [ 'aria-label' => sprintf(
+                            /* translators: %s: connection name */
+                            __('Revoke %s', 'wpmcp'),
+                            $record['name']
+                        ) ]);
+                    }
+                    ?>
                 </form>
             </td>
         </tr>
@@ -1002,7 +1027,7 @@ class Connection_Page
         $forced   = Data_Registry::is_forced();
         $editable = ! $forced && (! is_multisite() || current_user_can('manage_network_options'));
         ?>
-        <h2><?php echo esc_html__('When WP MCP is deleted', 'wpmcp'); ?></h2>
+        <h2><?php echo esc_html__('Delete all WP MCP data when the plugin is deleted', 'wpmcp'); ?></h2>
         <p>
             <?php if ($delete) : ?>
                 <strong><?php echo esc_html__('On.', 'wpmcp'); ?></strong>
@@ -1210,7 +1235,7 @@ class Connection_Page
         if (! OAuth_Config::is_enabled()) {
             ?>
             <h2><?php echo esc_html__('OAuth clients', 'wpmcp'); ?></h2>
-            <p><?php echo esc_html__('OAuth is off, so no client signs in with OAuth. Turn it on on the Settings tab.', 'wpmcp'); ?></p>
+            <p><?php echo esc_html__('OAuth is off, so no client signs in with OAuth. The switch is on the Settings tab.', 'wpmcp'); ?></p>
             <?php
             return;
         }

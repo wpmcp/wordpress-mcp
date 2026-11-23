@@ -1178,6 +1178,9 @@
 .wpmcp-table {
 	margin-top: 14px;
 }
+.wpmcp-table th {
+	white-space: nowrap;
+}
 .wpmcp-table td {
 	vertical-align: middle;
 }
@@ -1211,6 +1214,21 @@
 .wpmcp-actions-cell {
 	text-align: right;
 	white-space: nowrap;
+}
+.wpmcp-status.is-gone {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	color: var(--wpmcp-warn);
+	font-weight: 600;
+}
+.wpmcp-status.is-gone .dashicons {
+	width: 16px;
+	height: 16px;
+	font-size: 16px;
+}
+.wpmcp-table .is-gone .wpmcp-help {
+	display: block;
 }
 .wpmcp-connection .button.delete {
 	border-color: #b32d2e;

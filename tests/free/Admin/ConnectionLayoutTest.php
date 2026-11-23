@@ -276,7 +276,7 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
     public function test_the_connections_panel_lists_passwords_oauth_clients_and_identities(): void
     {
         add_filter('wpmcp_oauth_enabled', '__return_true');
-        update_option(Connection_Page::OPTION, [ [ 'uuid' => 'u-1', 'user_id' => $this->admin, 'name' => 'Claude Code (today)', 'created' => time(), 'client' => 'claude-code' ] ]);
+        $this->issued('Claude Code (today)');
         $client_id = 'https://claude.ai/oauth/mcp-client-metadata';
         Client_Metadata_Document::admit([ 'client_id' => $client_id, 'client_name' => 'Claude', 'redirect_uris' => [ 'https://claude.ai/api/mcp/auth_callback' ] ]);
         update_option(Refresh_Token_Store::OPTION, [ 'h1' => [ 'client_id' => $client_id, 'user_id' => $this->admin, 'scope' => 'mcp' ] ]);
@@ -291,6 +291,40 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
         $this->assertStringContainsString('value="oauth_client_forget"', $connections);
         $this->assertStringContainsString('value="oauth_client_approval"', $connections);
         $this->assertStringNotContainsString('wpmcp_trusted_proxies', $connections, 'proxy internals are under Advanced only');
+    }
+
+    /** A ledger record for a real application password of the admin. */
+    private function issued(string $name, string $client = 'claude-code'): string
+    {
+        [ , $item ] = \WP_Application_Passwords::create_new_application_password($this->admin, [ 'name' => $name ]);
+        $records    = get_option(Connection_Page::OPTION, []);
+        $records[]  = [ 'uuid' => (string) $item['uuid'], 'user_id' => $this->admin, 'name' => $name, 'created' => time(), 'client' => $client ];
+        update_option(Connection_Page::OPTION, $records);
+
+        return (string) $item['uuid'];
+    }
+
+    public function test_an_entry_whose_password_was_deleted_elsewhere_says_so_and_can_be_removed(): void
+    {
+        $this->issued('Still here');
+        $gone = $this->issued('Deleted on the profile screen', 'cursor');
+        \WP_Application_Passwords::delete_application_password($this->admin, $gone);
+
+        $html        = $this->render();
+        $connections = $this->panel($html, 'connections');
+
+        $this->assertSame(1, preg_match('#<tr[^>]*data-uuid="' . preg_quote($gone, '#') . '"[^>]*>(.*?)</tr>#s', $connections, $row));
+        $this->assertStringContainsString('Removed outside WP MCP', $row[1]);
+        $this->assertStringContainsString('value="revoke"', $row[1], 'Remove from list posts the idempotent revoke');
+        $this->assertMatchesRegularExpression('#<input type="submit"[^>]*value="Remove from list"#', $row[1]);
+        $this->assertStringNotContainsString('value="Revoke"', $row[1]);
+        $this->assertStringContainsString('Still here', $connections);
+        $this->assertMatchesRegularExpression('#data-tab="connections">Connections <span class="wpmcp-count">1</span>#', $html, 'only connections that can still sign in are counted');
+
+        $after = $this->render([], [ 'wpmcp_connection_action' => 'revoke', '_wpnonce' => wp_create_nonce(Connection_Page::NONCE_ACTION), 'user_id' => (string) $this->admin, 'uuid' => $gone ]);
+        $this->assertStringContainsString('Removed from the list', $after);
+        $this->assertStringNotContainsString('Deleted on the profile screen', $this->panel($after, 'connections'));
+        $this->assertStringContainsString('Still here', $this->panel($after, 'connections'));
     }
 
     public function test_the_connections_panel_has_an_empty_state(): void
@@ -309,7 +343,7 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
         $this->assertStringContainsString('value="toggle"', $settings);
         $this->assertStringContainsString('name="management_mode"', $settings);
         // The switch itself needs a network admin on multisite; the section is there either way.
-        $this->assertStringContainsString('When WP MCP is deleted', $settings);
+        $this->assertStringContainsString('Delete all WP MCP data when the plugin is deleted', $settings);
         $this->assertMatchesRegularExpression('#<details class="wpmcp-advanced"#', $settings, 'Advanced starts closed');
         $this->assertStringContainsString('<code id="wpmcp-endpoint">' . esc_html(home_url('/wp-json/mcp/wpmcp-server')) . '</code>', $settings);
         $this->assertStringContainsString('value="self_test"', $settings);
@@ -339,7 +373,7 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
     {
         add_filter('wpmcp_oauth_enabled', '__return_true');
         Client_Metadata_Document::admit([ 'client_id' => 'https://example.com/client.json', 'client_name' => 'Ex', 'redirect_uris' => [ 'https://example.com/cb' ] ]);
-        update_option(Connection_Page::OPTION, [ [ 'uuid' => 'u-1', 'user_id' => $this->admin, 'name' => 'laptop', 'created' => time() ] ]);
+        $this->issued('laptop', '');
 
         $html = $this->render();
 
