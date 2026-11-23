@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP MCP - MCP Server with Snapshot Undo for AI Agents
  * Plugin URI: https://wpmcp-pro.com/
- * Description: Connect an AI agent to this site over the Model Context Protocol. Every write takes a snapshot first, so any change can be rolled back.
+ * Description: Connect an AI agent to this site over the Model Context Protocol. It takes a snapshot before each supported write, so those changes can be rolled back.
  * Version: {{VERSION}}
  * Requires at least: 6.9
  * Requires PHP: 8.1

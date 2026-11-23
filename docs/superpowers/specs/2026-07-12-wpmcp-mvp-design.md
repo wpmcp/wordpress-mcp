@@ -39,7 +39,7 @@ Every mutating ability routes through one `Safe_Mutation` wrapper:
 1. **Snapshot (before):** capture a before-image, post content + a serialized copy of builder meta (`_elementor_data`, block markup), plus any touched options/terms. Store compressed.
 2. **Apply:** run the mutation.
 3. **Verify (lightweight):** post still loads, builder data still parses. On failure → auto-rollback + return error.
-4. **Rollback (on demand):** restore the before-image. Two scopes: single operation, or **whole session** ("undo everything this agent just did").
+4. **Rollback (on demand):** restore the before-image. Two scopes: single operation, or **whole session** ("undo what this agent just did").
 
 **Snapshot table** `wp_wpmcp_snapshots`: `id, operation_id, session_id, object_type, object_id, tool_name, args_hash, before_blob (gzipped), user_id, created_at`.
 
