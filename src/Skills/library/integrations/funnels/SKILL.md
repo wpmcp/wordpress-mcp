@@ -52,6 +52,6 @@ User: "Give 20 percent off the course on the Spring funnel checkout."
 
 ## Undo
 
-Every write is snapshotted; `wpmcp/rollback-operation` brings a deleted
+Supported writes are snapshotted; `wpmcp/rollback-operation` brings a deleted
 funnel or step back at its own ids. Orders already placed through a step are
 not affected by a rollback.

@@ -60,5 +60,5 @@ say so before you write.
 
 ## Undo
 
-Every write here is snapshotted; `wpmcp/rollback-operation` restores the
+Supported writes here are snapshotted; `wpmcp/rollback-operation` restores the
 previous language, links or string translation exactly.

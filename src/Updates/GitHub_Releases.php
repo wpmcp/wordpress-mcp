@@ -207,7 +207,7 @@ final class GitHub_Releases
         $notes = self::notes_html($release['notes']);
         $intro = sprintf(
             '<p>%s</p><p><a href="%s">%s</a></p>',
-            esc_html__('MCP server for WordPress with a snapshot before every write and one-click rollback.', 'wpmcp'),
+            esc_html__('MCP server for WordPress with a snapshot before each supported write and one-click rollback.', 'wpmcp'),
             esc_url($release['url']),
             esc_html__('Release page on GitHub', 'wpmcp')
         );

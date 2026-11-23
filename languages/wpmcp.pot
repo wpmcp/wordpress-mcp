@@ -502,7 +502,7 @@ msgid "Ask your client to list tools, you should see the wpmcp toolset."
 msgstr ""
 
 #: Admin/Connection_Page.php:446
-msgid "Every write is snapshotted first; review and roll back anything from the wpmcp History screen."
+msgid "Before each supported write, wpmcp saves a snapshot. Review and restore changes from the wpmcp History screen."
 msgstr ""
 
 #: Admin/Connection_Page.php:447
@@ -1671,7 +1671,7 @@ msgid "Conversation"
 msgstr ""
 
 #: Pro/Chat/Chat_Page.php:107
-msgid "Reads run straight away. Anything that changes the site waits for you to approve that exact call, and every change is snapshotted so it can be rolled back from the History screen."
+msgid "Reads run straight away. Anything that changes the site waits for you to approve that exact call, and each supported write is snapshotted first so it can be rolled back from the History screen."
 msgstr ""
 
 #: Pro/Chat/Chat_Page.php:114

@@ -8,7 +8,7 @@ Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Let an AI agent build your WordPress site and undo any supported change. MCP server with a snapshot before every write and one-click rollback.
+Let an AI agent build your WordPress site. MCP server with a snapshot before each supported write and one-click rollback.
 
 == Description ==
 
@@ -18,8 +18,8 @@ The difference: **every supported write takes a snapshot first.** If the agent g
 
 = Safety model =
 
-* Automatic snapshot before every write, with a browsable history and one-click restore
-* Session rollback: undo everything an agent did in one conversation
+* Automatic snapshot before each supported write, with a browsable history and one-click restore
+* Session rollback: undo the supported writes an agent made in one conversation
 * Six-layer governance where each layer can only narrow permissions, never widen them
 * Full audit log of every tool call and every governance decision
 * Scoped identities: give each agent exactly the capabilities it needs
@@ -88,7 +88,7 @@ The difference: **every supported write takes a snapshot first.** If the agent g
 * With Pro, Elementor Pro forms: forms found in pages, and form submissions listed, read and exported as CSV, with undoable status changes and deletes (off until the site turns them on)
 * With Pro, Blocksy Companion extensions: listed with their on or off state and switched on or off through the companion's own manager, every toggle undoable (off until the site turns theme writes on)
 * With Pro, Elementor addon packs: Essential Addons, Premium Addons, Ultimate Addons, JetElements, Happy Addons, Royal Elementor Addons and PowerPack Lite widgets listed with their controls, and each pack's modules switched on or off, every toggle undoable
-* With Pro, Ultimate Addons for Elementor header, footer and custom block templates: list, read, create, update and trash them and set their display rules, every write undoable
+* With Pro, Ultimate Addons for Elementor header, footer and custom block templates: list, read, create, update and trash them and set their display rules, with a snapshot before each supported write
 * Media library plus stock image imports, and regeneration of the image sizes a new theme or plugin added (undoable)
 * REST passthrough for anything else, still snapshotted
 
@@ -197,7 +197,7 @@ Fixes:
 * Safe MCP for WooCommerce no longer ships the site backup restore tool or the SQL importer (restore-site-backup answers not_in_this_build; making and managing backups still works), and no longer calls load_plugin_textdomain() itself, since WordPress.org loads its translations, matching the wordpress.org plugin check (#1147).
 
 = 1.2.0 =
-New integrations, site security tools, and a switch in wp-admin that turns on OAuth sign-in for ChatGPT and the Claude connector. No new top-level tools: everything is an operation on an existing tool, and every write is snapshotted and undoable unless it says otherwise.
+New integrations, site security tools, and a switch in wp-admin that turns on OAuth sign-in for ChatGPT and the Claude connector. No new top-level tools: everything is an operation on an existing tool, and each supported write is snapshotted and undoable unless it says otherwise.
 
 New:
 * Connect ChatGPT: an "Allow OAuth sign-in" switch on the WP MCP Connection screen, and a ChatGPT card with the server URL and setup steps next to the Claude connector card. OAuth stays off by default; switching it off refuses existing OAuth tokens on their next request. The WPMCP_OAUTH_ENABLED constant and the wpmcp_oauth_enabled filter still win over the switch (#842).
@@ -219,7 +219,7 @@ Fixes:
 * The privacy requests group on WP MCP > Opt-in operations has a readable name again, the known issue in 1.1.0 (#1100).
 
 = 1.1.0 =
-New integrations and core operations, and the fixes found in the 1.0 test pass. No new top-level tools: everything is an operation on an existing tool, and every write is snapshotted and undoable unless it says otherwise.
+New integrations and core operations, and the fixes found in the 1.0 test pass. No new top-level tools: everything is an operation on an existing tool, and each supported write is snapshotted and undoable unless it says otherwise.
 
 New:
 * WPGraphQL (read): wpgraphql-query runs a GraphQL query as the signed-in user, with mutations and subscriptions refused and emails, phones and IPs masked; wpgraphql-get-schema summarises the schema (#704).
@@ -346,9 +346,9 @@ Improvements:
 * Email log reads return no message body by default and redact passwords, codes and tokens.
 
 = 0.9.0 =
-This release roughly triples the plugins WP MCP can drive and makes every change reversible across all of them.
+This release roughly triples the plugins WP MCP can drive and adds a snapshot before each supported write across all of them.
 
-New page builders, each read and edited element by element, every write snapshotted and undone from the Mutations tab, and writes guarded by the page's content hash:
+New page builders, each read and edited element by element, supported writes snapshotted and undone from the Mutations tab, and writes guarded by the page's content hash:
 * Divi 5, Avada, WPBakery, Oxygen 6, Cornerstone, BeTheme (BeBuilder) and Thrive Architect.
 
 New integrations and operations:
@@ -424,7 +424,7 @@ Admin and tooling:
 
 = 0.8.165 =
 * Pro: Amelia employees and events. Agents can now create and change Amelia employees with their working hours, breaks and days off, create, change, open or cancel events, and add event attendees, refused when the event has too few places left. No new tools: the operations sit on the existing plugin-data pair.
-* Amelia categories, services, employees and customers can be deleted with confirmation, and only while nothing uses them; appointments and events are cancelled, never deleted. Amelia Lite's one-employee limit is refused by name. Customer emails stay held unless the agent asks to notify, and every change can be undone with rollback-operation.
+* Amelia categories, services, employees and customers can be deleted with confirmation, and only while nothing uses them; appointments and events are cancelled, never deleted. Amelia Lite's one-employee limit is refused by name. Customer emails stay held unless the agent asks to notify, and supported changes can be undone with rollback-operation.
 
 = 0.8.164 =
 * Security: agent memory entries can no longer be published, edited, created, copied, deleted or rolled back through the generic content, meta, staging, rollback or database row tools, even on an administrator connection. Entries are proposed with the memory tools and go live only when an administrator approves them in wp-admin.
@@ -443,7 +443,7 @@ Admin and tooling:
 * Writing back a masked gateway setting keeps the stored credential instead of overwriting it.
 
 = 0.8.160 =
-* Pro: Change FunnelKit funnels through FunnelKit itself. Agents can create, rename and delete funnels, add, reorder, enable, disable, publish and delete steps, and set checkout products with quantity and discount, seeing the price a buyer pays first with dry_run. Every change can be rolled back.
+* Pro: Change FunnelKit funnels through FunnelKit itself. Agents can create, rename and delete funnels, add, reorder, enable, disable, publish and delete steps, and set checkout products with quantity and discount, seeing the price a buyer pays first with dry_run. Supported changes can be rolled back.
 * Fixed a fatal error on REST requests on stores where the only MCP adapter loaded is the older copy bundled with WooCommerce.
 
 = 0.8.159 =
@@ -452,7 +452,7 @@ Admin and tooling:
 
 = 0.8.158 =
 * Pro: Amelia bookings. On sites running Amelia, agents can read the booking setup, categories, services, employees with their working hours, customers, appointments, free slots, events with places left and event attendees, and create or change categories, services and customers, book, reschedule, approve, cancel or reject appointments. No new tools: the operations sit on the existing plugin-data pair.
-* Every booking change goes through Amelia's own checks, so a taken slot or a time outside working hours is refused with Amelia's reason. Times are in the site's timezone and stay right across daylight-saving changes. Customer emails are held unless the agent asks to notify, and each answer lists what Amelia sent. Every change can be undone with rollback-operation, which never re-sends anything and is refused while later bookings depend on it.
+* Every booking change goes through Amelia's own checks, so a taken slot or a time outside working hours is refused with Amelia's reason. Times are in the site's timezone and stay right across daylight-saving changes. Customer emails are held unless the agent asks to notify, and each answer lists what Amelia sent. Supported changes can be undone with rollback-operation, which never re-sends anything and is refused while later bookings depend on it.
 * Amelia customer records are now included in Tools > Export Personal Data and Erase Personal Data.
 
 = 0.8.157 =
@@ -488,7 +488,7 @@ Admin and tooling:
 * Internal: a changelog-only release that moved the WordPress 6.9 global styles fix to the 0.8.146 entry; 0.8.156 corrected it to 0.8.145, the release that shipped it. No change to the plugin itself.
 
 = 0.8.148 =
-* Pro: FluentCRM and MailPoet contacts, lists and tags. Agents can read contacts, lists, tags, custom fields, campaigns and automations, and create, update, tag, list and delete contacts and lists through each plugin's own API, so its hooks, automations and opt-in rules run. Every write can be undone with rollback-operation.
+* Pro: FluentCRM and MailPoet contacts, lists and tags. Agents can read contacts, lists, tags, custom fields, campaigns and automations, and create, update, tag, list and delete contacts and lists through each plugin's own API, so its hooks, automations and opt-in rules run. Supported writes can be undone with rollback-operation.
 * New contacts follow each plugin's opt-in rules. A contact who unsubscribed or bounced is never added back to a list, and an undo never sets them back to subscribed.
 
 = 0.8.147 =
@@ -496,7 +496,7 @@ Admin and tooling:
 * Undoing a BuddyPress group create that holds only its own rows now deletes the group through BuddyPress itself, so no activity is left pointing at the deleted group.
 
 = 0.8.146 =
-* Pro: TablePress tables. Agents can list, read, export, render and find where a table is placed, create tables, edit cells, insert and delete rows and columns, update options, copy, rename the id, delete, import CSV, JSON or HTML, and place a table on a page, all through TablePress's own table model. Every write is snapshotted and can be rolled back.
+* Pro: TablePress tables. Agents can list, read, export, render and find where a table is placed, create tables, edit cells, insert and delete rows and columns, update options, copy, rename the id, delete, import CSV, JSON or HTML, and place a table on a page, all through TablePress's own table model. Each supported write is snapshotted and can be rolled back.
 * TablePress ops run on the existing plugin-data tools, so they add no tools where those tools already appear, and edits that would leave a table with rows of unequal length are refused.
 
 = 0.8.145 =
@@ -593,7 +593,7 @@ Admin and tooling:
 * list-posts with post_type "any", search-content and count-content now leave out post types the caller may not read.
 
 = 0.8.124 =
-* Pro: Tutor LMS and LifterLMS course structure. Agents can read a course as a tree of sections (Tutor LMS topics), lessons and quizzes with their questions, create courses, add sections, lessons and quizzes, edit and reorder them, and every change can be undone with rollback.
+* Pro: Tutor LMS and LifterLMS course structure. Agents can read a course as a tree of sections (Tutor LMS topics), lessons and quizzes with their questions, create courses, add sections, lessons and quizzes, edit and reorder them, and supported changes can be undone with rollback.
 * Pro: Read course enrollments for Tutor LMS and LifterLMS (student, status and date). Enrollments are read-only and need the same permission as listing users.
 * Fix: trashing a Tutor LMS course through the tools, or rolling back its creation, no longer ends the request early.
 
@@ -700,7 +700,7 @@ Admin and tooling:
 * Site owners can require approval for new OAuth clients, and approve or block them, on the WP MCP Connection screen. Blocking a client revokes its tokens.
 
 = 0.8.98 =
-* New: agents can edit block theme templates, template parts (header, footer and the rest) and navigation menus, with every change undoable.
+* New: agents can edit block theme templates, template parts (header, footer and the rest) and navigation menus, with a snapshot before each supported write.
 * A customized template can be reverted to the theme's own file, and undoing the revert brings the customization back.
 
 = 0.8.97 =
@@ -711,7 +711,7 @@ Admin and tooling:
 * find-unused-media pages through large libraries with a cursor and a time budget, states the checks it ran for every result, and can list unattached attachments separately, since unattached does not mean unused.
 
 = 0.8.95 =
-* New: agents can read and manage robots.txt rules, an llms.txt built from chosen pages, and which post types, taxonomies or posts appear in the WordPress XML sitemap, with every change undoable.
+* New: agents can read and manage robots.txt rules, an llms.txt built from chosen pages, and which post types, taxonomies or posts appear in the WordPress XML sitemap, with a snapshot before each supported write.
 * A physical robots.txt or llms.txt, or an SEO plugin that serves its own sitemap or llms.txt, is reported and never silently overridden.
 
 = 0.8.94 =
@@ -733,7 +733,7 @@ Admin and tooling:
 * FunnelKit upsell steps find their offers through the upsell add-on itself when it is active, with fallbacks to the stored offer list, and each offer reports its views and accepts.
 
 = 0.8.90 =
-* New: classic Oxygen (4.x and earlier) pages can now be read and edited structurally through get-builder-content and update-builder-content. Update, add, remove or move one element by path, or replace the whole tree; untouched elements, including ones wpmcp does not know, keep their exact bytes, and every write is undoable with rollback.
+* New: classic Oxygen (4.x and earlier) pages can now be read and edited structurally through get-builder-content and update-builder-content. Update, add, remove or move one element by path, or replace the whole tree; untouched elements, including ones wpmcp does not know, keep their exact bytes, and supported writes are undoable with rollback.
 * Classic Oxygen writes keep the JSON tree and Oxygen's signed shortcode copy in step through Oxygen itself, add an Oxygen revision, and refresh the page's generated CSS after writes and rollbacks. Pages still in the pre-4.0 format are read-only until saved in Oxygen 4.
 * The content mirror now exports and restores classic Oxygen pages.
 
@@ -746,7 +746,7 @@ Admin and tooling:
 * Rollback now leaves in place, and reports, any row the write created that has since changed hands.
 
 = 0.8.87 =
-* New: Thrive Architect pages can now be read and edited structurally through get-builder-content and update-builder-content. Update, add, remove or move one element by path, or replace the whole layout; untouched markup, including elements wpmcp does not know, keeps its exact bytes, and every write is undoable with rollback.
+* New: Thrive Architect pages can now be read and edited structurally through get-builder-content and update-builder-content. Update, add, remove or move one element by path, or replace the whole layout; untouched markup, including elements wpmcp does not know, keeps its exact bytes, and supported writes are undoable with rollback.
 * Thrive writes keep the Read More excerpt in step and make the page load Thrive's full styles and scripts until it is optimized again, so edited elements never render unstyled.
 * The content mirror now exports and restores Avada, Oxygen 6 and Thrive Architect pages.
 
@@ -815,7 +815,7 @@ Admin and tooling:
 * The External services section discloses the new, opt-in call to the DataForSEO API.
 
 = 0.8.70 =
-* New: product review moderation on the WooCommerce ops. List reviews by product, rating and status, approve, hold, mark as spam, trash, edit the text or reply as the store; every change can be rolled back exactly, rating and verified flag included.
+* New: product review moderation on the WooCommerce ops. List reviews by product, rating and status, approve, hold, mark as spam, trash, edit the text or reply as the store; supported changes can be rolled back exactly, rating and verified flag included.
 * New: read-only WooCommerce totals reports for sales (by day, week or month), top sellers, orders by status, customers and coupons. They use the store's analytics tables when those are up to date and fall back to order queries otherwise, and return aggregate figures only.
 
 = 0.8.69 =
@@ -855,7 +855,7 @@ Admin and tooling:
 * Rolling back a whole session that created a Redirection redirect and then edited it now removes the redirect as expected.
 
 = 0.8.60 =
-* New: Redirection plugin support. Agents can list its groups and redirects and create, edit, enable, disable or delete redirects, with every change undoable.
+* New: Redirection plugin support. Agents can list its groups and redirects and create, edit, enable, disable or delete redirects, with a snapshot before each supported write.
 * Redirects written through the Redirection plugin refuse loops, duplicate sources and unsafe targets before anything is saved.
 
 = 0.8.59 =
@@ -879,7 +879,7 @@ Admin and tooling:
 * Keyword extraction reads builder content (blocks, shortcodes, Elementor and Bricks) as plain text, keeps non-English words whole and drops stopwords for the site language.
 
 = 0.8.54 =
-* New: manage WooCommerce shipping zones and methods (flat rate, free shipping, local pickup) and store webhooks through the woo-write tool. Every change can be rolled back exactly.
+* New: manage WooCommerce shipping zones and methods (flat rate, free shipping, local pickup) and store webhooks through the woo-write tool. Supported changes can be rolled back exactly.
 * Webhook signing secrets are never shown in responses, and delivery URLs must be public https addresses.
 
 = 0.8.53 =
@@ -903,7 +903,7 @@ Admin and tooling:
 * All in One SEO edits are snapshotted from its own tables and roll back exactly.
 
 = 0.8.48 =
-* WooCommerce brands: create, update, delete and assign product brands through the WooCommerce catalog ops, with every change snapshotted so rollback restores it exactly.
+* WooCommerce brands: create, update, delete and assign product brands through the WooCommerce catalog ops, with a snapshot before each supported write so rollback restores it exactly.
 * Brand images must be an existing Media Library image or pass the remote media guard, and deleting a brand needs confirmation and reports how many products use it.
 
 = 0.8.47 =
@@ -920,14 +920,14 @@ Admin and tooling:
 * Fix: rolling back a post now keeps backslashes inside object-valued post meta exactly as they were.
 
 = 0.8.44 =
-* New theme settings packs for Kadence, and for GeneratePress and Blocksy (Pro): read and change global colors, typography, container width and basic header and footer settings through each theme's own storage. Every change is snapshotted and restorable with rollback, and a pack only appears while its theme is active.
+* New theme settings packs for Kadence, and for GeneratePress and Blocksy (Pro): read and change global colors, typography, container width and basic header and footer settings through each theme's own storage. Each supported change is snapshotted and restorable with rollback, and a pack only appears while its theme is active.
 
 = 0.8.43 =
 * New: create-comment and reply-to-comment post a comment or reply as the current user, approved (for moderators) or held for moderation.
 * Comments created this way are part of the undo history: rollback-operation and rollback-session move them to the trash, so they can still be restored.
 
 = 0.8.42 =
-* New: WPBakery page support in the builder tools. Detect WPBakery pages, read their layout as an element tree, and update, add, remove or move elements, with every change undoable through rollback.
+* New: WPBakery page support in the builder tools. Detect WPBakery pages, read their layout as an element tree, and update, add, remove or move elements, with a snapshot before each supported write for rollback.
 
 = 0.8.41 =
 * New: create, update, move and delete classic sidebar widgets (including block widgets) with create-sidebar-widget, update-sidebar-widget, move-sidebar-widget and delete-sidebar-widget. Settings are sanitized by each widget's own update routine.
@@ -1034,7 +1034,7 @@ Admin and tooling:
 
 = 0.8.17 =
 * New: WooCommerce variations can be created and deleted, and up to 50 products or variations can be updated in one call, with the whole batch undoable as a single session.
-* New: manage WooCommerce coupons (list, get, create, update, delete, and validate against store rules) and tax rates (list, create, update, delete), with snapshots so every change can be rolled back.
+* New: manage WooCommerce coupons (list, get, create, update, delete, and validate against store rules) and tax rates (list, create, update, delete), with a snapshot before each supported write for rollback.
 * Deletes of variations, coupons and tax rates stay off until the site opts in, and always require confirmation.
 
 = 0.8.16 =
@@ -1089,14 +1089,14 @@ Admin and tooling:
 
 = 0.8.4 =
 * New child theme scaffolding in the theme tools: create a child of the active theme with one confirmed call. It is off by default, never activates the child, and is fully reversible from the rollback history.
-* New Astra settings in the theme tools: read and update Astra's core colors and content width when Astra is the active theme, with a snapshot before every change.
+* New Astra settings in the theme tools: read and update Astra's core colors and content width when Astra is the active theme, with a snapshot before each supported change.
 * Session rollback undoes a child theme scaffold only after reverting any theme switch made in the same session.
 
 = 0.8.3 =
 * Internal: each local test run now uses its own clean WordPress install, so parallel test runs no longer interfere with each other. No change to the plugin itself.
 
 = 0.8.2 =
-* New PHP snippet store: create, list, get, update and delete PHP snippets as stored, validated objects. Snippets are always created inactive, critical validation findings block creation, and every change is snapshotted and reversible. Activation is a separate, governed Pro operation that never executes code, and rollback always restores a snippet inactive.
+* New PHP snippet store: create, list, get, update and delete PHP snippets as stored, validated objects. Snippets are always created inactive, critical validation findings block creation, and each supported change is snapshotted and reversible. Activation is a separate, governed Pro operation that never executes code, and rollback always restores a snippet inactive.
 * New theme tools: read the active theme's context (framework, parent and child, block theme support, menus) and write allowlisted theme mods with a snapshot for rollback. Theme writes are off by default.
 * Elementor atomic elements follow Elementor 4.3's schema, and the Elementor version the test suite installs is pinned.
 * Option names are matched the way the database matches them, so case, accent and invisible-character variants cannot reach a protected option.
@@ -1204,7 +1204,7 @@ Pro: Translate a page in a few calls on Polylang and WPML sites. Agents can list
 Security: payment gateway credentials (API keys, webhook secrets, tokens) are now masked when gateway settings are read through get-option or the REST passthrough, the same way the gateway tools already masked them.
 
 = 0.8.160 =
-Pro: Change FunnelKit funnels through FunnelKit itself. Agents can create, rename and delete funnels, add, reorder, enable, disable, publish and delete steps, and set checkout products with quantity and discount, seeing the price a buyer pays first with dry_run. Every change can be rolled back.
+Pro: Change FunnelKit funnels through FunnelKit itself. Agents can create, rename and delete funnels, add, reorder, enable, disable, publish and delete steps, and set checkout products with quantity and discount, seeing the price a buyer pays first with dry_run. Supported changes can be rolled back.
 
 = 0.8.159 =
 Fixed: on sites running the MCP Adapter plugin from WordPress.org (0.7.0), confirm prompts and background tasks work again for 2026-07-28 clients over HTTP, and tool listings carry their output schemas again.
@@ -1241,13 +1241,13 @@ Development: every push is now tested on the WordPress 6.9 minimum as well as 7.
 Internal: a changelog-only release that moved the WordPress 6.9 global styles fix to the 0.8.146 entry; 0.8.156 corrected it to 0.8.145, the release that shipped it. No change to the plugin itself.
 
 = 0.8.148 =
-Pro: FluentCRM and MailPoet contacts, lists and tags. Agents can read contacts, lists, tags, custom fields, campaigns and automations, and create, update, tag, list and delete contacts and lists through each plugin's own API, so its hooks, automations and opt-in rules run. Every write can be undone with rollback-operation.
+Pro: FluentCRM and MailPoet contacts, lists and tags. Agents can read contacts, lists, tags, custom fields, campaigns and automations, and create, update, tag, list and delete contacts and lists through each plugin's own API, so its hooks, automations and opt-in rules run. Supported writes can be undone with rollback-operation.
 
 = 0.8.147 =
 Undoing a BuddyPress group create no longer deletes other members' data: once someone else has joined, been invited, been notified or posted in the group, the undo is refused with the reason and nothing is deleted.
 
 = 0.8.146 =
-Pro: TablePress tables. Agents can list, read, export, render and find where a table is placed, create tables, edit cells, insert and delete rows and columns, update options, copy, rename the id, delete, import CSV, JSON or HTML, and place a table on a page, all through TablePress's own table model. Every write is snapshotted and can be rolled back.
+Pro: TablePress tables. Agents can list, read, export, render and find where a table is placed, create tables, edit cells, insert and delete rows and columns, update options, copy, rename the id, delete, import CSV, JSON or HTML, and place a table on a page, all through TablePress's own table model. Each supported write is snapshotted and can be rolled back.
 
 = 0.8.145 =
 New opt-in setting on the Connection screen, "Delete all WP MCP data when the plugin is deleted" (or define WPMCP_UNINSTALL_DELETE_DATA in wp-config.php): deleting the plugin then also removes its tables, settings, credentials and backup archives on every site. Off by default, so your data is kept.
@@ -1313,7 +1313,7 @@ Security: the content tools now apply WordPress's per-post permissions. Contribu
 Security: the content tools now require each post type's own capabilities. A non-public post type needs that type's edit capability, and one without an admin screen is refused below administrator, so Contributors, Authors and Editors can no longer read other plugins' private records (such as enrollments, orders or form entries) through the generic post tools. Some calls that used to succeed are now refused.
 
 = 0.8.124 =
-Pro: Tutor LMS and LifterLMS course structure. Agents can read a course as a tree of sections (Tutor LMS topics), lessons and quizzes with their questions, create courses, add sections, lessons and quizzes, edit and reorder them, and every change can be undone with rollback.
+Pro: Tutor LMS and LifterLMS course structure. Agents can read a course as a tree of sections (Tutor LMS topics), lessons and quizzes with their questions, create courses, add sections, lessons and quizzes, edit and reorder them, and supported changes can be undone with rollback.
 
 = 0.8.123 =
 rollback-session now refuses a run whose undo points were pruned however long ago it happened, and says clearly when no undo points were ever recorded under a session id.
@@ -1391,7 +1391,7 @@ Fix: Elementor padding, margin, border radius and gap values written by the Elem
 New: MCP clients can now sign in through OAuth with a client metadata document (an https URL as their client ID), the registration method the MCP authorization spec now prefers. Dynamic client registration keeps working for older clients.
 
 = 0.8.98 =
-New: agents can edit block theme templates, template parts (header, footer and the rest) and navigation menus, with every change undoable.
+New: agents can edit block theme templates, template parts (header, footer and the rest) and navigation menus, with a snapshot before each supported write.
 
 = 0.8.97 =
 Elementor edits now succeed on pages that contain a widget registered only on some requests (for example a checkout widget), and that widget is kept intact instead of the edit being rolled back.
@@ -1400,7 +1400,7 @@ Elementor edits now succeed on pages that contain a widget registered only on so
 New: find-unused-media lists Media Library attachments that nothing on the site references, checking featured images, the site logo and icon, post content, page builder data, post and term meta, and options, with each file's size on disk.
 
 = 0.8.95 =
-New: agents can read and manage robots.txt rules, an llms.txt built from chosen pages, and which post types, taxonomies or posts appear in the WordPress XML sitemap, with every change undoable.
+New: agents can read and manage robots.txt rules, an llms.txt built from chosen pages, and which post types, taxonomies or posts appear in the WordPress XML sitemap, with a snapshot before each supported write.
 
 = 0.8.94 =
 Ready for the next WordPress MCP adapter: both the HTTP endpoint and the stdio transport now speak MCP protocol 2026-07-28 (sessionless discovery via server/discover) alongside 2025-11-25.
@@ -1415,7 +1415,7 @@ Pro: Browse and import Spectra's remote pattern library through the block suite 
 FunnelKit funnel reads now give a stable reason code with every count or list they cannot read, so an unavailable value is never mistaken for zero or none.
 
 = 0.8.90 =
-New: classic Oxygen (4.x and earlier) pages can now be read and edited structurally through get-builder-content and update-builder-content. Update, add, remove or move one element by path, or replace the whole tree; untouched elements, including ones wpmcp does not know, keep their exact bytes, and every write is undoable with rollback.
+New: classic Oxygen (4.x and earlier) pages can now be read and edited structurally through get-builder-content and update-builder-content. Update, add, remove or move one element by path, or replace the whole tree; untouched elements, including ones wpmcp does not know, keep their exact bytes, and supported writes are undoable with rollback.
 
 = 0.8.89 =
 Fix: rolling back a BuddyPress write now restores only the rows it saved, by id, so membership requests, notifications and replies that other members add after the write are kept.
@@ -1424,7 +1424,7 @@ Fix: rolling back a BuddyPress write now restores only the rows it saved, by id,
 Fixed: rolling back a BuddyPress write no longer removes activity, notifications or other rows that someone else added while the write was running. Only the rows the write itself created are removed.
 
 = 0.8.87 =
-New: Thrive Architect pages can now be read and edited structurally through get-builder-content and update-builder-content. Update, add, remove or move one element by path, or replace the whole layout; untouched markup, including elements wpmcp does not know, keeps its exact bytes, and every write is undoable with rollback.
+New: Thrive Architect pages can now be read and edited structurally through get-builder-content and update-builder-content. Update, add, remove or move one element by path, or replace the whole layout; untouched markup, including elements wpmcp does not know, keeps its exact bytes, and supported writes are undoable with rollback.
 
 = 0.8.86 =
 Fix: BuddyPress writes now run through BuddyPress itself, so its hooks fire. A group created through the tools gets its "created the group" activity item, and add-ons listening for group, profile field and activity changes now hear about them.
@@ -1475,7 +1475,7 @@ Internal: the bundled compliance checker no longer reports superglobal names tha
 Pro: analyze-seo can look up keyword search volume, difficulty, CPC and intent, and backlink counts for a domain or URL, from your own DataForSEO account. Save the credentials once with set-seo-data-key; they are stored encrypted and never returned.
 
 = 0.8.70 =
-New: product review moderation on the WooCommerce ops. List reviews by product, rating and status, approve, hold, mark as spam, trash, edit the text or reply as the store; every change can be rolled back exactly, rating and verified flag included.
+New: product review moderation on the WooCommerce ops. List reviews by product, rating and status, approve, hold, mark as spam, trash, edit the text or reply as the store; supported changes can be rolled back exactly, rating and verified flag included.
 
 = 0.8.69 =
 New: a git-friendly content mirror. export-content with mirror:true writes builder page data (Elementor, blocks, Bricks, Divi, WPBakery, Beaver Builder, Breakdance) as stable, pretty-printed JSON files under uploads, one per page.
@@ -1505,7 +1505,7 @@ New: agents and directories can discover this site's MCP server before connectin
 Fixed: a Redirection redirect create that is refused at the last moment no longer leaves an undo point behind, and undoing a create never removes a different redirect that took its place.
 
 = 0.8.60 =
-New: Redirection plugin support. Agents can list its groups and redirects and create, edit, enable, disable or delete redirects, with every change undoable.
+New: Redirection plugin support. Agents can list its groups and redirects and create, edit, enable, disable or delete redirects, with a snapshot before each supported write.
 
 = 0.8.59 =
 Custom widgets can now show live data: post, product and term lists, a navigation menu, breadcrumbs, the WooCommerce cart, and values from a remote JSON feed.
@@ -1523,7 +1523,7 @@ New: Elementor addon suite packs for Essential Addons, Premium Addons and Ultima
 New: extract-content can return a post's top keywords and 2 to 3 word phrases (pass keywords=N), ranked by frequency with the title and headings weighted higher.
 
 = 0.8.54 =
-New: manage WooCommerce shipping zones and methods (flat rate, free shipping, local pickup) and store webhooks through the woo-write tool. Every change can be rolled back exactly.
+New: manage WooCommerce shipping zones and methods (flat rate, free shipping, local pickup) and store webhooks through the woo-write tool. Supported changes can be rolled back exactly.
 
 = 0.8.53 =
 Installing a plugin or theme from an uploaded ZIP no longer waits on the WordPress.org update check, so installs and their rollbacks work on sites without outbound network access.
@@ -1541,7 +1541,7 @@ Rolling back a post, page or ACF field group, post type or taxonomy now restores
 SEO support now covers Slim SEO, and with Pro, All in One SEO: titles, descriptions, canonical, robots and social fields per post and per term through the existing SEO tools.
 
 = 0.8.48 =
-WooCommerce brands: create, update, delete and assign product brands through the WooCommerce catalog ops, with every change snapshotted so rollback restores it exactly.
+WooCommerce brands: create, update, delete and assign product brands through the WooCommerce catalog ops, with a snapshot before each supported write so rollback restores it exactly.
 
 = 0.8.47 =
 The Requests tab of the audit log can now be filtered by date, user, tool and outcome, and exported as CSV for review.
@@ -1553,13 +1553,13 @@ Undoing a theme settings change for Astra, Kadence, GeneratePress or Blocksy now
 New: Beaver Builder pages can be read and edited through the builder tools: detection, a node tree read, and node updates, adds, removes and moves or a whole-layout write, each undoable with rollback.
 
 = 0.8.44 =
-New theme settings packs for Kadence, and for GeneratePress and Blocksy (Pro): read and change global colors, typography, container width and basic header and footer settings through each theme's own storage. Every change is snapshotted and restorable with rollback, and a pack only appears while its theme is active.
+New theme settings packs for Kadence, and for GeneratePress and Blocksy (Pro): read and change global colors, typography, container width and basic header and footer settings through each theme's own storage. Each supported change is snapshotted and restorable with rollback, and a pack only appears while its theme is active.
 
 = 0.8.43 =
 New: create-comment and reply-to-comment post a comment or reply as the current user, approved (for moderators) or held for moderation.
 
 = 0.8.42 =
-New: WPBakery page support in the builder tools. Detect WPBakery pages, read their layout as an element tree, and update, add, remove or move elements, with every change undoable through rollback.
+New: WPBakery page support in the builder tools. Detect WPBakery pages, read their layout as an element tree, and update, add, remove or move elements, with a snapshot before each supported write for rollback.
 
 = 0.8.41 =
 New: create, update, move and delete classic sidebar widgets (including block widgets) with create-sidebar-widget, update-sidebar-widget, move-sidebar-widget and delete-sidebar-widget. Settings are sanitized by each widget's own update routine.
@@ -1679,7 +1679,7 @@ New child theme scaffolding in the theme tools: create a child of the active the
 Internal: each local test run now uses its own clean WordPress install, so parallel test runs no longer interfere with each other. No change to the plugin itself.
 
 = 0.8.2 =
-New PHP snippet store: create, list, get, update and delete PHP snippets as stored, validated objects. Snippets are always created inactive, critical validation findings block creation, and every change is snapshotted and reversible. Activation is a separate, governed Pro operation that never executes code, and rollback always restores a snippet inactive.
+New PHP snippet store: create, list, get, update and delete PHP snippets as stored, validated objects. Snippets are always created inactive, critical validation findings block creation, and each supported change is snapshotted and reversible. Activation is a separate, governed Pro operation that never executes code, and rollback always restores a snippet inactive.
 
 = 0.8.1 =
 Snapshot history is now the same 20 operations on every install, free and Pro alike. Nothing is deleted on upgrade: a site that already has a deeper history keeps it until you choose, either through the admin notice or the filter:

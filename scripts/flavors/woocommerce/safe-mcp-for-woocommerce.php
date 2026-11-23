@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Safe MCP for WooCommerce
- * Description: AI agents run your WooCommerce store over MCP, with a snapshot before every write and one-click rollback.
+ * Description: AI agents run your WooCommerce store over MCP, with a snapshot before each supported write and one-click rollback.
  * Version: {{VERSION}}
  * Requires at least: 6.9
  * Requires PHP: 8.1

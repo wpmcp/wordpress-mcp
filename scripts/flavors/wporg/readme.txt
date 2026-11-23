@@ -18,8 +18,8 @@ The difference is the undo. Every mutating operation captures a snapshot before 
 
 = Safety model =
 
-* A snapshot before every write, with a browsable history and one-click restore
-* Session rollback: undo everything an agent did in one conversation
+* A snapshot before each supported write, with a browsable history and one-click restore
+* Session rollback: undo the supported writes an agent made in one conversation
 * Six governance layers, each of which can only narrow permissions, never widen them
 * An audit log of every tool call and every governance decision
 * Scoped identities, so each agent gets exactly the capabilities it needs
@@ -310,7 +310,7 @@ No. Nothing here requires registration. Stock image search with Pexels or Unspla
 = {{VERSION}} =
 * First directory release.
 * Snapshot retention is one flat number for every install (20), raisable or lowerable for free through the `wpmcp_snapshot_history_limit` filter.
-* MCP server on the core Abilities API, with a snapshot before every write and one-click or whole-session rollback.
+* MCP server on the core Abilities API, with a snapshot before each supported write and one-click or whole-session rollback.
 * Six governance layers, an audit log, scoped identities and OAuth 2.1.
 * Block editor composition, Elementor widget inspection, store, custom field, SEO and forms integrations.
 
