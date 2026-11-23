@@ -160,4 +160,14 @@ class KsesSafetyTest extends \WP_UnitTestCase
             $this->kses->sanitization(0, '<a href="javascript:alert(1)">x</a>')
         );
     }
+
+    /** Data kept in post_content as text (JSON) is refused on any change, an entity kses adds included. */
+    public function test_exact_refusal_lets_nothing_kses_changes_through(): void
+    {
+        $this->log_in_without_unfiltered_html();
+
+        $this->assertNull($this->kses->exact_refusal(0, '{"label":"Books"}', 'definition'));
+        $this->assertNull($this->kses->content_refusal(0, '{"label":"Books & Films"}', 'definition'), 'As markup it parses the same.');
+        $this->assertWPError($this->kses->exact_refusal(0, '{"label":"Books & Films"}', 'definition'));
+    }
 }

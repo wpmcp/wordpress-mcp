@@ -80,6 +80,25 @@ final class Kses_Safety
     }
 
     /**
+     * The refusal for data a post type keeps in post_content as text, not
+     * markup (JSON settings, say), or null when the save stores it byte for
+     * byte. Unlike content_refusal() nothing kses re-encodes is let through:
+     * an entity it adds is a changed value in the data.
+     */
+    public function exact_refusal(int $post_id, string $planned, string $subject): ?\WP_Error
+    {
+        if (current_user_can('unfiltered_html')) {
+            return null;
+        }
+        $stored = sanitize_post_field('post_content', wp_slash($planned), $post_id, 'db');
+        if (is_string($stored) && wp_unslash($stored) === $planned) {
+            return null;
+        }
+
+        return $this->refusal($subject);
+    }
+
+    /**
      * Throw the content refusal, so a write deep in a call stack stops before
      * anything is stored. The Registrar returns the carried WP_Error.
      *
