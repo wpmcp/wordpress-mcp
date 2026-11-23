@@ -625,6 +625,9 @@ final class Cpt_Builder_Pack
         }
 
         $settings = self::mb_settings($kind, $slug, [], $args);
+        // The definition is JSON in post_content: refuse any change the
+        // save's kses would make to it (#1243).
+        Kses_Check::assert_exact(0, (string) wp_json_encode($settings, JSON_UNESCAPED_UNICODE), 'definition');
         $id       = wp_insert_post([
             'post_type'    => 'post_type' === $kind ? self::MB_TYPE : self::MB_TAX,
             'post_status'  => 'publish',
@@ -650,6 +653,8 @@ final class Cpt_Builder_Pack
             self::cptui_save($kind, $slug, self::cptui_entry($kind, $slug, (array) $found['config'], $args));
         } else {
             $settings = self::mb_settings($kind, $slug, (array) $found['config'], $args);
+            $definition = $found['post'] ?? null;
+            Kses_Check::assert_exact($definition instanceof \WP_Post ? $definition->ID : 0, (string) wp_json_encode($settings, JSON_UNESCAPED_UNICODE), 'definition');
             $fields   = [
                 'ID'           => (int) $found['post']->ID,
                 'post_content' => wp_slash((string) wp_json_encode($settings, JSON_UNESCAPED_UNICODE)),

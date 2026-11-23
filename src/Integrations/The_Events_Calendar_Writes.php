@@ -385,6 +385,7 @@ final class The_Events_Calendar_Writes
     /** @return array{result: array<string, mixed>, operation_ids: string[]} */
     private static function create_event(array $args, array $context): array
     {
+        $sanitized = Kses_Check::report(0, $args['content'] ?? null);
         [ $id, $operation_id ] = Event_Calendar_Writes::insert([
             'post_type'    => self::EVENT,
             'post_title'   => (string) $args['title'],
@@ -396,16 +397,17 @@ final class The_Events_Calendar_Writes
             self::write_event($id, $args);
         }, $args, $context);
 
-        return [ 'result' => [ 'event' => self::view($id) ], 'operation_ids' => [ $operation_id ] ];
+        return [ 'result' => [ 'event' => self::view($id) ] + $sanitized, 'operation_ids' => [ $operation_id ] ];
     }
 
     /** @return array<string, mixed> */
     private static function update_event(array $args): array
     {
         $id = (int) $args['event_id'];
+        $sanitized = Kses_Check::report($id, $args['content'] ?? null);
         Event_Calendar_Writes::update_fields($id, $args);
         self::write_event($id, $args);
-        return [ 'event' => self::view($id) ];
+        return [ 'event' => self::view($id) ] + $sanitized;
     }
 
     /** @return array<string, mixed> */

@@ -439,6 +439,9 @@ final class I18n_Pack
             $texts[ (string) $segment['key'] ] = (string) $segment['text'];
         }
 
+        // The page is re-saved and sanitized for this user as the editor
+        // would; what kses removes is reported (#1243).
+        $sanitized = $post instanceof \WP_Post ? Kses_Check::report($post->ID, I18n_Page_Text::planned_content($post, $texts)) : [];
         $written = I18n_Adapter::without_sync(static fn () => I18n_Page_Text::apply($post, $texts));
         $post    = get_post((int) $args['post_id']);
 
@@ -447,6 +450,6 @@ final class I18n_Pack
             'written'       => $written,
             'previous_hash' => $previous,
             'hash'          => I18n_Page_Text::hash($post),
-        ];
+        ] + $sanitized;
     }
 }
