@@ -1688,6 +1688,7 @@ final class Plugin
                     'post_id'     => [ 'type' => 'integer' ],
                     'description' => [ 'type' => 'string' ],
                     'alt'         => [ 'type' => 'string' ],
+                    'session_id'  => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
             ],
             [$sideload_image, 'handle'],
@@ -2210,6 +2211,7 @@ final class Plugin
                     'slug'         => [ 'type' => 'string' ],
                     'activate'     => [ 'type' => 'boolean' ],
                     'network_wide' => [ 'type' => 'boolean' ],
+                    'session_id'   => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'slug' ],
             ],
@@ -2295,6 +2297,7 @@ final class Plugin
                 'properties' => [
                     'slug'     => [ 'type' => 'string' ],
                     'activate' => [ 'type' => 'boolean' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'slug' ],
             ],
@@ -2915,7 +2918,7 @@ final class Plugin
     {
         $confirm_schema = [
             'type'       => 'object',
-            'properties' => ['confirm' => ['type' => 'boolean']],
+            'properties' => ['confirm' => ['type' => 'boolean'], 'session_id' => ['type' => 'string']],
             'required'   => ['confirm'],
         ];
 
@@ -3130,6 +3133,7 @@ final class Plugin
                     'conditions' => $conditions_schema,
                     // Tie-break between equally specific matches; higher wins.
                     'priority'   => ['type' => 'integer'],
+                    'session_id' => ['type' => 'string'], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => ['part_type', 'title', 'conditions'],
             ],
@@ -3177,6 +3181,7 @@ final class Plugin
                     'content'     => ['type' => 'string'],
                     'conditions'  => $conditions_schema,
                     'priority'    => ['type' => 'integer'],
+                    'session_id'  => ['type' => 'string'], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => ['template_id'],
             ],
@@ -3194,6 +3199,7 @@ final class Plugin
                 'properties' => [
                     'template_id' => $template_id,
                     'status'      => ['type' => 'string', 'enum' => ['publish', 'draft']],
+                    'session_id'  => ['type' => 'string'], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => ['template_id', 'status'],
             ],
@@ -3208,7 +3214,7 @@ final class Plugin
             'Trash a site part, freeing its per-part-type slot. Snapshot-first: operation_id rolls it back',
             [
                 'type'       => 'object',
-                'properties' => ['template_id' => $template_id],
+                'properties' => ['template_id' => $template_id, 'session_id' => ['type' => 'string']],
                 'required'   => ['template_id'],
             ],
             [$delete, 'handle'],
@@ -4540,6 +4546,7 @@ final class Plugin
                     'confirm' => [ 'type' => 'boolean' ],
                     'mirror'  => [ 'type' => 'boolean' ],
                     'post_id' => [ 'type' => 'integer' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
             ],
             [$import_content, 'handle'],
@@ -5455,6 +5462,7 @@ final class Plugin
                     'dry_run' => [ 'type' => 'boolean' ],
                     'confirm' => [ 'type' => 'boolean' ],
                     'cursor'  => [ 'type' => 'string' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
             ],
             [$delete_transient, 'handle'],
@@ -5776,6 +5784,7 @@ final class Plugin
                     'status'            => [ 'type' => 'string' ],
                     'manage_stock'      => [ 'type' => 'boolean' ],
                     'stock_quantity'    => [ 'type' => 'integer' ],
+                    'session_id'        => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'name' ],
             ],
@@ -6007,6 +6016,7 @@ final class Plugin
                     'manage_stock' => [ 'type' => 'boolean' ],
                     'stock_quantity' => [ 'type' => 'integer' ],
                     'stock_status' => [ 'type' => 'string' ],
+                    'session_id'   => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'product_id' ],
             ],
@@ -6118,6 +6128,7 @@ final class Plugin
                     'excluded_product_categories' => [ 'type' => 'array', 'items' => [ 'type' => 'integer' ] ],
                     'email_restrictions' => [ 'type' => 'array', 'items' => [ 'type' => 'string' ] ],
                     'status' => [ 'type' => 'string' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'code' ],
             ],
@@ -6235,6 +6246,7 @@ final class Plugin
                     'shipping' => [ 'type' => 'boolean' ],
                     'order' => [ 'type' => 'integer' ],
                     'class' => [ 'type' => 'string' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'rate' ],
             ],

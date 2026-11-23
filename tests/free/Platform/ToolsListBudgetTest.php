@@ -290,7 +290,13 @@ class ToolsListBudgetTest extends \WP_UnitTestCase
     // the builder element-editing PRs (#1108, #1110, #1111, #1113, #1116 to
     // #1118) grow the shared builder descriptions; 219564 bytes measured.
     // Flagged for the owner's review.
-    private const TOOLS_LIST_BYTE_BUDGET = 220000;
+    // Raised 220000 -> 222000 on 2026-11-24 for #1255: 58 write tools whose
+    // handlers already recorded the caller's session_id now declare it
+    // ("session_id":{"type":"string"}, 31 bytes each, so rollback-session can
+    // undo one chat), and seven Elementor descriptions got shorter; 221072
+    // bytes measured. Approved for the 2.0 release; flagged for the owner's
+    // review.
+    private const TOOLS_LIST_BYTE_BUDGET = 222000;
 
     /** @return array<int, array<string, mixed>> tools/list-shaped entries. */
     private static function payload(): array
