@@ -2,6 +2,7 @@
 
 namespace WPMCP\Tools\Sync;
 
+use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Rollback_Service;
 use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Save_Filters;
@@ -68,6 +69,10 @@ class Change_Set_Applier
     private string $home = '';
 
     private string $site = '';
+
+    public function __construct(private readonly Kses_Safety $kses = new Kses_Safety())
+    {
+    }
 
     /** @var array<string, string> */
     private array $origin_tokens = [];
@@ -566,7 +571,7 @@ class Change_Set_Applier
 
         $created = $this->create_post($entry);
         $this->available[ $key ] = 'applied' === $created['outcome'];
-        $this->dep($key, $created['outcome'], 'create', $created['reason'], $created['target_id'], $created['operation_id']);
+        $this->dep($key, $created['outcome'], 'create', $created['reason'], $created['target_id'], $created['operation_id'], array_intersect_key($created, ['sanitized' => true, 'removed' => true]));
     }
 
     // ------------------------------------------------------------------
@@ -663,7 +668,7 @@ class Change_Set_Applier
                 return;
             }
             $created = $this->create_post($entry);
-            $this->obj($entry, $created['outcome'], 'create', $created['reason'], $created['target_id'], $created['operation_id']);
+            $this->obj($entry, $created['outcome'], 'create', $created['reason'], $created['target_id'], $created['operation_id'], array_intersect_key($created, ['sanitized' => true, 'removed' => true]));
             return;
         }
 
@@ -704,7 +709,7 @@ class Change_Set_Applier
 
         $updated = $this->update_post($target, $entry);
         $reason  = 'applied' === $updated['outcome'] && null !== $conflict ? 'forced over a conflict: ' . $conflict : $updated['reason'];
-        $this->obj($entry, $updated['outcome'], 'update', $reason, $target, $updated['operation_id']);
+        $this->obj($entry, $updated['outcome'], 'update', $reason, $target, $updated['operation_id'], array_intersect_key($updated, ['sanitized' => true, 'removed' => true]));
     }
 
     private function conflict_reason(array $entry, array $current): string
@@ -1009,11 +1014,12 @@ class Change_Set_Applier
         );
     }
 
-    /** @return array{outcome:string, reason:string, target_id:int|null, operation_id:string|null} */
+    /** @return array{outcome:string, reason:string, target_id:int|null, operation_id:string|null, sanitized?: true, removed?: list<string>} */
     private function update_post(int $target, array $entry): array
     {
         $fields       = $this->post_fields($entry, false);
         $fields['ID'] = $target;
+        $sanitized    = $this->kses_report($target, $fields);
 
         try {
             $run = Safe_Mutation::run(
@@ -1043,7 +1049,8 @@ class Change_Set_Applier
         }
 
         $this->note_slug($entry, $target);
-        return ['outcome' => 'applied', 'reason' => 'the target was unmodified since the base', 'target_id' => $target, 'operation_id' => $run['operation_id']];
+        $operation = $run['operation_id'] ?? null;
+        return ['outcome' => 'applied', 'reason' => 'the target was unmodified since the base', 'target_id' => $target, 'operation_id' => is_string($operation) ? $operation : null] + $sanitized;
     }
 
     /**
@@ -1052,7 +1059,7 @@ class Change_Set_Applier
      * (so the next sync matches by id); otherwise the post gets a new id and
      * references to it are remapped.
      *
-     * @return array{outcome:string, reason:string, target_id:int|null, operation_id:string|null}
+     * @return array{outcome:string, reason:string, target_id:int|null, operation_id:string|null, sanitized?: true, removed?: list<string>}
      */
     private function create_post(array $entry): array
     {
@@ -1061,6 +1068,7 @@ class Change_Set_Applier
         if ($src > 0 && ! get_post($src)) {
             $fields['import_id'] = $src;
         }
+        $sanitized = $this->kses_report(0, $fields);
 
         $id = wp_insert_post(wp_slash($fields), true);
         if (is_wp_error($id) || ! $id) {
@@ -1103,7 +1111,7 @@ class Change_Set_Applier
 
         $this->note_slug($entry, $id);
         $reason = $id === $src ? 'created on the target' : sprintf('created on the target as post %d (the origin id is taken by another object)', $id);
-        return ['outcome' => 'applied', 'reason' => $reason, 'target_id' => $id, 'operation_id' => $operation];
+        return ['outcome' => 'applied', 'reason' => $reason, 'target_id' => $id, 'operation_id' => $operation] + $sanitized;
     }
 
     /** WordPress de-duplicates slugs silently; a synced page that lands at a different URL is worth saying so. */
@@ -1114,6 +1122,25 @@ class Change_Set_Applier
         if ('' !== $wanted && $wanted !== $got) {
             $this->warnings[] = sprintf('%s landed with slug "%s" instead of "%s": the target already uses that slug for another post.', (string) $entry['key'], $got, $wanted);
         }
+    }
+
+    /**
+     * What the save's kses will remove from the entry's content for this
+     * user (issue #1243), for the entry's outcome: empty when the content is
+     * stored as carried, or is what the target already holds
+     * (Save_Filters::changed_text() leaves it out of the write).
+     *
+     * @param array<mixed> $fields
+     * @return array{sanitized?: true, removed?: list<string>}
+     */
+    private function kses_report(int $post_id, array $fields): array
+    {
+        $content = $fields['post_content'] ?? null;
+        if (! is_string($content) || ($post_id > 0 && get_post_field('post_content', $post_id, 'raw') === $content)) {
+            return [];
+        }
+
+        return $this->kses->sanitization($post_id, $content);
     }
 
     private function post_fields(array $entry, bool $create): array
@@ -1375,7 +1402,8 @@ class Change_Set_Applier
     // Reporting.
     // ------------------------------------------------------------------
 
-    private function dep(string $key, string $outcome, string $action, string $reason, ?int $target_id = null, ?string $operation_id = null): void
+    /** @param array<string, mixed> $sanitized What kses removed from the content written (issue #1243), when it did. */
+    private function dep(string $key, string $outcome, string $action, string $reason, ?int $target_id = null, ?string $operation_id = null, array $sanitized = []): void
     {
         $this->dep_results[] = [
             'key'          => $key,
@@ -1384,10 +1412,14 @@ class Change_Set_Applier
             'reason'       => $reason,
             'target_id'    => $target_id,
             'operation_id' => $operation_id,
-        ];
+        ] + $sanitized;
     }
 
-    private function obj(array $entry, string $outcome, string $action, string $reason, ?int $target_id = null, ?string $operation_id = null): void
+    /**
+     * @param array<mixed>         $entry
+     * @param array<string, mixed> $sanitized What kses removed from the content written (issue #1243), when it did.
+     */
+    private function obj(array $entry, string $outcome, string $action, string $reason, ?int $target_id = null, ?string $operation_id = null, array $sanitized = []): void
     {
         $this->obj_results[] = [
             'key'          => (string) $entry['key'],
@@ -1397,7 +1429,7 @@ class Change_Set_Applier
             'reason'       => $reason,
             'target_id'    => $target_id,
             'operation_id' => $operation_id,
-        ];
+        ] + $sanitized;
     }
 
     private function report(array $set): array

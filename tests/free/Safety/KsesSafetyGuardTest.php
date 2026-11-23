@@ -28,12 +28,12 @@ class KsesSafetyGuardTest extends \WP_UnitTestCase
      * @var array<string, string>
      */
     public const RECORDED = [
+        'Tools/SiteEditor/Global_Styles.php'        => 'The styles are JSON, not markup: its verify step compares the stored document with the planned one and rolls back with an error when the save\'s filters removed a value (GlobalStylesTest).',
         'Safety/Save_Filters.php'                   => 'The write helper itself; its callers run the check before they call it.',
         'Integrations/Advanced_Ads_Pack.php'        => self::PENDING,
         'Integrations/BetterDocs_Pack.php'          => self::PENDING,
         'Integrations/CartFlows_Pack.php'           => self::PENDING,
         'Integrations/Core_Fonts_Pack.php'          => self::PENDING,
-        'Integrations/Core_Patterns_Pack.php'       => self::PENDING,
         'Integrations/Cpt_Builder_Pack.php'         => self::PENDING,
         'Integrations/EDD_Pack.php'                 => self::PENDING,
         'Integrations/Event_Calendar_Writes.php'    => self::PENDING,
@@ -48,18 +48,10 @@ class KsesSafetyGuardTest extends \WP_UnitTestCase
         'Integrations/MemberPress_Pack.php'         => self::PENDING,
         'Integrations/Popup_Builder_Pack.php'       => self::PENDING,
         'Integrations/Popup_Maker_Pack.php'         => self::PENDING,
-        'Integrations/TablePress_Pack.php'          => self::PENDING,
         'Integrations/Theme_Layouts_Pack.php'       => self::PENDING,
         'Integrations/Thrive_Ovation_Pack.php'      => self::PENDING,
         'Memory/Memory_Store.php'                   => self::PENDING,
-        'Tools/Builders/Avada_Content.php'          => self::PENDING,
-        'Tools/Builders/Divi_Content.php'           => self::PENDING,
-        'Tools/Builders/WPBakery_Content.php'       => self::PENDING,
-        'Tools/Media/Update_Media.php'              => self::PENDING,
-        'Tools/SiteEditor/Global_Styles.php'        => self::PENDING,
-        'Tools/SiteEditor/Site_Templates_Write.php' => self::PENDING,
-        'Tools/Sync/Change_Set_Applier.php'         => self::PENDING,
-        'Tools/ThemeBuilder/Template_Store.php'     => self::PENDING,
+        'Tools/ThemeBuilder/Template_Store.php'     => 'Runs wp_kses_post over template content for every user before the write, so the save has nothing left to change (BuilderAndSiteKsesTest).',
     ];
 
     /**

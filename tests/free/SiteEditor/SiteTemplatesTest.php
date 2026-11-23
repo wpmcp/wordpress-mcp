@@ -426,14 +426,9 @@ class SiteTemplatesTest extends \WP_UnitTestCase
                 $this->write->handle(['entity' => $entity, 'id' => $id, 'content' => $kept . '<script>alert(1)</script>']);
                 $this->fail("Expected the $entity save kses would strip to be refused.");
             } catch (Mutation_Failed $e) {
-                // Navigation goes through the block tree, which refuses before
-                // the snapshot (issue #1243); a template part's verify step
-                // rolls the save back.
-                if ($e instanceof \WPMCP\Safety\Post_Write_Refused) {
-                    $this->assertSame('unfiltered_html_required', $e->error()->get_error_code());
-                } else {
-                    $this->assertStringContainsString('Verification failed', $e->getMessage());
-                }
+                // Refused before the snapshot (issue #1243).
+                $this->assertInstanceOf(\WPMCP\Safety\Post_Write_Refused::class, $e);
+                $this->assertSame('unfiltered_html_required', $e->error()->get_error_code());
             }
         }
         $this->assertSame($link, get_post($nav)->post_content);

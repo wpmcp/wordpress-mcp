@@ -181,11 +181,29 @@ class ContentWriteFilterTest extends \WP_UnitTestCase
         $id     = $this->authored_post($author, '', 'page');
         $this->act_as($author);
 
-        $writer::save($id, '[et_pb_section][vc_row][fusion_builder_container]' . self::raw_markup() . '[/fusion_builder_container][/vc_row][/et_pb_section]');
+        $this->spy_content_filter();
+
+        $writer::save($id, '[et_pb_section][vc_row][fusion_builder_container]<p>Layout</p>[/fusion_builder_container][/vc_row][/et_pb_section]');
 
         $this->assert_raw($id, ['post_title', 'post_excerpt']);
         $this->assertStringContainsString('[et_pb_section]', get_post($id)->post_content);
-        $this->assert_kses_stripped($id);
+        $this->assert_content_filtered();
+    }
+
+    /** @dataProvider builder_writers */
+    public function test_builder_content_save_refuses_a_layout_kses_would_rewrite(string $writer): void
+    {
+        $author = $this->author();
+        $id     = $this->authored_post($author, '', 'page');
+        $this->act_as($author);
+
+        try {
+            $writer::save($id, '[et_pb_section][vc_row][fusion_builder_container]' . self::raw_markup() . '[/fusion_builder_container][/vc_row][/et_pb_section]');
+            $this->fail('A layout kses would rewrite must be refused.');
+        } catch (\WPMCP\Safety\Post_Write_Refused $e) {
+            $this->assertSame('unfiltered_html_required', $e->error()->get_error_code());
+        }
+        $this->assert_raw($id);
     }
 
     /**
@@ -282,7 +300,8 @@ class ContentWriteFilterTest extends \WP_UnitTestCase
      * A change set carries the whole post row: title, content and excerpt
      * every time. The columns the target already holds byte for byte are
      * not written, so kses never sees them; a column that does change is
-     * filtered as before.
+     * filtered as before, and the entry's outcome reports what kses removed
+     * (issue #1243).
      */
     public function test_change_set_writes_only_the_text_columns_that_differ(): void
     {
@@ -299,7 +318,7 @@ class ContentWriteFilterTest extends \WP_UnitTestCase
                 'tool_name'   => 'update-post',
                 'args'        => [],
             ],
-            static fn () => wp_update_post(wp_slash(['ID' => $id, 'post_content' => self::raw_markup() . '<p>new</p>']))
+            static fn () => wp_update_post(wp_slash(['ID' => $id, 'post_content' => '<p>new</p>']))
         );
         $set = (new Change_Set_Builder())->build(['session_id' => 'build-440']);
 
@@ -307,11 +326,42 @@ class ContentWriteFilterTest extends \WP_UnitTestCase
         $this->make_raw($id);
 
         $this->act_as($this->admin_without_unfiltered_html());
+        $this->spy_content_filter();
         $report = (new Change_Set_Applier())->apply($set, ['dry_run' => false, 'session_id' => 'sync-440']);
 
         $this->assertSame(1, $report['summary']['applied'], (string) wp_json_encode($report));
         $this->assert_raw($id, ['post_title', 'post_excerpt']);
-        $this->assertStringContainsString('<p>new</p>', get_post($id)->post_content);
+        $this->assertSame('<p>new</p>', get_post($id)->post_content);
+        $this->assert_content_filtered();
+    }
+
+    public function test_a_change_set_entry_kses_rewrites_reports_what_it_removed(): void
+    {
+        wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
+        wpmcp_test_grant_network_admin(get_current_user_id());
+        $id = (int) self::factory()->post->create(['post_status' => 'publish']);
+        $this->make_raw($id);
+
+        Safe_Mutation::run(
+            [
+                'object_type' => 'post',
+                'object_id'   => $id,
+                'session_id'  => 'build-1243',
+                'tool_name'   => 'update-post',
+                'args'        => [],
+            ],
+            static fn () => wp_update_post(wp_slash(['ID' => $id, 'post_content' => self::raw_markup() . '<p>new</p>']))
+        );
+        $set = (new Change_Set_Builder())->build(['session_id' => 'build-1243']);
+        $this->make_raw($id);
+
+        $this->act_as($this->admin_without_unfiltered_html());
+        $report = (new Change_Set_Applier())->apply($set, ['dry_run' => false, 'session_id' => 'sync-1243']);
+
+        $this->assertSame(1, $report['summary']['applied'], (string) wp_json_encode($report));
+        $this->assertStringContainsString('"sanitized":true', (string) wp_json_encode($report));
+        $this->assertStringContainsString('<script> element', (string) wp_json_encode($report, JSON_UNESCAPED_SLASHES));
+        $this->assert_raw($id, ['post_title', 'post_excerpt']);
         $this->assert_kses_stripped($id);
     }
 
