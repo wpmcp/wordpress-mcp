@@ -5,6 +5,7 @@
 #   composer standard                          # full run
 #   composer standard -- --diff=origin/main    # new and changed code only
 #   bash bin/standard.sh --install             # fetch the toolchain, then exit
+#   bash bin/standard.sh --diff=<ref> --plan   # print the gates a run would run, run none
 #
 # Full run: PHPStan (phpstan.neon.dist: level max, strict rules, bleedingEdge,
 # the WPMCP module rules) and phpcs (phpcs-standard.xml.dist) on the v2 roots
@@ -35,11 +36,13 @@ CACHE="${WPMCP_STANDARD_CACHE:-$HOME/.cache/wpmcp-standard}"
 
 diff_ref=""
 install_only=false
+plan_only=false
 for arg in "$@"; do
 	case "$arg" in
 		--diff=*) diff_ref="${arg#--diff=}" ;;
 		--diff) diff_ref="origin/main" ;;
 		--install) install_only=true ;;
+		--plan) plan_only=true ;;
 		--prune)
 			# Keep only the pinned phar; drop older versions and partial downloads.
 			find "$CACHE" -maxdepth 1 -type f ! -name "phpstan-${PHPSTAN_VERSION}.phar" -delete 2>/dev/null
@@ -53,11 +56,17 @@ done
 say() { printf '[standard] %s\n' "$*" >&2; }
 
 # --- toolchain --------------------------------------------------------------
-if [ ! -f tools/standard/vendor/autoload.php ]; then
+if $plan_only; then
+	# --plan names the gates the same decisions would run and runs none of them.
+	PHPSTAN=(true)
+	PHPCS=(true)
+elif [ ! -f tools/standard/vendor/autoload.php ]; then
 	say "installing tools/standard (PHPStan extensions, slevomat)..."
 	composer install --working-dir=tools/standard --no-interaction --no-progress --prefer-dist -q || exit 2
 fi
-if [ -x vendor/bin/phpstan ]; then
+if $plan_only; then
+	:
+elif [ -x vendor/bin/phpstan ]; then
 	PHPSTAN=(vendor/bin/phpstan)
 	unset WPMCP_PHPSTAN_PHAR
 else
@@ -77,12 +86,24 @@ else
 	export WPMCP_PHPSTAN_PHAR="$phar"
 	PHPSTAN=(php "$phar")
 fi
-PHPCS=(tools/standard/vendor/bin/phpcs --standard=phpcs-standard.xml.dist --runtime-set installed_paths "$PWD/tools/standard/vendor/slevomat/coding-standard")
+$plan_only || PHPCS=(tools/standard/vendor/bin/phpcs --standard=phpcs-standard.xml.dist --runtime-set installed_paths "$PWD/tools/standard/vendor/slevomat/coding-standard")
 $install_only && { say "toolchain ready"; exit 0; }
 
 failed=0
+
+# Whether anything under the given paths differs from $base or is untracked.
+# The output is taken whole: under pipefail, `... | grep -q .` reads as false
+# when grep exits before a writer is done (SIGPIPE, 141), which skipped gates
+# in a worktree with both changed and untracked files.
+touched() {
+	local found
+	found="$({ git diff --name-only "$base" -- "$@"; git ls-files --others --exclude-standard -- "$@"; } 2>/dev/null)"
+	[ -n "$found" ]
+}
+
 gate() { # name, then the command
 	local name="$1"; shift
+	if $plan_only; then printf 'gate: %s\n' "$name"; return 0; fi
 	if "$@"; then say "ok    $name"; else say "FAIL  $name"; failed=1; fi
 }
 
@@ -118,10 +139,10 @@ else
 		gate "phpstan (level max, changed lines)" phpstan_diff
 		gate "phpcs (changed lines)" phpcs_diff
 	fi
-	if git diff --name-only "$base" -- tools/phpstan tests/kernel/PHPStan | grep -q . || git ls-files --others --exclude-standard -- tools/phpstan tests/kernel/PHPStan | grep -q .; then
+	if touched tools/phpstan tests/kernel/PHPStan; then
 		gate "gate rule tests" vendor/bin/phpunit --no-configuration --bootstrap tools/phpstan/test-bootstrap.php tests/kernel/PHPStan
 	fi
-	if git diff --name-only "$base" -- src/Modules pro/modules src/Api tools/registry | grep -q .; then
+	if touched src/Modules pro/modules src/Api tools/registry; then
 		gate "registry check (every flavor)" php bin/build-registry.php --check --all-flavors --quiet
 	fi
 	# Rule 13: a change to the code the tool surface comes from must leave the
@@ -129,7 +150,7 @@ else
 	# change carries its regenerated baseline. build/registry is generated
 	# (and ignored), so src/Modules stands for it.
 	surface=(src/Plugin.php src/Integrations src/Modules src/Tools src/Governance build/registry)
-	if { git diff --name-only "$base" -- "${surface[@]}"; git ls-files --others --exclude-standard -- "${surface[@]}"; } | grep -q .; then
+	if touched "${surface[@]}"; then
 		golden_check() {
 			golden_log="$(mktemp "${TMPDIR:-/tmp}/wpmcp-standard-golden.XXXXXX")" || return 1
 			# The log goes on any exit, Ctrl-C included.
@@ -139,7 +160,7 @@ else
 			[ "$rc" = 0 ] || grep -E -A20 '^[0-9]+\) ' "$golden_log" | head -60 >&2
 			rm -f "$golden_log"
 			[ "$rc" = 0 ] && return 0
-			if git diff --name-only "$base" -- tests/support/golden/baseline | grep -q .; then
+			if touched tests/support/golden/baseline; then
 				say "golden: the capture still differs from the baseline this change updates; regenerate it again"
 			else
 				say "golden: this change alters the tool surface and does not update tests/support/golden/baseline"
@@ -152,5 +173,6 @@ else
 fi
 gate "central-list guard" php tools/standard/central-list-guard.php "$guard_ref"
 
+$plan_only && exit 0
 [ "$failed" = 0 ] && say "standard: all gates passed" || say "standard: FAILED (docs/CODING-STANDARD.md)"
 exit "$failed"
