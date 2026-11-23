@@ -4,6 +4,7 @@ namespace WPMCP\Tools\Content;
 
 use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Post_Creation_Snapshot;
+use WPMCP\Tools\Builders\Builder_Meta_Keys;
 
 if (! defined('ABSPATH')) {
     exit;
@@ -13,8 +14,10 @@ class Create_Post
 {
     private const VALID_STATUSES = ['draft', 'publish', 'pending', 'private', 'future'];
 
-    public function __construct(private readonly Kses_Safety $kses = new Kses_Safety())
-    {
+    public function __construct(
+        private readonly Kses_Safety $kses = new Kses_Safety(),
+        private readonly Builder_Meta_Keys $builder_keys = new Builder_Meta_Keys()
+    ) {
     }
 
     /**
@@ -51,6 +54,7 @@ class Create_Post
                 throw new \InvalidArgumentException($guard);
             }
             Code_Posts::assert_meta_writable($post_type, array_map('strval', array_keys($args['meta'])));
+            $this->builder_keys->assert_writable(array_map('strval', array_keys($args['meta'])));
         }
 
         Post_Status_Guard::assert($post_type, $status, true);

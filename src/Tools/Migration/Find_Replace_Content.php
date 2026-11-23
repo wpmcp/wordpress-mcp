@@ -8,6 +8,7 @@ use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Save_Filters;
 use WPMCP\Safety\Snapshot_Store;
 use WPMCP\Tools\Backup\Url_Rewriter;
+use WPMCP\Tools\Builders\Builder_Meta_Keys;
 use WPMCP\Tools\Content\Code_Posts;
 use WPMCP\Tools\Content\Content_Guard;
 
@@ -77,8 +78,10 @@ class Find_Replace_Content
     private bool $regex     = false;
     private string $replace = '';
 
-    public function __construct(private readonly Kses_Safety $kses = new Kses_Safety())
-    {
+    public function __construct(
+        private readonly Kses_Safety $kses = new Kses_Safety(),
+        private readonly Builder_Meta_Keys $builder_keys = new Builder_Meta_Keys()
+    ) {
     }
 
     public function handle(array $args): array
@@ -238,6 +241,7 @@ class Find_Replace_Content
                 throw new \InvalidArgumentException($guard);
             }
             Code_Posts::assert_meta_writable(null, $keys);
+            $this->builder_keys->assert_writable($keys);
         }
         if (in_array('meta', $fields, true) && [] === $keys) {
             throw new \InvalidArgumentException('fields includes meta, so meta_keys must name the keys to search.');
