@@ -34,7 +34,7 @@ The difference: **a snapshot before each supported write.** A wrong bulk price u
 * Site context, diagnostics, exports, and scheduled maintenance
 * Media library work, including stock image search and import
 * Security scans, performance analysis, and plugin/theme installs and updates from WordPress.org
-* Everything snapshotted, logged, and reversible
+* A snapshot before each supported write, one-click restore, and an audit log of every tool call
 
 = What this plugin does not do =
 
@@ -112,7 +112,7 @@ The connection self-test calls this site's own REST route, and `scan-security` f
 
 1. Install and activate WooCommerce, then this plugin.
 2. Open the WP MCP admin menu and follow the connection wizard to pair your MCP client (Claude Code, Claude Desktop, Cursor, and others).
-3. Ask your agent to update a product. Check the History screen and restore any change with one click.
+3. Ask your agent to update a product. The History screen lists the snapshot taken before each supported write, with one-click restore.
 
 == Frequently Asked Questions ==
 
@@ -122,7 +122,7 @@ The Model Context Protocol is an open standard that lets AI assistants use tools
 
 = Can the AI destroy my store? =
 
-Every mutating tool snapshots the affected data first, and this build ships no code-execution, file-writing or raw database tools at all. You can restore any snapshot, or roll back an entire agent session.
+It takes a snapshot before each supported write, and this build ships no code-execution, file-writing or raw database tools at all. History gives one-click restore, and you can roll back the supported writes of an entire agent session.
 
 = What if my AI client skips permission prompts? =
 

@@ -144,7 +144,7 @@ Privacy policy: https://policies.google.com/privacy
 
 1. Install and activate the plugin.
 2. Open WP MCP, Connection and follow its four steps to connect your AI app (Claude Code, Claude Desktop, ChatGPT, Cursor, Antigravity, and others).
-3. Ask your agent to build something. Check the History screen to see snapshots accumulate; restore any of them with one click.
+3. Ask your agent to build something. The History screen lists the snapshot taken before each supported write, with one-click restore.
 
 == Frequently Asked Questions ==
 
@@ -154,7 +154,7 @@ The Model Context Protocol is an open standard that lets AI assistants use tools
 
 = Can the AI destroy my site? =
 
-Every supported write snapshots the affected data first, the few that cannot be snapshotted are off by default or need confirmation and say so in their result, and destructive escape hatches (WP-CLI, PHP execution) ship disabled by default and only run in development environments. You can restore any snapshot, or roll back an entire agent session.
+Every supported write snapshots the affected data first, the few that cannot be snapshotted are off by default or need confirmation and say so in their result, and destructive escape hatches (WP-CLI, PHP execution) ship disabled by default and only run in development environments. History gives one-click restore, and you can roll back the supported writes of an entire agent session.
 
 = What if my AI client skips permission prompts? =
 

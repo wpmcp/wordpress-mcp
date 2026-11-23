@@ -41,6 +41,9 @@ class OverclaimWordingGuardTest extends TestCase
         '/\b(?:snapshot|before-image)s? (?:ahead of|in front of) (?:every|all|any) (?:write|change|edit|mutation)s?\b/i',
         '/\b(?:any|every) change can be (?:rolled back|undone|reverted|restored)\b/i',
         '/\broll (?:any|every) change back\b/i',
+        '/\brestore any (?:change|snapshot|of them)\b/i',
+        '/\beverything (?:is )?snapshotted\b/i',
+        '/\bevery (?:mutating|write|writing) tool snapshots\b/i',
     ];
 
     /** Roots scanned, relative to the repository root. Missing ones are skipped. */
@@ -108,6 +111,11 @@ class OverclaimWordingGuardTest extends TestCase
             'Every write snapshots the whole subscription, its schedule included.',
             'and every one is snapshotted so rollback undoes it.',
             'wpmcp writes a before-image ahead of every mutation.',
+            'Check the History screen and restore any change with one click.',
+            'Check the History screen to see snapshots accumulate; restore any of them with one click.',
+            'You can restore any snapshot, or roll back an entire agent session.',
+            'Everything snapshotted, logged, and reversible',
+            'Every mutating tool snapshots the affected data first.',
         ];
         foreach ($bad as $line) {
             $this->assertNotNull($this->match($line), 'Not caught: ' . $line);
@@ -125,6 +133,8 @@ class OverclaimWordingGuardTest extends TestCase
             'Each supported write is snapshotted: `rollback-operation` deletes a created booking.',
             'Use one session_id for every write in this task.',
             'the deny rule would deny every write on the site.',
+            'The History screen lists the snapshot taken before each supported write, with one-click restore.',
+            'History gives one-click restore, and you can roll back the supported writes of an entire agent session.',
         ];
         foreach ($good as $line) {
             $this->assertNull($this->match($line), 'Flagged honest text: ' . $line);
