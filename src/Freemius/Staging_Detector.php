@@ -16,6 +16,8 @@ if (! defined('ABSPATH')) {
  * not count; a numbered copy is a staging marker, a word after the hyphen is
  * not. The last two host labels are never looked at: they are the
  * registrable domain, and a business that owns stage.com is a live site.
+ * One host-specific rule adds Kinsta's own staging domains
+ * (staging-<site>.kinsta.cloud and the others in Kinsta_Staging_Host).
  *
  * Pure on purpose (no state, no options, no hooks), so the rule is
  * unit-testable on its own. Staging_Copy reads the real addresses and acts
@@ -39,6 +41,10 @@ class Staging_Detector
         $parts = wp_parse_url(strtolower(trim($url)));
         if (! is_array($parts) || empty($parts['host'])) {
             return false;
+        }
+
+        if (Kinsta_Staging_Host::matches($parts['host'])) {
+            return true;
         }
 
         $labels = explode('.', $parts['host']);
