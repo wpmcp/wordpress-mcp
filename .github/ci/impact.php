@@ -62,6 +62,7 @@ const GUARDS = array(
 	'ToolsListBudgetTest',
 	'AbilityManifestTest',
 	'WporgStripTest',
+	'OverclaimWordingGuardTest',
 );
 const GUARD_GLOBS = array( '#Flavor[^/]*Test\.php$#', '#Hardening[^/]*Test\.php$#' );
 

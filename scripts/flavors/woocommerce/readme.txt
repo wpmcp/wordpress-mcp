@@ -8,7 +8,7 @@ Stable tag: {{VERSION}}
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-AI agents run your WooCommerce store over MCP, from products and orders to content. A snapshot before every write, one-click rollback after.
+AI agents run your WooCommerce store over MCP, from products and orders to content. A snapshot before each supported write, one-click rollback after.
 
 == Description ==
 
@@ -18,8 +18,8 @@ The difference: **every mutating operation takes a snapshot first.** A wrong bul
 
 = Safety model =
 
-* Automatic snapshot before every write, with browsable history and one-click restore
-* Session rollback: undo everything an agent did in one conversation
+* Automatic snapshot before each supported write, with browsable history and one-click restore
+* Session rollback: undo the supported writes an agent made in one conversation
 * Layered governance where permissions can only be narrowed, never widened
 * Full audit log of every tool call
 * No remote code execution tools of any kind in this plugin

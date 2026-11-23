@@ -71,7 +71,7 @@ that will change and confirm first.
 
 ## Undo
 
-Every write is snapshotted; `wpmcp/rollback-operation` restores the page as
+Supported writes are snapshotted; `wpmcp/rollback-operation` restores the page as
 it was. Never fall back to `wpmcp/set-post-meta` or the database tools to
 write builder data: that bypasses the hash check and the builder's own
 format validation.

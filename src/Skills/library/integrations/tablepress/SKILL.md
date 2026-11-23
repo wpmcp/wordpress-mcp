@@ -1,6 +1,6 @@
 ---
 name: Tables: TablePress
-description: Read, edit cell by cell, import, export and place tables through TablePress, every change snapshotted.
+description: Read, edit cell by cell, import, export and place tables through TablePress, with a snapshot before each supported write.
 version: 1.0.0
 tier: pro
 tags: [integrations, tables]

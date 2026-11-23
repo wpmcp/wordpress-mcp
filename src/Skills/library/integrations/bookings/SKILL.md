@@ -57,5 +57,5 @@ User: "Move Sara's massage on Friday to the next free slot on Monday."
 
 ## Undo
 
-Every write is snapshotted and undone with `wpmcp/rollback-operation`. A
+Supported writes are snapshotted and undone with `wpmcp/rollback-operation`. A
 message already sent to a customer (with `notify: true`) is not undone.

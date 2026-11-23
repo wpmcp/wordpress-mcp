@@ -457,7 +457,7 @@ class Connection_Page
                 <h2><?php echo esc_html__('Next steps', 'wpmcp'); ?></h2>
                 <ol>
                     <li><?php echo esc_html__('Ask your client to list tools, you should see the wpmcp toolset.', 'wpmcp'); ?></li>
-                    <li><?php echo esc_html__('Every write is snapshotted first; review and roll back anything from the wpmcp History screen.', 'wpmcp'); ?></li>
+                    <li><?php echo esc_html__('Before each supported write, wpmcp saves a snapshot. Review and restore changes from the wpmcp History screen.', 'wpmcp'); ?></li>
                     <li><?php echo esc_html__('Narrow what agents may do per ability, domain, or operation via governance, and audit every decision on the Audit Log screen.', 'wpmcp'); ?></li>
                 </ol>
             <?php endif; ?>
