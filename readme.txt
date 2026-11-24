@@ -4,7 +4,7 @@ Tags: mcp, ai, ai agent, automation, undo
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -146,6 +146,14 @@ OAuth is off by default. Clients configured with an application password (Claude
 Yes. The safety core and the MCP server are free and GPL. Pro adds convenience and depth (Elementor deep editing, builders, cloud sync), not safety. Snapshot retention is not part of that: it is the same flat, filterable number on every install.
 
 == Changelog ==
+
+= 1.2.3 =
+Security hardening for undo; update recommended.
+
+Fixes:
+* Security hardening for undo.
+* Undo now needs the same permission as the change it reverses, checked for the person undoing it. Below administrator you can undo only your own changes, and a session is undone whole or not at all.
+* Undoing a change to a user keeps their current login sessions and application passwords, so ones revoked since stay revoked. An administrator can change this on the Opt-in operations screen (on a network, only a network administrator).
 
 = 1.2.2 =
 Security hardening for builder writes on multisite; update recommended.
@@ -1094,6 +1102,9 @@ Admin and tooling:
 * Freemius licensing shows its stock, default-off opt-in screen on activation rather than deciding consent for you. Sites that ran a pre-release build under anonymous mode see that connect screen once after upgrading; Skip dismisses it and the plugin keeps working unchanged. The WordPress.org build ships no licensing SDK at all.
 
 == Upgrade Notice ==
+
+= 1.2.3 =
+Security hardening for undo; update recommended.
 
 = 1.2.2 =
 Security hardening for builder writes on multisite; update recommended.
