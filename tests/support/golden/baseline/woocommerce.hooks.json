@@ -276,7 +276,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -1847,7 +1847,7 @@
           1
         ]
       ],
-      "activate_<abspath>/wpmcp-pro": [
+      "activate_<abspath>/wpmcp-premium": [
         [
           10,
           "Freemius->_activate_plugin_event_hook",
@@ -2139,7 +2139,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -3730,7 +3730,7 @@
           1
         ]
       ],
-      "activate_<abspath>/wpmcp-pro": [
+      "activate_<abspath>/wpmcp-premium": [
         [
           10,
           "Freemius->_activate_plugin_event_hook",
@@ -4012,7 +4012,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -5866,7 +5866,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -7705,7 +7705,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -9544,7 +9544,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],

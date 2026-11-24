@@ -2951,7 +2951,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Security\\Incident_Response->handle",
-    "description": "list-app-passwords (no secrets); revoke-app-password (uuid or all); list-sessions (one user, masked, no tokens); end-sessions (user_id or all); rotate-salts (wp-config.php, backup kept; refused if unwritable or defined elsewhere); reinstall-core-files (files scan-security flags, from the checksum-verified official package, never wp-content; undo: rollback-operation); quarantine-file (path, reason: moves it to a private folder; not core, wp-config or WP MCP files; undo: rollback-operation); list-quarantine; restore-quarantined-file (id, overwrite); purge-quarantined-file (id). Quarantine needs the wpmcp_enable_fs_writes opt-in. Writes need confirm:true. Cannot be undone: revoke, end-sessions, rotate-salts (logs out everyone, your cookie session too, not app passwords). Your session and app password stay unless include_current. Other users take edit_users",
+    "description": "list-app-passwords (no secrets); revoke-app-password (uuid or all); list-sessions (one user, masked, no tokens); end-sessions (user_id or all); rotate-salts (wp-config.php, backup kept; refused if unwritable or defined elsewhere); reinstall-core-files (files scan-security flags, from the checksum-verified official package, never wp-content; undo: rollback-operation); quarantine-file (path, reason: moves it to a private folder; not core, wp-config or WPMCP files; undo: rollback-operation); list-quarantine; restore-quarantined-file (id, overwrite); purge-quarantined-file (id). Quarantine needs the wpmcp_enable_fs_writes opt-in. Writes need confirm:true. Cannot be undone: revoke, end-sessions, rotate-salts (logs out everyone, your cookie session too, not app passwords). Your session and app password stay unless include_current. Other users take edit_users",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -8215,7 +8215,7 @@
     "group": "redirects",
     "method": "register_redirect_abilities",
     "handler": "WPMCP\\Tools\\Redirects\\List_Redirects->handle",
-    "description": "List this site's redirects (the active redirect plugin's, else WP MCP's own: source path, resolved target, status code, enabled, hit count), plus pending suggestions raised when a published post was deleted or moved. Filter by enabled state or a search string. Read-only",
+    "description": "List this site's redirects (the active redirect plugin's, else WPMCP's own: source path, resolved target, status code, enabled, hit count), plus pending suggestions raised when a published post was deleted or moved. Filter by enabled state or a search string. Read-only",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -8254,7 +8254,7 @@
     "group": "redirects",
     "method": "register_redirect_abilities",
     "handler": "WPMCP\\Tools\\Redirects\\Create_Redirect->handle",
-    "description": "Create a redirect (in the active redirect plugin, else WP MCP's own table) from a source path to a target URL or target_post_id (which survives slug changes). Chains are flattened to one hop and loops refused; the stored target is reported. Snapshotted; rollback-operation removes it",
+    "description": "Create a redirect (in the active redirect plugin, else WPMCP's own table) from a source path to a target URL or target_post_id (which survives slug changes). Chains are flattened to one hop and loops refused; the stored target is reported. Snapshotted; rollback-operation removes it",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -8915,7 +8915,7 @@
     "group": "maintenance",
     "method": "register_maintenance_abilities",
     "handler": "WPMCP\\Tools\\Maintenance\\Get_Maintenance_Status->handle",
-    "description": "Whether the site is gated: WP MCP maintenance mode (message, Retry-After), core .maintenance, coming soon and maintenance plugins",
+    "description": "Whether the site is gated: WPMCP maintenance mode (message, Retry-After), core .maintenance, coming soon and maintenance plugins",
     "input_schema": {
       "type": "object",
       "properties": []
@@ -14729,7 +14729,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Connect->handle",
-    "description": "Connect this site to WP MCP Cloud: store the cloud url + api key and verify them by fetching the account, which is returned. gateway_consent (default false) permits a gateway credential upload; false withdraws it and kills any the cloud holds",
+    "description": "Connect this site to WPMCP Cloud: store the cloud url + api key and verify them by fetching the account, which is returned. gateway_consent (default false) permits a gateway credential upload; false withdraws it and kills any the cloud holds",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -14766,7 +14766,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Status->handle",
-    "description": "Whether this site is connected to WP MCP Cloud, and where",
+    "description": "Whether this site is connected to WPMCP Cloud, and where",
     "input_schema": {
       "type": "object",
       "properties": []
@@ -14788,7 +14788,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_List_Assets->handle",
-    "description": "List the assets (widget/block specs) in this site's WP MCP Cloud account",
+    "description": "List the assets (widget/block specs) in this site's WPMCP Cloud account",
     "input_schema": {
       "type": "object",
       "properties": []
@@ -14810,7 +14810,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Push_Assets->handle",
-    "description": "Push this site's custom widget and block specs up to WP MCP Cloud (backup + reuse across sites). Optional type filter (widget|block)",
+    "description": "Push this site's custom widget and block specs up to WPMCP Cloud (backup + reuse across sites). Optional type filter (widget|block)",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -14836,7 +14836,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Pull_Assets->handle",
-    "description": "Pull this site's WP MCP Cloud builder assets and recreate them as local custom widget/block specs (each validated first; refusals listed under skipped with a reason)",
+    "description": "Pull this site's WPMCP Cloud builder assets and recreate them as local custom widget/block specs (each validated first; refusals listed under skipped with a reason)",
     "input_schema": {
       "type": "object",
       "properties": []
@@ -14858,7 +14858,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Sync_Settings->handle",
-    "description": "Preview what would sync to WP MCP Cloud: governance toggles, MCP exposure switch, tool-exposure mode, skills switch. Never secrets or code-level gates (db writes, php exec, cli allowlist)",
+    "description": "Preview what would sync to WPMCP Cloud: governance toggles, MCP exposure switch, tool-exposure mode, skills switch. Never secrets or code-level gates (db writes, php exec, cli allowlist)",
     "input_schema": {
       "type": "object",
       "properties": []
@@ -14880,7 +14880,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Push_Settings->handle",
-    "description": "Push the cloud-sync-settings posture plus identity scopes (no secrets) to WP MCP Cloud for cloud-apply-settings elsewhere. Paid. Changes nothing here",
+    "description": "Push the cloud-sync-settings posture plus identity scopes (no secrets) to WPMCP Cloud for cloud-apply-settings elsewhere. Paid. Changes nothing here",
     "input_schema": {
       "type": "object",
       "properties": []
@@ -14931,7 +14931,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Marketplace_Browse->handle",
-    "description": "Browse WP MCP Cloud marketplace widget and block specs, optionally by type and search",
+    "description": "Browse WPMCP Cloud marketplace widget and block specs, optionally by type and search",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -14964,7 +14964,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Cloud\\Cloud_Marketplace_Install->handle",
-    "description": "Install a WP MCP Cloud marketplace listing by slug: validated like validate-widget-spec / validate-block-spec, template run through wp_kses_post, lands INACTIVE until set-widget-status / set-block-status. Refuses a name colliding with a local spec",
+    "description": "Install a WPMCP Cloud marketplace listing by slug: validated like validate-widget-spec / validate-block-spec, template run through wp_kses_post, lands INACTIVE until set-widget-status / set-block-status. Refuses a name colliding with a local spec",
     "input_schema": {
       "type": "object",
       "properties": {

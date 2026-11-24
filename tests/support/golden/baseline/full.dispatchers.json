@@ -9703,7 +9703,7 @@
           {
             "name": "actionscheduler-cancel-action",
             "mode": "write",
-            "description": "Cancel one pending Action Scheduler action so it never runs. Refuses an action that is not pending and WP MCP's own hooks. Off unless wpmcp_enable_action_scheduler_write. Undo: rollback-operation queues it again, pending, on its old schedule (the canceled record keeps its id)",
+            "description": "Cancel one pending Action Scheduler action so it never runs. Refuses an action that is not pending and WPMCP's own hooks. Off unless wpmcp_enable_action_scheduler_write. Undo: rollback-operation queues it again, pending, on its old schedule (the canceled record keeps its id)",
             "capability": "manage_options",
             "enabled": false,
             "requires_confirm": false,
@@ -9724,7 +9724,7 @@
           {
             "name": "actionscheduler-run-action",
             "mode": "destructive",
-            "description": "Run one pending Action Scheduler action now through the queue runner, whatever its schedule. Its hook's callbacks execute (mail, API calls, syncs) and that CANNOT be undone: recoverable:false, and it needs confirm:true after a preview. Refuses an action that is not pending and WP MCP's own hooks. Off unless wpmcp_enable_action_scheduler_write",
+            "description": "Run one pending Action Scheduler action now through the queue runner, whatever its schedule. Its hook's callbacks execute (mail, API calls, syncs) and that CANNOT be undone: recoverable:false, and it needs confirm:true after a preview. Refuses an action that is not pending and WPMCP's own hooks. Off unless wpmcp_enable_action_scheduler_write",
             "capability": "manage_options",
             "enabled": false,
             "requires_confirm": true,
@@ -13731,7 +13731,7 @@
           {
             "name": "searchreplace-get-last-run",
             "mode": "read",
-            "description": "The last search and replace WP MCP ran (tables, rows changed, session_id for rollback-session) and Better Search Replace's own last result, when either exists",
+            "description": "The last search and replace WPMCP ran (tables, rows changed, session_id for rollback-session) and Better Search Replace's own last result, when either exists",
             "capability": "manage_options",
             "enabled": true,
             "requires_confirm": false,
@@ -13744,7 +13744,7 @@
           {
             "name": "searchreplace-run",
             "mode": "destructive",
-            "description": "Run a serialization-safe search and replace over the named tables. Needs the dry_run_token of a searchreplace-dry-run with the same arguments and confirm:true; refuses when the data now has more matching rows than the dry run. Never touches users, usermeta, WP MCP tables, salts, keys or active_plugins. Each row is snapshotted: rollback-session with the returned session_id undoes the run. Off unless wpmcp_enable_search_replace_write",
+            "description": "Run a serialization-safe search and replace over the named tables. Needs the dry_run_token of a searchreplace-dry-run with the same arguments and confirm:true; refuses when the data now has more matching rows than the dry run. Never touches users, usermeta, WPMCP tables, salts, keys or active_plugins. Each row is snapshotted: rollback-session with the returned session_id undoes the run. Off unless wpmcp_enable_search_replace_write",
             "capability": "manage_options",
             "enabled": false,
             "requires_confirm": true,
@@ -40993,7 +40993,7 @@
           {
             "name": "get-hardening-status",
             "mode": "read",
-            "description": "Hardening settings WP MCP can apply (disable XML-RPC, hide the WordPress version, block user enumeration, hide PHP errors, disable the file editor, security headers): each one's state, whether wp-config.php, the server or another plugin already handles it, and the scan-security finding it answers",
+            "description": "Hardening settings WPMCP can apply (disable XML-RPC, hide the WordPress version, block user enumeration, hide PHP errors, disable the file editor, security headers): each one's state, whether wp-config.php, the server or another plugin already handles it, and the scan-security finding it answers",
             "capability": "manage_options",
             "enabled": true,
             "requires_confirm": false,
@@ -41006,7 +41006,7 @@
           {
             "name": "set-hardening",
             "mode": "write",
-            "description": "Switch hardening settings on or off: settings is an object of disable_xmlrpc (also pingbacks; breaks Jetpack and the mobile apps), hide_wp_version, block_user_enumeration (visitors only), hide_php_errors, disable_file_editor, security_headers => true or false. Applied by WP MCP's hooks, no file edits. Refuses a setting something else already handles. One snapshot; undo: rollback-operation. Disabled by default (wpmcp_enable_hardening_write filter)",
+            "description": "Switch hardening settings on or off: settings is an object of disable_xmlrpc (also pingbacks; breaks Jetpack and the mobile apps), hide_wp_version, block_user_enumeration (visitors only), hide_php_errors, disable_file_editor, security_headers => true or false. Applied by WPMCP's hooks, no file edits. Refuses a setting something else already handles. One snapshot; undo: rollback-operation. Disabled by default (wpmcp_enable_hardening_write filter)",
             "capability": "manage_options",
             "enabled": false,
             "requires_confirm": false,
@@ -41539,7 +41539,7 @@
                 "reason": {
                   "type": "string",
                   "maxLength": 200,
-                  "default": "Blocked via WP MCP"
+                  "default": "Blocked via WPMCP"
                 },
                 "duration": {
                   "type": "integer",
@@ -42214,7 +42214,7 @@
           {
             "name": "get-site-gate-status",
             "mode": "read",
-            "description": "Whether the public site is gated and by what: WP MCP maintenance mode, WordPress core .maintenance, and the SeedProd, WP Maintenance Mode, Under Construction, Maintenance and CMP plugins. Per gate: active, mode (coming soon or maintenance), the HTTP status and message visitors get, and who bypasses it (roles, counts, whether a bypass link or password is set; the secrets themselves are never returned). public_site_gated comes from a live request to the home page as an anonymous visitor, with the evidence in basis and probe",
+            "description": "Whether the public site is gated and by what: WPMCP maintenance mode, WordPress core .maintenance, and the SeedProd, WP Maintenance Mode, Under Construction, Maintenance and CMP plugins. Per gate: active, mode (coming soon or maintenance), the HTTP status and message visitors get, and who bypasses it (roles, counts, whether a bypass link or password is set; the secrets themselves are never returned). public_site_gated comes from a live request to the home page as an anonymous visitor, with the evidence in basis and probe",
             "capability": "manage_options",
             "enabled": true,
             "requires_confirm": false,

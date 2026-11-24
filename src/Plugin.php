@@ -313,11 +313,11 @@ final class Plugin
      * inside a msgid is one more literal for a flavor build to chase. This
      * constant is the single place such a build would rewrite; today neither
      * scripts/build-woo-release.sh nor build-wporg-release.sh does, so every
-     * flavor still renders "wpmcp" here. Menu and page titles compose it with
+     * flavor renders "WPMCP" here. Menu and page titles compose it with
      * a translated tail through page_title() instead of baking it into a
      * msgid.
      */
-    public const BRAND = 'wpmcp';
+    public const BRAND = 'WPMCP';
 
     /**
      * The product name in page titles and H1s (issues #1127, #1128):
