@@ -1535,6 +1535,13 @@
           1
         ]
       ],
+      "wpmcp_enable_user_credential_restore": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_variation_swatches_write": [
         [
           -9223372036854775808,
@@ -3418,6 +3425,13 @@
           1
         ]
       ],
+      "wpmcp_enable_user_credential_restore": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_variation_swatches_write": [
         [
           -9223372036854775808,
@@ -5286,6 +5300,13 @@
           1
         ]
       ],
+      "wpmcp_enable_user_credential_restore": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_variation_swatches_write": [
         [
           -9223372036854775808,
@@ -7119,6 +7140,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -8964,6 +8992,13 @@
           1
         ]
       ],
+      "wpmcp_enable_user_credential_restore": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
       "wpmcp_enable_variation_swatches_write": [
         [
           -9223372036854775808,
@@ -10797,6 +10832,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
