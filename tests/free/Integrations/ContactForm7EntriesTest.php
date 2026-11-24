@@ -597,10 +597,13 @@ class ContactForm7EntriesTest extends \WP_UnitTestCase
         $this->assertNull(get_post($id));
 
         wp_set_current_user(self::factory()->user->create([ 'role' => 'editor' ]));
+        // Recorded as the caller's own operation, so the capability (not
+        // operation ownership) is what refuses.
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => $out['operation_id']]);
         $rolled = (new Rollback_Operation())->handle([ 'operation_id' => $out['operation_id'] ]);
 
-        $this->assertFalse($rolled['restored']);
-        $this->assertNotEmpty($rolled['warnings']);
+        $this->assertWPError($rolled);
+        $this->assertSame('rollback_capability_required', $rolled->get_error_code());
         $this->assertNull(get_post($id), 'The submission stays deleted for a caller who may not read it');
     }
 

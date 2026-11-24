@@ -255,10 +255,14 @@ class SubSitePluginNetworkScopeTest extends \WP_UnitTestCase
         $out = (new Activate_Plugin())->handle(['plugin' => $this->regular, 'network_wide' => true]);
 
         wp_set_current_user($this->admin);
+        // Recorded as the site admin's own, so the capability (not operation
+        // ownership: a super admin's operation is refused to them anyway) is
+        // what refuses.
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => $out['operation_id']]);
         $restored = (new Rollback_Operation())->handle(['operation_id' => $out['operation_id']]);
 
-        $this->assertFalse($restored['restored'], 'Restoring active_sitewide_plugins must take manage_network_plugins.');
-        $this->assertStringContainsString('manage_network_plugins', implode(' ', (array) ($restored['warnings'] ?? [])));
+        $this->assertWPError($restored, 'Restoring active_sitewide_plugins must take manage_network_plugins.');
+        $this->assertStringContainsString('manage_network_plugins', $restored->get_error_message());
         $this->assertTrue(is_plugin_active_for_network($this->regular));
     }
 }

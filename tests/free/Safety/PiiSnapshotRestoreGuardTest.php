@@ -42,10 +42,14 @@ class PiiSnapshotRestoreGuardTest extends \WP_UnitTestCase
     }
 
     /** Delete the entry through Safe_Mutation so a real snapshot row exists. */
-    private function delete_entry_with_snapshot(): string
+    private function delete_entry_with_snapshot(?int $user = null): string
     {
-        wp_set_current_user(self::factory()->user->create([ 'role' => 'administrator' ]));
-        wpmcp_test_grant_network_admin(get_current_user_id());
+        if (null === $user) {
+            wp_set_current_user(self::factory()->user->create([ 'role' => 'administrator' ]));
+            wpmcp_test_grant_network_admin(get_current_user_id());
+        } else {
+            wp_set_current_user($user);
+        }
         $id  = $this->entry_id;
         $out = Safe_Mutation::run(
             [
@@ -64,9 +68,11 @@ class PiiSnapshotRestoreGuardTest extends \WP_UnitTestCase
 
     public function test_an_editor_cannot_resurrect_a_submission_they_may_not_read(): void
     {
-        $operation_id = $this->delete_entry_with_snapshot();
+        // The editor's own write (only one's own are undone below
+        // manage_options), so the PII guard is
+        // what refuses.
+        $operation_id = $this->delete_entry_with_snapshot(self::factory()->user->create([ 'role' => 'editor' ]));
 
-        wp_set_current_user(self::factory()->user->create([ 'role' => 'editor' ]));
         $restored = Rollback_Service::restore_operation($operation_id);
 
         $this->assertFalse($restored, 'A PII snapshot must not be restorable at edit_posts');
@@ -88,11 +94,11 @@ class PiiSnapshotRestoreGuardTest extends \WP_UnitTestCase
         $this->assertSame('flamingo_inbound', $restored->post_type);
     }
 
-    public function test_a_session_rollback_skips_the_pii_snapshot_it_may_not_restore(): void
+    public function test_a_session_rollback_is_refused_whole_for_a_pii_snapshot_it_may_not_restore(): void
     {
         $ordinary = self::factory()->post->create([ 'post_content' => 'before' ]);
         // The editor starts the session (it is theirs to roll back, issue
-        // #450) and an administrator's entry delete then lands in it.
+        // #450) and their own entry delete then lands in it.
         $editor = self::factory()->user->create([ 'role' => 'editor' ]);
         wp_set_current_user($editor);
         Safe_Mutation::run(
@@ -105,21 +111,27 @@ class PiiSnapshotRestoreGuardTest extends \WP_UnitTestCase
             ],
             static fn () => wp_update_post([ 'ID' => $ordinary, 'post_content' => 'after' ])
         );
-        $this->delete_entry_with_snapshot();
+        $this->delete_entry_with_snapshot($editor);
 
-        wp_set_current_user($editor);
-        Rollback_Service::restore_session('pii-66');
+        try {
+            Rollback_Service::restore_session('pii-66');
+            $this->fail('The session was rolled back past a submission the editor may not read.');
+        } catch (\WPMCP\Safety\Post_Write_Refused $e) {
+            $this->assertSame(Rollback_Service::REFUSED_CAPABILITY, $e->error()->get_error_code());
+            $this->assertStringContainsString('edit_users', $e->error()->get_error_message());
+        }
 
-        $this->assertSame('before', get_post($ordinary)->post_content, 'The ordinary post still unwinds');
+        // All or nothing.
+        $this->assertSame('after', get_post($ordinary)->post_content, 'Nothing is unwound');
         $this->assertNull(get_post($this->entry_id), 'The submission is not resurrected');
-        $this->assertNotEmpty(Rollback_Service::take_warnings());
     }
 
     public function test_an_ordinary_post_snapshot_is_not_gated(): void
     {
         $post = self::factory()->post->create([ 'post_content' => 'before' ]);
-        wp_set_current_user(self::factory()->user->create([ 'role' => 'administrator' ]));
-        wpmcp_test_grant_network_admin(get_current_user_id());
+        // The editor's own edit: below manage_options only one's own
+        // operations are undone.
+        wp_set_current_user(self::factory()->user->create([ 'role' => 'editor' ]));
         $out = Safe_Mutation::run(
             [
                 'object_type' => 'post',
@@ -130,8 +142,6 @@ class PiiSnapshotRestoreGuardTest extends \WP_UnitTestCase
             ],
             static fn () => wp_update_post([ 'ID' => $post, 'post_content' => 'after' ])
         );
-
-        wp_set_current_user(self::factory()->user->create([ 'role' => 'editor' ]));
 
         $this->assertTrue(Rollback_Service::restore_operation($out['operation_id']));
         $this->assertSame('before', get_post($post)->post_content);
@@ -146,8 +156,8 @@ class PiiSnapshotRestoreGuardTest extends \WP_UnitTestCase
         add_filter('wpmcp_pii_snapshot_capabilities', $filter);
 
         $post = self::factory()->post->create([ 'post_content' => 'before' ]);
-        wp_set_current_user(self::factory()->user->create([ 'role' => 'administrator' ]));
-        wpmcp_test_grant_network_admin(get_current_user_id());
+        // The editor's own edit, so the declared capability is what refuses.
+        wp_set_current_user(self::factory()->user->create([ 'role' => 'editor' ]));
         $out = Safe_Mutation::run(
             [
                 'object_type' => 'post',
@@ -158,8 +168,6 @@ class PiiSnapshotRestoreGuardTest extends \WP_UnitTestCase
             ],
             static fn () => wp_update_post([ 'ID' => $post, 'post_content' => 'after' ])
         );
-
-        wp_set_current_user(self::factory()->user->create([ 'role' => 'editor' ]));
 
         $this->assertFalse(Rollback_Service::restore_operation($out['operation_id']));
         $this->assertSame('after', get_post($post)->post_content);

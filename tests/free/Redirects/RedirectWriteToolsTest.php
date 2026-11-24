@@ -314,11 +314,14 @@ class RedirectWriteToolsTest extends \WP_UnitTestCase
     {
         $out = (new Create_Redirect())->handle(['source' => '/old', 'target' => '/new']);
         wp_set_current_user(self::factory()->user->create(['role' => 'editor']));
+        // Recorded as the caller's own operation, so the capability (not
+        // operation ownership) is what refuses.
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => $out['operation_id']]);
 
-        $this->expectException(\WPMCP\Safety\Mutation_Failed::class);
-        $this->expectExceptionMessage('requires the manage_options capability');
-
-        Rollback_Service::restore_operation($out['operation_id']);
+        // Refused by the undo's capability check before anything is
+        // written, no longer by the redirect restore itself throwing.
+        $this->assertFalse(Rollback_Service::restore_operation($out['operation_id']));
+        $this->assertStringContainsString('manage_options', implode(' ', Rollback_Service::take_warnings()));
     }
 
     // -----------------------------------------------------------------
