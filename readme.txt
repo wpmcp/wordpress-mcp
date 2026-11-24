@@ -180,6 +180,93 @@ Yes. The safety core and the MCP server are free and GPL. Pro adds convenience a
 
 == Changelog ==
 
+= 2.0.0 =
+WPMCP Pro is now separate from the free plugin, the Connection screen connects an AI app in four steps, plugin and theme updates can roll themselves back, and dozens of plugins gain integrations. Undo stays free, and this release includes the 1.2.2 fixes.
+
+Changes you will notice:
+
+* WPMCP Pro comes from your Freemius account, and the wpmcp.zip on GitHub is the free plugin: adding a licence to it no longer brings Elementor editing, the other page builders, the custom widget and block builders, WPMCP Cloud sync or the in-admin chat, which come with WPMCP Pro. Sites that run WPMCP Pro update it under Dashboard > Updates as before. On a site with the free plugin, activating WPMCP Pro switches off the free copy, and both use the same snapshots, history and settings (#1245).
+* In the free plugin, Elementor support is the widget list, widget schemas and global settings (read) and CSS regeneration. Undo stays free: Restore on the History screen, rollback-operation and rollback-session (#1245).
+* A site that goes back to the free plugin keeps showing the custom widgets and blocks, custom CSS and dynamic templates made with Pro (#1245).
+* The Connection screen is rebuilt in three tabs. Connect an app walks four steps: pick the app (Claude Desktop, Claude Code, ChatGPT, Cursor, Antigravity or another MCP client), create the connection (an application password shown once with Copy, or OAuth sign-in for ChatGPT and the Claude connector), add it to the app (only that app's steps and its one snippet, or the Claude Desktop bundle), and check it against what WordPress recorded: the password's first use, the MCP session the app opened and its first tool call, or for an OAuth app its approval and token. Connections lists the passwords the screen issued (with Revoke), the OAuth clients and the scoped identities, and Settings holds the MCP switch, OAuth sign-in, management access, the uninstall choice and Advanced (#1257).
+* Refusals keep their reason on the wire. A refused tool call now comes back as a tool result with isError: true over stdio and HTTP alike, including refusals from the integration pairs and the WooCommerce catalog, which used to arrive as successes. Each refusal carries one envelope three ways: a readable line, the envelope as JSON text, and _meta["com.wpmcp-pro/unavailable"]. The envelope holds the code and the message and, when the refusal has a reason code, the reason, who can act and what they do, a retry hint and a docs link (the readable line then starts "Unavailable (<reason>):" and ends with the link); a rate limit adds retry_after. A refusal carries no structuredContent (#628).
+* Over HTTP with MCP 2025-11-25, WPMCP now answers tools/call on its own route itself, as it already did over stdio and MCP 2026-07-28, so every transport sends the same result. Breaking for clients that parse it: a tool that returns a single value (not an object or a list) now comes back as {"data": ...} instead of {"result": ...} (#628).
+* A tool the site knows but does not offer to this connection answers with its refusal as a tool result: one switched off on the Abilities screen, one held until its plugin is active, and a Pro tool, which on the free plugin says that WPMCP Pro is not installed and links to the upgrade, and in WPMCP Pro without an active licence asks for one. Over stdio that replaces a -32602 JSON-RPC error; a name the site does not know is still a protocol error (#628).
+* Undo checks the current user's rights and ownership. A user below administrator undoes only their own changes, so an Editor can no longer undo another user's change to a post; undoing a change takes the same capability as making it; rollback-session is all or nothing, so if one change in the session may not be undone by this user, nothing is restored; and a rollback-operation that the user may not run now returns an error instead of a result. list-operations, History and the Audit Log offer undo only where the user may use it.
+
+New:
+
+* Safe plugin and theme updates: manage-updates with type plugins or themes plans, runs, reports on and restores updates. For each package it first keeps a copy of the folder, the database tables named after it and this site's options, updates through WordPress, then checks the home page, wp-admin and two recent posts. If the update fails, or a page that loaded before now errors, it puts the files, tables, options and active state back and names the package and the check that failed. Off until the site sets the wpmcp_enable_safe_updates filter in code; needs confirm:true; up to 5 packages per call (#843).
+* Maps and store locators: WP Go Maps maps and markers, WP Store Locator stores and settings (a new store is a draft unless the call asks to publish it), and WP Maps maps and locations (read). An address without coordinates is geocoded with the site's own setup, and keys are never returned. Writes are off until the site turns them on (#907).
+* OAuth: clients whose client metadata document signs in with private_key_jwt, as ChatGPT's does, are accepted, and the token endpoint checks their signed assertion (#1098).
+* WPMCP_ROUTE_SCOPED_MCP, off by default: set it to true in wp-config.php and the MCP server loads only on MCP and WP-CLI requests, so other page loads skip registering the abilities. With it on, the REST index lists the MCP route only on MCP requests; leave it off on a site whose theme changes the REST prefix (#1209).
+* The Connection screen and get-connection-info warn when the address ChatGPT and the Claude connector would use is not public HTTPS (localhost, .test, .local or a private IP), which those apps cannot reach (#1149).
+* Audit Log: a Session column filters the Mutations tab to one agent session, and Undo session runs rollback-session on it after a confirmation that says how many changes it will undo (#1150). One row and one Restore per call, recent backup and restore jobs, times in the site timezone, object titles and dropdown filters for tool and user; Restore asks first and shows the tool's message when it is refused (#1126). Paging buttons above and below both tabs, and striped rows (#1125).
+* Abilities screen: a summary bar (total, on, off and high-risk on), domains grouped under WordPress, Page builders, Site tools and Integrations, and read, write and destructive counts per domain (#1128).
+* list-tools with include_unavailable:true lists what this site cannot run, grouped by reason (for example a plugin that is not active, or a tool switched off on the Abilities screen), with the step that fixes each; get-tool-schema, list-tool-catalog and get-connection-info carry the same report (#629).
+* The wpmcp.zip from GitHub gets update notices from GitHub releases with or without a licence, and WPMCP Pro updates through its licence (#1180).
+* Code Snippets: code-snippets-trash-snippet moves an inactive snippet to the Code Snippets trash, undoable with rollback-operation (#1129).
+* The Pro notice on free installs names the page builder the site runs and what Pro adds for it (#1179).
+* After the third undoable agent write or the first rollback, the History and Connection screens ask once for a GitHub star. One click hides it for good, and it never shows on a licensed site (#1176).
+* Refusals share one set of reason codes that say who can fix the problem and how. An identity scope denial now answers identity_scope instead of a bare permission error, and a memory block answers memory_blocked (#627).
+* WPMCP has a new icon in the wp-admin menu, on the plugin update screen and on the licensing connect screen (#1218).
+* Agent skills: 15 new bundled skills for integrations and page builders: a router, block editing, security incidents, performance and caching, translation, events and memberships, and with Pro page builders, courses, CRM, page translation, TablePress, bookings, MemberPress and funnels. list-skills shows an area skill only while one of its plugins is active (#850).
+* More writes join the chat's session: update-settings and update-governance-settings record under the caller's session_id (the shared default session only when none is given), find-replace-content and apply-product-import join a session when one is given and keep making their own otherwise, and other writes that recorded the session_id without declaring it now declare it, for example install-plugin, import-content, create-product and create-coupon. rollback-session then undoes a chat's changes together. A session another user started is refused before anything is written (#1255).
+
+New integrations:
+
+* Forms: Everest Forms and JetFormBuilder forms, fields and entries (masked in lists, read one at a time), Kadence Blocks forms and their email notifications, and Jetpack Forms responses, with undoable entry status changes, deletes and notification edits, off until the site turns them on (#676).
+* Events: Events Manager events and bookings (#678), and The Events Calendar and Modern Events Calendar venues, organizers and categories, plus event creates, updates and cancellations, off until the site turns them on (#677).
+* Popups: Popup Maker and OptinMonster (#685), Popup Builder, Hustle and Depicter (#898), with Hustle content, schedule, on and off and display condition changes and Depicter rename, publish and display rule changes (#1091). Writes are undoable and off until the site turns them on.
+* Galleries and sliders: FooGallery, MetaSlider, Modula, Envira Gallery, Smart Slider 3 and NextGEN Gallery: list and read galleries and sliders and, where a snapshot can cover it, create them and add, remove, reorder or edit their images and slides. Each plugin has its own switch (#705).
+* Directories and editorial: WP Job Manager, GeoDirectory and Directorist listings (#707); the PublishPress Planner calendar, Checklists and Future scheduled changes (#709); CPT UI and MB Custom Post Types post types and taxonomies (#710). Writes are off until the site turns them on.
+* Site tools: get-debug-log searches the web server access log, off until the site turns it on (#848); the WPS Hide Login login URL, read and changed (#896); serialization-safe search and replace on Better Search Replace and Search Regex sites, always after a dry run and undone in one step (#895); the generic redirect tools use the active redirect plugin (#930); site gate toggles for WP Maintenance Mode, Maintenance and CMP (#903) and gate content and bypass settings (#1099); sent and failed counts from email log plugins (#905). Writes are off until the site turns them on.
+* Options and fields: Redux Framework panels (#897), CMB2 boxes and values and ACF Extended items (#1089), and a check that the ACF tools work with Secure Custom Fields (#1089). Writes are off until the site turns them on.
+* Marketing and store: tracking IDs and events for GTM4WP, PixelYourSite, Meta pixel and Clarity, with undoable changes (#899, #1094); Discount Rules for WooCommerce (#901); Variation Swatches, Product Feed Pro and Cart Abandonment Recovery for WooCommerce (#1096); Max Mega Menu (#908); Smash Balloon Instagram Feed (#902); WP All Import and WP All Export saved jobs, read only (#909); FileBird media folders (#906); SearchWP settings, index status, top searches and engine weights (#993); wpForo and Asgaros Forum (#671). Writes are off until the site turns them on.
+
+With Pro:
+
+* Page builders: element-level editing for Bricks (#633), Breakdance (#634) and Beaver Builder (#638); Visual Composer pages read and edited, with elements moved and removed (#642, part of #1112), Kirki (#641), SiteOrigin Page Builder (#644), Brizy (#645) and Flatsome with its UX Blocks and theme options (#849); Oxygen 6 design system writes, Component properties, design library export and import, new pages, and templates with conditions (#805).
+* Blocks: Essential Blocks, GreenShift and CoBlocks on the block suites tools (#1009); custom blocks take select, repeater, media and link attributes, supports and panels (#852).
+* Themes: Thrive Theme Builder templates, sections and settings (#824); Divi theme options (#1011); Blocksy content blocks (#650); ElementsKit widgets and modules (#1012); Happy Addons, Royal Elementor Addons and PowerPack Lite addon packs (#653).
+* Courses: LearnPress (#672), Sensei LMS (#673), MasterStudy LMS (#1033) and Thrive Apprentice (#826).
+* Marketing and sales: Thrive Leads (#825), Thrive Ovation (#829), Thrive Optimize (#827), Thrive Ultimatum (#828) and Thrive Automator (#830); FunnelKit Cart (#832), FunnelKit Automations (#831) and FunnelKit upsell offers (#1021); WPFunnels (#834); GamiPress (#833); Jetpack CRM and HubSpot forms (#684); Newsletter, Groundhogg, MC4WP and Brevo (#683); MailerLite, Klaviyo, Kit, Omnisend and ActiveCampaign (#900); Easy Table of Contents (#904).
+* Bookings and tables: Bookly, Simply Schedule Appointments, BookingPress and LatePoint (#679); wpDataTables and Ninja Tables (#706).
+* SEO and translation: Yoast SEO Premium redirects, Rank Math Pro schema templates and Yoast schema defaults (#681); WPML String Translation in the string tools (#1053).
+* WPForms entries can be deleted with confirm:true, off until the site turns it on, and rollback-session puts them back; entries with payments and WPForms Lite are refused (#1031).
+* Static HTML export: trigger-backup with type static exports the public pages as a static HTML site, for administrators and off by default (#854).
+* Elementor writes take the chat's session_id, so rollback-session undoes one chat's Elementor changes and leaves another chat's. The template, popup and code snippet creates and deletes (create-theme-template, save-as-template, import-template, create-popup, create-code-snippet, delete-theme-template and delete-code-snippet) are now undoable: rollback-operation moves what they created to the trash and puts what they deleted back (#1255).
+
+Fixes:
+
+* Includes the 1.2.2 fixes: security hardening for builder writes on multisite; builder layouts that WordPress would rewrite on save are refused with a clear error instead of being stored changed, and plain content writes report what WordPress removed; get-option masks one more stored SMTP password field (#1162).
+* With Pro, builder writes by a user without unfiltered_html (on a network, anyone but a super admin) are checked further, and nothing is written when one is refused: update-builder-content also refuses a value WordPress would change on BeTheme, Brizy, SiteOrigin, Kirki and Thrive Architect pages and in the Bricks, Breakdance, Oxygen and Avada global design settings; adding or changing code (a script, PHP or a code element) in a Bricks, Breakdance, Oxygen, Beaver Builder, Divi, Thrive Architect, BeTheme, Brizy, SiteOrigin or Kirki layout is refused, while code the page already holds can stay; Divi 5 layout writes are refused instead of filtered; and a Thrive Architect page whose layout holds a script is refused rather than rewritten, since the layout is checked as one value.
+* set-post-meta, the meta argument of create-post and update-post, and find-replace-content write only meta keys made of printable ASCII characters without spaces, and check each key in the form WordPress stores it. For a user without unfiltered_html they also refuse the meta rows a page builder builds the page from (BeTheme, Brizy, SiteOrigin, Kirki, Thrive Architect, Breakdance 1.x, classic Oxygen before 4.8.3 and Visual Composer) and point to update-builder-content (WPMCP Pro), which checks the values.
+* A product import that fails inside a chat's session now undoes only the undo points that call added, not the chat's earlier writes; an import in its own session still rolls back whole (#1255).
+* Kinsta's own staging domains count as staging copies: stg-<site>-<environment>.kinsta.cloud, and on older environments staging-<site>[-<environment>].kinsta.cloud and staging-<site>.kinsta.com (#807).
+* Step 4 of the Connection screen shows Connected once WPMCP has answered an MCP request made with that connection's password, so apps on MCP 2026-07-28, which send no initialize (for example current Claude Code releases), connect as older apps do. A request made with another password of the same user no longer counts, and until a request arrives the step reads "Password accepted, no MCP request yet". The Connections tab shows each password's newest request with the app's name and version, or "Unnamed MCP client" (#1258).
+* Copy on the Connection screen copies a working config while the password is hidden, as it is by default after Create connection; before, the copied config carried the screen reader's "password hidden" label instead of the password (#1260).
+* With Pro, Breakdance and Oxygen 6 template settings read correctly when the builder stored them encoded twice (#1210).
+* restore-site-backup stops at once if it loses its database lock during the import, and backup jobs do not run during a restore; a job it interrupts shows in list-backup-jobs as failed with interrupted_by_restore (#1124, #1152).
+* scan-security compromise checks no longer pass when the file walk is cut short: they report incomplete and return a cursor to continue from (#1151).
+* A refusal that asks for confirm:true says it goes in the top-level confirm parameter of the write tool, next to operation and args, not inside args (#1156).
+* run-updraftplus-backup with only_database:true backs up only the database (#1159). list-backwpup-backups reports last_run in UTC (#1161). list-aio-wp-migration-backups tells an installed but inactive All-in-One WP Migration from a missing one (#1163).
+* get-analytics-summary and get-top-pages say when Jetpack is not connected to WordPress.com or its Stats module is off, and where to fix it (#1158). get-query-monitor-page-profile lists very long queries masked and shortened instead of empty (#1157).
+* Easy Digital Downloads drafts report their real date in UTC (#1153). give-read and give-write name GiveWP when it is missing or inactive (#1155). WP Activity Log plugin events show the plugin name and version (#1139).
+* create-term refuses a parent on a taxonomy that is not hierarchical, such as tags, with that reason (#1198); list-revisions and diff-revisions give each revision's time in UTC (#1199); undoing delete-comment puts its replies back under the restored comment (#1200); install-plugin with activate:true leaves a heavy plugin installed and names the activate-plugin call to run, instead of timing out (#1201).
+* Wording across the plugin, the readmes and the bundled skills says "a snapshot before each supported write" (#1251).
+* The readme says which Elementor, Gutenberg, Bricks, Divi, WooCommerce and Paid Memberships Pro tools are free and which need Pro, and that writes through the REST passthrough cannot be undone (#1256).
+
+Internal: a module kernel and a compiled registry that new integrations register through, a stricter coding standard gate, a recorded baseline of the tool surface for the test gate, and benchmarks (#1207, #1208, #1211, #1215).
+
+= 1.2.2 =
+Security hardening for builder writes on multisite; update recommended.
+
+Fixes:
+* Security hardening for builder writes on multisite.
+* Builder layouts that WordPress would rewrite on save are now refused with a clear error instead of being stored changed, and plain content writes report what WordPress removed.
+* get-option masks one more stored SMTP password field (#1162).
+
 = 1.2.1 =
 The free plugin from GitHub is now the full plugin: install wpmcp.zip, use everything free, and add a licence later to unlock Pro in the same plugin. Free installs also get updates from Dashboard > Updates.
 
@@ -1122,6 +1209,12 @@ Admin and tooling:
 * Freemius licensing shows its stock, default-off opt-in screen on activation rather than deciding consent for you. Sites that ran a pre-release build under anonymous mode see that connect screen once after upgrading; Skip dismisses it and the plugin keeps working unchanged. The WordPress.org build ships no licensing SDK at all.
 
 == Upgrade Notice ==
+
+= 2.0.0 =
+Licensed sites: WPMCP Pro updates under Dashboard > Updates as before, keeping licence, History and settings; the free wpmcp.zip no longer includes Elementor editing or the page builders. Over HTTP, a single-value tool result is now {"data": ...}, not {"result": ...}.
+
+= 1.2.2 =
+Security hardening for builder writes on multisite; update recommended.
 
 = 1.2.1 =
 The GitHub wpmcp.zip is now the full plugin and updates itself from GitHub releases. If you installed the 1.2.0 wpmcp.zip from GitHub, upload 1.2.1 once by hand; later updates appear under Dashboard > Updates.
