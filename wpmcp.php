@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WPMCP - MCP Server with Snapshot Undo for AI Agents
  * Description: AI builds and edits your WordPress site over MCP, with a snapshot before each supported write and one-click rollback.
- * Version: 1.2.1
+ * Version: 2.0.0
  * Requires at least: 6.9
  * Requires PHP: 8.1
  * Author: Fahad Murtaza
@@ -50,7 +50,7 @@ if ( wpmcp_flavor_should_defer( __FILE__, 'full', defined( 'WPMCP_VERSION' ) ) )
 if ( ! defined( 'WPMCP_PREMIUM_BUILD' ) ) {
 	define( 'WPMCP_PREMIUM_BUILD', is_readable( __DIR__ . '/.wpmcp-pro' ) );
 }
-define( 'WPMCP_VERSION', '1.2.1' );
+define( 'WPMCP_VERSION', '2.0.0' );
 // Must match the Text Domain header above: Plugin::load_textdomain() loads
 // the self-hosted .mo from languages/ into this domain (issue #184).
 define( 'WPMCP_TEXT_DOMAIN', 'wpmcp' );
