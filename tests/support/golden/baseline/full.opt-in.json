@@ -340,6 +340,10 @@
       "owner": "src/Integrations/Paid_Memberships_Pro_Pack.php",
       "destructive": true
     },
+    "wpmcp_enable_user_credential_restore": {
+      "owner": "src/Safety/Rollback_Service.php",
+      "destructive": false
+    },
     "wpmcp_enable_cart_abandonment_write": {
       "owner": "src/Modules/Cart_Abandonment/Opt_In.php",
       "destructive": false
@@ -471,6 +475,7 @@
     "wpmcp_enable_hardening_write": "Security hardening settings: writes",
     "wpmcp_enable_checkout_field_editor_write": "Checkout Field Editor: checkout field writes",
     "wpmcp_enable_pmpro_write": "Paid Memberships Pro: level, member and discount code writes",
+    "wpmcp_enable_user_credential_restore": "Undo of a user change: also restore their login sessions and application passwords, bringing back ones revoked after the change",
     "wpmcp_enable_cart_abandonment_write": "Cart Abandonment Recovery: follow-up email and timing changes",
     "wpmcp_enable_cmb2_write": "CMB2: field value writes",
     "wpmcp_enable_depicter_write": "Depicter: rename, publish, unpublish and display rules",
@@ -569,6 +574,7 @@
     "wpmcp_enable_hardening_write",
     "wpmcp_enable_checkout_field_editor_write",
     "wpmcp_enable_pmpro_write",
+    "wpmcp_enable_user_credential_restore",
     "wpmcp_enable_cart_abandonment_write",
     "wpmcp_enable_cmb2_write",
     "wpmcp_enable_depicter_write",
