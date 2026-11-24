@@ -257,6 +257,10 @@ class UltimateMemberPackTest extends \WP_UnitTestCase
         $this->assertSame([ 'um_member' ], $out['result']['previous_um_roles']);
         $this->assertSame([ 'subscriber', 'um_vip' ], $this->roles($id));
 
+        // Undoing a role change takes edit_user and promote_user on the
+        // member, which on a network only a network administrator holds for
+        // another user (usermeta is network-wide).
+        wpmcp_test_grant_network_admin(get_current_user_id());
         $this->assertTrue(Rollback_Service::restore_operation($out['operation_id']));
         $this->assertSame([ 'subscriber', 'um_member' ], $this->roles($id));
     }
