@@ -97,7 +97,8 @@ class OptInSettingsTest extends \WP_UnitTestCase
 
         $groups = Opt_In_Settings::all_groups();
         $this->assertSame([], array_values(array_diff(array_keys($found), array_keys($groups))), 'opt_in_filter values with no settings toggle');
-        $this->assertSame([], array_values(array_diff(array_keys($groups), array_keys($found))), 'toggles for filters no pack declares');
+        // A behaviour group gates no operation, so no opt_in_filter names it.
+        $this->assertSame([], array_values(array_diff(array_keys($groups), array_keys($found), Opt_In_Settings::BEHAVIOUR_GROUPS)), 'toggles for filters no pack declares');
 
         foreach ($groups as $filter => $group) {
             $owner = $root . '/' . $group['owner'];

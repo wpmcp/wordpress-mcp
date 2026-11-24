@@ -2018,7 +2018,15 @@ class Rollback_Service
         }
 
         $snapshotted_meta = (array) $snapshot['data']['meta'];
-        $current_meta     = get_user_meta($user_id);
+        $current_meta     = self::map_of(get_user_meta($user_id));
+
+        // Login sessions and application passwords keep their current
+        // values unless the site opts in, so ones revoked since the snapshot
+        // stay revoked, snapshots taken before this rule included.
+        $kept = self::kept_credential_keys($snapshotted_meta, $current_meta);
+        foreach ($kept as $key) {
+            unset($snapshotted_meta[ $key ], $current_meta[ $key ]);
+        }
 
         // Purge any usermeta key that didn't exist at snapshot time.
         foreach (array_keys(array_diff_key($current_meta, $snapshotted_meta)) as $key) {
@@ -2032,6 +2040,45 @@ class Rollback_Service
                 add_user_meta($user_id, $key, self::slash_meta_value(maybe_unserialize($v)));
             }
         }
+
+        if ([] !== $kept) {
+            self::warn(sprintf(
+                'user %d: %s kept their current values, so login sessions and application passwords are not brought back by an undo. An administrator can change this with the %s opt-in.',
+                $user_id,
+                implode(' and ', $kept),
+                self::USER_CREDENTIAL_OPT_IN
+            ));
+        }
+    }
+
+    /** Usermeta keys a user restore leaves as they are, unless the site opts in. */
+    private const USER_CREDENTIAL_KEYS = [ 'session_tokens', '_application_passwords' ];
+
+    /**
+     * The opt-in (an Opt_In_Settings group, network-wide on multisite) that
+     * lets a user restore bring login sessions and application passwords
+     * back as well.
+     */
+    public const USER_CREDENTIAL_OPT_IN = 'wpmcp_enable_user_credential_restore';
+
+    /**
+     * The credential keys this restore leaves at their current values: each
+     * one the snapshot or the user holds now, or none while the site opts in.
+     *
+     * @param array<array-key, mixed> $captured usermeta as captured
+     * @param array<array-key, mixed> $current  usermeta as it is now
+     * @return list<string>
+     */
+    private static function kept_credential_keys(array $captured, array $current): array
+    {
+        // The literal is USER_CREDENTIAL_OPT_IN, spelled out for the hook name sniffs.
+        if (in_array(apply_filters('wpmcp_enable_user_credential_restore', false), [ true, 1, '1' ], true)) {
+            return [];
+        }
+        return array_values(array_filter(
+            self::USER_CREDENTIAL_KEYS,
+            static fn (string $key): bool => array_key_exists($key, $captured) || array_key_exists($key, $current)
+        ));
     }
 
     /** The filters wp_update_comment() runs over a row before it is saved. */
