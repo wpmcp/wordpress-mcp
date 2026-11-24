@@ -288,6 +288,11 @@ class PaidMembershipsProWritesTest extends \WP_UnitTestCase
     {
         $out = $this->ok($this->write('update-level', [ 'level_id' => $this->gold, 'name' => 'Renamed' ]));
         wp_set_current_user(self::factory()->user->create([ 'role' => 'editor' ]));
+        // Another user's operation: refused by ownership before the restorer runs.
+        $this->assertFalse(Rollback_Service::restore_operation($out['operation_id']));
+        $this->assertSame(Rollback_Service::REFUSED_NOT_OWNER, Rollback_Service::take_refusal()?->get_error_code());
+        // Recorded as the editor's own, so the manage_options rule is what refuses.
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), [ 'user_id' => get_current_user_id() ], [ 'operation_id' => $out['operation_id'] ]);
         try {
             Rollback_Service::restore_operation($out['operation_id']);
             $this->fail('an editor restored a PMPro level');

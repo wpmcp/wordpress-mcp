@@ -559,9 +559,17 @@ class WooOrderWritesTest extends \WP_UnitTestCase
         $out    = $this->write('orders.update', ['id' => $order->get_id(), 'customer_note' => 'edited']);
         $this->assertSame(200, $out['status']);
 
+        // Another user's operation: below manage_options it is refused by
+        // ownership before anything else is asked.
         wp_set_current_user(self::factory()->user->create(['role' => 'editor']));
         $refused = (new Rollback_Operation())->handle(['operation_id' => $out['operation_id']]);
-        $this->assertFalse($refused['restored']);
+        $this->assertWPError($refused);
+        $this->assertSame(\WPMCP\Safety\Rollback_Service::REFUSED_NOT_OWNER, $refused->get_error_code());
+        // Recorded as the editor's own, so the store capability is what refuses.
+        $this->made_by_current_user($out['operation_id']);
+        $refused = (new Rollback_Operation())->handle(['operation_id' => $out['operation_id']]);
+        $this->assertWPError($refused);
+        $this->assertSame(\WPMCP\Safety\Rollback_Service::REFUSED_CAPABILITY, $refused->get_error_code());
         $this->assertSame('edited', wc_get_order($order->get_id())->get_customer_note());
 
         wp_set_current_user(self::factory()->user->create(['role' => 'administrator']));
@@ -598,5 +606,15 @@ class WooOrderWritesTest extends \WP_UnitTestCase
 
         $this->assertSame(2, $out['applied'], wp_json_encode($out));
         $this->assertSame('batched', wc_get_order($order->get_id())->get_customer_note());
+    }
+
+    /**
+     * Record the current user as the one who made $operation_id: below
+     * manage_options only one's own operations are undone, so the
+     * capability is what the next undo is judged on.
+     */
+    private function made_by_current_user(string $operation_id): void
+    {
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => $operation_id]);
     }
 }

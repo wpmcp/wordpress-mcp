@@ -256,6 +256,16 @@ class FunnelKitLiveTest extends \WP_UnitTestCase
         $denied = $this->write('delete-funnelkit-funnel', [ 'id' => $id ], [ 'confirm' => true ]);
         $this->assertSame('funnelkit_access_denied', $denied['error']['code'] ?? '', (string) wp_json_encode($denied));
 
+        // The administrator's operations: below manage_options they are
+        // refused by ownership before FunnelKit is asked.
+        $this->assertFalse(Rollback_Service::restore_operation((string) $created['operation_ids'][0]));
+        $this->assertSame(Rollback_Service::REFUSED_NOT_OWNER, Rollback_Service::take_refusal()?->get_error_code());
+        Rollback_Service::take_warnings();
+        // Recorded as the manager's own, so FunnelKit's own access check is what refuses.
+        foreach ([ (string) $created['operation_ids'][0], (string) $renamed['operation_id'], (string) $deleted['operation_id'] ] as $operation_id) {
+            $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), [ 'user_id' => $manager ], [ 'operation_id' => $operation_id ]);
+        }
+
         $this->assertFalse(Rollback_Service::restore_operation((string) $created['operation_ids'][0]), 'A user FunnelKit refuses deleted the admin\'s funnel through rollback.');
         $this->assertStringContainsString('FunnelKit', implode(' ', Rollback_Service::take_warnings()));
         $this->assertFalse(Rollback_Service::restore_operation((string) $renamed['operation_id']), 'A user FunnelKit refuses reverted the admin\'s funnel through rollback.');

@@ -257,6 +257,15 @@ class UltimateMemberPackTest extends \WP_UnitTestCase
         $this->assertSame([ 'um_member' ], $out['result']['previous_um_roles']);
         $this->assertSame([ 'subscriber', 'um_vip' ], $this->roles($id));
 
+        if (is_multisite()) {
+            // Usermeta is network-wide, so on a network undoing a change to
+            // another user takes edit_user, which only a network
+            // administrator holds: a site administrator is refused.
+            $this->assertFalse(Rollback_Service::restore_operation($out['operation_id']));
+            $this->assertSame(Rollback_Service::REFUSED_CAPABILITY, Rollback_Service::take_refusal()?->get_error_code());
+            $this->assertSame([ 'subscriber', 'um_vip' ], $this->roles($id));
+            grant_super_admin(get_current_user_id());
+        }
         $this->assertTrue(Rollback_Service::restore_operation($out['operation_id']));
         $this->assertSame([ 'subscriber', 'um_member' ], $this->roles($id));
     }
