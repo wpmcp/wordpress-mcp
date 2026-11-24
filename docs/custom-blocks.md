@@ -1,6 +1,6 @@
 # Custom blocks
 
-`create-custom-block` turns a data spec into a real block. The spec is data, never code: a dynamic `render_callback` fills the template from the attributes, escaping every value by its declared type. `list-block-control-types` returns the same vocabulary at runtime. The custom block tools are part of WP MCP Pro.
+`create-custom-block` turns a data spec into a real block. The spec is data, never code: a dynamic `render_callback` fills the template from the attributes, escaping every value by its declared type. `list-block-control-types` returns the same vocabulary at runtime. The custom block tools are part of WPMCP Pro.
 
 ## Spec
 

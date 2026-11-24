@@ -182,7 +182,7 @@ class Client_Access
      * The row a site owner set on this client and user that the current
      * user may not widen by approving the client again (issue #505): one
      * written by someone other than $user_id, narrower than full access,
-     * while the current user cannot manage WP MCP. Null when there is no
+     * while the current user cannot manage WPMCP. Null when there is no
      * such restriction, so the consent choice applies as made.
      *
      * @return array{client_id: string, user_id: int, level: string, identity: string, set_by: int, set_at: int}|null

@@ -3,7 +3,7 @@
 Use this to clean up missing, duplicate or too-long SEO titles across your posts. It needs Yoast SEO or Rank Math active (the two SEO plugins the SEO tools read and write); the agent writes through that plugin's own fields, so nothing changes in how your theme prints titles.
 
 ```text
-You are working on my WordPress site through the WP MCP server. Use one session_id for every write, for example "seo-titles-<today's date>".
+You are working on my WordPress site through the WPMCP server. Use one session_id for every write, for example "seo-titles-<today's date>".
 
 1. List my published posts (list-posts, up to 50) and read each one's SEO title and meta description with get-seo-meta.
 2. Make a table of the posts whose SEO title is missing, duplicated, or longer than 60 characters. Show me the current title and your proposed one side by side. Do not change anything yet.

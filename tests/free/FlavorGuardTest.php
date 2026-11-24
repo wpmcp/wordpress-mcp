@@ -3,7 +3,7 @@
 namespace WPMCP\Tests\Free;
 
 /**
- * Two WP MCP builds (the full plugin, the wp.org directory build, a vertical
+ * Two WPMCP builds (the full plugin, the wp.org directory build, a vertical
  * such as wpmcp-for-woocommerce) share the WPMCP_* constants, the \WPMCP\
  * namespace and every option, table and hook name. Only one of them may boot
  * per request, and which one must not depend on WordPress's load order: core
@@ -47,8 +47,8 @@ class FlavorGuardTest extends \WP_UnitTestCase
     }
 
     /**
-     * Write a plugin main file under WP_PLUGIN_DIR. With a flavor it is a WP
-     * MCP build; without one it is an unrelated plugin that happens to share
+     * Write a plugin main file under WP_PLUGIN_DIR. With a flavor it is a WPMCP
+     * build; without one it is an unrelated plugin that happens to share
      * part of the name. Refuses to overwrite a real plugin.
      */
     private function install(string $plugin, ?string $flavor = null): string
@@ -187,7 +187,7 @@ class FlavorGuardTest extends \WP_UnitTestCase
     {
         $self = $this->install('wpmcp-for-woocommerce/wpmcp-for-woocommerce.php', self::WOO);
         // Same directory prefix, and the exact main-file basename in another
-        // directory: neither declares a flavor, so neither is a WP MCP build.
+        // directory: neither declares a flavor, so neither is a WPMCP build.
         $this->install('wpmcp-companion/wpmcp-companion.php');
         $this->install('other-dir/wpmcp.php');
         update_option('active_plugins', [

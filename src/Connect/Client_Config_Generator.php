@@ -193,7 +193,7 @@ class Client_Config_Generator
         if ($on_connection_screen) {
             return sprintf(
                 /* translators: 1: the switch label, Allow OAuth sign-in; 2: the PHP line, define('WPMCP_OAUTH_ENABLED', true); */
-                __('An administrator who manages WP MCP switches it on with "%1$s" below. Or add %2$s to wp-config.php, above the line "That\'s all, stop editing!". Or use an app that signs in with an application password instead, such as Claude Desktop with the bundle.', 'wpmcp'),
+                __('An administrator who manages WPMCP switches it on with "%1$s" below. Or add %2$s to wp-config.php, above the line "That\'s all, stop editing!". Or use an app that signs in with an application password instead, such as Claude Desktop with the bundle.', 'wpmcp'),
                 self::OAUTH_SWITCH_LABEL,
                 self::OAUTH_CONSTANT_LINE
             );
@@ -201,7 +201,7 @@ class Client_Config_Generator
 
         return sprintf(
             /* translators: 1: the switch label, Allow OAuth sign-in; 2: the PHP line, define('WPMCP_OAUTH_ENABLED', true); */
-            __('An administrator who manages WP MCP switches it on in wp-admin under WP MCP, Connection, on the Settings tab, with "%1$s". Or add %2$s to wp-config.php, above the line "That\'s all, stop editing!". Or connect an app that signs in with an application password instead, such as Claude Desktop with the bundle from that screen.', 'wpmcp'),
+            __('An administrator who manages WPMCP switches it on in wp-admin under WPMCP, Connection, on the Settings tab, with "%1$s". Or add %2$s to wp-config.php, above the line "That\'s all, stop editing!". Or connect an app that signs in with an application password instead, such as Claude Desktop with the bundle from that screen.', 'wpmcp'),
             self::OAUTH_SWITCH_LABEL,
             self::OAUTH_CONSTANT_LINE
         );
@@ -216,7 +216,7 @@ class Client_Config_Generator
     {
         return [
             /* translators: %s: the switch label, Allow OAuth sign-in */
-            sprintf(__('In wp-admin, open WP MCP, Connection, the Settings tab, and turn on "%s" (administrators who can manage WP MCP).', 'wpmcp'), self::OAUTH_SWITCH_LABEL),
+            sprintf(__('In wp-admin, open WPMCP, Connection, the Settings tab, and turn on "%s" (administrators who can manage WPMCP).', 'wpmcp'), self::OAUTH_SWITCH_LABEL),
             /* translators: %s: the PHP line to add, define('WPMCP_OAUTH_ENABLED', true); */
             sprintf(__('Or add %s to wp-config.php, above the line "That\'s all, stop editing!". The constant decides instead of the switch.', 'wpmcp'), self::OAUTH_CONSTANT_LINE),
             __('Or, from a plugin or mu-plugin: add_filter(\'wpmcp_oauth_enabled\', \'__return_true\');', 'wpmcp'),
@@ -229,7 +229,7 @@ class Client_Config_Generator
      *
      * The connector signs in with OAuth and cannot send an Authorization
      * header, and OAuth is off unless the site opts in, so on a default
-     * install it fails with "Couldn't register with WP MCP's sign-in
+     * install it fails with "Couldn't register with WPMCP's sign-in
      * service". OAuth stays off by default; this states the requirement,
      * the current state, and exactly how to switch it on, for the
      * get-connection-info tool and the Connection screen alike.
@@ -250,7 +250,7 @@ class Client_Config_Generator
             'oauth_enabled' => $enabled,
             'note'          => $enabled
                 ? __('OAuth is on for this site, so the custom connector can sign in: add it with the steps below and approve the sign-in when your browser opens.', 'wpmcp')
-                : __('OAuth is off for this site (the default). The custom connector requires OAuth: it cannot send an application password, so on this site it fails with "Couldn\'t register with WP MCP\'s sign-in service".', 'wpmcp') . ' ' . self::oauth_switch_on($on_connection_screen),
+                : __('OAuth is off for this site (the default). The custom connector requires OAuth: it cannot send an application password, so on this site it fails with "Couldn\'t register with WPMCP\'s sign-in service".', 'wpmcp') . ' ' . self::oauth_switch_on($on_connection_screen),
             'enable_oauth'  => self::enable_oauth_steps(),
             'steps'         => [
                 __('In Claude Desktop or on claude.ai, open Settings, then Connectors (under Customize in current versions), and choose "Add custom connector".', 'wpmcp'),
@@ -292,8 +292,8 @@ class Client_Config_Generator
             'steps'         => [
                 __('On chatgpt.com, open Settings, then Apps & Connectors, open Advanced settings and turn on Developer mode.', 'wpmcp'),
                 /* translators: %s: the MCP endpoint URL */
-                sprintf(__('Back in Apps & Connectors, choose Create and name the connector, for example "WP MCP". Enter %s as the MCP server URL and choose OAuth as the authentication. Leave any client ID and secret empty: ChatGPT registers itself.', 'wpmcp'), $endpoint),
-                __('Confirm that you trust the connector and click Create, then sign in to WordPress in the window that opens and approve the access. In a chat, open the + menu, choose Developer mode and turn on WP MCP for that chat. The desktop app uses the connectors you added on the web.', 'wpmcp'),
+                sprintf(__('Back in Apps & Connectors, choose Create and name the connector, for example "WPMCP". Enter %s as the MCP server URL and choose OAuth as the authentication. Leave any client ID and secret empty: ChatGPT registers itself.', 'wpmcp'), $endpoint),
+                __('Confirm that you trust the connector and click Create, then sign in to WordPress in the window that opens and approve the access. In a chat, open the + menu, choose Developer mode and turn on WPMCP for that chat. The desktop app uses the connectors you added on the web.', 'wpmcp'),
             ],
         ];
     }
@@ -314,7 +314,7 @@ class Client_Config_Generator
      */
     public static function antigravity_note(): string
     {
-        return __('In Antigravity, open Customizations, then Installed, scroll to MCP Servers and click Copy Config File Path. Paste this block into that file (mcp_config.json) and save, then quit and reopen Antigravity and start a new conversation so the WP MCP tools load.', 'wpmcp');
+        return __('In Antigravity, open Customizations, then Installed, scroll to MCP Servers and click Copy Config File Path. Paste this block into that file (mcp_config.json) and save, then quit and reopen Antigravity and start a new conversation so the WPMCP tools load.', 'wpmcp');
     }
 
     /**

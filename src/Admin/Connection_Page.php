@@ -280,7 +280,7 @@ class Connection_Page
     }
 
     /**
-     * Save who may manage WP MCP (issue #479). Management_Access::save()
+     * Save who may manage WPMCP (issue #479). Management_Access::save()
      * refuses a self-lockout, a non-administrator, a stale form and any
      * save while the wp-config.php constant is defined.
      */
@@ -765,7 +765,7 @@ class Connection_Page
         if (! $exposed) {
             ?>
             <div class="notice notice-warning">
-                <p><strong><?php echo esc_html__('MCP is off on this site.', 'wpmcp'); ?></strong> <?php echo esc_html__('All WP MCP tools refuse, for all apps and passwords, until you turn it back on.', 'wpmcp'); ?></p>
+                <p><strong><?php echo esc_html__('MCP is off on this site.', 'wpmcp'); ?></strong> <?php echo esc_html__('All WPMCP tools refuse, for all apps and passwords, until you turn it back on.', 'wpmcp'); ?></p>
                 <form method="post" action="#wpmcp-tab-connect">
                     <input type="hidden" name="wpmcp_connection_action" value="toggle">
                     <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
@@ -881,7 +881,7 @@ class Connection_Page
             <td><?php echo esc_html((string) wp_date($date, $record['created'])); ?></td>
             <td>
                 <?php if ($gone) : ?>
-                    <span class="wpmcp-status is-gone"><span class="dashicons dashicons-warning" aria-hidden="true"></span><?php echo esc_html__('Removed outside WP MCP', 'wpmcp'); ?></span>
+                    <span class="wpmcp-status is-gone"><span class="dashicons dashicons-warning" aria-hidden="true"></span><?php echo esc_html__('Removed outside WPMCP', 'wpmcp'); ?></span>
                     <span class="wpmcp-help"><?php echo esc_html__('Its application password was deleted in WordPress, so nothing can sign in with it.', 'wpmcp'); ?></span>
                 <?php elseif (null !== $activity) : ?>
                     <?php echo esc_html((string) wp_date(trim($date . ' ' . $time), $activity->last_at)); ?>
@@ -921,7 +921,7 @@ class Connection_Page
     }
 
     /**
-     * The Settings tab: the MCP switch, OAuth sign-in, who may manage WP MCP,
+     * The Settings tab: the MCP switch, OAuth sign-in, who may manage WPMCP,
      * what happens when the plugin is deleted, and Advanced.
      *
      * @param array<string, mixed>|null $result
@@ -932,8 +932,8 @@ class Connection_Page
         <div class="wpmcp-card">
             <h2><?php echo esc_html__('MCP access', 'wpmcp'); ?></h2>
             <p class="wpmcp-intro"><?php echo esc_html($exposed
-                ? __('On: apps you connect can use WP MCP tools on this site. Turning it off is the quickest way to stop all agents at once.', 'wpmcp')
-                : __('Off: all WP MCP tools refuse, for all apps and passwords.', 'wpmcp')); ?></p>
+                ? __('On: apps you connect can use WPMCP tools on this site. Turning it off is the quickest way to stop all agents at once.', 'wpmcp')
+                : __('Off: all WPMCP tools refuse, for all apps and passwords.', 'wpmcp')); ?></p>
             <form method="post" action="#wpmcp-tab-settings">
                 <input type="hidden" name="wpmcp_connection_action" value="toggle">
                 <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
@@ -1083,14 +1083,14 @@ class Connection_Page
         $forced   = Data_Registry::is_forced();
         $editable = ! $forced && (! is_multisite() || current_user_can('manage_network_options'));
         ?>
-        <h2><?php echo esc_html__('Delete all WP MCP data when the plugin is deleted', 'wpmcp'); ?></h2>
+        <h2><?php echo esc_html__('Delete all WPMCP data when the plugin is deleted', 'wpmcp'); ?></h2>
         <p>
             <?php if ($delete) : ?>
                 <strong><?php echo esc_html__('On.', 'wpmcp'); ?></strong>
-                <?php echo esc_html__('Deleting WP MCP from the Plugins screen will also delete its tables (snapshots, redirects, search index), settings, OAuth clients and tokens, scoped identities, the application passwords issued here, and its directories, including site backup archives and file backups, on every site of the network. This cannot be undone.', 'wpmcp'); ?>
+                <?php echo esc_html__('Deleting WPMCP from the Plugins screen will also delete its tables (snapshots, redirects, search index), settings, OAuth clients and tokens, scoped identities, the application passwords issued here, and its directories, including site backup archives and file backups, on every site of the network. This cannot be undone.', 'wpmcp'); ?>
             <?php else : ?>
                 <strong><?php echo esc_html__('Off.', 'wpmcp'); ?></strong>
-                <?php echo esc_html__('WP MCP\'s data (snapshots, settings, credentials and backup archives) is kept when the plugin is deleted, so reinstalling picks up where you left off.', 'wpmcp'); ?>
+                <?php echo esc_html__('WPMCP\'s data (snapshots, settings, credentials and backup archives) is kept when the plugin is deleted, so reinstalling picks up where you left off.', 'wpmcp'); ?>
             <?php endif; ?>
         </p>
         <?php if ($forced) : ?>
@@ -1114,7 +1114,7 @@ class Connection_Page
     }
 
     /**
-     * Who may manage WP MCP (issue #479). Read-only while the
+     * Who may manage WPMCP (issue #479). Read-only while the
      * WPMCP_MANAGEMENT_ADMINS constant is defined, with listed ids that are
      * not administrators flagged; otherwise every administrator or a chosen
      * few. Agent execution is not affected either way.
@@ -1125,7 +1125,7 @@ class Connection_Page
         ?>
         <h2><?php echo esc_html__('Management access', 'wpmcp'); ?></h2>
         <p class="description">
-            <?php echo esc_html__('Who can open these screens and change WP MCP settings. Administrators left out keep the rest of wp-admin, and what agents may do is still decided by identities and governance.', 'wpmcp'); ?>
+            <?php echo esc_html__('Who can open these screens and change WPMCP settings. Administrators left out keep the rest of wp-admin, and what agents may do is still decided by identities and governance.', 'wpmcp'); ?>
         </p>
         <?php if ('constant' === $policy['source']) : ?>
             <p>
@@ -1138,9 +1138,9 @@ class Connection_Page
                 ?>
             </p>
             <?php if ('closed' === $policy['mode']) : ?>
-                <div class="notice notice-error inline"><p><?php echo esc_html__('The constant is not valid, so nobody can manage WP MCP until it is fixed. Use \'all\', a comma-separated list of user ids, or an array of user ids.', 'wpmcp'); ?></p></div>
+                <div class="notice notice-error inline"><p><?php echo esc_html__('The constant is not valid, so nobody can manage WPMCP until it is fixed. Use \'all\', a comma-separated list of user ids, or an array of user ids.', 'wpmcp'); ?></p></div>
             <?php elseif ('all' === $policy['mode']) : ?>
-                <p><?php echo esc_html__('Every administrator can manage WP MCP.', 'wpmcp'); ?></p>
+                <p><?php echo esc_html__('Every administrator can manage WPMCP.', 'wpmcp'); ?></p>
             <?php else : ?>
                 <?php $not_admin = Management_Access::non_admin_ids(); ?>
                 <ul style="margin-left: 1.5em; list-style: disc;">

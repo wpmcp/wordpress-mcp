@@ -68,7 +68,7 @@ class Get_Connection_Info
                     'label'       => 'Claude Desktop',
                     'config_file' => 'claude_desktop_config.json',
                     'snippet'     => Client_Config_Generator::desktop_snippet($endpoint, $auth_header_value),
-                    'note'        => 'Easiest: in wp-admin, open WP MCP, Connection, pick Claude Desktop and click Create connection, then download the wpmcp.mcpb bundle there and double-click it; it asks for the username and password and needs nothing else installed. For a manual setup, add this block to claude_desktop_config.json under "mcpServers", then fully quit and reopen Claude Desktop. Claude Desktop\'s config file only runs local servers and skips an entry with "url" or "headers", so this block starts the mcp-remote bridge through npx, which needs Node.js installed. Replace the placeholder in env with the base64 value from the auth steps. The other route, Settings -> Connectors -> Add custom connector, signs in with OAuth instead and needs OAuth switched on for this site: see custom-connector.',
+                    'note'        => 'Easiest: in wp-admin, open WPMCP, Connection, pick Claude Desktop and click Create connection, then download the wpmcp.mcpb bundle there and double-click it; it asks for the username and password and needs nothing else installed. For a manual setup, add this block to claude_desktop_config.json under "mcpServers", then fully quit and reopen Claude Desktop. Claude Desktop\'s config file only runs local servers and skips an entry with "url" or "headers", so this block starts the mcp-remote bridge through npx, which needs Node.js installed. Replace the placeholder in env with the base64 value from the auth steps. The other route, Settings -> Connectors -> Add custom connector, signs in with OAuth instead and needs OAuth switched on for this site: see custom-connector.',
                 ],
                 'antigravity'    => [
                     'label'       => 'Antigravity',
@@ -80,7 +80,7 @@ class Get_Connection_Info
                 'chatgpt'          => Client_Config_Generator::chatgpt(),
             ],
             'unavailable_summary' => Tool_Availability::summary(Tool_Availability::report()),
-            'note'     => 'This tool never returns a real credential. The WP MCP, Connection screen in wp-admin walks four steps: pick the app, create the connection (an application password, shown once), add it to the app with the snippet filled in (or the Claude Desktop bundle, .mcpb), and check that the app signed in.',
+            'note'     => 'This tool never returns a real credential. The WPMCP, Connection screen in wp-admin walks four steps: pick the app, create the connection (an application password, shown once), add it to the app with the snippet filled in (or the Claude Desktop bundle, .mcpb), and check that the app signed in.',
         ];
     }
 

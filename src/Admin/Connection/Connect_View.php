@@ -126,7 +126,7 @@ final class Connect_View
     {
         printf('<p class="wpmcp-lead">%s</p>', wp_kses(sprintf(
             /* translators: 1: app name, 2: the current user's login */
-            __('WP MCP creates a WordPress application password for %1$s. The app signs in with it as %2$s. You can revoke it any time on the Connections tab.', 'wpmcp'),
+            __('WPMCP creates a WordPress application password for %1$s. The app signs in with it as %2$s. You can revoke it any time on the Connections tab.', 'wpmcp'),
             '<strong>' . esc_html($this->labels->label($app)) . '</strong>',
             '<strong>' . esc_html(wp_get_current_user()->user_login) . '</strong>'
         ), [ 'strong' => [] ]));
@@ -205,7 +205,7 @@ final class Connect_View
             </div>
             <p class="wpmcp-key__note">
                 <?php
-                echo esc_html(__('WP MCP doesn\'t store this password and can\'t show it again.', 'wpmcp') . ' ' . $where . ' ' . __('Lost it? Revoke this connection on the Connections tab and create a new one.', 'wpmcp'));
+                echo esc_html(__('WPMCP doesn\'t store this password and can\'t show it again.', 'wpmcp') . ' ' . $where . ' ' . __('Lost it? Revoke this connection on the Connections tab and create a new one.', 'wpmcp'));
                 ?>
             </p>
         </div>
@@ -281,7 +281,7 @@ final class Connect_View
                 printf('<p class="wpmcp-public-address-warning">%s</p>', esc_html($screen->public_warning));
                 printf(
                     '<ul><li>%1$s</li><li>%2$s</li></ul>',
-                    esc_html__('Connect from your live site instead: open WP MCP, Connection there.', 'wpmcp'),
+                    esc_html__('Connect from your live site instead: open WPMCP, Connection there.', 'wpmcp'),
                     esc_html__('Or pick an app that runs on your computer: it can reach this site as it is.', 'wpmcp')
                 );
                 $base = admin_url('admin.php?page=' . Connection_Page::SLUG);
@@ -335,10 +335,10 @@ final class Connect_View
 
         $name = $this->labels->in_text($app, $screen->connector);
         $ask  = Client_App::Chatgpt === $app
-            ? __('In a ChatGPT chat with WP MCP turned on, ask: "List the WP MCP tools."', 'wpmcp')
+            ? __('In a ChatGPT chat with WPMCP turned on, ask: "List the WPMCP tools."', 'wpmcp')
             : sprintf(
                 /* translators: %s: app name, or "your app" */
-                __('Ask %s something simple, like "List the WP MCP tools."', 'wpmcp'),
+                __('Ask %s something simple, like "List the WPMCP tools."', 'wpmcp'),
                 $name
             );
         printf('<p class="wpmcp-lead">%s %s</p>', esc_html($ask), esc_html__('This page then looks for the sign-in on your site.', 'wpmcp'));

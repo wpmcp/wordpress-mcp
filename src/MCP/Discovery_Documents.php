@@ -119,7 +119,7 @@ class Discovery_Documents
             'url'  => Mcp_Resource::canonical(),
         ];
         // Every revision the endpoint answers, whichever adapter copy
-        // mounts it: 2026-07-28 is served by WP MCP when the adapter
+        // mounts it: 2026-07-28 is served by WPMCP when the adapter
         // predates it (issue #386).
         $remote['supportedProtocolVersions'] = Protocol_Revision::advertised_versions();
 

@@ -250,7 +250,7 @@ class ProBannerTest extends \WP_UnitTestCase
     {
         $html = $this->with_builder('elementor');
 
-        $this->assertStringContainsString('Elementor detected: WP MCP Pro adds deep Elementor editing, building sections and templates, and unlimited undo history.', $html);
+        $this->assertStringContainsString('Elementor detected: WPMCP Pro adds deep Elementor editing, building sections and templates, and unlimited undo history.', $html);
     }
 
     public function test_names_bricks_and_drops_the_elementor_pitch_on_a_bricks_site(): void
@@ -307,7 +307,7 @@ class ProBannerTest extends \WP_UnitTestCase
 
         foreach ($names as $builder => $name) {
             $html = $this->with_builder($builder);
-            $this->assertStringContainsString($name . ' detected: WP MCP Pro', $html, $builder);
+            $this->assertStringContainsString($name . ' detected: WPMCP Pro', $html, $builder);
             $this->assertStringContainsString('unlimited undo history', $html, $builder);
             $lower = strtolower($html);
             foreach (['upgrade to unlock', 'unlock this feature', 'pro feature', 'available in pro', 'only in pro', 'upgrade now', 'the only', 'every write'] as $phrase) {
@@ -455,7 +455,7 @@ class ProBannerTest extends \WP_UnitTestCase
 
         $this->assertNotFalse(has_action('admin_notices', [$banner, 'render']));
 
-        // Issue #479: every WP MCP admin-post handler sits behind the
+        // Issue #479: every WPMCP admin-post handler sits behind the
         // management check, so the registered callback is the guard, not the
         // bare method (ManagementAccessEntryPointsTest enumerates them).
         $callbacks = array_values($wp_filter[$hook]->callbacks[10] ?? []);

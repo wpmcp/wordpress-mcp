@@ -1,13 +1,13 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: WP MCP\n"
+"Project-Id-Version: WPMCP\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-24T21:11:11+00:00\n"
+"POT-Creation-Date: 2026-11-24T22:17:23+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wpmcp\n"
@@ -94,7 +94,7 @@ msgid "Abilities"
 msgstr ""
 
 #: Admin/Ability_Grid_Page.php:427
-msgid "Every tool WP MCP offers to AI clients on this site, grouped by area. Switching a tool off here stops clients from using it; switching it on cannot override a tool that is blocked elsewhere, such as in site code. Every change is recorded in the audit log."
+msgid "Every tool WPMCP offers to AI clients on this site, grouped by area. Switching a tool off here stops clients from using it; switching it on cannot override a tool that is blocked elsewhere, such as in site code. Every change is recorded in the audit log."
 msgstr ""
 
 #. translators: 1: ability name, 2: enabled/disabled.
@@ -133,7 +133,7 @@ msgid "Save"
 msgstr ""
 
 #: Admin/Ability_Grid_Page.php:478
-msgid "When on, tools that a WP MCP update adds arrive switched on. Tools that run code, write files or database rows, or manage users, plugins or themes always arrive off, and a tool you switched off stays off."
+msgid "When on, tools that a WPMCP update adds arrive switched on. Tools that run code, write files or database rows, or manage users, plugins or themes always arrive off, and a tool you switched off stays off."
 msgstr ""
 
 #. translators: %d: number of abilities in the domain.
@@ -637,7 +637,7 @@ msgid "VS Code, or any app that takes a URL and a header."
 msgstr ""
 
 #: Admin/Connection/Check_View.php:36
-msgid "MCP is off on this site, so all WP MCP tools refuse until you turn it back on on the Settings tab."
+msgid "MCP is off on this site, so all WPMCP tools refuse until you turn it back on on the Settings tab."
 msgstr ""
 
 #: Admin/Connection/Check_View.php:51
@@ -889,7 +889,7 @@ msgstr ""
 #. translators: %s: link to the History screen
 #: Admin/Connection/Check_View.php:292
 #, php-format
-msgid "Before each supported write, WP MCP saves a snapshot, and undo is free. Your changes are on the %s screen."
+msgid "Before each supported write, WPMCP saves a snapshot, and undo is free. Your changes are on the %s screen."
 msgstr ""
 
 #: Admin/Connection/Check_View.php:293
@@ -1051,7 +1051,7 @@ msgstr ""
 #. translators: 1: app name, 2: the current user's login
 #: Admin/Connection/Connect_View.php:129
 #, php-format
-msgid "WP MCP creates a WordPress application password for %1$s. The app signs in with it as %2$s. You can revoke it any time on the Connections tab."
+msgid "WPMCP creates a WordPress application password for %1$s. The app signs in with it as %2$s. You can revoke it any time on the Connections tab."
 msgstr ""
 
 #: Admin/Connection/Connect_View.php:140
@@ -1128,7 +1128,7 @@ msgid "Copy password"
 msgstr ""
 
 #: Admin/Connection/Connect_View.php:208
-msgid "WP MCP doesn't store this password and can't show it again."
+msgid "WPMCP doesn't store this password and can't show it again."
 msgstr ""
 
 #: Admin/Connection/Connect_View.php:208
@@ -1184,7 +1184,7 @@ msgid "%s can't reach this site"
 msgstr ""
 
 #: Admin/Connection/Connect_View.php:284
-msgid "Connect from your live site instead: open WP MCP, Connection there."
+msgid "Connect from your live site instead: open WPMCP, Connection there."
 msgstr ""
 
 #: Admin/Connection/Connect_View.php:285
@@ -1230,13 +1230,13 @@ msgid "Available after step 3."
 msgstr ""
 
 #: Admin/Connection/Connect_View.php:338
-msgid "In a ChatGPT chat with WP MCP turned on, ask: \"List the WP MCP tools.\""
+msgid "In a ChatGPT chat with WPMCP turned on, ask: \"List the WPMCP tools.\""
 msgstr ""
 
 #. translators: %s: app name, or "your app"
 #: Admin/Connection/Connect_View.php:341
 #, php-format
-msgid "Ask %s something simple, like \"List the WP MCP tools.\""
+msgid "Ask %s something simple, like \"List the WPMCP tools.\""
 msgstr ""
 
 #: Admin/Connection/Connect_View.php:344
@@ -1322,7 +1322,7 @@ msgid "Copied the .mcp.json block, with the password."
 msgstr ""
 
 #: Admin/Connection/Instructions_View.php:103
-msgid "Download the WP MCP bundle for Claude Desktop."
+msgid "Download the WPMCP bundle for Claude Desktop."
 msgstr ""
 
 #: Admin/Connection/Instructions_View.php:105
@@ -1336,7 +1336,7 @@ msgstr ""
 #. translators: %s: the file name wpmcp.mcpb
 #: Admin/Connection/Instructions_View.php:111
 #, php-format
-msgid "Double-click %s. Claude Desktop opens and offers to install WP MCP."
+msgid "Double-click %s. Claude Desktop opens and offers to install WPMCP."
 msgstr ""
 
 #. translators: 1: the user login, 2: the Install button label
@@ -1366,7 +1366,7 @@ msgstr ""
 #. translators: 1: the project file .cursor/mcp.json, 2: the global file ~/.cursor/mcp.json
 #: Admin/Connection/Instructions_View.php:139
 #, php-format
-msgid "Open %1$s in your project, or %2$s to use WP MCP in all your projects. Create the file if it isn't there."
+msgid "Open %1$s in your project, or %2$s to use WPMCP in all your projects. Create the file if it isn't there."
 msgstr ""
 
 #. translators: 1: the server name wpmcp, 2: the key mcpServers
@@ -1410,7 +1410,7 @@ msgid "Copied the Antigravity config, with the password."
 msgstr ""
 
 #: Admin/Connection/Instructions_View.php:179
-msgid "Quit and reopen Antigravity, then start a new conversation so the WP MCP tools load."
+msgid "Quit and reopen Antigravity, then start a new conversation so the WPMCP tools load."
 msgstr ""
 
 #: Admin/Connection/Instructions_View.php:188
@@ -1684,7 +1684,7 @@ msgid "MCP is off on this site."
 msgstr ""
 
 #: Admin/Connection_Page.php:768
-msgid "All WP MCP tools refuse, for all apps and passwords, until you turn it back on."
+msgid "All WPMCP tools refuse, for all apps and passwords, until you turn it back on."
 msgstr ""
 
 #: Admin/Connection_Page.php:773
@@ -1750,7 +1750,7 @@ msgid "Actions"
 msgstr ""
 
 #: Admin/Connection_Page.php:884
-msgid "Removed outside WP MCP"
+msgid "Removed outside WPMCP"
 msgstr ""
 
 #: Admin/Connection_Page.php:885
@@ -1790,11 +1790,11 @@ msgid "MCP access"
 msgstr ""
 
 #: Admin/Connection_Page.php:935
-msgid "On: apps you connect can use WP MCP tools on this site. Turning it off is the quickest way to stop all agents at once."
+msgid "On: apps you connect can use WPMCP tools on this site. Turning it off is the quickest way to stop all agents at once."
 msgstr ""
 
 #: Admin/Connection_Page.php:936
-msgid "Off: all WP MCP tools refuse, for all apps and passwords."
+msgid "Off: all WPMCP tools refuse, for all apps and passwords."
 msgstr ""
 
 #: Admin/Connection_Page.php:941
@@ -1916,7 +1916,7 @@ msgid "Allowed addresses on scoped identities are checked against REMOTE_ADDR. B
 msgstr ""
 
 #: Admin/Connection_Page.php:1086
-msgid "Delete all WP MCP data when the plugin is deleted"
+msgid "Delete all WPMCP data when the plugin is deleted"
 msgstr ""
 
 #: Admin/Connection_Page.php:1089
@@ -1924,7 +1924,7 @@ msgid "On."
 msgstr ""
 
 #: Admin/Connection_Page.php:1090
-msgid "Deleting WP MCP from the Plugins screen will also delete its tables (snapshots, redirects, search index), settings, OAuth clients and tokens, scoped identities, the application passwords issued here, and its directories, including site backup archives and file backups, on every site of the network. This cannot be undone."
+msgid "Deleting WPMCP from the Plugins screen will also delete its tables (snapshots, redirects, search index), settings, OAuth clients and tokens, scoped identities, the application passwords issued here, and its directories, including site backup archives and file backups, on every site of the network. This cannot be undone."
 msgstr ""
 
 #: Admin/Connection_Page.php:1092
@@ -1932,7 +1932,7 @@ msgid "Off."
 msgstr ""
 
 #: Admin/Connection_Page.php:1093
-msgid "WP MCP's data (snapshots, settings, credentials and backup archives) is kept when the plugin is deleted, so reinstalling picks up where you left off."
+msgid "WPMCP's data (snapshots, settings, credentials and backup archives) is kept when the plugin is deleted, so reinstalling picks up where you left off."
 msgstr ""
 
 #: Admin/Connection_Page.php:1097
@@ -1952,7 +1952,7 @@ msgid "Management access"
 msgstr ""
 
 #: Admin/Connection_Page.php:1128
-msgid "Who can open these screens and change WP MCP settings. Administrators left out keep the rest of wp-admin, and what agents may do is still decided by identities and governance."
+msgid "Who can open these screens and change WPMCP settings. Administrators left out keep the rest of wp-admin, and what agents may do is still decided by identities and governance."
 msgstr ""
 
 #. translators: %s: constant name.
@@ -1962,11 +1962,11 @@ msgid "Set in wp-config.php by %s, so it is read-only here."
 msgstr ""
 
 #: Admin/Connection_Page.php:1141
-msgid "The constant is not valid, so nobody can manage WP MCP until it is fixed. Use 'all', a comma-separated list of user ids, or an array of user ids."
+msgid "The constant is not valid, so nobody can manage WPMCP until it is fixed. Use 'all', a comma-separated list of user ids, or an array of user ids."
 msgstr ""
 
 #: Admin/Connection_Page.php:1143
-msgid "Every administrator can manage WP MCP."
+msgid "Every administrator can manage WPMCP."
 msgstr ""
 
 #: Admin/Connection_Page.php:1152
@@ -2169,7 +2169,7 @@ msgid "Agent History"
 msgstr ""
 
 #: Admin/Management_Access.php:84
-msgid "Sorry, you are not allowed to manage WP MCP on this site."
+msgid "Sorry, you are not allowed to manage WPMCP on this site."
 msgstr ""
 
 #: Admin/Management_Access.php:249
@@ -2181,7 +2181,7 @@ msgid "Unknown management access mode."
 msgstr ""
 
 #: Admin/Management_Access.php:263
-msgid "Choose at least one administrator who can manage WP MCP."
+msgid "Choose at least one administrator who can manage WPMCP."
 msgstr ""
 
 #. translators: %d: user id.
@@ -2191,7 +2191,7 @@ msgid "User %d is not an administrator of this site."
 msgstr ""
 
 #: Admin/Management_Access.php:277
-msgid "You cannot remove yourself from the administrators who manage WP MCP. Ask another listed administrator to do it."
+msgid "You cannot remove yourself from the administrators who manage WPMCP. Ask another listed administrator to do it."
 msgstr ""
 
 #. translators: %s: constant name.
@@ -2233,7 +2233,7 @@ msgid "kept as you set it"
 msgstr ""
 
 #: Admin/New_Tools_Notice.php:59
-msgid "This WP MCP update added new tools:"
+msgid "This WPMCP update added new tools:"
 msgstr ""
 
 #: Admin/New_Tools_Notice.php:71
@@ -2241,7 +2241,7 @@ msgid "Review on the Abilities screen"
 msgstr ""
 
 #: Admin/New_Tools_Notice.php:81
-msgid "You are not allowed to change WP MCP settings."
+msgid "You are not allowed to change WPMCP settings."
 msgstr ""
 
 #: Admin/OAuth_Consent_Page.php:79
@@ -2311,7 +2311,7 @@ msgid "What may it do?"
 msgstr ""
 
 #: Admin/OAuth_Consent_Page.php:210
-msgid "Whatever you choose, it can never do more than your own account can. A site owner can change this later on the WP MCP Connection screen."
+msgid "Whatever you choose, it can never do more than your own account can. A site owner can change this later on the WPMCP Connection screen."
 msgstr ""
 
 #: Admin/OAuth_Consent_Page.php:211
@@ -2329,7 +2329,7 @@ msgid "Opt-in operations"
 msgstr ""
 
 #: Admin/Opt_In_Settings_Page.php:43
-msgid "WP MCP opt-in operations"
+msgid "WPMCP opt-in operations"
 msgstr ""
 
 #: Admin/Opt_In_Settings_Page.php:65
@@ -2401,55 +2401,55 @@ msgid "Switch on"
 msgstr ""
 
 #: Admin/Pro_Banner.php:176
-msgid "Elementor detected: WP MCP Pro adds deep Elementor editing, building sections and templates, and unlimited undo history."
+msgid "Elementor detected: WPMCP Pro adds deep Elementor editing, building sections and templates, and unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:178
-msgid "Bricks detected: WP MCP Pro reads and edits Bricks pages and their design system, with unlimited undo history."
+msgid "Bricks detected: WPMCP Pro reads and edits Bricks pages and their design system, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:180
-msgid "Divi detected: WP MCP Pro edits Divi pages, element by element on Divi 5, plus Divi Library and Theme Builder layouts, with unlimited undo history."
+msgid "Divi detected: WPMCP Pro edits Divi pages, element by element on Divi 5, plus Divi Library and Theme Builder layouts, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:182
-msgid "WPBakery detected: WP MCP Pro edits WPBakery pages and saved templates, with unlimited undo history."
+msgid "WPBakery detected: WPMCP Pro edits WPBakery pages and saved templates, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:184
-msgid "Beaver Builder detected: WP MCP Pro reads and edits Beaver Builder pages, with unlimited undo history."
+msgid "Beaver Builder detected: WPMCP Pro reads and edits Beaver Builder pages, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:186
-msgid "Breakdance detected: WP MCP Pro reads and edits Breakdance pages and their design system, with unlimited undo history."
+msgid "Breakdance detected: WPMCP Pro reads and edits Breakdance pages and their design system, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:188
-msgid "Oxygen detected: WP MCP Pro edits Oxygen 6 pages, templates and Components, with unlimited undo history."
+msgid "Oxygen detected: WPMCP Pro edits Oxygen 6 pages, templates and Components, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:190
-msgid "Oxygen detected: WP MCP Pro reads and edits Oxygen Classic pages, with unlimited undo history."
+msgid "Oxygen detected: WPMCP Pro reads and edits Oxygen Classic pages, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:192
-msgid "Avada detected: WP MCP Pro edits Avada pages, its library, global colors and typography, with unlimited undo history."
+msgid "Avada detected: WPMCP Pro edits Avada pages, its library, global colors and typography, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:194
-msgid "Thrive Architect detected: WP MCP Pro edits Thrive Architect pages, templates and global styles, with unlimited undo history."
+msgid "Thrive Architect detected: WPMCP Pro edits Thrive Architect pages, templates and global styles, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:196
-msgid "BeTheme detected: WP MCP Pro edits BeBuilder sections and items and adds from BeBuilder templates, with unlimited undo history."
+msgid "BeTheme detected: WPMCP Pro edits BeBuilder sections and items and adds from BeBuilder templates, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:198
-msgid "Flatsome detected: WP MCP Pro edits UX Builder pages, UX Blocks and theme options, with unlimited undo history."
+msgid "Flatsome detected: WPMCP Pro edits UX Builder pages, UX Blocks and theme options, with unlimited undo history."
 msgstr ""
 
 #: Admin/Pro_Banner.php:317
-msgid "WP MCP Pro"
+msgid "WPMCP Pro"
 msgstr ""
 
 #: Admin/Pro_Banner.php:318
@@ -2473,7 +2473,7 @@ msgid "Custom widget and block builders, forms adapter pack"
 msgstr ""
 
 #: Admin/Pro_Banner.php:327
-msgid "WP MCP Cloud sync and priority support"
+msgid "WPMCP Cloud sync and priority support"
 msgstr ""
 
 #: Admin/Pro_Banner.php:330
@@ -2660,7 +2660,7 @@ msgstr ""
 #. translators: 1: existing snapshot count, 2: the flat retention cap.
 #: Admin/Snapshot_Retention_Notice.php:55
 #, php-format
-msgid "WP MCP keeps %2$d snapshots by default. This site has %1$d, left over from an earlier setting, and they are being kept until you decide. Set the filter below to choose your own depth, or trim to %2$d now, which also deletes the file backups behind the older snapshots."
+msgid "WPMCP keeps %2$d snapshots by default. This site has %1$d, left over from an earlier setting, and they are being kept until you decide. Set the filter below to choose your own depth, or trim to %2$d now, which also deletes the file backups behind the older snapshots."
 msgstr ""
 
 #. translators: %d: the flat retention cap.
@@ -2674,7 +2674,7 @@ msgid "You are not allowed to change snapshot retention."
 msgstr ""
 
 #: Admin/Star_Prompt.php:174
-msgid "WP MCP just kept a snapshot of your site."
+msgid "WPMCP just kept a snapshot of your site."
 msgstr ""
 
 #: Admin/Star_Prompt.php:175
@@ -2682,7 +2682,7 @@ msgid "If the free plugin helps, a star on GitHub helps other WordPress builders
 msgstr ""
 
 #: Admin/Star_Prompt.php:178
-msgid "Star WP MCP on GitHub"
+msgid "Star WPMCP on GitHub"
 msgstr ""
 
 #. translators: 1: ability name, 2: its operation (create, update or delete), 3: the OAuth scope it needs.
@@ -2692,7 +2692,7 @@ msgid "This connection is read-only: \"%1$s\" changes the site (its operation is
 msgstr ""
 
 #: Auth/Endpoints.php:351
-msgid "OAuth is off for this site (the default), so WP MCP has no sign-in service here and a custom connector cannot connect."
+msgid "OAuth is off for this site (the default), so WPMCP has no sign-in service here and a custom connector cannot connect."
 msgstr ""
 
 #: Auth/Endpoints.php:358
@@ -2764,19 +2764,19 @@ msgstr ""
 #. translators: 1: the switch label, Allow OAuth sign-in; 2: the PHP line, define('WPMCP_OAUTH_ENABLED', true);
 #: Connect/Client_Config_Generator.php:196
 #, php-format
-msgid "An administrator who manages WP MCP switches it on with \"%1$s\" below. Or add %2$s to wp-config.php, above the line \"That's all, stop editing!\". Or use an app that signs in with an application password instead, such as Claude Desktop with the bundle."
+msgid "An administrator who manages WPMCP switches it on with \"%1$s\" below. Or add %2$s to wp-config.php, above the line \"That's all, stop editing!\". Or use an app that signs in with an application password instead, such as Claude Desktop with the bundle."
 msgstr ""
 
 #. translators: 1: the switch label, Allow OAuth sign-in; 2: the PHP line, define('WPMCP_OAUTH_ENABLED', true);
 #: Connect/Client_Config_Generator.php:204
 #, php-format
-msgid "An administrator who manages WP MCP switches it on in wp-admin under WP MCP, Connection, on the Settings tab, with \"%1$s\". Or add %2$s to wp-config.php, above the line \"That's all, stop editing!\". Or connect an app that signs in with an application password instead, such as Claude Desktop with the bundle from that screen."
+msgid "An administrator who manages WPMCP switches it on in wp-admin under WPMCP, Connection, on the Settings tab, with \"%1$s\". Or add %2$s to wp-config.php, above the line \"That's all, stop editing!\". Or connect an app that signs in with an application password instead, such as Claude Desktop with the bundle from that screen."
 msgstr ""
 
 #. translators: %s: the switch label, Allow OAuth sign-in
 #: Connect/Client_Config_Generator.php:219
 #, php-format
-msgid "In wp-admin, open WP MCP, Connection, the Settings tab, and turn on \"%s\" (administrators who can manage WP MCP)."
+msgid "In wp-admin, open WPMCP, Connection, the Settings tab, and turn on \"%s\" (administrators who can manage WPMCP)."
 msgstr ""
 
 #. translators: %s: the PHP line to add, define('WPMCP_OAUTH_ENABLED', true);
@@ -2802,7 +2802,7 @@ msgid "OAuth is on for this site, so the custom connector can sign in: add it wi
 msgstr ""
 
 #: Connect/Client_Config_Generator.php:253
-msgid "OAuth is off for this site (the default). The custom connector requires OAuth: it cannot send an application password, so on this site it fails with \"Couldn't register with WP MCP's sign-in service\"."
+msgid "OAuth is off for this site (the default). The custom connector requires OAuth: it cannot send an application password, so on this site it fails with \"Couldn't register with WPMCP's sign-in service\"."
 msgstr ""
 
 #: Connect/Client_Config_Generator.php:256
@@ -2838,11 +2838,11 @@ msgstr ""
 #. translators: %s: the MCP endpoint URL
 #: Connect/Client_Config_Generator.php:295
 #, php-format
-msgid "Back in Apps & Connectors, choose Create and name the connector, for example \"WP MCP\". Enter %s as the MCP server URL and choose OAuth as the authentication. Leave any client ID and secret empty: ChatGPT registers itself."
+msgid "Back in Apps & Connectors, choose Create and name the connector, for example \"WPMCP\". Enter %s as the MCP server URL and choose OAuth as the authentication. Leave any client ID and secret empty: ChatGPT registers itself."
 msgstr ""
 
 #: Connect/Client_Config_Generator.php:296
-msgid "Confirm that you trust the connector and click Create, then sign in to WordPress in the window that opens and approve the access. In a chat, open the + menu, choose Developer mode and turn on WP MCP for that chat. The desktop app uses the connectors you added on the web."
+msgid "Confirm that you trust the connector and click Create, then sign in to WordPress in the window that opens and approve the access. In a chat, open the + menu, choose Developer mode and turn on WPMCP for that chat. The desktop app uses the connectors you added on the web."
 msgstr ""
 
 #: Connect/Client_Config_Generator.php:307
@@ -2850,7 +2850,7 @@ msgid "Custom MCP connectors need ChatGPT's Developer mode, on the plans that of
 msgstr ""
 
 #: Connect/Client_Config_Generator.php:317
-msgid "In Antigravity, open Customizations, then Installed, scroll to MCP Servers and click Copy Config File Path. Paste this block into that file (mcp_config.json) and save, then quit and reopen Antigravity and start a new conversation so the WP MCP tools load."
+msgid "In Antigravity, open Customizations, then Installed, scroll to MCP Servers and click Copy Config File Path. Paste this block into that file (mcp_config.json) and save, then quit and reopen Antigravity and start a new conversation so the WPMCP tools load."
 msgstr ""
 
 #. translators: %s: transport error message.
@@ -2949,7 +2949,7 @@ msgid "MCP: Off"
 msgstr ""
 
 #: Freemius/Staging_Copy.php:205
-msgid "Staging copy. This site does not count toward your WP MCP license."
+msgid "Staging copy. This site does not count toward your WPMCP license."
 msgstr ""
 
 #: Freemius/Staging_Copy.php:207
@@ -3297,7 +3297,7 @@ msgid "Paid Memberships Pro: level, member and discount code writes"
 msgstr ""
 
 #: Identity/Ip_Allowlist.php:240
-msgid "Sorry, you are not allowed to do that. The WP MCP identity this connection acts as refused the request; a site administrator can see which rule refused it in the WP MCP governance audit log."
+msgid "Sorry, you are not allowed to do that. The WPMCP identity this connection acts as refused the request; a site administrator can see which rule refused it in the WPMCP governance audit log."
 msgstr ""
 
 #: MCP/Discovery_Documents.php:163
@@ -3484,22 +3484,22 @@ msgstr ""
 
 #: Privacy/Personal_Data.php:60
 #: Privacy/Personal_Data.php:234
-msgid "WP MCP undo snapshots"
+msgid "WPMCP undo snapshots"
 msgstr ""
 
 #: Privacy/Personal_Data.php:61
 #: Privacy/Personal_Data.php:350
-msgid "WP MCP activity logs"
+msgid "WPMCP activity logs"
 msgstr ""
 
 #: Privacy/Personal_Data.php:62
 #: Privacy/Personal_Data.php:504
-msgid "WP MCP agent memory"
+msgid "WPMCP agent memory"
 msgstr ""
 
 #: Privacy/Personal_Data.php:63
 #: Privacy/Personal_Data.php:596
-msgid "WP MCP search index"
+msgid "WPMCP search index"
 msgstr ""
 
 #: Privacy/Personal_Data.php:223
@@ -3521,21 +3521,21 @@ msgid "yes"
 msgstr ""
 
 #: Privacy/Personal_Data.php:235
-msgid "Copies of site data WP MCP saved before an AI agent changed it, so the change can be undone."
+msgid "Copies of site data WPMCP saved before an AI agent changed it, so the change can be undone."
 msgstr ""
 
 #. translators: %d: number of undo snapshots.
 #: Privacy/Personal_Data.php:283
 #, php-format
-msgid "WP MCP kept the account id recorded on %d undo snapshots this account made (no name, email or address): rollback uses it to decide who may undo those changes."
+msgid "WPMCP kept the account id recorded on %d undo snapshots this account made (no name, email or address): rollback uses it to decide who may undo those changes."
 msgstr ""
 
 #: Privacy/Personal_Data.php:289
-msgid "WP MCP site backup archives are full copies of the database and were not changed. Delete any archive made before this request to remove the person from it."
+msgid "WPMCP site backup archives are full copies of the database and were not changed. Delete any archive made before this request to remove the person from it."
 msgstr ""
 
 #: Privacy/Personal_Data.php:351
-msgid "Records of AI agent requests and of the permission decisions WP MCP made about them."
+msgid "Records of AI agent requests and of the permission decisions WPMCP made about them."
 msgstr ""
 
 #: Privacy/Personal_Data.php:358
@@ -3590,7 +3590,7 @@ msgid "Written by this account"
 msgstr ""
 
 #: Privacy/Personal_Data.php:597
-msgid "Text WP MCP copied from site content so AI agents can search it."
+msgid "Text WPMCP copied from site content so AI agents can search it."
 msgstr ""
 
 #: Privacy/Personal_Data.php:600
@@ -3602,13 +3602,13 @@ msgid "Field"
 msgstr ""
 
 #: Privacy/Personal_Data.php:627
-msgid "WP MCP removed search index rows that held the person's email; rebuilding the index copies the content again only if the site content still holds it."
+msgid "WPMCP removed search index rows that held the person's email; rebuilding the index copies the content again only if the site content still holds it."
 msgstr ""
 
 #: Pro/Chat/Conversation_Store.php:212
 #: Pro/Chat/Conversation_Store.php:219
 #: Pro/Chat/Conversation_Store.php:279
-msgid "WP MCP chat"
+msgid "WPMCP chat"
 msgstr ""
 
 #: Pro/Chat/Conversation_Store.php:266
@@ -3634,7 +3634,7 @@ msgstr ""
 #. translators: %s: the backup folder path.
 #: Tools/Backup/Backup_Dir_Health.php:69
 #, php-format
-msgid "WP MCP backup archives in %s can be downloaded from the web: the server returned a test file placed there. Block that folder in the web server config, or define WPMCP_BACKUP_DIR in wp-config.php with a folder outside the web root."
+msgid "WPMCP backup archives in %s can be downloaded from the web: the server returned a test file placed there. Block that folder in the web server config, or define WPMCP_BACKUP_DIR in wp-config.php with a folder outside the web root."
 msgstr ""
 
 #: Tools/Backup/Restore_Maintenance.php:122
@@ -3678,7 +3678,7 @@ msgid "Release page on GitHub"
 msgstr ""
 
 #: Updates/GitHub_Releases.php:266
-msgid "The update package does not contain WP MCP: wpmcp.php is not at the top of its folder."
+msgid "The update package does not contain WPMCP: wpmcp.php is not at the top of its folder."
 msgstr ""
 
 #. translators: %s: plugin folder name

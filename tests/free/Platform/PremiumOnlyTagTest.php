@@ -16,7 +16,7 @@ final class PremiumOnlyTagTest extends \WP_UnitTestCase
 {
     private string $dir = '';
 
-    private const HEADER = "<?php\n/**\n * Plugin Name: WP MCP\n * Version: 9.9.9\n * WPMCP Flavor: full\n */\nif ( ! defined( 'ABSPATH' ) ) { exit; }\n/** Not the header. */\n";
+    private const HEADER = "<?php\n/**\n * Plugin Name: WPMCP\n * Version: 9.9.9\n * WPMCP Flavor: full\n */\nif ( ! defined( 'ABSPATH' ) ) { exit; }\n/** Not the header. */\n";
 
     public function set_up(): void
     {

@@ -15,7 +15,7 @@ if (! defined('ABSPATH')) {
  * each site has its own connections (the MCP adapter keys its sessions the
  * same way).
  *
- * The rows are WP MCP's own; one of any other shape reads as nothing. At
+ * The rows are WPMCP's own; one of any other shape reads as nothing. At
  * most MAX_ROWS passwords are kept per user and site, the least recently
  * active dropped first. Deleting the user deletes it, and uninstall removes
  * it with the rest of the wpmcp_ user meta (Data_Registry).

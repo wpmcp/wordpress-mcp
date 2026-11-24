@@ -15,7 +15,7 @@ if (! defined('ABSPATH')) {
  * dispatcher pair, so they add no top-level tool.
  *
  * Reads: get-site-gate-status answers the question get-maintenance-status
- * could not, from every mechanism at once (WP MCP's own flag, WordPress
+ * could not, from every mechanism at once (WPMCP's own flag, WordPress
  * core's .maintenance, SeedProd, WP Maintenance Mode, Under Construction,
  * Maintenance and CMP): which one is closing the site, what a visitor gets
  * (the live probe asks the site itself), and who bypasses it. The reading
@@ -87,7 +87,7 @@ final class Site_Gate_Pack
             'get-site-gate-status'  => [
                 'mode'         => 'read',
                 'capability'   => 'manage_options',
-                'description'  => 'Whether the public site is gated and by what: WP MCP maintenance mode, WordPress core .maintenance, and the SeedProd, WP Maintenance Mode, Under Construction, Maintenance and CMP plugins. Per gate: active, mode (coming soon or maintenance), the HTTP status and message visitors get, and who bypasses it (roles, counts, whether a bypass link or password is set; the secrets themselves are never returned). public_site_gated comes from a live request to the home page as an anonymous visitor, with the evidence in basis and probe',
+                'description'  => 'Whether the public site is gated and by what: WPMCP maintenance mode, WordPress core .maintenance, and the SeedProd, WP Maintenance Mode, Under Construction, Maintenance and CMP plugins. Per gate: active, mode (coming soon or maintenance), the HTTP status and message visitors get, and who bypasses it (roles, counts, whether a bypass link or password is set; the secrets themselves are never returned). public_site_gated comes from a live request to the home page as an anonymous visitor, with the evidence in basis and probe',
                 'input_schema' => [ 'type' => 'object', 'properties' => [] ],
                 'handler'      => static fn (): array => Site_Gate::status(true),
             ],
@@ -146,7 +146,7 @@ final class Site_Gate_Pack
             $active = [] !== $on ? $on : $active;
         }
         if ([] === $active) {
-            return [ null, Plugin_Refusal::any_of('site_gate_plugin_inactive', 'None of ' . implode(', ', self::LABELS) . ' is active on this site. Other gates (WP MCP, WordPress core) can be read with get-site-gate-status but not toggled here.') ];
+            return [ null, Plugin_Refusal::any_of('site_gate_plugin_inactive', 'None of ' . implode(', ', self::LABELS) . ' is active on this site. Other gates (WPMCP, WordPress core) can be read with get-site-gate-status but not toggled here.') ];
         }
         if (count($active) > 1) {
             return [ null, self::refusal('plugin_required', 'More than one gate plugin is active; name one with plugin.', [ 'plugins' => $active ]) ];

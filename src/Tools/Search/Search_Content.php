@@ -133,7 +133,7 @@ class Search_Content
         }
         if (! $complete) {
             return sprintf(
-                'The search index is partial (%d objects): it has not been fully built, so content saved before WP MCP was installed may be missing and an empty result does not mean the text is not on the site. Run wpmcp/reindex-search until complete is true; after that it updates on every save.',
+                'The search index is partial (%d objects): it has not been fully built, so content saved before WPMCP was installed may be missing and an empty result does not mean the text is not on the site. Run wpmcp/reindex-search until complete is true; after that it updates on every save.',
                 (int) $stats['objects']
             );
         }

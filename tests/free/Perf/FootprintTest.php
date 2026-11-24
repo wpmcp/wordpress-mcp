@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace WPMCP\Tests\Free\Perf;
 
 /**
- * What WP MCP loads per request context (module architecture, section 3.6
+ * What WPMCP loads per request context (module architecture, section 3.6
  * and acceptance criteria A1), gated on the counts that do not vary between
- * runs: WP MCP src files, Freemius SDK files, declared WPMCP\ classes and
- * WP MCP abilities registered. Times are not gated; bin/bench/run.php
+ * runs: WPMCP src files, Freemius SDK files, declared WPMCP\ classes and
+ * WPMCP abilities registered. Times are not gated; bin/bench/run.php
  * reports them.
  *
  * Each context boots in a fresh PHP process (tests/support/probes/footprint.php)
- * on tables of its own, with WP MCP the only plugin, and runs twice; the
+ * on tables of its own, with WPMCP the only plugin, and runs twice; the
  * second, steady-state run is the one measured, so first-request seeding
  * does not count.
  *
@@ -83,7 +83,7 @@ final class FootprintTest extends \WP_UnitTestCase
             'abilities' => (int) $record['abilities']['wpmcp'],
         ];
         $summary = sprintf(
-            '%s: %d src files (%d bytes, Plugin.php %s), %d Freemius files, %d WPMCP classes, %d WP MCP abilities registered',
+            '%s: %d src files (%d bytes, Plugin.php %s), %d Freemius files, %d WPMCP classes, %d WPMCP abilities registered',
             $context,
             $got['src'],
             (int) $files['src_bytes'],

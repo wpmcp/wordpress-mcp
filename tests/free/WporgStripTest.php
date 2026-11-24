@@ -326,7 +326,7 @@ PHP;
         $this->assertStringContainsString('SKILL.md', $output);
 
         $tree = $this->fixture_tree([
-            'readme.txt' => "=== WP MCP ===\n\nOn an unlicensed site the history is capped.\n",
+            'readme.txt' => "=== WPMCP ===\n\nOn an unlicensed site the history is capped.\n",
         ]);
         [$status, $output] = $this->assert_free_tier($tree);
         $this->assertSame(1, $status, 'readme.txt is the first file a directory reviewer reads');
@@ -372,7 +372,7 @@ PHP;
     {
         [$status, $output] = $this->assert_free_tier($this->fixture_tree([
             'src/Thing.php' => "<?php\n\$x = new Ability('wpmcp/demo', 'free', 'desc');\n",
-            'readme.txt'    => "=== WP MCP ===\n\nEverything here is free.\n",
+            'readme.txt'    => "=== WPMCP ===\n\nEverything here is free.\n",
         ]));
 
         $this->assertSame(0, $status, $output);

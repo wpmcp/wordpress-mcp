@@ -17,7 +17,7 @@ use WPMCP\Auth\Token_Store;
 use WPMCP\MCP\Request_Log;
 
 /**
- * The WordPress side of "Check connection": what core, WP MCP's record of
+ * The WordPress side of "Check connection": what core, WPMCP's record of
  * the MCP requests answered per password (issue #1258), the MCP adapter, the
  * request log and the OAuth stores recorded, read without changing any of
  * it. On multisite the adapter keys sessions per site, so the reader does

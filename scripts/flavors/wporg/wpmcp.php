@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WP MCP - MCP Server with Snapshot Undo for AI Agents
+ * Plugin Name: WPMCP - MCP Server with Snapshot Undo for AI Agents
  * Plugin URI: https://wpmcp-pro.com/
  * Description: Connect an AI agent to this site over the Model Context Protocol. It takes a snapshot before each supported write, so those changes can be rolled back.
  * Version: {{VERSION}}
@@ -22,7 +22,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once __DIR__ . '/src/flavor-guard.php';
-// Only one WP MCP build may boot per request: they share the WPMCP_* constants,
+// Only one WPMCP build may boot per request: they share the WPMCP_* constants,
 // the \WPMCP\ namespace and all persisted state. The guard ranks builds by the
 // WPMCP Flavor header above, so this build stands down whenever the full
 // plugin is active, whichever directory it lives in and whichever of the two
@@ -30,7 +30,7 @@ require_once __DIR__ . '/src/flavor-guard.php';
 if ( wpmcp_flavor_should_defer( __FILE__, 'wporg', defined( 'WPMCP_VERSION' ) ) ) {
 	add_action( 'admin_notices', function () {
 		echo '<div class="notice notice-warning"><p>';
-		echo esc_html__( 'This copy of WP MCP is inactive because another WP MCP build already loaded on this site. Deactivate one of them.', 'wpmcp' );
+		echo esc_html__( 'This copy of WPMCP is inactive because another WPMCP build already loaded on this site. Deactivate one of them.', 'wpmcp' );
 		echo '</p></div>';
 	} );
 	return;

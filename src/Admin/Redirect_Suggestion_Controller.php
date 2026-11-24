@@ -44,7 +44,7 @@ class Redirect_Suggestion_Controller
         $args = [
             'source'     => $suggestion['source'],
             'session_id' => 'admin-suggestion',
-            // This screen manages WP MCP's own table (issue #930).
+            // This screen manages WPMCP's own table (issue #930).
             'provider'   => Redirect_Router::BUILTIN,
             'notes'      => sprintf('Confirmed from suggestion (%s).', (string) ($suggestion['reason'] ?? '')),
         ];

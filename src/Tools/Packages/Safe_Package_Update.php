@@ -40,7 +40,7 @@ if (! defined('ABSPATH')) {
  * What a snapshot covers, and what it cannot: the package folder; the
  * tables whose names start with the package's folder name (wp_<slug>_*,
  * dashes as underscores; wpmcp_safe_update_owned_tables adds others); and
- * this site's options, except transients, cron and WP MCP's own. Rows a
+ * this site's options, except transients, cron and WPMCP's own. Rows a
  * package keeps in core tables (posts, meta) or in tables named after
  * something else are not covered. On multisite only the current site's
  * options are kept.
@@ -821,7 +821,7 @@ final class Safe_Package_Update
 
     /**
      * Tables named after the package folder on this site's prefix
-     * (wp_<slug>, wp_<slug>_*), never a core table or one of WP MCP's.
+     * (wp_<slug>, wp_<slug>_*), never a core table or one of WPMCP's.
      *
      * @return string[]
      */
@@ -920,7 +920,7 @@ final class Safe_Package_Update
         return [ 'tables_covered' => false, 'tables_note' => Package_Tables_Snapshot::unavailable_reason() ];
     }
 
-    /** The WHERE clause for the options a snapshot keeps: no transients, no cron, none of WP MCP's own. */
+    /** The WHERE clause for the options a snapshot keeps: no transients, no cron, none of WPMCP's own. */
     private static function options_where(): string
     {
         $wpdb = self::db();

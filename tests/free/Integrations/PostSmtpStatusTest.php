@@ -469,7 +469,7 @@ class PostSmtpStatusTest extends \WP_UnitTestCase
         $before = get_option('postman_options');
         $rows   = Snapshot_Store::row_count();
 
-        $out = $this->write('set-post-smtp-from', [ 'from_email' => 'admin@example.com', 'sender_name' => 'WP MCP Test Mailer' ]);
+        $out = $this->write('set-post-smtp-from', [ 'from_email' => 'admin@example.com', 'sender_name' => 'WPMCP Test Mailer' ]);
 
         $this->assertSame('invalid_args', $out['error']['code'] ?? null, (string) wp_json_encode($out));
         $this->assertSame([ 'sender_name' ], $out['error']['data']['unknown']);

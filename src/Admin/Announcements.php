@@ -11,7 +11,7 @@ if (! defined('ABSPATH')) {
 
 /**
  * Admin announcements feed (issue #138): a small, unobtrusive notifications
- * surface fed from WP MCP Cloud.
+ * surface fed from WPMCP Cloud.
  *
  * Design constraints, deliberately narrower than the bell-and-drawer chrome
  * some plugins ship:

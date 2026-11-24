@@ -545,7 +545,7 @@ class Client_Metadata_Document
     {
         return 'denied' === $status
             ? new \WP_Error('access_denied', 'A site administrator has blocked this client.')
-            : new \WP_Error('access_denied', 'This client is waiting for a site administrator to approve it on the WP MCP Connection screen.');
+            : new \WP_Error('access_denied', 'This client is waiting for a site administrator to approve it on the WPMCP Connection screen.');
     }
 
     private static function set_status(string $client_id, string $status): bool

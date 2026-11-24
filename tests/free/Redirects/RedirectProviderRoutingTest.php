@@ -19,8 +19,8 @@ require_once __DIR__ . '/../../support/rank-math-tables.php';
  * #930): with Redirection or Rank Math's Redirections module active they
  * read and write that plugin's redirects through its own pack (so every
  * write keeps that pack's guards and snapshot), with neither they keep using
- * WP MCP's own table, and with both they refuse until the caller names a
- * provider. provider:'wpmcp' always picks WP MCP's own table.
+ * WPMCP's own table, and with both they refuse until the caller names a
+ * provider. provider:'wpmcp' always picks WPMCP's own table.
  */
 class RedirectProviderRoutingTest extends \WP_UnitTestCase
 {
@@ -123,7 +123,7 @@ class RedirectProviderRoutingTest extends \WP_UnitTestCase
         $this->assertSame(1, $out['total']);
         $this->assertSame('/a-930', $out['redirects'][0]['source']);
         $this->assertArrayHasKey('pending_suggestions', $out);
-        $this->assertSame(1, $out['managed_total'], 'WP MCP\'s own redirects are counted so they are not forgotten');
+        $this->assertSame(1, $out['managed_total'], 'WPMCP\'s own redirects are counted so they are not forgotten');
     }
 
     public function test_update_routes_enabled_alone_to_disable_and_refuses_a_mixed_change(): void

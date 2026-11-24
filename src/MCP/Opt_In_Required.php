@@ -18,7 +18,7 @@ if (! defined('ABSPATH')) {
  *    gate such as the ability bridge, uses this code and a message built
  *    here: what is off, that it is off on purpose, and the exact filter (and
  *    constant, where one exists) a developer sets to switch it on. When the
- *    filter is a group on the WP MCP > Opt-in operations screen (#823), the
+ *    filter is a group on the WPMCP > Opt-in operations screen (#823), the
  *    message names that screen, the group and its URL first (issue #966);
  *    only code-only gates say there is no wp-admin setting.
  *  - operation_disabled: the feature is on by default and this site has
@@ -37,7 +37,7 @@ class Opt_In_Required extends \RuntimeException
     public const CODE = 'opt_in_required';
 
     /** The admin menu path of the opt-in operations screen (issue #823). */
-    public const SCREEN = 'WP MCP > Opt-in operations';
+    public const SCREEN = 'WPMCP > Opt-in operations';
 
     private string $filter;
 

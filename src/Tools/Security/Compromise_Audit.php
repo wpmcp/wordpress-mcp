@@ -27,7 +27,7 @@ if (! defined('ABSPATH')) {
  * - Administrators created recently or with a generic or random login.
  *
  * Read-only. Files are only stat()ed, hashed or have their header read; they
- * are never executed or included. WP MCP's own backups (#604) are skipped.
+ * are never executed or included. WPMCP's own backups (#604) are skipped.
  * Logins are masked (src/Privacy/Masking.php). Bounded by max_files and
  * max_seconds; a truncated run says so.
  */
@@ -680,7 +680,7 @@ class Compromise_Audit
             foreach ($this->walk($uploads) as $path) {
                 $rel = ltrim(substr($path, strlen($abspath)), '/');
                 if ($this->in_dirs($rel, $backups)) {
-                    continue; // WP MCP's own backups (#604).
+                    continue; // WPMCP's own backups (#604).
                 }
                 if ($this->is_exposed_name(basename($path), false)) {
                     $candidates[ $path ] = true;

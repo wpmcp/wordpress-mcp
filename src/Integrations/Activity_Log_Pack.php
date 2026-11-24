@@ -12,7 +12,7 @@ if (! defined('ABSPATH')) {
 /**
  * Activity logs (issue #698) on the plugin-data pair, free tier, read only,
  * so it adds no top-level tool and writes nothing: the ops answer "who
- * changed this and when" beside WP MCP's own audit log.
+ * changed this and when" beside WPMCP's own audit log.
  *
  * Two plugins, both free on wordpress.org, each with tables of its own
  * (read in WP Activity Log 5.7.0 and Simple History 5.36.0):
@@ -253,7 +253,7 @@ final class Activity_Log_Pack
         }
         foreach ([ 'since', 'until' ] as $key) {
             if (isset($args[ $key ]) && null === self::timestamp((string) $args[ $key ])) {
-                return [ 'code' => 'invalid_date', 'message' => sprintf('%s is not a date WP MCP can read; use 2026-11-15 or 2026-11-15T09:30:00Z.', $key), 'data' => [ 'field' => $key ] ];
+                return [ 'code' => 'invalid_date', 'message' => sprintf('%s is not a date WPMCP can read; use 2026-11-15 or 2026-11-15T09:30:00Z.', $key), 'data' => [ 'field' => $key ] ];
             }
         }
         return null;

@@ -14,7 +14,7 @@ if (! defined('ABSPATH')) {
 
 /**
  * Where a classic Oxygen (4.x) tree keeps code. Oxygen's save signs the
- * tree's shortcode copy with the site's key, and WP MCP has Oxygen sign
+ * tree's shortcode copy with the site's key, and WPMCP has Oxygen sign
  * what it writes, so whatever reaches the tree runs as if Oxygen's editor
  * had saved it:
  *

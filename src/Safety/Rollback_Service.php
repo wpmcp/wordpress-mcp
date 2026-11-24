@@ -547,7 +547,7 @@ class Rollback_Service
     }
 
     /**
-     * Why a restore may not write a post of one of WP MCP's private stores
+     * Why a restore may not write a post of one of WPMCP's private stores
      * (issue #517): agent memory entries and chat conversations are never
      * written by the generic tools, so a snapshot of one, taken before that
      * rule existed, must not put an entry back either. Restoring an agent
@@ -560,7 +560,7 @@ class Rollback_Service
             return null;
         }
         $why = Content_Guard::store_refusal($post_type);
-        return sprintf('post %d belongs to a WP MCP internal store.', $post_id) . (null === $why ? '' : ' ' . $why);
+        return sprintf('post %d belongs to a WPMCP internal store.', $post_id) . (null === $why ? '' : ' ' . $why);
     }
 
     /** Core meta capabilities that need an object ID, so are not re-mapped without one. */

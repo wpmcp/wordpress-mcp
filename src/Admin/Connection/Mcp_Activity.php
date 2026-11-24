@@ -9,7 +9,7 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * What WP MCP recorded for one application password on this site: the
+ * What WPMCP recorded for one application password on this site: the
  * client that last named itself with it, and when the MCP route first and
  * last answered a request made with it (the last to the minute:
  * Activity_Recorder writes it at most once a minute).

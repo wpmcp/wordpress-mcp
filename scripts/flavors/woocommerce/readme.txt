@@ -42,13 +42,13 @@ It has no tool to read, list, search, write, edit, delete or quarantine files, r
 
 = Looking for more? =
 
-This plugin is complete for WooCommerce stores. The full WP MCP plugin adds more integrations, and WP MCP Pro adds page-builder editing (Elementor, Bricks, Divi) and custom widget and block building: https://wpmcp-pro.com
+This plugin is complete for WooCommerce stores. The full WPMCP plugin adds more integrations, and WPMCP Pro adds page-builder editing (Elementor, Bricks, Divi) and custom widget and block building: https://wpmcp-pro.com
 
 = Privacy =
 
 The plugin collects nothing about you and sends nothing to the author. Its only scheduled task is a daily local cleanup of expired OAuth tokens; nothing on the schedule ever makes a network request, and neither does activation. Every host it can reach is listed under "External services" below, and each request happens only while you or your agent are running the specific ability that needs it, except, with OAuth switched on, the client metadata document fetch described below, which runs while an MCP client signs in.
 
-This plugin keeps copies of site data it needs to work: undo snapshots of what an agent changed (which can include users, comments, orders and form entries), the request and governance audit logs, agent memory and the content search index. All of it stays on your site, and all of it takes part in WordPress's own personal data tools: Tools > Export Personal Data lists a person's records from each store, and Tools > Erase Personal Data redacts them from undo snapshots (a redacted snapshot can no longer be rolled back, and says so), anonymizes them in the logs and deletes the memory and index entries that hold them. WP MCP's erasure runs after your other plugins' own, so their copies in WP MCP's snapshots are covered too. Site backup archives made by WP MCP are full database copies and are left unchanged; the erasure says so when any exist.
+This plugin keeps copies of site data it needs to work: undo snapshots of what an agent changed (which can include users, comments, orders and form entries), the request and governance audit logs, agent memory and the content search index. All of it stays on your site, and all of it takes part in WordPress's own personal data tools: Tools > Export Personal Data lists a person's records from each store, and Tools > Erase Personal Data redacts them from undo snapshots (a redacted snapshot can no longer be rolled back, and says so), anonymizes them in the logs and deletes the memory and index entries that hold them. WPMCP's erasure runs after your other plugins' own, so their copies in WPMCP's snapshots are covered too. Site backup archives made by WPMCP are full database copies and are left unchanged; the erasure says so when any exist.
 
 == External services ==
 
@@ -90,7 +90,7 @@ Used by the `search-stock-images` ability when the Unsplash provider is chosen, 
 
 = Downloads you point the plugin at yourself (any host) =
 
-`sideload-image` hands the URL you or your agent supply to WordPress core's `media_sideload_image()`, so it can fetch an image from any host on the internet. It is not restricted by the allowlist above, and the destination is whatever you asked for; the plugin never picks one. Disable the ability in the WP MCP ability grid if you do not want that reach. As with any core download, the request carries WordPress's standard user agent.
+`sideload-image` hands the URL you or your agent supply to WordPress core's `media_sideload_image()`, so it can fetch an image from any host on the internet. It is not restricted by the allowlist above, and the destination is whatever you asked for; the plugin never picks one. Disable the ability in the WPMCP ability grid if you do not want that reach. As with any core download, the request carries WordPress's standard user agent.
 
 = The AI provider the site owner configured (WordPress 7.0+) =
 
@@ -102,7 +102,7 @@ Used by the `search-stock-images` ability when the Unsplash provider is chosen, 
 
 = MCP client metadata documents (the client's own https URL) =
 
-Used only when OAuth is switched on (it is off by default) and an MCP client signs in with an https URL as its client ID, a Client ID Metadata Document. While a signed-in user authorizes that client, this site fetches that one URL to read the client's name and allowed redirect addresses. Nothing about your site or its users is sent: it is a plain GET under a WPMCP-OAuth-Client-Metadata/1.0 user agent. Private, loopback and reserved addresses are refused, redirects are not followed, the document is capped at 5 KB, and it is cached per its Cache-Control header (an hour by default), so a repeat sign-in sends nothing. Set the wpmcp_oauth_cimd_enabled filter to false to turn this off, or require approval of new clients on the WP MCP Connection screen. The client's publisher's own terms and privacy policy apply to the document it hosts.
+Used only when OAuth is switched on (it is off by default) and an MCP client signs in with an https URL as its client ID, a Client ID Metadata Document. While a signed-in user authorizes that client, this site fetches that one URL to read the client's name and allowed redirect addresses. Nothing about your site or its users is sent: it is a plain GET under a WPMCP-OAuth-Client-Metadata/1.0 user agent. Private, loopback and reserved addresses are refused, redirects are not followed, the document is capped at 5 KB, and it is cached per its Cache-Control header (an hour by default), so a repeat sign-in sends nothing. Set the wpmcp_oauth_cimd_enabled filter to false to turn this off, or require approval of new clients on the WPMCP Connection screen. The client's publisher's own terms and privacy policy apply to the document it hosts.
 
 = Loopback requests to this site itself =
 
@@ -111,7 +111,7 @@ The connection self-test calls this site's own REST route, and `scan-security` f
 == Installation ==
 
 1. Install and activate WooCommerce, then this plugin.
-2. Open the WP MCP admin menu and follow the connection wizard to pair your MCP client (Claude Code, Claude Desktop, Cursor, and others).
+2. Open the WPMCP admin menu and follow the connection wizard to pair your MCP client (Claude Code, Claude Desktop, Cursor, and others).
 3. Ask your agent to update a product. The History screen lists the snapshot taken before each supported write, with one-click restore.
 
 == Frequently Asked Questions ==
@@ -126,7 +126,7 @@ It takes a snapshot before each supported write, and this build ships no code-ex
 
 = What if my AI client skips permission prompts? =
 
-This plugin asks before destructive actions: through your MCP client's confirmation prompt when the client supports one, otherwise by refusing until the agent passes confirm:true. A client set to skip its own permission prompts (for example Claude Code started with --dangerously-skip-permissions, or any auto-approve mode) also skips those WP MCP confirmations, because it answers them itself without asking you. Actions that cannot be undone are never confirmed through the client: they run only when the agent's own call carries confirm:true, and the refusal says exactly what that will do. Keep permission prompts on when an agent can reach those tools.
+This plugin asks before destructive actions: through your MCP client's confirmation prompt when the client supports one, otherwise by refusing until the agent passes confirm:true. A client set to skip its own permission prompts (for example Claude Code started with --dangerously-skip-permissions, or any auto-approve mode) also skips those WPMCP confirmations, because it answers them itself without asking you. Actions that cannot be undone are never confirmed through the client: they run only when the agent's own call carries confirm:true, and the refusal says exactly what that will do. Keep permission prompts on when an agent can reach those tools.
 
 = Does this replace my backup plugin? =
 
@@ -136,9 +136,9 @@ No. Snapshots are fine-grained, per-operation undo, not full-site backups. Keep 
 
 In wp-content/uploads/wpmcp-site-backups by default, behind a deny rule that Apache honours. On nginx and other servers that ignore .htaccess, define WPMCP_BACKUP_DIR in wp-config.php with a folder outside the web root, for example define( 'WPMCP_BACKUP_DIR', '/home/example/wpmcp-backups' ); archives then go to its wpmcp-site-backups subfolder, and archives made earlier are moved there after the next backup. This build makes and manages these archives but has no tool to restore one over the site; restore an archive with your host's tools. When the folder is under the web root, trigger-backup and get-backup-status request a test file placed in it from this site's own URL (at most once a day) and warn on the Dashboard if the server returns it; get-backup-status reports the folder in use and the last result.
 
-= How is this different from the full WP MCP plugin? =
+= How is this different from the full WPMCP plugin? =
 
-Same safety core, same snapshot engine, scoped to what a WooCommerce store needs. If you later want more integrations, the full plugin replaces this one in place; page-builder editing (Elementor, Bricks, Divi) is part of WP MCP Pro.
+Same safety core, same snapshot engine, scoped to what a WooCommerce store needs. If you later want more integrations, the full plugin replaces this one in place; page-builder editing (Elementor, Bricks, Divi) is part of WPMCP Pro.
 
 == Changelog ==
 

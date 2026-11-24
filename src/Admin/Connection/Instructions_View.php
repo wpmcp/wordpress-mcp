@@ -100,7 +100,7 @@ final class Instructions_View
     {
         $this->routes($screen);
         $this->open(true);
-        $this->item(__('Download the WP MCP bundle for Claude Desktop.', 'wpmcp'), false);
+        $this->item(__('Download the WPMCP bundle for Claude Desktop.', 'wpmcp'), false);
         ?>
         <div class="wpmcp-actions"><a class="button button-primary" href="<?php echo esc_url($screen->bundle_url); ?>"><span class="dashicons dashicons-download" aria-hidden="true"></span><?php echo esc_html__('Download wpmcp.mcpb', 'wpmcp'); ?></a></div>
         <p class="wpmcp-fine"><?php echo esc_html__('No password inside: only this site\'s address and a small connector program.', 'wpmcp'); ?></p>
@@ -108,7 +108,7 @@ final class Instructions_View
         <?php
         $this->item(sprintf(
             /* translators: %s: the file name wpmcp.mcpb */
-            __('Double-click %s. Claude Desktop opens and offers to install WP MCP.', 'wpmcp'),
+            __('Double-click %s. Claude Desktop opens and offers to install WPMCP.', 'wpmcp'),
             '<strong>wpmcp.mcpb</strong>'
         ));
         $this->item(sprintf(
@@ -136,7 +136,7 @@ final class Instructions_View
         $this->open(false);
         $this->item(sprintf(
             /* translators: 1: the project file .cursor/mcp.json, 2: the global file ~/.cursor/mcp.json */
-            __('Open %1$s in your project, or %2$s to use WP MCP in all your projects. Create the file if it isn\'t there.', 'wpmcp'),
+            __('Open %1$s in your project, or %2$s to use WPMCP in all your projects. Create the file if it isn\'t there.', 'wpmcp'),
             '<code>.cursor/mcp.json</code>',
             '<code>~/.cursor/mcp.json</code>'
         ));
@@ -176,7 +176,7 @@ final class Instructions_View
         ), false);
         $this->snippets->code('wpmcp-snippet-antigravity', 'mcp_config.json', $made->configs['antigravity']['snippet'] ?? '', $this->secret($made), __('Copy the Antigravity config', 'wpmcp'), __('Copied the Antigravity config, with the password.', 'wpmcp'));
         echo '</li>';
-        $this->item(__('Quit and reopen Antigravity, then start a new conversation so the WP MCP tools load.', 'wpmcp'));
+        $this->item(__('Quit and reopen Antigravity, then start a new conversation so the WPMCP tools load.', 'wpmcp'));
         $this->close();
         $this->end_howto();
     }
@@ -337,7 +337,7 @@ final class Instructions_View
             <div class="wpmcp-mock" role="img" aria-label="<?php echo esc_attr__('Claude Desktop install dialog with a username field, an application password field and an Install button.', 'wpmcp'); ?>">
                 <div class="wpmcp-mock__bar"><i></i><i></i><i></i><span>Claude</span></div>
                 <div class="wpmcp-mock__body">
-                    <div class="wpmcp-mock__title">Install WP MCP?</div>
+                    <div class="wpmcp-mock__title">Install WPMCP?</div>
                     <div class="wpmcp-mock__field"><b>Username</b><span><?php echo esc_html($user_login); ?></span></div>
                     <div class="wpmcp-mock__field"><b>Application password</b><span class="is-focus">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;</span></div>
                     <span class="wpmcp-mock__button is-claude">Install</span>
@@ -356,7 +356,7 @@ final class Instructions_View
                 <div class="wpmcp-mock__bar"><i></i><i></i><i></i><span><?php echo esc_html($chatgpt ? 'ChatGPT' : 'Claude'); ?></span></div>
                 <div class="wpmcp-mock__body">
                     <div class="wpmcp-mock__title"><?php echo esc_html($chatgpt ? 'New connector' : 'Add custom connector'); ?></div>
-                    <div class="wpmcp-mock__field"><b>Name</b><span>WP MCP</span></div>
+                    <div class="wpmcp-mock__field"><b>Name</b><span>WPMCP</span></div>
                     <div class="wpmcp-mock__field"><b><?php echo esc_html($chatgpt ? 'MCP server URL' : 'Remote MCP server URL'); ?></b><span class="is-focus"><?php echo esc_html($endpoint); ?></span></div>
                     <?php if ($chatgpt) : ?>
                         <div class="wpmcp-mock__field"><b>Authentication</b><span>OAuth</span></div>

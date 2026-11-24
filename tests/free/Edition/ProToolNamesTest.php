@@ -133,7 +133,7 @@ final class ProToolNamesTest extends \WP_UnitTestCase
             $this->assertSame('pro_required', $envelope['reason']);
             $this->assertSame('account_owner', $envelope['action']['who']);
             $this->assertTrue($envelope['hidden']);
-            $this->assertStringContainsString('"' . self::PRO_ABILITY . '" is a WP MCP Pro tool', $envelope['message']);
+            $this->assertStringContainsString('"' . self::PRO_ABILITY . '" is a WPMCP Pro tool', $envelope['message']);
 
             $text = $result['content'][0]['text'];
             $this->assertStringStartsWith('Unavailable (pro_required): ', $text);

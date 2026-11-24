@@ -281,7 +281,7 @@ final class Secret_Options
             // Akismet.
             'wordpress_api_key'                 => true,
 
-            // WP MCP's own credential stores (sealed or hashed today; masked as defence in depth).
+            // WPMCP's own credential stores (sealed or hashed today; masked as defence in depth).
             'wpmcp_seo_data_keys'               => true,
             'wpmcp_stock_keys'                  => true,
             'wpmcp_oauth_tokens'                => true,

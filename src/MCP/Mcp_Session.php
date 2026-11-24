@@ -10,8 +10,8 @@ if (! defined('ABSPATH')) {
 
 /**
  * The 2025-11-25 session check of the HTTP route (issue #628). The session
- * lifecycle belongs to the MCP adapter that mounts the route; a request WP
- * MCP answers itself must pass the same check first.
+ * lifecycle belongs to the MCP adapter that mounts the route; a request WPMCP
+ * answers itself must pass the same check first.
  */
 interface Mcp_Session
 {

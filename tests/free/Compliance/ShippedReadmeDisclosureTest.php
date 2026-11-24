@@ -182,11 +182,11 @@ class ShippedReadmeDisclosureTest extends \WP_UnitTestCase
         'www.wpvulnerability.net' => ['https://www.wpvulnerability.com/license/', 'https://www.wpvulnerability.com/privacy/'],
         'upload.wikimedia.org'    => ['https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use', 'https://foundation.wikimedia.org/wiki/Policy:Privacy_policy'],
         'staticflickr.com'        => ['https://www.flickr.com/help/terms', 'https://www.flickr.com/help/privacy'],
-        'WP MCP Cloud ('          => ['https://wpmcp-pro.com/terms.html', 'https://wpmcp-pro.com/privacy.html'],
+        'WPMCP Cloud ('          => ['https://wpmcp-pro.com/terms.html', 'https://wpmcp-pro.com/privacy.html'],
     ];
 
     /**
-     * Shipped readmes that carry no WP MCP Cloud entry, with the reason.
+     * Shipped readmes that carry no WPMCP Cloud entry, with the reason.
      * The full plugin and the directory cut ship src/Admin/Announcements.php,
      * which Plugin boots unconditionally and which fetches /announcements
      * through Cloud_Client whenever a cloud URL and key are saved, so both
@@ -241,7 +241,7 @@ class ShippedReadmeDisclosureTest extends \WP_UnitTestCase
         foreach (self::SHIPPED_READMES as $relative) {
             $section = $this->external_services($this->readme($relative));
             foreach (self::PROVIDER_POLICIES as $needle => [$terms, $privacy]) {
-                if ('WP MCP Cloud (' === $needle && in_array($relative, self::CLOUD_ENTRY_EXCLUSIONS, true)) {
+                if ('WPMCP Cloud (' === $needle && in_array($relative, self::CLOUD_ENTRY_EXCLUSIONS, true)) {
                     continue;
                 }
                 $entry = preg_replace('/\s+/', ' ', $this->entry($section, $needle));
@@ -259,7 +259,7 @@ class ShippedReadmeDisclosureTest extends \WP_UnitTestCase
     public function test_the_cloud_entry_discloses_the_announcements_request(): void
     {
         foreach (array_diff(self::SHIPPED_READMES, self::CLOUD_ENTRY_EXCLUSIONS) as $relative) {
-            $entry = preg_replace('/\s+/', ' ', $this->entry($this->external_services($this->readme($relative)), 'WP MCP Cloud ('));
+            $entry = preg_replace('/\s+/', ' ', $this->entry($this->external_services($this->readme($relative)), 'WPMCP Cloud ('));
             $this->assertStringContainsString('/announcements', $entry, $relative . ': the Cloud entry does not disclose the announcements fetch');
             $this->assertMatchesRegularExpression('/API key in the Authorization header/i', $entry, $relative . ': the Cloud entry does not say the API key is sent');
             $this->assertMatchesRegularExpression('/admin screen/i', $entry, $relative . ': the Cloud entry does not say when the announcements fetch fires');

@@ -1,5 +1,5 @@
 /*
- * WP MCP Connection screen. Progressive enhancement: without this script
+ * WPMCP Connection screen. Progressive enhancement: without this script
  * every panel shows, app cards and forms post normally and the password
  * stays visible. With it: ARIA tabs, Copy buttons, the password hidden on
  * screen by default, create and check over AJAX (the server draws the HTML),

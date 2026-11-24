@@ -50,7 +50,7 @@ if (! defined('ABSPATH')) {
  *
  * Running an import is not part of this slice: an import rewrites posts in
  * bulk and the plugin keeps no before-image, so it cannot be undone the way
- * every WP MCP write must be. Running an export is left with it.
+ * every WPMCP write must be. Running an export is left with it.
  *
  * Presence is filterable (wpmcp_wp_all_import_active,
  * wpmcp_wp_all_export_active), and each plugin gates only its own ops.

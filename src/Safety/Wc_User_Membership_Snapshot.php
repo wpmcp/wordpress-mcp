@@ -219,7 +219,7 @@ final class Wc_User_Membership_Snapshot
         if ('' === $method || null === $membership || ! method_exists($membership, $method)) {
             return false;
         }
-        $membership->$method('Changed through WP MCP.');
+        $membership->$method('Changed through WPMCP.');
         return true;
     }
 

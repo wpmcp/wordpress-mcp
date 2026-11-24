@@ -14,7 +14,7 @@ if (! defined('ABSPATH')) {
  * Hands each request the MCP route answered for an application password to
  * Activity_Recorder (issue #1258), on rest_post_dispatch: after the route's
  * permission check and whoever answered it (the MCP adapter, the 2026-07-28
- * bridge or WP MCP's own tools/call), with the final status. That is the one
+ * bridge or WPMCP's own tools/call), with the final status. That is the one
  * point every HTTP request of either revision passes, so no transport records
  * anything itself. The stdio transport has nothing to record here: it runs
  * as the WP-CLI --user on the server, with no password to credit.

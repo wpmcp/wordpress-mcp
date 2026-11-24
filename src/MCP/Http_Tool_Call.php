@@ -9,15 +9,15 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * A 2025-11-25 tools/call on the HTTP route, answered by WP MCP instead of
+ * A 2025-11-25 tools/call on the HTTP route, answered by WPMCP instead of
  * the bundled adapter (issue #628).
  *
  * The adapter's tools handler sends a WP_Error back as its message alone, so
  * the code (insufficient_scope, wpmcp_rate_limited, plugin_inactive,
  * unfiltered_html_required) and the data (retry_after) never reached the
  * agent, and a dispatcher pair's refusal went out as a success. The stdio
- * transport and the 2026-07-28 bridge already answer tools/call through WP
- * MCP's own dispatcher (Tool_Call_Handler); this makes the 2025 session
+ * transport and the 2026-07-28 bridge already answer tools/call through WPMCP's
+ * own dispatcher (Tool_Call_Handler); this makes the 2025 session
  * the same, so every transport sends the same result (Refusal_Result).
  *
  * The adapter keeps the session lifecycle and every request this does not
@@ -35,7 +35,7 @@ if (! defined('ABSPATH')) {
  *
  * It runs from Modern_Http_Bridge on rest_dispatch_request, which core
  * applies after the route's permission_callback, so the transport's
- * permission check (and everything WP MCP layers on it) still decides who
+ * permission check (and everything WPMCP layers on it) still decides who
  * gets in.
  */
 final class Http_Tool_Call

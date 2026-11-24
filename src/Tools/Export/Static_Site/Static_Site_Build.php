@@ -484,7 +484,7 @@ class Static_Site_Build
             'redirection' => $redirects,
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core's own loopback filter, the one WP-Cron's spawn honours.
             'sslverify'   => (bool) apply_filters('https_local_ssl_verify', false),
-            'user-agent'  => 'WP MCP static export',
+            'user-agent'  => 'WPMCP static export',
             'headers'     => ['Accept' => 'text/html,*/*'],
         ];
         if ($limit > 0) {

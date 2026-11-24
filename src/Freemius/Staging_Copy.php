@@ -202,7 +202,7 @@ class Staging_Copy
 
         $state = self::banner_state(self::is_staging_site(), Bootstrap::fs(), self::clone_manager());
         if (self::BANNER_CLONE === $state) {
-            $message = __('Staging copy. This site does not count toward your WP MCP license.', 'wpmcp');
+            $message = __('Staging copy. This site does not count toward your WPMCP license.', 'wpmcp');
         } elseif (self::BANNER_FRESH === $state) {
             $message = __('This looks like a staging site. Copy it from your licensed live site instead of activating a license here, so it does not use one of your sites.', 'wpmcp');
         } else {

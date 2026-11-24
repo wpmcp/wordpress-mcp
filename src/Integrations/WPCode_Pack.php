@@ -692,7 +692,7 @@ final class WPCode_Pack
     private static function injection_refusal(string $what): ?array
     {
         if (! Custom_Js_Guard::is_enabled()) {
-            return self::refusal(Opt_In_Required::CODE, Opt_In_Required::message(sprintf('Custom code injection is disabled, so WP MCP will not %s.', $what), 'wpmcp_allow_js_injection', 'WPMCP_ALLOW_JS_INJECTION'), [ 'filter' => 'wpmcp_allow_js_injection' ]);
+            return self::refusal(Opt_In_Required::CODE, Opt_In_Required::message(sprintf('Custom code injection is disabled, so WPMCP will not %s.', $what), 'wpmcp_allow_js_injection', 'WPMCP_ALLOW_JS_INJECTION'), [ 'filter' => 'wpmcp_allow_js_injection' ]);
         }
         if (! Custom_Js_Guard::current_user_can_inject()) {
             return self::refusal('operation_denied', sprintf('Refusing to %s: printing raw code needs the unfiltered_html capability.', $what), [ 'reason' => 'capability', 'capability' => 'unfiltered_html' ]);

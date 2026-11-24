@@ -14,7 +14,7 @@ use WPMCP\RateLimit\Rate_Limiter;
  * as real JSON-RPC POSTs to the mounted /mcp/wpmcp-server endpoint.
  *
  * These pass whichever adapter copy serves the route: the bundled 0.6.x
- * (which predates 2026-07-28, so WP MCP answers those requests itself) or a
+ * (which predates 2026-07-28, so WPMCP answers those requests itself) or a
  * 0.7.x canonical plugin (which answers them natively). Run them against a
  * canonical build with WPMCP_TEST_ADAPTER_PLUGIN, see tests/bootstrap.php.
  */

@@ -1,4 +1,4 @@
-# WordPress MCP server overview: what WP MCP is and why undo comes first
+# WordPress MCP server overview: what WPMCP is and why undo comes first
 
 Moved from the repository README; the short overview is in [README.md](../../README.md) and the index of these pages in [docs/reference/README.md](README.md).
 

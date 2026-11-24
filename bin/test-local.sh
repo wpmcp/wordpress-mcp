@@ -2397,7 +2397,7 @@ fetch_adapter_locked() {
 
 # The adapter leg (issue #501): the default install with the released MCP
 # Adapter plugin added to this run's own core copy, where a site keeps it,
-# and its own database. tests/bootstrap.php loads the plugin ahead of WP MCP,
+# and its own database. tests/bootstrap.php loads the plugin ahead of WPMCP,
 # as WordPress orders 'mcp-adapter/' before 'wpmcp/'. First the coexistence
 # group with --fail-on-skipped, then the free and pro suites in full.
 run_live_adapter() {

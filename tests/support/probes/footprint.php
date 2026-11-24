@@ -2,25 +2,25 @@
 /**
  * The footprint probe of tests/free/Perf/FootprintTest.php (module
  * architecture, section 3.6): one fresh PHP process per request context,
- * booting WordPress and WP MCP the way that request does, then printing what
- * WP MCP loaded (bin/bench/probe.php's Probe::snapshot()).
+ * booting WordPress and WPMCP the way that request does, then printing what
+ * WPMCP loaded (bin/bench/probe.php's Probe::snapshot()).
  *
  * The suite's own process cannot show this: it has autoloaded most of src/
  * long before a test runs. So each context runs here, against tables of its
  * own (the table prefix is the fourth argument) in the test database, never
- * the suite's tables: what WP MCP writes while it boots (seeded options,
+ * the suite's tables: what WPMCP writes while it boots (seeded options,
  * Freemius state, transients) stays out of the suite, and the test drops the
  * tables afterwards.
  *
- * WP MCP is the only plugin loaded, from the repository, at
+ * WPMCP is the only plugin loaded, from the repository, at
  * muplugins_loaded like tests/bootstrap.php loads it, so the counts depend
- * on WP MCP's code alone and not on the versions of the third-party test
+ * on WPMCP's code alone and not on the versions of the third-party test
  * plugins. bin/bench/run.php measures the same counts with the canonical
  * plugins active.
  *
  * Usage: php footprint.php <wp-tests-config.php> <repo root> <mode> <table prefix>
  *   install   wp_install() into the prefixed tables
- *   activate  WP MCP's activation hook (its tables and options)
+ *   activate  WPMCP's activation hook (its tables and options)
  *   front     the front-end home page: wp() and the template loader
  *   admin     wp-admin/index.php as an administrator, approximated (see below)
  *   rest      GET ?rest_route=/wp/v2/posts&per_page=1 through wp(), unauthenticated

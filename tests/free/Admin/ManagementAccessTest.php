@@ -6,7 +6,7 @@ use WPMCP\Admin\Connection_Page;
 use WPMCP\Admin\Management_Access;
 
 /**
- * Issue #479: who may manage WP MCP. By default every administrator; an
+ * Issue #479: who may manage WPMCP. By default every administrator; an
  * optional allowlist of administrator ids narrows it, and the
  * WPMCP_MANAGEMENT_ADMINS constant pins it from wp-config.php. An invalid
  * constant closes management instead of opening it. Agent execution is not

@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Plugin Name: WP MCP bench probe
- * Description: Records what WP MCP loads on each request of the benchmark environment (bin/bench/env.sh).
+ * Plugin Name: WPMCP bench probe
+ * Description: Records what WPMCP loads on each request of the benchmark environment (bin/bench/env.sh).
  *
  * REPO-ONLY, like the rest of bin/: the release zips never ship it. It is a
  * must-use plugin that bin/bench/env.sh copies into a throwaway site, and it
@@ -17,7 +17,7 @@
  *    rest of src/, vendor/freemius and the rest of vendor/, with their bytes;
  *  - the WPMCP\ classes declared;
  *  - how many abilities were registered (the wp_register_ability_args filter
- *    runs once per registration), WP MCP's and every plugin's, and how long
+ *    runs once per registration), WPMCP's and every plugin's, and how long
  *    wp_abilities_api_init took, measured here and as Handshake_Timing (the
  *    Server-Timing `abilities` value) saw it;
  *  - the PHP version and whether opcache served the request.
@@ -32,9 +32,9 @@
  *
  * Two request headers steer a request, only on a bench site:
  *
- *  - X-WPMCP-Bench-Inactive: 1 drops WP MCP (WPMCP_BENCH_PLUGIN, default
+ *  - X-WPMCP-Bench-Inactive: 1 drops WPMCP (WPMCP_BENCH_PLUGIN, default
  *    wpmcp/wpmcp.php) from active_plugins for that request, so the same
- *    server measures the cost of the same page without WP MCP (the "delta"
+ *    server measures the cost of the same page without WPMCP (the "delta"
  *    of the acceptance criteria: active minus inactive);
  *  - X-WPMCP-Bench-Exposure: compact|full forces the tool exposure mode
  *    through the wpmcp_tool_exposure_mode filter (scenario S8).
@@ -236,7 +236,7 @@ final class Probe
     }
 
     /**
-     * Included files, total and under the WP MCP directory, split by area.
+     * Included files, total and under the WPMCP directory, split by area.
      *
      * @return array<string, int>
      */

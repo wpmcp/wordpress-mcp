@@ -445,7 +445,7 @@ class Db_Dumper
 
         $charset = $wpdb->charset ?: 'utf8mb4';
 
-        return "-- WP MCP site backup\n"
+        return "-- WPMCP site backup\n"
             . '-- Generated: ' . gmdate('c') . "\n"
             . '-- Plugin version: ' . (defined('WPMCP_VERSION') ? WPMCP_VERSION : '0.0.0') . "\n\n"
             . "SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';\n"

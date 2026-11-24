@@ -32,7 +32,7 @@ class GitHubReleasesTest extends \WP_UnitTestCase
         $this->latest   = $this->json(200, $this->release('v9.0.0'));
         $this->readme   = [
             'headers'  => [],
-            'body'     => "=== WP MCP ===\nRequires at least: 6.9\nTested up to: 7.1\nRequires PHP: 8.1\nStable tag: 9.0.0\n",
+            'body'     => "=== WPMCP ===\nRequires at least: 6.9\nTested up to: 7.1\nRequires PHP: 8.1\nStable tag: 9.0.0\n",
             'response' => [ 'code' => 200, 'message' => 'OK' ],
             'cookies'  => [],
         ];

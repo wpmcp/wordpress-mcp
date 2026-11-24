@@ -240,11 +240,11 @@ $edits['src/MCP/Registrar.php'] = [
     /**
      * The refusal for a name that is not registered because it is a Pro
      * tool and this install has no active license (issue #631), or null
-     * when that is not the reason. Lets the meta-tools say "needs WP MCP
+     * when that is not the reason. Lets the meta-tools say "needs WPMCP
      * Pro" instead of "no tool by that name", with the same upgrade offer
      * the admin banner carries (Pro_Refusal). On the free zip, which carries
      * no Pro code, a Pro tool is not declared at all and is known by name
-     * from the build (Pro_Catalog, issue #628), so it says WP MCP Pro is not
+     * from the build (Pro_Catalog, issue #628), so it says WPMCP Pro is not
      * installed. Grants nothing: the tool is still unregistered and
      * unreachable.
      */
@@ -257,13 +257,13 @@ $edits['src/MCP/Registrar.php'] = [
         }
 
         $upgrade     = Pro_Refusal::upgrade_url();
-        $unavailable = new Unavailable('pro_required', '', 'The account owner switches this site to an edition of WP MCP that includes it.', [ 'admin_url' => admin_url('admin.php?page=wpmcp') ]);
+        $unavailable = new Unavailable('pro_required', '', 'The account owner switches this site to an edition of WPMCP that includes it.', [ 'admin_url' => admin_url('admin.php?page=wpmcp') ]);
         return $unavailable->attach(new \WP_Error(
             'pro_required',
             sprintf(
                 $not_here
-                    ? '"%s" is a WP MCP Pro tool, and WP MCP Pro is not installed on this site, so the tool is not available here. Install WP MCP Pro on this site to use it.'
-                    : '"%s" is a WP MCP Pro tool, and this site has no active WP MCP Pro license, so the tool is not available here. Activate a WP MCP Pro license on this site to use it.',
+                    ? '"%s" is a WPMCP Pro tool, and WPMCP Pro is not installed on this site, so the tool is not available here. Install WPMCP Pro on this site to use it.'
+                    : '"%s" is a WPMCP Pro tool, and this site has no active WPMCP Pro license, so the tool is not available here. Activate a WPMCP Pro license on this site to use it.',
                 $name
             ) . Pro_Refusal::upgrade_sentence(),
             null === $upgrade ? [] : [ 'upgrade_url' => $upgrade ]
@@ -306,7 +306,7 @@ $edits['src/Tools/Compose/Build_Page.php'][] = [
     <<<'SRC'
         if ('elementor' === $spec['dialect']) {
             if (! Gate::can_use('build-page-builder')) {
-                throw new \RuntimeException('The builder (Elementor) dialect of build-page needs an active WP MCP Pro license on this site. The Gutenberg dialect is free and always available: pass dialect "gutenberg" to build the page with blocks instead.');
+                throw new \RuntimeException('The builder (Elementor) dialect of build-page needs an active WPMCP Pro license on this site. The Gutenberg dialect is free and always available: pass dialect "gutenberg" to build the page with blocks instead.');
             }
             if (! class_exists('\\Elementor\\Plugin')) {
                 throw new \RuntimeException('The builder dialect requires Elementor to be active on this site.');
@@ -1205,7 +1205,7 @@ $plugin_edits[] = [
 ];
 $plugin_edits[] = [
     "            // In-admin Pro banner: a dismissible pricing-page link for free\n"
-        . "            // installs on the Dashboard, the Plugins list and WP MCP screens\n"
+        . "            // installs on the Dashboard, the Plugins list and WPMCP screens\n"
         . "            // (docs/superpowers/specs/2026-11-01-pro-upgrade-banner.md).\n"
         . "            Pro_Banner::register();\n",
     '',
@@ -2184,10 +2184,10 @@ $edits['src/MCP/Tool_Availability.php'] = [
             . "            \$count    = array_sum(\$pro);\n"
             . "            \$groups[] = [\n"
             . "                'reason'  => 'pro_required',\n"
-            . "                'label'   => sprintf('%d Pro tools: needs a WP MCP Pro license', \$count),\n"
+            . "                'label'   => sprintf('%d Pro tools: needs a WPMCP Pro license', \$count),\n"
             . "                'count'   => \$count,\n"
             . "                'domains' => \$pro,\n"
-            . "                'action'  => 'Activate a WP MCP Pro license on this site.' . Pro_Refusal::upgrade_sentence(),\n"
+            . "                'action'  => 'Activate a WPMCP Pro license on this site.' . Pro_Refusal::upgrade_sentence(),\n"
             . "            ];\n"
             . "        }\n",
         '',
@@ -2283,7 +2283,7 @@ $edits['src/Tools/Context/Get_Site_Context.php'][] = [
 // Two orphaned group docblocks and one enumeration of withheld paid tools.
 $edits['src/Plugin.php'][] = [
     "    /**\n"
-        . "     * WP MCP Cloud sync (MVP): connect a site to the cloud and push/pull its\n"
+        . "     * WPMCP Cloud sync (MVP): connect a site to the cloud and push/pull its\n"
         . "     * builder assets (custom widget + block specs) over a versioned,\n"
         . "     * backend-agnostic REST contract. All PRO, manage_options, domain 'cloud'.\n"
         . "     */\n",

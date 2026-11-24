@@ -11,7 +11,7 @@ use WPMCP\Tools\Meta\Update_Option;
 
 /**
  * Issue #823 part 4: the operations that are off by default behind an
- * opt-in filter can be switched on from the WP MCP admin, a group at a
+ * opt-in filter can be switched on from the WPMCP admin, a group at a
  * time, by a site administrator (and network-wide by a network admin).
  *
  * Every toggle defaults off, a filter set in code wins (the toggle shows

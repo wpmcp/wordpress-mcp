@@ -3,10 +3,10 @@
 namespace WPMCP\Tests\Free\MCP;
 
 /**
- * Issue #501: WP MCP on the released MCP Adapter plugin.
+ * Issue #501: WPMCP on the released MCP Adapter plugin.
  *
  * The adapter is a plugin in the WordPress.org directory, and when a site has
- * it active WP MCP runs on its classes instead of the bundled copy
+ * it active WPMCP runs on its classes instead of the bundled copy
  * (src/adapter-guard.php, issue #386). That plugin updates on its own
  * schedule, so the local gate's adapter leg (bin/test-local.sh --live-adapter,
  * also part of --all) downloads the latest release, points

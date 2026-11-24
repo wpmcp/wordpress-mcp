@@ -19,7 +19,7 @@ if (! defined('ABSPATH')) {
  *
  * No Requires: the ops stay listed while none of the five plugins is active
  * and answer site_gate_plugin_inactive, as the toggles do. No Owns_Data: the
- * options it writes belong to those plugins, and uninstalling WP MCP must
+ * options it writes belong to those plugins, and uninstalling WPMCP must
  * never delete them.
  */
 #[Module_Declaration(

@@ -73,7 +73,7 @@ class Sql_Import_Policy
                 . '|NAMES\s+[A-Za-z0-9_]+(?:\s+COLLATE\s+[A-Za-z0-9_]+)?'
                 . ')\s*$/i';
             if (! preg_match($allowed, $sql)) {
-                throw new \RuntimeException('Only the SET statements a WP MCP dump writes (sql_mode, foreign_key_checks, unique_checks, names) are allowed.');
+                throw new \RuntimeException('Only the SET statements a WPMCP dump writes (sql_mode, foreign_key_checks, unique_checks, names) are allowed.');
             }
             return ['kind' => self::KIND_SET, 'table' => null];
         }
@@ -107,7 +107,7 @@ class Sql_Import_Policy
             return ['kind' => self::KIND_INSERT, 'table' => $table];
         }
 
-        throw new \RuntimeException('Only SET, DROP TABLE IF EXISTS, CREATE TABLE and INSERT INTO ... VALUES statements are allowed in a WP MCP dump.');
+        throw new \RuntimeException('Only SET, DROP TABLE IF EXISTS, CREATE TABLE and INSERT INTO ... VALUES statements are allowed in a WPMCP dump.');
     }
 
     /**

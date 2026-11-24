@@ -161,7 +161,7 @@ class StagingCopyTest extends \WP_UnitTestCase
     public function test_suppression_against_the_real_sdk_clone_manager(): void
     {
         $manager = \FS_Clone_Manager::instance();
-        $manager->add_temporary_duplicate_sticky_notice([WPMCP_FS_ID], 'Activate a license here.', 'WP MCP');
+        $manager->add_temporary_duplicate_sticky_notice([WPMCP_FS_ID], 'Activate a license here.', 'WPMCP');
         $this->assertTrue($manager->is_temporary_duplicate_notice_shown());
 
         Staging_Copy::set_staging_for_tests(true);
@@ -245,7 +245,7 @@ class StagingCopyTest extends \WP_UnitTestCase
         $html = $this->rendered();
 
         $this->assertStringContainsString('notice-info', $html);
-        $this->assertStringContainsString('Staging copy. This site does not count toward your WP MCP license.', $html);
+        $this->assertStringContainsString('Staging copy. This site does not count toward your WPMCP license.', $html);
     }
 
     public function test_render_shows_the_fresh_install_banner_on_wpmcp_submenus(): void

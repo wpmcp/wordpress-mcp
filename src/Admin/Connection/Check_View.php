@@ -33,7 +33,7 @@ final class Check_View
         if (! $result->mcp_on) {
             printf(
                 '<div class="notice notice-warning inline"><p>%s</p></div>',
-                esc_html__('MCP is off on this site, so all WP MCP tools refuse until you turn it back on on the Settings tab.', 'wpmcp')
+                esc_html__('MCP is off on this site, so all WPMCP tools refuse until you turn it back on on the Settings tab.', 'wpmcp')
             );
         }
 
@@ -289,7 +289,7 @@ final class Check_View
                 <?php
                 echo wp_kses(sprintf(
                     /* translators: %s: link to the History screen */
-                    __('Before each supported write, WP MCP saves a snapshot, and undo is free. Your changes are on the %s screen.', 'wpmcp'),
+                    __('Before each supported write, WPMCP saves a snapshot, and undo is free. Your changes are on the %s screen.', 'wpmcp'),
                     '<a href="' . esc_url(admin_url('admin.php?page=wpmcp')) . '">' . esc_html__('History', 'wpmcp') . '</a>'
                 ), [ 'a' => [ 'href' => true ] ]);
                 ?>

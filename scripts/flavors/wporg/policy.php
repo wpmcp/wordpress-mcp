@@ -41,7 +41,7 @@ return [
         // long as it is dismissible and limited to the plugin's own screens,
         // and guideline 5 allows upselling. The banner leaves anyway because
         // the first submissions ship none (issue #1140, decision D5); a
-        // dismissible banner on WP MCP's own screens is planned for the first
+        // dismissible banner on WPMCP's own screens is planned for the first
         // update after approval.
         'src/Admin/Pro_Banner.php',
         // The GitHub star prompt leaves with it, for the same decision: the

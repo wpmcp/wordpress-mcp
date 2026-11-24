@@ -9,7 +9,7 @@ use WPMCP\Tools\Sync\Change_Set_Builder;
 use WPMCP\Tools\Sync\Change_Set_Format;
 
 /**
- * Issue #506: every post type and meta key WP MCP itself creates is either
+ * Issue #506: every post type and meta key WPMCP itself creates is either
  * deliberately syncable or deliberately kept out of change sets. A new
  * internal store has to be classified here, so it cannot leak through sync
  * the way the chat conversation store did.
@@ -44,7 +44,7 @@ class SyncInternalTypesTest extends \WP_UnitTestCase
     ];
 
     /**
-     * WP MCP post meta that describes the content itself and travels with
+     * WPMCP post meta that describes the content itself and travels with
      * it: builder specs, site-part targeting, media provenance and the
      * media optimization record.
      */
@@ -102,7 +102,7 @@ class SyncInternalTypesTest extends \WP_UnitTestCase
     }
 
     /**
-     * WP MCP post types, from source. The runtime registry is not used: other
+     * WPMCP post types, from source. The runtime registry is not used: other
      * tests register throwaway wpmcp_* types that are not the plugin's.
      *
      * @param array<string, string>|null $sources src/... path => absolute path; the public sources when null
@@ -121,7 +121,7 @@ class SyncInternalTypesTest extends \WP_UnitTestCase
     }
 
     /**
-     * WP MCP meta keys named in source.
+     * WPMCP meta keys named in source.
      *
      * @param array<string, string>|null $sources src/... path => absolute path; the public sources when null
      * @return string[]
@@ -138,7 +138,7 @@ class SyncInternalTypesTest extends \WP_UnitTestCase
         $never      = in_array($type, self::NEVER_SYNCED_POST_TYPES, true);
         $test->assertTrue(
             $on_purpose xor $never,
-            "WP MCP post type {$type} is not classified: add it to Change_Set_Format's non-syncable list, or to SYNCABLE_ON_PURPOSE_POST_TYPES here if pushing it from local to live is intended"
+            "WPMCP post type {$type} is not classified: add it to Change_Set_Format's non-syncable list, or to SYNCABLE_ON_PURPOSE_POST_TYPES here if pushing it from local to live is intended"
         );
         $test->assertSame($on_purpose, Change_Set_Format::is_syncable_post_type($type), "{$type}: sync behavior does not match its classification");
     }
@@ -150,7 +150,7 @@ class SyncInternalTypesTest extends \WP_UnitTestCase
         $internal   = Change_Set_Format::is_internal_meta($key);
         $test->assertTrue(
             $on_purpose xor $internal,
-            "WP MCP meta key {$key} is not classified: make Change_Set_Format::is_internal_meta() cover it, or add it to SYNCABLE_ON_PURPOSE_META here if it describes the content"
+            "WPMCP meta key {$key} is not classified: make Change_Set_Format::is_internal_meta() cover it, or add it to SYNCABLE_ON_PURPOSE_META here if it describes the content"
         );
     }
 
@@ -158,7 +158,7 @@ class SyncInternalTypesTest extends \WP_UnitTestCase
     {
         $types = self::own_post_types();
         foreach (array_diff(array_merge(self::SYNCABLE_ON_PURPOSE_POST_TYPES, self::NEVER_SYNCED_POST_TYPES), self::PRO_OWNED_POST_TYPES) as $known) {
-            $this->assertContains($known, $types, 'the source scan is not finding WP MCP post types, so the classification below proves nothing');
+            $this->assertContains($known, $types, 'the source scan is not finding WPMCP post types, so the classification below proves nothing');
         }
         $this->assertSame([], array_values(array_intersect(self::PRO_OWNED_POST_TYPES, $types)), 'PRO_OWNED_POST_TYPES lists a type public code declares; drop it from the list');
         $this->assertSame([], array_values(array_diff(self::PRO_OWNED_POST_TYPES, self::SYNCABLE_ON_PURPOSE_POST_TYPES, self::NEVER_SYNCED_POST_TYPES)), 'PRO_OWNED_POST_TYPES lists a type with no classification');
@@ -187,7 +187,7 @@ class SyncInternalTypesTest extends \WP_UnitTestCase
     public function test_every_wpmcp_meta_key_is_deliberately_classified_for_sync(): void
     {
         $keys = self::own_meta_keys();
-        $this->assertContains('_wpmcp_stage_of', $keys, 'the meta scan is not finding WP MCP meta keys');
+        $this->assertContains('_wpmcp_stage_of', $keys, 'the meta scan is not finding WPMCP meta keys');
 
         foreach ($keys as $key) {
             self::assert_meta_key_classified($this, $key);

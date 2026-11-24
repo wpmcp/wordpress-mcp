@@ -273,7 +273,7 @@ class SiteGateTest extends \WP_UnitTestCase
 
         $out = (new Get_Maintenance_Status())->handle([]);
 
-        $this->assertFalse($out['enabled'], 'enabled stays WP MCP\'s own flag');
+        $this->assertFalse($out['enabled'], 'enabled stays WPMCP\'s own flag');
         $this->assertTrue($out['site_gated'], 'but the site is closed by a plugin');
         $this->assertSame([ 'ucp' ], $out['active_gates']);
     }

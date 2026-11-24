@@ -22,7 +22,7 @@ if (! defined('ABSPATH')) {
  *    dismiss handler, so it is shown only to users who can dismiss it;
  *  - the History and Connection screens only;
  *  - never with a Pro licence, and never on a screen load where the Pro
- *    banner renders, so a free install never sees two WP MCP banners at once;
+ *    banner renders, so a free install never sees two WPMCP banners at once;
  *  - one dismissal hides it for good, per user;
  *  - the wpmcp_star_prompt_enabled filter turns it off for the whole site.
  *
@@ -46,7 +46,7 @@ class Star_Prompt
     /** Agent writes with an undo point before the prompt is earned. */
     public const WRITES_NEEDED = 3;
 
-    /** Screen id of the History screen (the top-level WP MCP page). */
+    /** Screen id of the History screen (the top-level WPMCP page). */
     private const HISTORY_SCREEN = 'toplevel_page_wpmcp';
 
     /** Submenu slug of the Connection screen. */
@@ -171,11 +171,11 @@ class Star_Prompt
         ?>
         <div class="notice notice-success wpmcp-star-prompt">
             <p>
-                <strong><?php esc_html_e('WP MCP just kept a snapshot of your site.', 'wpmcp'); ?></strong>
+                <strong><?php esc_html_e('WPMCP just kept a snapshot of your site.', 'wpmcp'); ?></strong>
                 <?php esc_html_e('If the free plugin helps, a star on GitHub helps other WordPress builders find it.', 'wpmcp'); ?>
             </p>
             <p>
-                <a class="button button-primary" href="<?php echo esc_url(self::REPO_URL); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Star WP MCP on GitHub', 'wpmcp'); ?></a>
+                <a class="button button-primary" href="<?php echo esc_url(self::REPO_URL); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Star WPMCP on GitHub', 'wpmcp'); ?></a>
                 &nbsp;
                 <a href="<?php echo esc_url($dismiss_url); ?>"><?php esc_html_e('Do not show this again', 'wpmcp'); ?></a>
             </p>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WP MCP - MCP Server with Snapshot Undo for AI Agents
+ * Plugin Name: WPMCP - MCP Server with Snapshot Undo for AI Agents
  * Description: AI builds and edits your WordPress site over MCP, with a snapshot before each supported write and one-click rollback.
  * Version: 1.2.1
  * Requires at least: 6.9
@@ -23,7 +23,7 @@ if ( wpmcp_is_pro_build( __FILE__ ) ) {
 	register_activation_hook( __FILE__, static function () { wpmcp_pro_deactivate_free_copies( __FILE__ ); } );
 	add_action( 'admin_init', static function () { wpmcp_pro_deactivate_free_copies( __FILE__ ); } );
 }
-// Only one WP MCP build may boot per request: they share the WPMCP_* constants,
+// Only one WPMCP build may boot per request: they share the WPMCP_* constants,
 // the \WPMCP\ namespace and all persisted state. The guard ranks builds by the
 // WPMCP Flavor header above, and 'full' ranks highest, so this file only
 // stands down for a copy that already booted this request (a second install
@@ -41,7 +41,7 @@ if ( wpmcp_flavor_should_defer( __FILE__, 'full', defined( 'WPMCP_VERSION' ) ) )
 	// 'wpmcp' domain itself, and core's just-in-time loader covers the notice.
 	add_action( 'admin_notices', function () {
 		echo '<div class="notice notice-warning"><p>';
-		echo esc_html__( 'This copy of WP MCP is inactive because another WP MCP build already loaded on this site. Deactivate one of them.', 'wpmcp' );
+		echo esc_html__( 'This copy of WPMCP is inactive because another WPMCP build already loaded on this site. Deactivate one of them.', 'wpmcp' );
 		echo '</p></div>';
 	} );
 	return;

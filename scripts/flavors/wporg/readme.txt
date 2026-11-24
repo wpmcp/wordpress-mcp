@@ -1,4 +1,4 @@
-=== WP MCP - MCP Server with Snapshot Undo for AI Agents ===
+=== WPMCP - MCP Server with Snapshot Undo for AI Agents ===
 Contributors: fahdi
 Tags: mcp, mcp server, ai agent, automation, undo
 Requires at least: 6.9
@@ -12,7 +12,7 @@ Turn this site into an MCP server for AI agents. It takes a snapshot before each
 
 == Description ==
 
-WP MCP exposes this site to AI agents over the Model Context Protocol, built on the Abilities API in core 6.9. Pair any MCP client and let an agent build pages, edit content, manage plugins and configure the site.
+WPMCP exposes this site to AI agents over the Model Context Protocol, built on the Abilities API in core 6.9. Pair any MCP client and let an agent build pages, edit content, manage plugins and configure the site.
 
 The difference is the undo. Every mutating operation captures a snapshot before it runs, so a change you did not want is one click away from being reversed on the History screen.
 
@@ -54,11 +54,11 @@ nothing on the schedule ever makes a network request, and neither does
 activation. Every host it can reach is listed under "External services"
 below, and each request happens only while you or your agent are running the
 specific ability that needs it, except the cloud announcements check
-described under WP MCP Cloud, which runs only if a cloud connection was
+described under WPMCP Cloud, which runs only if a cloud connection was
 saved, and, with OAuth switched on, the client metadata document fetch
 described below, which runs while an MCP client signs in.
 
-WP MCP keeps copies of site data it needs to work: undo snapshots of what an agent changed (which can include users, comments, orders and form entries), the request and governance audit logs, agent memory and the content search index. All of it stays on your site, and all of it takes part in WordPress's own personal data tools: Tools > Export Personal Data lists a person's records from each store, and Tools > Erase Personal Data redacts them from undo snapshots (a redacted snapshot can no longer be rolled back, and says so), anonymizes them in the logs and deletes the memory and index entries that hold them. WP MCP's erasure runs after your other plugins' own, so their copies in WP MCP's snapshots are covered too. Site backup archives made by WP MCP are full database copies and are left unchanged; the erasure says so when any exist.
+WPMCP keeps copies of site data it needs to work: undo snapshots of what an agent changed (which can include users, comments, orders and form entries), the request and governance audit logs, agent memory and the content search index. All of it stays on your site, and all of it takes part in WordPress's own personal data tools: Tools > Export Personal Data lists a person's records from each store, and Tools > Erase Personal Data redacts them from undo snapshots (a redacted snapshot can no longer be rolled back, and says so), anonymizes them in the logs and deletes the memory and index entries that hold them. WPMCP's erasure runs after your other plugins' own, so their copies in WPMCP's snapshots are covered too. Site backup archives made by WPMCP are full database copies and are left unchanged; the erasure says so when any exist.
 
 == External services ==
 
@@ -199,7 +199,7 @@ contains the WordPress version and this site's address.
 `media_sideload_image()`, so it can fetch an image from any host on the
 internet. It is not restricted by the allowlist above, and the destination
 is whatever you asked for; the plugin never picks one. Disable the ability
-in the WP MCP ability grid if you do not want that reach. As with any core
+in the WPMCP ability grid if you do not want that reach. As with any core
 download, the request carries WordPress's standard user agent.
 
 = The AI provider the site owner configured (WordPress 7.0+) =
@@ -233,7 +233,7 @@ WPMCP-OAuth-Client-Metadata/1.0 user agent. Private, loopback and reserved
 addresses are refused, redirects are not followed, the document is capped at
 5 KB, and it is cached per its Cache-Control header (an hour by default), so
 a repeat sign-in sends nothing. Set the wpmcp_oauth_cimd_enabled filter to
-false to turn this off, or require approval of new clients on the WP MCP
+false to turn this off, or require approval of new clients on the WPMCP
 Connection screen. The client's publisher's own terms and privacy policy
 apply to the document it hosts.
 
@@ -257,12 +257,12 @@ search engines, and sends HEAD requests for backup or dump files it finds in
 public folders. Nothing is sent to www.google.com: the Referer is only a
 header on the request to your own site.
 
-= WP MCP Cloud (only if a cloud connection was saved elsewhere) =
+= WPMCP Cloud (only if a cloud connection was saved elsewhere) =
 
 This build ships no tool that can connect to the author's optional cloud
 service, but it keeps the announcements feed, which reads a cloud URL and
 API key if one was saved earlier by the separate add-on plugin on this site.
-Only then, when an administrator opens a WP MCP admin screen, it fetches
+Only then, when an administrator opens a WPMCP admin screen, it fetches
 notices from that saved URL, at most once a day, or once an hour after a
 failed fetch. What is sent: a GET request for /announcements with your saved
 API key in the Authorization header; no site content. With no saved
@@ -272,7 +272,7 @@ Privacy policy: https://wpmcp-pro.com/privacy.html
 == Installation ==
 
 1. Install and activate the plugin.
-2. Open the WP MCP menu and follow the connection wizard to pair your MCP client.
+2. Open the WPMCP menu and follow the connection wizard to pair your MCP client.
 3. Ask your agent to build something, then open the History screen: it lists the snapshot taken before each supported write, with one-click restore.
 
 == Frequently Asked Questions ==
@@ -287,7 +287,7 @@ It takes a snapshot before each supported write, with one-click restore from His
 
 = What if my AI client skips permission prompts? =
 
-WP MCP asks before destructive actions: through your MCP client's confirmation prompt when the client supports one, otherwise by refusing until the agent passes confirm:true. A client set to skip its own permission prompts (for example Claude Code started with --dangerously-skip-permissions, or any auto-approve mode) also skips those WP MCP confirmations, because it answers them itself without asking you. Actions that cannot be undone, and the Wordfence IP block, unblock and scan issue ignore operations, are never confirmed through the client: they run only when the agent's own call carries confirm:true, and the refusal says exactly what that will do. Keep permission prompts on when an agent can reach those tools.
+WPMCP asks before destructive actions: through your MCP client's confirmation prompt when the client supports one, otherwise by refusing until the agent passes confirm:true. A client set to skip its own permission prompts (for example Claude Code started with --dangerously-skip-permissions, or any auto-approve mode) also skips those WPMCP confirmations, because it answers them itself without asking you. Actions that cannot be undone, and the Wordfence IP block, unblock and scan issue ignore operations, are never confirmed through the client: they run only when the agent's own call carries confirm:true, and the refusal says exactly what that will do. Keep permission prompts on when an agent can reach those tools.
 
 = Does this replace my backup plugin? =
 

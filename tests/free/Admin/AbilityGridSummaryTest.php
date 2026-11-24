@@ -129,7 +129,7 @@ class AbilityGridSummaryTest extends \WP_UnitTestCase
     {
         $html = $this->render();
 
-        $this->assertStringContainsString('<h1>WP MCP: Abilities</h1>', $html);
+        $this->assertStringContainsString('<h1>WPMCP: Abilities</h1>', $html);
         $this->assertStringNotContainsString('governance state', $html);
         $this->assertStringNotContainsString('narrowing layer', $html);
         $this->assertMatchesRegularExpression('#<input type="checkbox" id="wpmcp-auto-enable-new" name="enabled" value="1"[^>]*>\s*<label for="wpmcp-auto-enable-new">#', $html);

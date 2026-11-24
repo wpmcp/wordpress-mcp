@@ -1273,7 +1273,7 @@ final class MemberPress_Pack
                 \MeprRule::$all_rules = null;
             }
         } catch (\Throwable $e) {
-            error_log('WP MCP: could not refresh MemberPress rule caches: ' . $e->getMessage()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a failed cache refresh must be visible without failing the write.
+            error_log('WPMCP: could not refresh MemberPress rule caches: ' . $e->getMessage()); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- a failed cache refresh must be visible without failing the write.
         }
     }
 

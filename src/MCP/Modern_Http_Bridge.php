@@ -11,7 +11,7 @@ if (! defined('ABSPATH')) {
  * (issue #386).
  *
  * The route belongs to the WordPress MCP adapter. Adapter 0.7.0 and later
- * implement 2026-07-28 themselves; the 0.6.x copy WP MCP bundles predates
+ * implement 2026-07-28 themselves; the 0.6.x copy WPMCP bundles predates
  * it and would answer a sessionless 2026 request with a missing-session
  * error. So on this one route:
  *
@@ -20,8 +20,8 @@ if (! defined('ABSPATH')) {
  *    stdio transport (the adapter's own discovery result has no filter and
  *    would advertise the server description instead);
  *  - a 2026-07-28 tools/call is always answered here (issue #501): the
- *    confirm gates answered as elicitation and the Tasks extension are WP
- *    MCP's, and the adapter's own tools/call has neither (0.7.0 rejects
+ *    confirm gates answered as elicitation and the Tasks extension are WPMCP's,
+ *    and the adapter's own tools/call has neither (0.7.0 rejects
  *    continuation parameters for ability-backed tools);
  *  - other 2026-07-28 requests are answered here only when the loaded
  *    adapter does not speak that revision, and left to the adapter when it
@@ -35,7 +35,7 @@ if (! defined('ABSPATH')) {
  *
  * It hooks rest_dispatch_request, which core applies after the route's
  * permission_callback has passed, so the adapter's transport permission
- * check (and everything WP MCP layers on it) still decides who gets in.
+ * check (and everything WPMCP layers on it) still decides who gets in.
  * The answer itself comes from the stdio transport's dispatcher, the one
  * implementation of the tool, prompt and resource methods outside the
  * adapter, so the two transports cannot drift.

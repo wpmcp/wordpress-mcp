@@ -8,7 +8,7 @@ use WPMCP\Admin\Connection\Activity_Recorder;
 use WPMCP\Admin\Connection\Mcp_Client;
 
 /**
- * What WP MCP keeps about each application password the MCP route answered
+ * What WPMCP keeps about each application password the MCP route answered
  * (issue #1258): when it first and last answered a request made with it, and
  * the name the client gave. Every answered request counts, so a 2026-07-28
  * client that never sends initialize is recorded as surely as a 2025 one.

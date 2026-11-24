@@ -209,7 +209,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         'src/Auth/Client_Metadata_Document.php'              => 'cache key built by cache_key() from CACHE_PREFIX (wpmcp_oauth_cimd_)',
         'src/Cloud/Cloud_Credentials.php'                    => 'restores its own wpmcp_cloud_ options from a snapshot',
         'src/Tools/Settings/Update_Settings.php'             => 'edits a named core setting',
-        'src/Integrations/PixelYourSite_Store.php'           => 'writes the legacy option of one network (pys_facebook, pys_ga or pys_gtm), named by PixelYourSite_Network::row(); PixelYourSite\'s own data, never WP MCP\'s',
+        'src/Integrations/PixelYourSite_Store.php'           => 'writes the legacy option of one network (pys_facebook, pys_ga or pys_gtm), named by PixelYourSite_Network::row(); PixelYourSite\'s own data, never WPMCP\'s',
         'src/Integrations/Site_Gate_Pack.php'                => 'puts back the one gate option (seedprod_settings or ucp_options) it just wrote, named by WRITABLE; both are FOREIGN',
         'src/Tools/Meta/Update_Option.php'                   => 'edits a named option on request',
         'src/Tools/CustomCode/Custom_Code_Store.php'         => 'per-post option built from POST_OPTION_PREFIX (wpmcp_custom_code_post_)',
@@ -236,7 +236,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
      * with the reason.
      */
     public const KEPT_DIRS = [
-        'wpmcp-skills' => 'skills the site owner wrote by hand in wp-content; WP MCP only reads them',
+        'wpmcp-skills' => 'skills the site owner wrote by hand in wp-content; WPMCP only reads them',
     ];
 
     /**
@@ -318,9 +318,9 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         $found = self::key_problems($writes, self::DYNAMIC_KEY_FILES, self::FOREIGN);
         $this->assertSame([], $found['dynamic_stale'], 'DYNAMIC_KEY_FILES lists files with no dynamic write any more.');
         $this->assertSame([], $found['unresolved'], "Writes whose key could not be resolved; resolve it to a constant or add the file to DYNAMIC_KEY_FILES with the reason:\n" . implode("\n", $found['unresolved']));
-        $this->assertSame([], $found['missing'], "Keys WP MCP writes that Data_Registry does not cover, so deleting the plugin would leave them behind:\n" . implode("\n", $found['missing']));
+        $this->assertSame([], $found['missing'], "Keys WPMCP writes that Data_Registry does not cover, so deleting the plugin would leave them behind:\n" . implode("\n", $found['missing']));
         $this->assertSame([], array_values(array_diff(self::declared(self::FOREIGN), array_keys($found['foreign_used']))), 'FOREIGN lists keys nothing in src/ writes any more.');
-        $this->assertSame([], $found['unknown'], "Keys written that are neither WP MCP's (wpmcp_ / _wpmcp_) nor declared FOREIGN here. A new store must use a registered prefix:\n" . implode("\n", $found['unknown']));
+        $this->assertSame([], $found['unknown'], "Keys written that are neither WPMCP's (wpmcp_ / _wpmcp_) nor declared FOREIGN here. A new store must use a registered prefix:\n" . implode("\n", $found['unknown']));
     }
 
     public function test_the_allowlists_name_only_public_files(): void
@@ -334,7 +334,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
         $tables = self::tables();
         $owned  = array_values(array_unique(array_filter(array_column($tables, 'name'), [self::class, 'looks_like_ours'])));
 
-        $this->assertNotEmpty($owned, 'The scan found no WP MCP tables at all.');
+        $this->assertNotEmpty($owned, 'The scan found no WPMCP tables at all.');
         $this->assertSame([], array_values(array_diff($owned, Data_Registry::TABLES)), 'Tables created in src/ but missing from Data_Registry::TABLES.');
         $this->assertSame([], array_values(array_diff(Data_Registry::TABLES, $owned)), 'Data_Registry::TABLES lists tables nothing in src/ uses any more.');
 
@@ -373,7 +373,7 @@ class DataRegistryGuardTest extends \WP_UnitTestCase
 
         $registered = array_merge(Data_Registry::UPLOADS_DIRS, Data_Registry::CONTENT_DIRS);
         $missing    = array_diff(array_keys($found), $registered, array_keys(self::KEPT_DIRS));
-        $this->assertSame([], array_values($missing), 'Directory constants named like WP MCP\'s that are neither in Data_Registry nor KEPT_DIRS.');
+        $this->assertSame([], array_values($missing), 'Directory constants named like WPMCP\'s that are neither in Data_Registry nor KEPT_DIRS.');
         $this->assertSame([], array_values(array_diff($registered, array_keys($found), self::PRO_OWNED_DIRS)), 'Data_Registry lists directories no constant in src/ names any more.');
         $this->assertSame([], array_values(array_diff(self::PRO_OWNED_DIRS, $registered)), 'PRO_OWNED_DIRS lists directories Data_Registry does not.');
         $this->assertSame([], array_values(array_intersect(self::PRO_OWNED_DIRS, array_keys($found))), 'PRO_OWNED_DIRS lists directories a public constant names; drop them from the list.');

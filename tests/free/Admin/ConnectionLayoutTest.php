@@ -108,7 +108,7 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
     {
         $html = $this->render();
 
-        $this->assertStringContainsString('<h1>WP MCP: Connection</h1>', $html);
+        $this->assertStringContainsString('<h1>WPMCP: Connection</h1>', $html);
         $this->assertStringContainsString('class="wpmcp-mark"', $html);
         $this->assertStringContainsString('MCP is on', $html);
         $this->assertStringNotContainsString('MCP is off on this site', $html);
@@ -317,7 +317,7 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
         $connections = $this->panel($html, 'connections');
 
         $this->assertSame(1, preg_match('#<tr[^>]*data-uuid="' . preg_quote($gone, '#') . '"[^>]*>(.*?)</tr>#s', $connections, $row));
-        $this->assertStringContainsString('Removed outside WP MCP', $row[1]);
+        $this->assertStringContainsString('Removed outside WPMCP', $row[1]);
         $this->assertStringContainsString('value="revoke"', $row[1], 'Remove from list posts the idempotent revoke');
         $this->assertMatchesRegularExpression('#<input type="submit"[^>]*value="Remove from list"#', $row[1]);
         $this->assertStringNotContainsString('value="Revoke"', $row[1]);
@@ -385,7 +385,7 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
         $this->assertStringContainsString('value="toggle"', $settings);
         $this->assertStringContainsString('name="management_mode"', $settings);
         // The switch itself needs a network admin on multisite; the section is there either way.
-        $this->assertStringContainsString('Delete all WP MCP data when the plugin is deleted', $settings);
+        $this->assertStringContainsString('Delete all WPMCP data when the plugin is deleted', $settings);
         $this->assertMatchesRegularExpression('#<details class="wpmcp-advanced"#', $settings, 'Advanced starts closed');
         $this->assertStringContainsString('<code id="wpmcp-endpoint">' . esc_html(home_url('/wp-json/mcp/wpmcp-server')) . '</code>', $settings);
         $this->assertStringContainsString('value="self_test"', $settings);

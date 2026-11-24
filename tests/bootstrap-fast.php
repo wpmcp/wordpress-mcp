@@ -30,7 +30,7 @@ require_once __DIR__ . '/support/edition-tree.php';
 // tools/registry/src/Freshness.php.
 $wpmcp_registry_error = \WPMCP\Registry\Freshness::ensure( dirname( __DIR__ ) );
 if ( null !== $wpmcp_registry_error ) {
-    fwrite( STDERR, "WP MCP tests: build/registry is stale and could not be rebuilt: {$wpmcp_registry_error}\n" );
+    fwrite( STDERR, "WPMCP tests: build/registry is stale and could not be rebuilt: {$wpmcp_registry_error}\n" );
     exit( 1 );
 }
 

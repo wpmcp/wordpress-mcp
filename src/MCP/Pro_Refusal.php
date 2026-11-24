@@ -38,11 +38,11 @@ final class Pro_Refusal
 
         $offer = self::offer();
         if (null === $offer) {
-            return sprintf('%s is part of WP MCP Pro and is not available on this install.', $subject);
+            return sprintf('%s is part of WPMCP Pro and is not available on this install.', $subject);
         }
 
         return sprintf(
-            '%s is part of WP MCP Pro. Upgrade at %s (code %s takes %d%% off).',
+            '%s is part of WPMCP Pro. Upgrade at %s (code %s takes %d%% off).',
             $subject,
             $offer['url'],
             $offer['coupon'],

@@ -76,7 +76,7 @@ if (! function_exists('wpmcp_flavor_rank')) {
 if (! function_exists('wpmcp_flavor_of')) {
     /**
      * The flavor id a plugin main file declares, or '' when the file is
-     * missing or is not a WP MCP build.
+     * missing or is not a WPMCP build.
      *
      * A missing file is the stale-entry case: core's loader skips an
      * active_plugins entry whose file is gone but only prunes the entry when
@@ -201,7 +201,7 @@ if (! function_exists('wpmcp_flavor_should_defer')) {
                 continue;
             }
 
-            // Every WP MCP main file is named wpmcp*.php. Filtering on that
+            // Every WPMCP main file is named wpmcp*.php. Filtering on that
             // before touching the filesystem keeps this to one header read
             // per sibling build rather than one per active plugin, and an
             // unrelated 'wpmcp-companion/wpmcp-companion.php' still has to
@@ -231,7 +231,7 @@ if (! function_exists('wpmcp_pro_deactivate_free_copies')) {
      * deactivation hook of the free copy runs, and network-wide entries
      * are removed from the network list.
      *
-     * Every WP MCP main file is named wpmcp*.php, so the header is read only
+     * Every WPMCP main file is named wpmcp*.php, so the header is read only
      * for active plugins whose basename starts with 'wpmcp': on a site with
      * no other copy this costs one marker check and no file read.
      *
@@ -276,7 +276,7 @@ if (! function_exists('wpmcp_pro_deactivate_free_copies')) {
 
 if (! function_exists('wpmcp_other_build_installed')) {
     /**
-     * Whether another WP MCP build is installed on this site, active or not:
+     * Whether another WPMCP build is installed on this site, active or not:
      * any plugin outside $plugin_dir whose main file carries a `WPMCP Flavor:`
      * header.
      *
@@ -318,7 +318,7 @@ if (! function_exists('wpmcp_other_build_installed')) {
 
 if (! function_exists('wpmcp_other_build_active')) {
     /**
-     * Whether another WP MCP build is active on this site or network-wide:
+     * Whether another WPMCP build is active on this site or network-wide:
      * an active plugin outside $plugin_dir whose main file carries a
      * `WPMCP Flavor:` header.
      *

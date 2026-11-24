@@ -9,7 +9,7 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * Encrypted single-option credential vault for WP MCP Cloud (issue #141,
+ * Encrypted single-option credential vault for WPMCP Cloud (issue #141,
  * phase 1 of #135). The full credential set (base_url, api_key, and the token
  * bundle the phase 2 OAuth connect flow will populate: access_token,
  * refresh_token, access_expires_at, client_id, client_secret) is sealed as one

@@ -13,7 +13,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-// The full WP MCP plugin already bundles everything this build ships, and the
+// The full WPMCP plugin already bundles everything this build ships, and the
 // two share the WPMCP_* constants, the \WPMCP\ namespace, every option, custom
 // table, cron hook and admin menu slug. Running both would double-register the
 // abilities and make class resolution depend on which vendor/ autoloader was
@@ -30,7 +30,7 @@ if ( wpmcp_flavor_should_defer( __FILE__, 'woocommerce', defined( 'WPMCP_VERSION
 	// slug's language packs just in time for the notice below.
 	add_action( 'admin_notices', function () {
 		echo '<div class="notice notice-warning"><p>';
-		echo esc_html__( 'Safe MCP for WooCommerce is inactive because another WP MCP build that already includes all of its tools is active on this site.', 'safe-mcp-for-woocommerce' );
+		echo esc_html__( 'Safe MCP for WooCommerce is inactive because another WPMCP build that already includes all of its tools is active on this site.', 'safe-mcp-for-woocommerce' );
 		echo '</p></div>';
 	} );
 	return;

@@ -355,7 +355,7 @@ final class Restrict_Content_Pack
         global $wpdb;
         $id = (int) $args['level_id'];
         if (self::levels_table() !== $wpdb->prefix . 'restrict_content_pro') {
-            return self::refusal('rcp_network_tables', 'Restrict Content keeps its membership levels in a network-wide table on this install, which WP MCP does not write. Change the level from Restrict Content\'s own screen.', [ 'level_id' => $id ]);
+            return self::refusal('rcp_network_tables', 'Restrict Content keeps its membership levels in a network-wide table on this install, which WPMCP does not write. Change the level from Restrict Content\'s own screen.', [ 'level_id' => $id ]);
         }
         $row = self::level_row($id);
         if (null === $row) {

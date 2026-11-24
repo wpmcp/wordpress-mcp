@@ -92,7 +92,7 @@ abstract class Consent_Adapter
     {
         return [
             'code'    => 'not_supported',
-            'message' => sprintf('%s has no cookie scan WP MCP can start on this site.', $this->label()),
+            'message' => sprintf('%s has no cookie scan WPMCP can start on this site.', $this->label()),
         ];
     }
 

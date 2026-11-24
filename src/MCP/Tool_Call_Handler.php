@@ -9,7 +9,7 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * WP MCP's own answer to tools/call (and the other MCP methods): the stdio
+ * WPMCP's own answer to tools/call (and the other MCP methods): the stdio
  * transport's dispatcher, which the HTTP route uses too (issue #628), so
  * the transports cannot drift.
  */

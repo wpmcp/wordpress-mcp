@@ -106,7 +106,7 @@ final class Wordfence_Integration
                 'mode'            => 'destructive',
                 'description'     => 'Block an IP in Wordfence (permanent unless duration, in seconds). Snapshotted; restorable with rollback-operation',
                 'input_schema'    => [ 'type' => 'object', 'properties' => $ip + [
-                    'reason'   => [ 'type' => 'string', 'maxLength' => 200, 'default' => 'Blocked via WP MCP' ],
+                    'reason'   => [ 'type' => 'string', 'maxLength' => 200, 'default' => 'Blocked via WPMCP' ],
                     'duration' => [ 'type' => 'integer', 'minimum' => 0, 'default' => 0 ],
                 ], 'required' => [ 'ip' ] ],
                 'requires'        => $requires,
@@ -237,7 +237,7 @@ final class Wordfence_Integration
         $disabled                                = (bool) $api->config('loginSec_disableApplicationPasswords');
         $status['application_passwords_disabled'] = $disabled;
         if ($disabled) {
-            $status['application_passwords_note'] = 'Wordfence disables Application Passwords, so Application Password clients such as WP MCP cannot connect. Turn off "Disable WordPress application passwords" under Wordfence > Firewall > All Firewall Options > Brute Force Protection.';
+            $status['application_passwords_note'] = 'Wordfence disables Application Passwords, so Application Password clients such as WPMCP cannot connect. Turn off "Disable WordPress application passwords" under Wordfence > Firewall > All Firewall Options > Brute Force Protection.';
         }
 
         // The install and license state only, never the key or the email.
@@ -526,7 +526,7 @@ final class Wordfence_Integration
     {
         $ip       = (string) $args['ip'];
         $duration = (int) ($args['duration'] ?? 0);
-        self::api()->block_ip($ip, sanitize_text_field((string) ($args['reason'] ?? 'Blocked via WP MCP')), $duration);
+        self::api()->block_ip($ip, sanitize_text_field((string) ($args['reason'] ?? 'Blocked via WPMCP')), $duration);
         return [
             'ip'       => $ip,
             'duration' => $duration,

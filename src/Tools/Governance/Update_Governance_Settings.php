@@ -147,7 +147,7 @@ class Update_Governance_Settings
             return new \WP_Error(
                 'wpmcp_governance_lockout',
                 sprintf(
-                    'Refusing to switch off %s: that would disable the tools an MCP client needs to read, change and undo governance, and no MCP client could switch them back on. Nothing was written. An administrator can change these toggles under WP MCP > Abilities in wp-admin.',
+                    'Refusing to switch off %s: that would disable the tools an MCP client needs to read, change and undo governance, and no MCP client could switch them back on. Nothing was written. An administrator can change these toggles under WPMCP > Abilities in wp-admin.',
                     implode('; ', $lockout)
                 ),
                 [ 'refused' => $lockout ]

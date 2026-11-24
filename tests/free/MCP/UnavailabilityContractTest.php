@@ -274,7 +274,7 @@ class UnavailabilityContractTest extends \WP_UnitTestCase
 
         $this->assertInstanceOf(\WP_Error::class, $denial);
         $this->assertSame('identity_scope', $denial->get_error_code());
-        $this->assertStringContainsString('outside the scope of the WP MCP identity', $denial->get_error_message());
+        $this->assertStringContainsString('outside the scope of the WPMCP identity', $denial->get_error_message());
         $this->assertSame('identity_scope', $denial->get_error_data()['unavailable']['reason']);
     }
 

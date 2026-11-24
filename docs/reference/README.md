@@ -1,10 +1,10 @@
-# WordPress MCP plugin developer docs (WP MCP reference)
+# WordPress MCP plugin developer docs (WPMCP reference)
 
 The full reference that used to live in the repository README. The user documentation, with client setup guides, is at [wpmcp-pro.com/docs](https://wpmcp-pro.com/docs).
 
 | Page | What is in it |
 | --- | --- |
-| [Overview](overview.md) | What WP MCP is, test status, ability counts, why it is built around undo |
+| [Overview](overview.md) | What WPMCP is, test status, ability counts, why it is built around undo |
 | [Safety model](safety-model.md) | Snapshot, apply, verify, rollback; the Audit Log; [what cannot be undone](safety-model.md#what-cannot-be-undone) |
 | [Page builders](page-builders.md) | Gutenberg, Elementor and the other builders, free and Pro, plus theme add-ons |
 | [Installation](installation.md) | Requirements, the release zip, WP-CLI, other release zips, installing from source |

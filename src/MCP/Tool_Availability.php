@@ -81,10 +81,10 @@ final class Tool_Availability
             $count    = array_sum($pro);
             $groups[] = [
                 'reason'  => 'pro_required',
-                'label'   => sprintf('%d Pro tools: needs a WP MCP Pro license', $count),
+                'label'   => sprintf('%d Pro tools: needs a WPMCP Pro license', $count),
                 'count'   => $count,
                 'domains' => $pro,
-                'action'  => 'Activate a WP MCP Pro license on this site.' . Pro_Refusal::upgrade_sentence(),
+                'action'  => 'Activate a WPMCP Pro license on this site.' . Pro_Refusal::upgrade_sentence(),
             ];
         }
         ksort($plugins);
@@ -110,7 +110,7 @@ final class Tool_Availability
                 'label'  => sprintf('%d tools switched off by governance', count($governance)),
                 'count'  => count($governance),
                 'tools'  => $governance,
-                'action' => 'An administrator can switch them back on under WP MCP > Abilities in wp-admin, or with wpmcp/update-governance-settings.',
+                'action' => 'An administrator can switch them back on under WPMCP > Abilities in wp-admin, or with wpmcp/update-governance-settings.',
             ];
         }
 

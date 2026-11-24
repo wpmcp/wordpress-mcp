@@ -685,11 +685,11 @@ class Registrar
     /**
      * The refusal for a name that is not registered because it is a Pro
      * tool and this install has no active license (issue #631), or null
-     * when that is not the reason. Lets the meta-tools say "needs WP MCP
+     * when that is not the reason. Lets the meta-tools say "needs WPMCP
      * Pro" instead of "no tool by that name", with the same upgrade offer
      * the admin banner carries (Pro_Refusal). On the free zip, which carries
      * no Pro code, a Pro tool is not declared at all and is known by name
-     * from the build (Pro_Catalog, issue #628), so it says WP MCP Pro is not
+     * from the build (Pro_Catalog, issue #628), so it says WPMCP Pro is not
      * installed. Grants nothing: the tool is still unregistered and
      * unreachable.
      */
@@ -702,13 +702,13 @@ class Registrar
         }
 
         $upgrade     = Pro_Refusal::upgrade_url();
-        $unavailable = new Unavailable('pro_required', '', 'The account owner switches this site to an edition of WP MCP that includes it.', [ 'admin_url' => admin_url('admin.php?page=wpmcp') ]);
+        $unavailable = new Unavailable('pro_required', '', 'The account owner switches this site to an edition of WPMCP that includes it.', [ 'admin_url' => admin_url('admin.php?page=wpmcp') ]);
         return $unavailable->attach(new \WP_Error(
             'pro_required',
             sprintf(
                 $not_here
-                    ? '"%s" is a WP MCP Pro tool, and WP MCP Pro is not installed on this site, so the tool is not available here. Install WP MCP Pro on this site to use it.'
-                    : '"%s" is a WP MCP Pro tool, and this site has no active WP MCP Pro license, so the tool is not available here. Activate a WP MCP Pro license on this site to use it.',
+                    ? '"%s" is a WPMCP Pro tool, and WPMCP Pro is not installed on this site, so the tool is not available here. Install WPMCP Pro on this site to use it.'
+                    : '"%s" is a WPMCP Pro tool, and this site has no active WPMCP Pro license, so the tool is not available here. Activate a WPMCP Pro license on this site to use it.',
                 $name
             ) . Pro_Refusal::upgrade_sentence(),
             null === $upgrade ? [] : [ 'upgrade_url' => $upgrade ]
@@ -887,14 +887,14 @@ class Registrar
         $key                  = 'ability' === $dimension ? $name : $declared->{$dimension};
         if ('toggle' === $kind) {
             $cause = sprintf('the %s toggle for "%s" is off', $dimension, $key);
-            $fix   = 'An administrator can switch it back on under WP MCP > Abilities in wp-admin, or with wpmcp/update-governance-settings.';
+            $fix   = 'An administrator can switch it back on under WPMCP > Abilities in wp-admin, or with wpmcp/update-governance-settings.';
         } else {
             $cause = sprintf('the wpmcp_%s_enabled filter on this site switches off "%s"', $dimension, $key);
             $fix   = 'An administrator or developer has to change that filter in the site code before it can be used.';
         }
 
         $unavailable = 'toggle' === $kind
-            ? new Unavailable('disabled_by_admin', '', 'A site administrator switches it back on under WP MCP > Abilities.', [ 'admin_url' => admin_url('admin.php?page=wpmcp-abilities') ])
+            ? new Unavailable('disabled_by_admin', '', 'A site administrator switches it back on under WPMCP > Abilities.', [ 'admin_url' => admin_url('admin.php?page=wpmcp-abilities') ])
             : new Unavailable('disabled_by_code', '', 'A site developer changes the governance filter in the site code.');
 
         return $unavailable->attach(new \WP_Error(

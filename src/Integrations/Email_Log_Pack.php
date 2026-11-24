@@ -312,7 +312,7 @@ final class Email_Log_Pack
         }
         foreach ([ 'since', 'until' ] as $key) {
             if (isset($args[ $key ]) && null === self::site_time((string) $args[ $key ])) {
-                return [ 'code' => 'invalid_date', 'message' => sprintf('%s is not a date WP MCP can read; use 2026-11-15 or 2026-11-15 09:30:00 (site time).', $key), 'data' => [ 'field' => $key ] ];
+                return [ 'code' => 'invalid_date', 'message' => sprintf('%s is not a date WPMCP can read; use 2026-11-15 or 2026-11-15 09:30:00 (site time).', $key), 'data' => [ 'field' => $key ] ];
             }
         }
         return null;

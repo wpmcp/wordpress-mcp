@@ -232,7 +232,7 @@ php "$ROOT/scripts/flavors/woocommerce/text-domain.php" "$STAGE" "$SLUG" \
 lint_stage "after the text-domain rewrite"
 
 # Coexistence with the full plugin is handled at bootstrap, not by rewriting
-# identifiers. src/flavor-guard.php ranks the active WP MCP builds by the
+# identifiers. src/flavor-guard.php ranks the active WPMCP builds by the
 # WPMCP Flavor header in each main file and makes this build stand down
 # whenever a higher-ranked one is active, so the two never share a request
 # whichever directory the other lives in or loads from. A build-time

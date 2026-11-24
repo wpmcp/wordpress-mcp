@@ -74,7 +74,7 @@ final class RegistryHealthTest extends TestCase
         self::assertTrue($health->report());
         self::assertTrue($health->report());
         self::assertCount(1, $logged);
-        self::assertStringStartsWith('WP MCP: ', $logged[0]);
+        self::assertStringStartsWith('WPMCP: ', $logged[0]);
         self::assertSame(['admin_notices'], $hooks);
     }
 

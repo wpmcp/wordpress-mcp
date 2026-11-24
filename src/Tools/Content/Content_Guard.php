@@ -92,7 +92,7 @@ class Content_Guard
     }
 
     /**
-     * Why the generic tools refuse a post type, when it is one of WP MCP's
+     * Why the generic tools refuse a post type, when it is one of WPMCP's
      * own stores with tools of its own; null otherwise. The memory message
      * names the memory tools so the agent knows the sanctioned path.
      */

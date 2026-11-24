@@ -65,7 +65,7 @@ class Build_Page
 
         if ('elementor' === $spec['dialect']) {
             if (! Gate::can_use('build-page-builder')) {
-                throw new \RuntimeException('The builder (Elementor) dialect of build-page needs an active WP MCP Pro license on this site. The Gutenberg dialect is free and always available: pass dialect "gutenberg" to build the page with blocks instead.');
+                throw new \RuntimeException('The builder (Elementor) dialect of build-page needs an active WPMCP Pro license on this site. The Gutenberg dialect is free and always available: pass dialect "gutenberg" to build the page with blocks instead.');
             }
             if (! class_exists('\\Elementor\\Plugin')) {
                 throw new \RuntimeException('The builder dialect requires Elementor to be active on this site.');
@@ -291,7 +291,7 @@ class Build_Page
     {
         $composer = Page_Composers::from_hooks()->for_dialect($dialect);
         if (null === $composer) {
-            throw new \RuntimeException(sprintf('The %s dialect of build-page is not available in this build of WP MCP. The Gutenberg dialect is free and always available: pass dialect "gutenberg" to build the page with blocks instead.', $dialect)); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- returned to the caller as a tool error, never echoed.
+            throw new \RuntimeException(sprintf('The %s dialect of build-page is not available in this build of WPMCP. The Gutenberg dialect is free and always available: pass dialect "gutenberg" to build the page with blocks instead.', $dialect)); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- returned to the caller as a tool error, never echoed.
         }
         $sections = [];
         foreach (is_array($content) ? $content : [] as $section) {

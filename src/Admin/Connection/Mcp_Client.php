@@ -13,7 +13,7 @@ if (! defined('ABSPATH')) {
 /**
  * The MCP client a request names, as it names itself: clientInfo in the
  * params of an initialize (2025-11-25 and earlier), or in params._meta on
- * every request of 2026-07-28, which has no initialize. The one place WP MCP
+ * every request of 2026-07-28, which has no initialize. The one place WPMCP
  * reads a client's name, whichever revision it speaks (issue #1258).
  *
  * The text is untrusted network input: only a string or a number is kept,

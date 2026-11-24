@@ -178,7 +178,7 @@ class SkillToolsTest extends \WP_UnitTestCase
         $this->assertSame('pro', $error->get_error_data()['tier']);
 
         $message = $error->get_error_message();
-        $this->assertStringContainsString('WP MCP Pro', $message);
+        $this->assertStringContainsString('WPMCP Pro', $message);
         $this->assertStringContainsString('https://wpmcp-pro.com/pricing.html', $message);
         $this->assertStringContainsString('utm_medium=tool-refusal', $message);
         $this->assertStringContainsString('WPMCP20', $message);

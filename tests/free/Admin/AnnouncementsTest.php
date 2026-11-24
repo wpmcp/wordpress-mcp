@@ -8,7 +8,7 @@ use WPMCP\Memory\Memory_Store;
 use WPMCP\Plugin;
 
 /**
- * Issue #138: the admin announcements feed. Fetched from WP MCP Cloud
+ * Issue #138: the admin announcements feed. Fetched from WPMCP Cloud
  * through Cloud_Client, cached 24 hours in a transient (failures cached
  * one hour so a down endpoint self-heals), rendered as dismissible dated
  * notices on wpmcp admin screens ONLY, with per-user dismissal state in

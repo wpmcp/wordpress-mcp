@@ -13,7 +13,7 @@ if (! defined('ABSPATH')) {
  * file-access SQL are all rejected there. Reads touching the users or
  * usermeta tables are additionally refused by
  * Database_Guard::guard_user_table_read() (credential and session data),
- * and reads of WP MCP's snapshot ledger by
+ * and reads of WPMCP's snapshot ledger by
  * Database_Guard::guard_internal_store_read() (raw undo copies).
  * On multisite, a caller without manage_network_options may only reference
  * the current site's tables (Database_Guard::guard_query_scope()). For the
@@ -43,7 +43,7 @@ class Query
             throw new \RuntimeException(esc_html($user_table_read->get_error_message()));
         }
 
-        // WP MCP's snapshot ledger holds raw undo copies (issue #550).
+        // WPMCP's snapshot ledger holds raw undo copies (issue #550).
         $store_read = Database_Guard::guard_internal_store_read($sql);
         if (is_wp_error($store_read)) {
             throw new \RuntimeException(esc_html($store_read->get_error_message()));
