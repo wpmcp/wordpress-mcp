@@ -7,7 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-24T22:17:23+00:00\n"
+"POT-Creation-Date: 2026-11-24T22:59:11+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wpmcp\n"
@@ -100,7 +100,7 @@ msgstr ""
 #. translators: 1: ability name, 2: enabled/disabled.
 #. translators: 1: filter name, 2: on/off.
 #: Admin/Ability_Grid_Page.php:437
-#: Admin/Opt_In_Settings_Page.php:167
+#: Admin/Opt_In_Settings_Page.php:173
 #, php-format
 msgid "%1$s is now %2$s."
 msgstr ""
@@ -186,7 +186,7 @@ msgstr ""
 
 #: Admin/Ability_Grid_Page.php:544
 #: Admin/Ability_Grid_Page.php:709
-#: Admin/Opt_In_Settings_Page.php:179
+#: Admin/Opt_In_Settings_Page.php:185
 msgid "State"
 msgstr ""
 
@@ -565,7 +565,7 @@ msgstr ""
 
 #: Admin/Audit_Log_Page.php:625
 #: Admin/Audit_Log_Page.php:673
-#: Admin/Opt_In_Settings_Page.php:178
+#: Admin/Opt_In_Settings_Page.php:184
 msgid "Filter"
 msgstr ""
 
@@ -2195,7 +2195,7 @@ msgid "You cannot remove yourself from the administrators who manage WPMCP. Ask 
 msgstr ""
 
 #. translators: %s: constant name.
-#: Admin/Management_Access.php:344
+#: Admin/Management_Access.php:345
 #, php-format
 msgid "Management access is set by %s in wp-config.php. Change or remove it there."
 msgstr ""
@@ -2323,7 +2323,7 @@ msgid "Deny"
 msgstr ""
 
 #: Admin/Opt_In_Settings_Page.php:42
-#: Admin/Opt_In_Settings_Page.php:149
+#: Admin/Opt_In_Settings_Page.php:155
 #: Plugin.php:1161
 msgid "Opt-in operations"
 msgstr ""
@@ -2344,59 +2344,71 @@ msgstr ""
 msgid "Unknown opt-in group."
 msgstr ""
 
+#: Admin/Opt_In_Settings_Page.php:84
+msgid "On a network this is decided for every site at once: a network administrator switches it on the network screen (Network Settings, WPMCP opt-in operations)."
+msgstr ""
+
 #. translators: %s: filter name.
-#: Admin/Opt_In_Settings_Page.php:87
+#: Admin/Opt_In_Settings_Page.php:90
 #, php-format
 msgid "%s is set in code on this site, so the code decides and this toggle cannot change it."
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:121
+#: Admin/Opt_In_Settings_Page.php:125
 msgid "Includes operations that delete data or that undo cannot fully reverse (mail sent, external calls)."
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:154
+#: Admin/Opt_In_Settings_Page.php:160
 msgid "These operations are off by default. Switching a group on here enables it on every site of the network. A filter set in code always wins. Every change is recorded in the governance audit log."
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:155
+#: Admin/Opt_In_Settings_Page.php:161
 msgid "These operations are off by default. Switching a group on lets connected agents run it on this site, subject to their usual permissions. A filter set in code always wins. Every change is recorded in the governance audit log."
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:169
-#: Admin/Opt_In_Settings_Page.php:199
+#: Admin/Opt_In_Settings_Page.php:175
+#: Admin/Opt_In_Settings_Page.php:205
 msgid "on"
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:169
-#: Admin/Opt_In_Settings_Page.php:203
+#: Admin/Opt_In_Settings_Page.php:175
+#: Admin/Opt_In_Settings_Page.php:209
 msgid "off"
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:177
+#: Admin/Opt_In_Settings_Page.php:183
 msgid "Group"
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:197
+#: Admin/Opt_In_Settings_Page.php:203
 msgid "set in code"
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:201
+#: Admin/Opt_In_Settings_Page.php:207
 msgid "on for the network"
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:213
+#: Admin/Opt_In_Settings_Page.php:219
 msgid "Set in code: remove the filter to manage it here."
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:214
+#: Admin/Opt_In_Settings_Page.php:220
 msgid "Set in code"
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:218
+#: Admin/Opt_In_Settings_Page.php:224
+msgid "Decided for the whole network on the network screen."
+msgstr ""
+
+#: Admin/Opt_In_Settings_Page.php:225
+msgid "Network setting"
+msgstr ""
+
+#: Admin/Opt_In_Settings_Page.php:229
 msgid "Switch off"
 msgstr ""
 
-#: Admin/Opt_In_Settings_Page.php:222
+#: Admin/Opt_In_Settings_Page.php:233
 msgid "Switch on"
 msgstr ""
 
@@ -2956,344 +2968,348 @@ msgstr ""
 msgid "This looks like a staging site. Copy it from your licensed live site instead of activating a license here, so it does not use one of your sites."
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:211
+#: Governance/Opt_In_Settings.php:226
 msgid "WooCommerce: destructive operations (delete, cancel, refund)"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:212
+#: Governance/Opt_In_Settings.php:227
 msgid "MemberPress: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:213
+#: Governance/Opt_In_Settings.php:228
 msgid "GamiPress: points, achievement and rank writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:214
+#: Governance/Opt_In_Settings.php:229
 msgid "Thrive Optimize: traffic splits, stopping tests and picking winners"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:215
+#: Governance/Opt_In_Settings.php:230
 msgid "Form plugins: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:216
+#: Governance/Opt_In_Settings.php:231
 msgid "WS Form: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:217
+#: Governance/Opt_In_Settings.php:232
 msgid "Everest Forms: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:218
+#: Governance/Opt_In_Settings.php:233
 msgid "Elementor Pro forms: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:219
+#: Governance/Opt_In_Settings.php:234
 msgid "Themes: settings, layouts and child themes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:220
+#: Governance/Opt_In_Settings.php:235
 msgid "Rank Math: redirect writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:221
+#: Governance/Opt_In_Settings.php:236
 msgid "ACF: field and field group writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:222
+#: Governance/Opt_In_Settings.php:237
 msgid "Meta Box: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:223
+#: Governance/Opt_In_Settings.php:238
 msgid "JetEngine: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:224
+#: Governance/Opt_In_Settings.php:239
 msgid "Pods: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:225
+#: Governance/Opt_In_Settings.php:240
 msgid "Core site settings: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:226
+#: Governance/Opt_In_Settings.php:241
 msgid "Block patterns: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:227
+#: Governance/Opt_In_Settings.php:242
 msgid "Font Library: install and delete fonts"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:228
+#: Governance/Opt_In_Settings.php:243
 msgid "Cache plugin settings: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:229
+#: Governance/Opt_In_Settings.php:244
 msgid "Maintenance and coming soon mode"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:230
+#: Governance/Opt_In_Settings.php:245
 msgid "Redux Framework: options panel writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:231
+#: Governance/Opt_In_Settings.php:246
 msgid "WPS Hide Login: change the login URL"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:232
+#: Governance/Opt_In_Settings.php:247
 msgid "Cookie consent banners: banner text writes and a Complianz scan restart"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:233
+#: Governance/Opt_In_Settings.php:248
 msgid "Action Scheduler: run and cancel actions"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:234
+#: Governance/Opt_In_Settings.php:249
 msgid "CRM: send email"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:235
+#: Governance/Opt_In_Settings.php:250
 msgid "FunnelKit Automations: contact tags and lists, automation status"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:236
+#: Governance/Opt_In_Settings.php:251
 msgid "Helpdesk: ticket writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:237
+#: Governance/Opt_In_Settings.php:252
 msgid "Bookly, Simply Schedule Appointments, BookingPress and LatePoint: cancel bookings"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:238
+#: Governance/Opt_In_Settings.php:253
 msgid "LearnDash: learner enrolment and progress"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:239
+#: Governance/Opt_In_Settings.php:254
 msgid "Thrive Apprentice: course and lesson writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:240
+#: Governance/Opt_In_Settings.php:255
 msgid "SMTP plugins: send a test email"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:241
+#: Governance/Opt_In_Settings.php:256
 msgid "Backup plugins (UpdraftPlus, BackWPup): start a backup"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:242
+#: Governance/Opt_In_Settings.php:257
 msgid "Pretty Links: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:243
+#: Governance/Opt_In_Settings.php:258
 msgid "Instagram Feed: feed settings and cache clears"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:244
+#: Governance/Opt_In_Settings.php:259
 msgid "ThirstyAffiliates: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:245
+#: Governance/Opt_In_Settings.php:260
 msgid "Site Reviews: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:246
+#: Governance/Opt_In_Settings.php:261
 msgid "Thrive Ovation: testimonial writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:247
+#: Governance/Opt_In_Settings.php:262
 msgid "PublishPress Planner and Future: status changes and scheduled changes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:248
+#: Governance/Opt_In_Settings.php:263
 msgid "wpForo: close, open and move topics"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:249
+#: Governance/Opt_In_Settings.php:264
 msgid "Asgaros Forum: post, moderate, move and delete"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:250
+#: Governance/Opt_In_Settings.php:265
 msgid "Privacy requests: export and erase personal data"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:251
+#: Governance/Opt_In_Settings.php:266
 msgid "Kadence Blocks and Spectra: plugin settings writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:252
+#: Governance/Opt_In_Settings.php:267
 msgid "Otter Blocks: settings writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:253
+#: Governance/Opt_In_Settings.php:268
 msgid "Restrict Content: membership level changes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:254
+#: Governance/Opt_In_Settings.php:269
 msgid "Ultimate Member: member role changes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:255
+#: Governance/Opt_In_Settings.php:270
 msgid "Easy Digital Downloads: download and discount writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:256
+#: Governance/Opt_In_Settings.php:271
 msgid "GTranslate: language settings writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:257
+#: Governance/Opt_In_Settings.php:272
 msgid "Easy Table of Contents: settings and per-post flags"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:258
+#: Governance/Opt_In_Settings.php:273
 msgid "SureCart: product edits and coupon creates"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:259
+#: Governance/Opt_In_Settings.php:274
 msgid "Polylang: theme and plugin string translations"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:260
+#: Governance/Opt_In_Settings.php:275
 msgid "CartFlows: flow, step and checkout product writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:261
+#: Governance/Opt_In_Settings.php:276
 msgid "Advanced Ads: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:262
+#: Governance/Opt_In_Settings.php:277
 msgid "WP Go Maps and WP Store Locator: marker and store writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:263
+#: Governance/Opt_In_Settings.php:278
 msgid "Max Mega Menu: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:264
+#: Governance/Opt_In_Settings.php:279
 msgid "Discount Rules for WooCommerce: pricing rule writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:265
+#: Governance/Opt_In_Settings.php:280
 msgid "Popup Builder: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:266
+#: Governance/Opt_In_Settings.php:281
 msgid "WPFunnels: funnel and checkout product writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:267
+#: Governance/Opt_In_Settings.php:282
 msgid "Thrive Automator: turn automations on and off"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:268
+#: Governance/Opt_In_Settings.php:283
 msgid "Thrive Leads: form and display rule writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:269
+#: Governance/Opt_In_Settings.php:284
 msgid "WP Job Manager, GeoDirectory and Directorist: listing writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:270
+#: Governance/Opt_In_Settings.php:285
 msgid "Jetpack CRM: contact writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:271
+#: Governance/Opt_In_Settings.php:286
 msgid "Popup Maker: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:272
+#: Governance/Opt_In_Settings.php:287
 msgid "OptinMonster: switch campaigns on or off"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:273
+#: Governance/Opt_In_Settings.php:288
 msgid "Events Manager: event writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:274
+#: Governance/Opt_In_Settings.php:289
 msgid "The Events Calendar: event, venue and organizer writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:275
+#: Governance/Opt_In_Settings.php:290
 msgid "Modern Events Calendar: event, location and organizer writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:276
+#: Governance/Opt_In_Settings.php:291
 msgid "Image optimization plugins: optimize an image"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:277
+#: Governance/Opt_In_Settings.php:292
 msgid "wpDataTables and Ninja Tables: cell and row writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:278
+#: Governance/Opt_In_Settings.php:293
 msgid "FooGallery: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:279
+#: Governance/Opt_In_Settings.php:294
 msgid "FileBird: folder writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:280
+#: Governance/Opt_In_Settings.php:295
 msgid "JetFormBuilder: entry read state and delete"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:281
+#: Governance/Opt_In_Settings.php:296
 msgid "Kadence Blocks forms: email notification changes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:282
+#: Governance/Opt_In_Settings.php:297
 msgid "Jetpack Forms: response status, read state and delete"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:283
+#: Governance/Opt_In_Settings.php:298
 msgid "Newsletter: contact writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:284
+#: Governance/Opt_In_Settings.php:299
 msgid "WPCode: snippet and global script writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:285
+#: Governance/Opt_In_Settings.php:300
 msgid "Loco Translate: .po string edits and .mo compiles"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:286
+#: Governance/Opt_In_Settings.php:301
 msgid "GiveWP: donation form and donation status writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:287
+#: Governance/Opt_In_Settings.php:302
 msgid "Search plugins (Relevanssi, FiboSearch): settings writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:288
+#: Governance/Opt_In_Settings.php:303
 msgid "Klaviyo and Kit: signup and form settings writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:289
+#: Governance/Opt_In_Settings.php:304
 msgid "Tracking plugins (GTM4WP, Microsoft Clarity): ID and event settings writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:290
+#: Governance/Opt_In_Settings.php:305
 msgid "Search and replace (Better Search Replace, Search Regex): run a database search and replace"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:291
+#: Governance/Opt_In_Settings.php:306
 msgid "Thrive Ultimatum: campaign writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:292
+#: Governance/Opt_In_Settings.php:307
 msgid "Custom Post Type UI and MB Custom Post Types: post type and taxonomy writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:293
+#: Governance/Opt_In_Settings.php:308
 msgid "Security hardening settings: writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:294
+#: Governance/Opt_In_Settings.php:309
 msgid "Checkout Field Editor: checkout field writes"
 msgstr ""
 
-#: Governance/Opt_In_Settings.php:295
+#: Governance/Opt_In_Settings.php:310
 msgid "Paid Memberships Pro: level, member and discount code writes"
+msgstr ""
+
+#: Governance/Opt_In_Settings.php:311
+msgid "Undo of a user change: also restore their login sessions and application passwords, bringing back ones revoked after the change"
 msgstr ""
 
 #: Identity/Ip_Allowlist.php:240
