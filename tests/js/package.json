@@ -1,0 +1,13 @@
+{
+  "name": "wpmcp-js-tests",
+  "private": true,
+  "description": "Tests for the plugin's admin scripts, run in jsdom by node's own test runner. Install once per checkout with npm ci --prefix tests/js.",
+  "license": "GPL-2.0-or-later",
+  "type": "module",
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "devDependencies": {
+    "jsdom": "30.1.3"
+  }
+}

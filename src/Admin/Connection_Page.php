@@ -1030,7 +1030,7 @@ class Connection_Page
         <details class="wpmcp-advanced"<?php echo null === $fresh ? '' : ' open'; ?>>
             <summary><span class="dashicons dashicons-arrow-right-alt2" aria-hidden="true"></span><?php echo esc_html__('Advanced: endpoint, server self-test, OAuth discovery and proxies', 'wpmcp'); ?></summary>
             <h3><?php echo esc_html__('MCP endpoint', 'wpmcp'); ?></h3>
-            <?php (new Snippet_View())->copy_row('wpmcp-endpoint', $endpoint, __('Copy the endpoint address', 'wpmcp')); ?>
+            <?php (new Snippet_View())->copy_row('wpmcp-endpoint', $endpoint, __('Copy the endpoint address', 'wpmcp'), __('Copied the endpoint address.', 'wpmcp')); ?>
 
             <h3><?php echo esc_html__('Server self-test', 'wpmcp'); ?></h3>
             <p class="wpmcp-help"><?php echo esc_html__('Posts an MCP initialize request from this site to its own endpoint, without a password, and checks the answer.', 'wpmcp'); ?></p>

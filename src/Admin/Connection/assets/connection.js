@@ -190,24 +190,33 @@
 		}
 	}
 
+	/*
+	 * The text comes from the button (data-wpmcp-copy-text, drawn by the
+	 * server with the block), never from what the block shows: while the
+	 * password is hidden, the block also holds the screen-reader label
+	 * "password hidden" (#1260). The label the button had before the first
+	 * copy is kept, so a second click within the "Copied" time puts it back.
+	 */
 	function copyText(button) {
-		var target = document.getElementById(button.dataset.copyTarget);
-		if (!target) {
+		var text = button.getAttribute('data-wpmcp-copy-text');
+		if (null === text) {
 			return;
 		}
-		var text = target.textContent;
+		var copied = button.getAttribute('data-wpmcp-copied') || i18n.copiedLong;
 		var label = button.querySelector('.wpmcp-copy__label');
-		var original = label ? label.textContent : '';
+		if (label && !button.hasAttribute('data-wpmcp-label')) {
+			button.setAttribute('data-wpmcp-label', label.textContent);
+		}
 		function done() {
 			button.classList.add('is-copied');
 			if (label) {
 				label.textContent = i18n.copied;
 			}
-			announce(i18n.copiedLong);
+			announce(copied);
 			window.setTimeout(function () {
 				button.classList.remove('is-copied');
 				if (label) {
-					label.textContent = original;
+					label.textContent = button.getAttribute('data-wpmcp-label');
 				}
 			}, 1800);
 		}
@@ -238,6 +247,31 @@
 			fallback();
 		}
 	}
+
+	/*
+	 * Copying by hand (a selection and Ctrl+C or Cmd+C) inside one code
+	 * block leaves out the "password hidden" label, so it copies what the
+	 * block holds, as Copy does. Any other selection is the browser's.
+	 */
+	document.addEventListener('copy', function (event) {
+		var selection = window.getSelection();
+		if (!event.clipboardData || !selection || 1 !== selection.rangeCount || selection.isCollapsed) {
+			return;
+		}
+		var range = selection.getRangeAt(0);
+		var node = range.commonAncestorContainer;
+		var within = 1 === node.nodeType ? node : node.parentElement;
+		var pre = within ? within.closest('[data-wpmcp-code] pre') : null;
+		if (!pre || !root.contains(pre) || !pre.querySelector('.wpmcp-secret-label')) {
+			return;
+		}
+		var part = range.cloneContents();
+		Array.prototype.forEach.call(part.querySelectorAll('.wpmcp-secret-label'), function (label) {
+			label.parentNode.removeChild(label);
+		});
+		event.clipboardData.setData('text/plain', part.textContent);
+		event.preventDefault();
+	});
 
 	root.addEventListener('click', function (event) {
 		var copy = event.target.closest('.wpmcp-copy');

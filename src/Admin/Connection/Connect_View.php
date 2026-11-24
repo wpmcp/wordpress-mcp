@@ -182,6 +182,7 @@ final class Connect_View
             Client_App::Other => __('It is already inside the header and the JSON in step 3.', 'wpmcp'),
             default => __('It is already inside the JSON in step 3.', 'wpmcp'),
         };
+        $shown = trim(chunk_split($made->password, 4, ' '));
         ?>
         <div class="wpmcp-key" id="wpmcp-key">
             <div class="wpmcp-key__top">
@@ -199,8 +200,8 @@ final class Connect_View
             </div>
             <div class="wpmcp-key__label" id="wpmcp-password-label"><?php echo esc_html__('Application password', 'wpmcp'); ?> <span class="wpmcp-once"><span class="dashicons dashicons-lock" aria-hidden="true"></span><?php echo esc_html__('Shown once', 'wpmcp'); ?></span></div>
             <div class="wpmcp-key__row">
-                <output class="wpmcp-key__value" id="wpmcp-password" aria-labelledby="wpmcp-password-label"><?php echo esc_html(trim(chunk_split($made->password, 4, ' '))); ?></output>
-                <button type="button" class="button wpmcp-copy" data-copy-target="wpmcp-password" hidden><span class="dashicons dashicons-clipboard" aria-hidden="true"></span><span class="wpmcp-copy__label"><?php echo esc_html__('Copy password', 'wpmcp'); ?></span></button>
+                <output class="wpmcp-key__value" id="wpmcp-password" aria-labelledby="wpmcp-password-label"><?php echo esc_html($shown); ?></output>
+                <button type="button" class="button wpmcp-copy" data-copy-target="wpmcp-password" data-wpmcp-copy-text="<?php echo esc_attr($shown); ?>" data-wpmcp-copied="<?php echo esc_attr__('Copied the application password.', 'wpmcp'); ?>" hidden><span class="dashicons dashicons-clipboard" aria-hidden="true"></span><span class="wpmcp-copy__label"><?php echo esc_html__('Copy password', 'wpmcp'); ?></span></button>
             </div>
             <p class="wpmcp-key__note">
                 <?php
