@@ -86,19 +86,20 @@ class WooSettingsRollbackCapabilityTest extends \WP_UnitTestCase
         $this->assertSame('manage_woocommerce', $row['snapshot']['data']['restore_capability'] ?? null);
     }
 
-    public function test_an_authors_default_session_rollback_skips_a_shop_managers_store_setting(): void
+    public function test_an_authors_default_session_rollback_is_refused_over_a_shop_managers_store_setting(): void
     {
         $this->change_recipient(self::factory()->user->create(['role' => 'shop_manager']));
 
         wp_set_current_user($this->author());
-        $out = (new Rollback_Session())->handle(['session_id' => 'default']);
+        try {
+            (new Rollback_Session())->handle(['session_id' => 'default']);
+            $this->fail('An Author rolled back the default session over a shop manager\'s store setting');
+        } catch (\WPMCP\Safety\Post_Write_Refused $e) {
+            // All or nothing.
+            $this->assertSame('rollback_not_owner', $e->error()->get_error_code());
+        }
 
         $this->assertSame('owner@example.com', $this->recipient(), 'An Author rolled back a shop manager\'s store setting');
-        $this->assertSame(0, $out['restored_count']);
-        $this->assertNotEmpty(
-            array_filter($out['warnings'], static fn (string $w): bool => false !== strpos($w, self::OPTION) && false !== strpos($w, 'skipped') && false !== strpos($w, 'manage_woocommerce')),
-            'The skipped store setting is not reported: ' . wp_json_encode($out['warnings'])
-        );
     }
 
     public function test_an_authors_operation_rollback_of_a_store_setting_is_refused_with_a_reason(): void
@@ -106,12 +107,14 @@ class WooSettingsRollbackCapabilityTest extends \WP_UnitTestCase
         $out = $this->change_recipient(self::factory()->user->create(['role' => 'shop_manager']));
 
         wp_set_current_user($this->author());
+        // Recorded as the author's own, so the capability (not operation
+        // ownership) is what refuses.
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => $out['operation_id']]);
         $rolled = (new Rollback_Operation())->handle(['operation_id' => $out['operation_id']]);
 
-        $this->assertFalse($rolled['restored']);
+        $this->assertWPError($rolled);
         $this->assertSame('owner@example.com', $this->recipient());
-        $this->assertCount(1, $rolled['warnings']);
-        $this->assertStringContainsString('manage_woocommerce', $rolled['warnings'][0]);
+        $this->assertStringContainsString('manage_woocommerce', $rolled->get_error_message());
     }
 
     public function test_a_shop_manager_can_roll_back_their_own_store_setting(): void

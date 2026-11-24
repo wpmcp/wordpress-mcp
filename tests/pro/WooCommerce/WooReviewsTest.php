@@ -396,6 +396,16 @@ class WooReviewsTest extends \WP_UnitTestCase
      * what the review ops take: moderate_comments plus edit_product for the
      * review's product. The refusal never echoes the stored email or IP.
      */
+    /**
+     * Record the current user as the one who made $operation_id: below
+     * manage_options only one's own operations are undone, so the
+     * capability is what the next undo is judged on.
+     */
+    private function made_by_current_user(string $operation_id): void
+    {
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => $operation_id]);
+    }
+
     public function test_review_rollback_needs_moderate_comments_and_edit_product(): void
     {
         $review = $this->review($this->product, 4);
@@ -407,30 +417,33 @@ class WooReviewsTest extends \WP_UnitTestCase
 
         // An author has edit_posts but neither moderate_comments nor edit_product.
         wp_set_current_user(self::factory()->user->create(['role' => 'author']));
+        $this->made_by_current_user($out['operation_id']);
         $rolled = (new Rollback_Operation())->handle(['operation_id' => $out['operation_id']]);
-        $this->assertFalse($rolled['restored'], wp_json_encode($rolled));
-        $this->assertStringContainsString('moderate_comments', wp_json_encode($rolled['warnings']));
-        $this->assertStringNotContainsString('rita@example.com', (string) wp_json_encode($rolled));
-        $this->assertStringNotContainsString('203.0.113.9', (string) wp_json_encode($rolled));
+        $this->assertWPError($rolled);
+        $this->assertStringContainsString('moderate_comments', $rolled->get_error_message());
+        $this->assertStringNotContainsString('rita@example.com', (string) wp_json_encode([$rolled->get_error_message(), $rolled->get_error_data()]));
+        $this->assertStringNotContainsString('203.0.113.9', (string) wp_json_encode([$rolled->get_error_message(), $rolled->get_error_data()]));
         $this->assertSame($after, $this->state($review));
 
-        // An editor moderates comments but cannot edit products.
+        // An editor moderates comments but cannot edit products. The
+        // session is not the editor's own, so it is refused outright (issue
+        // #450), and nothing is restored.
         wp_set_current_user(self::factory()->user->create(['role' => 'editor']));
-        $rolled = (new Rollback_Operation())->handle(['operation_id' => $out['operation_id']]);
-        $this->assertFalse($rolled['restored'], wp_json_encode($rolled));
-        $this->assertStringContainsString('edit_product', wp_json_encode($rolled['warnings']));
-        // The session is not the editor's own, so it is refused outright
-        // (issue #450), and nothing is restored.
         try {
             (new Rollback_Session())->handle(['session_id' => 'review-348']);
             $this->fail('Another user\'s session was rolled back');
         } catch (Mutation_Failed $e) {
             $this->assertStringContainsString('another user', $e->getMessage());
         }
+        $this->made_by_current_user($out['operation_id']);
+        $rolled = (new Rollback_Operation())->handle(['operation_id' => $out['operation_id']]);
+        $this->assertWPError($rolled);
+        $this->assertStringContainsString('edit_product', $rolled->get_error_message());
         $this->assertSame($after, $this->state($review));
 
         // A shop manager has both, and the undo still restores exactly.
         wp_set_current_user(self::factory()->user->create(['role' => 'shop_manager']));
+        $this->made_by_current_user($out['operation_id']);
         $rolled = (new Rollback_Operation())->handle(['operation_id' => $out['operation_id']]);
         $this->assertTrue($rolled['restored'], wp_json_encode($rolled));
         $this->assertSame($before, $this->state($review));

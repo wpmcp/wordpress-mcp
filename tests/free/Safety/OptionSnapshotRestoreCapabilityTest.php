@@ -3,6 +3,9 @@
 namespace WPMCP\Tests\Free\Safety;
 
 use WPMCP\Integrations\Theme_Integration;
+use WPMCP\Safety\Post_Write_Refused;
+use WPMCP\Safety\Rollback_Service;
+use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Snapshot_Store;
 use WPMCP\Tools\Menus\Assign_Menu_To_Location;
 use WPMCP\Tools\Rollback_Operation;
@@ -72,24 +75,40 @@ class OptionSnapshotRestoreCapabilityTest extends \WP_UnitTestCase
         $operation_id = $this->change_tagline();
         $this->assertArrayNotHasKey('restore_capability', Snapshot_Store::get_by_operation($operation_id)['snapshot']['data']);
 
-        wp_set_current_user($this->theme_editor());
-        $rolled = (new Rollback_Operation())->handle([ 'operation_id' => $operation_id ]);
-
-        $this->assertFalse($rolled['restored']);
+        // The administrator's operation: refused to the theme editor,
+        // first of all as another user's.
+        $editor = $this->theme_editor();
+        wp_set_current_user($editor);
+        $this->assertWPError((new Rollback_Operation())->handle([ 'operation_id' => $operation_id ]));
         $this->assertSame('After', get_option('blogdescription'));
-        $this->assertStringContainsString('manage_options', $rolled['warnings'][0] ?? '');
+
+        // An undeclared option snapshot the theme editor made themselves
+        // still takes manage_options to restore.
+        $own = Safe_Mutation::run(
+            [ 'object_type' => 'option', 'object_id' => 'blogdescription', 'session_id' => 'default', 'tool_name' => 'update-option', 'args' => [] ],
+            static fn () => update_option('blogdescription', 'Theirs')
+        );
+        $rolled = (new Rollback_Operation())->handle([ 'operation_id' => $own['operation_id'] ]);
+
+        $this->assertWPError($rolled);
+        $this->assertSame(Rollback_Service::REFUSED_CAPABILITY, $rolled->get_error_code());
+        $this->assertStringContainsString('manage_options', $rolled->get_error_message());
+        $this->assertSame('Theirs', get_option('blogdescription'));
     }
 
-    public function test_an_undeclared_option_snapshot_is_skipped_in_a_session_rollback_below_manage_options(): void
+    public function test_an_undeclared_option_snapshot_refuses_a_session_rollback_below_manage_options(): void
     {
         $this->change_tagline();
 
         wp_set_current_user(self::factory()->user->create([ 'role' => 'author' ]));
-        $out = (new Rollback_Session())->handle([ 'session_id' => 'default' ]);
+        try {
+            (new Rollback_Session())->handle([ 'session_id' => 'default' ]);
+            $this->fail('An author rolled back an administrator\'s setting through the default session.');
+        } catch (Post_Write_Refused $e) {
+            $this->assertSame(403, $e->error()->get_error_data()['status'] ?? null);
+        }
 
         $this->assertSame('After', get_option('blogdescription'));
-        $this->assertSame(0, $out['restored_count']);
-        $this->assertNotEmpty(array_filter($out['warnings'], static fn (string $w): bool => false !== strpos($w, 'blogdescription') && false !== strpos($w, 'manage_options')));
     }
 
     public function test_an_administrator_can_still_restore_an_undeclared_option_snapshot(): void
@@ -113,7 +132,7 @@ class OptionSnapshotRestoreCapabilityTest extends \WP_UnitTestCase
         $this->assertSame('edit_theme_options', Snapshot_Store::get_by_operation($out['operation_id'])['snapshot']['data']['restore_capability'] ?? null);
 
         wp_set_current_user(self::factory()->user->create([ 'role' => 'author' ]));
-        $this->assertFalse((new Rollback_Operation())->handle([ 'operation_id' => $out['operation_id'] ])['restored']);
+        $this->assertWPError((new Rollback_Operation())->handle([ 'operation_id' => $out['operation_id'] ]));
         $this->assertSame($menu_id, (int) (get_theme_mod('nav_menu_locations')['wpmcp-cap-loc'] ?? 0));
 
         wp_set_current_user($editor);
@@ -162,9 +181,12 @@ class OptionSnapshotRestoreCapabilityTest extends \WP_UnitTestCase
         $this->assertCount(1, $placed);
 
         wp_set_current_user(self::factory()->user->create([ 'role' => 'author' ]));
-        $out = (new Rollback_Session())->handle([ 'session_id' => 'default' ]);
-
-        $this->assertSame(0, $out['restored_count']);
+        try {
+            (new Rollback_Session())->handle([ 'session_id' => 'default' ]);
+            $this->fail('An author rolled back a theme editor\'s widget write through the default session.');
+        } catch (Post_Write_Refused $e) {
+            $this->assertSame(403, $e->error()->get_error_data()['status'] ?? null);
+        }
         $this->assertSame($placed, array_values((array) get_option('sidebars_widgets')[ self::SIDEBAR ]));
     }
     public function test_an_integration_option_write_declares_the_capability_its_op_took(): void
@@ -186,7 +208,7 @@ class OptionSnapshotRestoreCapabilityTest extends \WP_UnitTestCase
         $this->assertSame('edit_theme_options', Snapshot_Store::get_by_operation($out['operation_id'])['snapshot']['data']['restore_capability'] ?? null);
 
         wp_set_current_user(self::factory()->user->create([ 'role' => 'author' ]));
-        $this->assertFalse((new Rollback_Operation())->handle([ 'operation_id' => $out['operation_id'] ])['restored']);
+        $this->assertWPError((new Rollback_Operation())->handle([ 'operation_id' => $out['operation_id'] ]));
         $this->assertSame('336699', get_theme_mod('header_textcolor'));
 
         wp_set_current_user($editor);

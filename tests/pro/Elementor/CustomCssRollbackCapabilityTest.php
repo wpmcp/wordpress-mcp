@@ -59,6 +59,9 @@ class CustomCssRollbackCapabilityTest extends \WP_UnitTestCase
 
         wp_set_current_user(self::factory()->user->create(['role' => 'author']));
         $this->assertFalse(current_user_can('edit_css'));
+        // Recorded as the author's own, so edit_css (not operation
+        // ownership) is what refuses.
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => $operation_id]);
 
         $this->assertFalse(Rollback_Service::restore_operation($operation_id));
         $warnings = implode(' ', Rollback_Service::take_warnings());

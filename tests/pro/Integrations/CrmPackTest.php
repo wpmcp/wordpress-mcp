@@ -1285,6 +1285,9 @@ class CrmPackTest extends \WP_UnitTestCase
         $out = $this->write('mailpoet-update-contact', [ 'id' => $id, 'first_name' => 'Changed' ]);
         $this->ok($out);
         $this->editor();
+        // Recorded as the editor's own, so the plugin's permission (not
+        // operation ownership) is what refuses.
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => (string) $out['operation_id']]);
         $this->assertFalse(Rollback_Service::restore_operation((string) $out['operation_id']));
         $this->assertSame('Changed', $this->rows('mailpoet_subscribers')[0]['first_name']);
 
@@ -1292,6 +1295,7 @@ class CrmPackTest extends \WP_UnitTestCase
         wp_set_current_user($this->admin);
         $out = $this->write('fluentcrm-update-contact', [ 'id' => $fc, 'first_name' => 'Changed' ]);
         $this->editor();
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => (string) $out['operation_id']]);
         $this->expectException(\WPMCP\Safety\Mutation_Failed::class);
         Rollback_Service::restore_operation((string) $out['operation_id']);
     }

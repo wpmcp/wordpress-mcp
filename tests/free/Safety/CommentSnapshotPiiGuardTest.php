@@ -63,9 +63,9 @@ class CommentSnapshotPiiGuardTest extends \WP_UnitTestCase
     }
 
     /** Edit the comment through the real tool, so a real comment snapshot row exists. */
-    private function edit_comment(string $session = 'pii-348'): string
+    private function edit_comment(string $session = 'pii-348', string $role = 'administrator'): string
     {
-        $this->as_role('administrator');
+        $this->as_role($role);
         $out = (new Edit_Comment())->handle([
             'id'         => $this->comment_id,
             'content'    => 'edited text',
@@ -75,9 +75,9 @@ class CommentSnapshotPiiGuardTest extends \WP_UnitTestCase
         return $out['operation_id'];
     }
 
-    private function delete_comment(string $session = 'pii-348'): string
+    private function delete_comment(string $session = 'pii-348', string $role = 'administrator'): string
     {
-        $this->as_role('administrator');
+        $this->as_role($role);
         $id  = $this->comment_id;
         $out = Safe_Mutation::run(
             [
@@ -112,10 +112,30 @@ class CommentSnapshotPiiGuardTest extends \WP_UnitTestCase
 
         $out = (new Rollback_Operation())->handle([ 'operation_id' => $operation_id ]);
 
-        $this->assertFalse($out['restored'], 'A comment snapshot must not be restorable at edit_posts');
+        // The administrator's operation, refused first as another user's.
+        $this->assertWPError($out, 'A comment snapshot must not be restorable at edit_posts');
         $this->assertSame('edited text', get_comment($this->comment_id)->comment_content);
-        $this->assertStringContainsString('moderate_comments', (string) wp_json_encode($out['warnings']));
-        $this->assert_no_personal_data($out, 'rollback-operation');
+        $this->assert_no_personal_data([ $out->get_error_message(), $out->get_error_data() ], 'rollback-operation');
+
+        // A comment snapshot the author's own write took still needs
+        // moderate_comments.
+        $own = $this->author_comment_snapshot('pii-348-own');
+        $out = (new Rollback_Operation())->handle([ 'operation_id' => $own ]);
+        $this->assertWPError($out);
+        $this->assertSame(Rollback_Service::REFUSED_CAPABILITY, $out->get_error_code());
+        $this->assertStringContainsString('moderate_comments', $out->get_error_message());
+        $this->assert_no_personal_data([ $out->get_error_message(), $out->get_error_data() ], 'rollback-operation');
+    }
+
+    /** A comment snapshot taken by a write of the current user's (an author), as a comment-touching op would. */
+    private function author_comment_snapshot(string $session): string
+    {
+        $id  = $this->comment_id;
+        $out = Safe_Mutation::run(
+            [ 'object_type' => 'comment', 'object_id' => $id, 'session_id' => $session, 'tool_name' => 'edit-comment', 'args' => [] ],
+            static fn () => wp_update_comment([ 'comment_ID' => $id, 'comment_content' => 'author text' ])
+        );
+        return $out['operation_id'];
     }
 
     public function test_an_author_cannot_resurrect_a_deleted_comment(): void
@@ -126,12 +146,12 @@ class CommentSnapshotPiiGuardTest extends \WP_UnitTestCase
         $this->as_role('author');
         $out = (new Rollback_Operation())->handle([ 'operation_id' => $operation_id ]);
 
-        $this->assertFalse($out['restored']);
+        $this->assertWPError($out);
         $this->assertSame($count, (int) get_comments([ 'count' => true, 'status' => 'all' ]), 'No comment is resurrected');
-        $this->assert_no_personal_data($out, 'rollback-operation');
+        $this->assert_no_personal_data([ $out->get_error_message(), $out->get_error_data() ], 'rollback-operation');
     }
 
-    public function test_a_session_rollback_by_an_author_skips_the_comment_but_unwinds_the_rest(): void
+    public function test_a_session_rollback_by_an_author_is_refused_whole_for_a_comment_it_may_not_restore(): void
     {
         // The post is the author's own: undoing an edit of it takes
         // edit_post for it (issue #448).
@@ -139,8 +159,8 @@ class CommentSnapshotPiiGuardTest extends \WP_UnitTestCase
         wp_update_post([ 'ID' => $this->post_id, 'post_author' => $author ]);
         $post = $this->post_id;
         // The author starts the session (a session belongs to whoever
-        // started it, issue #450), and an administrator's comment edit then
-        // lands in it.
+        // started it, issue #450), and a comment write of theirs then lands
+        // in it.
         wp_set_current_user($author);
         Safe_Mutation::run(
             [
@@ -152,25 +172,32 @@ class CommentSnapshotPiiGuardTest extends \WP_UnitTestCase
             ],
             static fn () => wp_update_post([ 'ID' => $post, 'post_content' => 'after' ])
         );
-        $this->edit_comment('pii-348-session');
+        $this->author_comment_snapshot('pii-348-session');
 
         wp_set_current_user($author);
-        $out = (new Rollback_Session())->handle([ 'session_id' => 'pii-348-session' ]);
+        try {
+            (new Rollback_Session())->handle([ 'session_id' => 'pii-348-session' ]);
+            $this->fail('The session was rolled back past a comment the author may not restore.');
+        } catch (\WPMCP\Safety\Post_Write_Refused $e) {
+            $error = $e->error();
+        }
 
-        $this->assertSame('before', get_post($post)->post_content, 'The ordinary post still unwinds');
-        $this->assertSame('edited text', get_comment($this->comment_id)->comment_content, 'The comment is not restored');
-        $this->assertSame(1, $out['restored_count']);
-        $this->assertStringContainsString('moderate_comments', (string) wp_json_encode($out['warnings']));
-        $this->assert_no_personal_data($out, 'rollback-session');
+        // All or nothing: the post is not
+        // unwound either.
+        $this->assertSame('after', get_post($post)->post_content);
+        $this->assertSame('author text', get_comment($this->comment_id)->comment_content, 'The comment is not restored');
+        $this->assertSame(Rollback_Service::REFUSED_CAPABILITY, $error->get_error_code());
+        $this->assertStringContainsString('moderate_comments', $error->get_error_message());
+        $this->assert_no_personal_data([ $error->get_error_message(), $error->get_error_data() ], 'rollback-session');
     }
 
     public function test_a_moderator_can_still_roll_a_comment_edit_back(): void
     {
-        $operation_id = $this->edit_comment();
+        $operation_id = $this->edit_comment('pii-348', 'editor');
 
         // An editor holds moderate_comments: the people the comment tools
-        // already admit keep the undo that snapshotting promises them.
-        $this->as_role('editor');
+        // already admit keep the undo that snapshotting promises them,
+        // for their own writes.
         $out = (new Rollback_Operation())->handle([ 'operation_id' => $operation_id ]);
 
         $this->assertTrue($out['restored'], (string) wp_json_encode($out));
@@ -182,9 +209,8 @@ class CommentSnapshotPiiGuardTest extends \WP_UnitTestCase
 
     public function test_a_moderator_can_still_resurrect_a_deleted_comment(): void
     {
-        $operation_id = $this->delete_comment();
+        $operation_id = $this->delete_comment('pii-348', 'editor');
 
-        $this->as_role('editor');
         $this->assertTrue(Rollback_Service::restore_operation($operation_id));
 
         $found = get_comments([ 'post_id' => $this->post_id, 'status' => 'all' ]);

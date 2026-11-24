@@ -19,8 +19,10 @@ use WPMCP\Tools\Rollback_Session;
  * restored. The per-post checks still apply on top, row by row.
  *
  * The shared catch-all 'default' session is a stream of unrelated single
- * writes by everyone, not one run, so it is not refused as a whole: each of
- * its rows is judged by the per-post checks, as before.
+ * writes by everyone, not one run. Every operation a session undoes is
+ * authorized for the caller (capabilities and operation ownership): below site
+ * administrator a session holding another user's operation, 'default'
+ * included, is refused whole and nothing is restored.
  *
  * The victim post in each case is the caller's own draft, so the per-post
  * checks would let the caller restore it and only ownership refuses.
@@ -167,7 +169,18 @@ class SessionOwnershipTest extends \WP_UnitTestCase
             $this->assertStringContainsString('another user', $e->getMessage());
         }
 
+        // The session is the editor's, but one operation in it is the
+        // administrator's, which the editor may not undo.
         wp_set_current_user($this->users['editor']);
+        try {
+            Rollback_Service::restore_session($session);
+            $this->fail('An editor undid an administrator\'s operation through their own session');
+        } catch (Mutation_Failed $e) {
+            $this->assertStringContainsString('another user', $e->getMessage());
+        }
+        $this->assertSame('editor change', get_post_field('post_title', $editors));
+
+        wp_set_current_user($this->users['administrator']);
         $this->assertSame(2, Rollback_Service::restore_session($session));
         $this->assertSame('original', get_post_field('post_title', $editors));
         $this->assertSame('original', get_post_field('post_title', $mine));
@@ -192,14 +205,26 @@ class SessionOwnershipTest extends \WP_UnitTestCase
         $this->assertSame('written by cron', get_post_field('post_title', $post));
 
         wp_set_current_user($this->users['administrator']);
+        if (is_multisite()) {
+            // On a network an operation made with no user is undone only by
+            // a network administrator, since a site admin holds
+            // manage_options too.
+            try {
+                Rollback_Service::restore_session($session);
+                $this->fail('A site admin rolled back a session written with no user.');
+            } catch (Mutation_Failed $e) {
+                $this->assertStringContainsString('Nothing was restored', $e->getMessage());
+            }
+            grant_super_admin($this->users['administrator']);
+        }
         $this->assertSame(1, Rollback_Service::restore_session($session));
         $this->assertSame('original', get_post_field('post_title', $post));
     }
 
     /**
-     * @dataProvider all_roles
+     * @dataProvider non_admin_roles
      */
-    public function test_the_default_session_keeps_working_row_by_row(string $role): void
+    public function test_the_default_session_is_refused_whole_below_administrator_while_it_holds_another_users_rows(string $role): void
     {
         $mine   = $this->draft_of($role);
         $theirs = self::factory()->post->create(['post_author' => $this->creator, 'post_status' => 'draft', 'post_title' => 'original']);
@@ -207,14 +232,29 @@ class SessionOwnershipTest extends \WP_UnitTestCase
         $this->edit($this->creator, $theirs, 'default', 'creator changed theirs');
 
         wp_set_current_user($this->users[ $role ]);
-        $restored = Rollback_Service::restore_session('default');
+        try {
+            Rollback_Service::restore_session('default');
+            $this->fail('The default session was rolled back past another user\'s rows for ' . $role);
+        } catch (Mutation_Failed $e) {
+            $this->assertStringContainsString('Nothing was restored', $e->getMessage());
+        }
 
-        // The caller's own post comes back whoever wrote the change; another
-        // user's draft only for a caller who may edit it.
+        // Not even the caller's own post: the creator made both changes.
+        $this->assertSame('creator changed mine', get_post_field('post_title', $mine));
+        $this->assertSame('creator changed theirs', get_post_field('post_title', $theirs));
+    }
+
+    public function test_an_administrator_rolls_back_the_whole_default_session(): void
+    {
+        $mine   = $this->draft_of('author');
+        $theirs = self::factory()->post->create(['post_author' => $this->creator, 'post_status' => 'draft', 'post_title' => 'original']);
+        $this->edit($this->creator, $mine, 'default', 'creator changed mine');
+        $this->edit($this->users['author'], $theirs, 'default', 'author changed theirs');
+
+        wp_set_current_user($this->users['administrator']);
+        $this->assertSame(2, Rollback_Service::restore_session('default'));
         $this->assertSame('original', get_post_field('post_title', $mine));
-        $may_edit = current_user_can('edit_post', $theirs);
-        $this->assertSame($may_edit ? 'original' : 'creator changed theirs', get_post_field('post_title', $theirs));
-        $this->assertSame($may_edit ? 2 : 1, $restored);
+        $this->assertSame('original', get_post_field('post_title', $theirs));
     }
 
     public function test_an_unknown_session_is_still_reported_as_unknown(): void

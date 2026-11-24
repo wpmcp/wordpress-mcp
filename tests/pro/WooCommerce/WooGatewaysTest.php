@@ -382,6 +382,16 @@ class WooGatewaysTest extends \WP_UnitTestCase
         $this->assertSame($ledger, $this->snapshot_count(), 'A refusal writes no snapshot');
     }
 
+    /**
+     * Record the current user as the one who made $operation_id: below
+     * manage_options only one's own operations are undone, so the
+     * capability is what the next undo is judged on.
+     */
+    private function made_by_current_user(string $operation_id): void
+    {
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => $operation_id]);
+    }
+
     public function test_gateway_ops_and_their_rollback_need_manage_woocommerce(): void
     {
         $before = $this->state();
@@ -395,7 +405,8 @@ class WooGatewaysTest extends \WP_UnitTestCase
         $this->assertSame('operation_denied', $out['error']['code'] ?? null);
         $this->assertSame($before, $this->state());
 
-        wp_set_current_user(self::factory()->user->create(['role' => 'shop_manager']));
+        $manager = self::factory()->user->create(['role' => 'shop_manager']);
+        wp_set_current_user($manager);
         $out = $this->write('gateways.update', ['id' => self::FAKE_ID, 'title' => 'Shop managed']);
         $this->assertSame(200, $out['status'], wp_json_encode($out));
         $after = $this->state();
@@ -403,11 +414,14 @@ class WooGatewaysTest extends \WP_UnitTestCase
         // The snapshot holds the gateway's secrets, so an editor, who may
         // run rollback-operation, may not restore it.
         wp_set_current_user(self::factory()->user->create(['role' => 'editor']));
+        $this->made_by_current_user($out['operation_id']);
         $rolled = (new Rollback_Operation())->handle(['operation_id' => $out['operation_id']]);
-        $this->assertFalse($rolled['restored'] ?? false, wp_json_encode($rolled));
+        $this->assertWPError($rolled);
+        $this->assertStringContainsString('manage_woocommerce', $rolled->get_error_message());
         $this->assertSame($after, $this->state());
 
-        wp_set_current_user(self::factory()->user->create(['role' => 'shop_manager']));
+        wp_set_current_user($manager);
+        $this->made_by_current_user($out['operation_id']);
         $rolled = (new Rollback_Operation())->handle(['operation_id' => $out['operation_id']]);
         $this->assertTrue($rolled['restored'], wp_json_encode($rolled));
         $this->assertSame($before, $this->state());

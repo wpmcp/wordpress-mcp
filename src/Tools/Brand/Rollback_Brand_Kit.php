@@ -45,6 +45,13 @@ class Rollback_Brand_Kit
         $target = (string) $record['operation_id'];
 
         if (! Rollback_Service::restore_operation($target)) {
+            // The caller may not undo that apply (operation ownership or
+            // capability): returned as the rollback tools return it.
+            $refusal = Rollback_Service::take_refusal();
+            if (null !== $refusal) {
+                Rollback_Service::take_warnings();
+                return $refusal;
+            }
             return new \WP_Error(
                 'snapshot_unavailable',
                 sprintf(
