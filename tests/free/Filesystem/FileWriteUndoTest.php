@@ -238,10 +238,13 @@ class FileWriteUndoTest extends \WP_UnitTestCase
         $out = $this->call('write-file', ['path' => $this->path('notes.txt'), 'content' => 'changed']);
 
         wp_set_current_user(self::factory()->user->create(['role' => 'editor']));
-        $rolled = $this->call('rollback-operation', ['operation_id' => $out['operation_id']]);
-        $this->assertFalse($rolled['restored'], wp_json_encode($rolled));
+        // Recorded as the caller's own operation, so the capability (not
+        // operation ownership) is what refuses.
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => $out['operation_id']]);
+        $rolled = wp_get_ability('wpmcp/rollback-operation')->execute(['operation_id' => $out['operation_id']]);
+        $this->assertWPError($rolled);
         $this->assertSame('changed', $this->bytes('notes.txt'));
-        $this->assertStringContainsString('edit_files', implode(' ', $rolled['warnings']));
+        $this->assertStringContainsString('edit_files', $rolled->get_error_message());
     }
 
     public function test_restoring_a_php_file_runs_the_site_check(): void

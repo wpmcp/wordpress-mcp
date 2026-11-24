@@ -164,9 +164,11 @@ class RestoreControllerAjaxTest extends \WP_Ajax_UnitTestCase
 
     public function test_succeeds_with_capability_and_valid_nonce_and_reverts_content(): void
     {
+        // The administrator's own operation: on a network a site admin does
+        // not undo one made with no user.
+        $this->_setRole('administrator');
         [$id, $operation_id] = $this->create_restorable_operation();
 
-        $this->_setRole('administrator');
         $_POST['operation_id'] = $operation_id;
         $_POST['nonce']        = wp_create_nonce('wpmcp_restore');
 

@@ -341,7 +341,7 @@ abstract class Forms_Integration extends Integration_Dispatcher
             foreach (array_reverse($ids) as $operation_id) {
                 try {
                     $result = ( new \WPMCP\Tools\Rollback_Operation() )->handle([ 'operation_id' => $operation_id ]);
-                    if (! empty($result['restored'])) {
+                    if (is_array($result) && true === ($result['restored'] ?? false)) {
                         $undone[] = $operation_id;
                     } else {
                         $failed[] = $operation_id;

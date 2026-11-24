@@ -124,9 +124,10 @@ class PostSnapshotCommentPiiTest extends \WP_UnitTestCase
 
     public function test_a_moderator_restores_the_comments_exactly(): void
     {
-        $operation_id = $this->delete_post('pii-362');
+        // The moderator's own delete: below manage_options only one's own
+        // operations are undone.
+        $operation_id = $this->delete_post('pii-362', self::factory()->user->create([ 'role' => 'editor' ]));
 
-        wp_set_current_user(self::factory()->user->create([ 'role' => 'editor' ]));
         $out = (new Rollback_Operation())->handle([ 'operation_id' => $operation_id ]);
 
         $this->assertTrue($out['restored'], (string) wp_json_encode($out));

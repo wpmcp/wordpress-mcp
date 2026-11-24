@@ -147,6 +147,9 @@ class RestoreFilterBypassTest extends \WP_UnitTestCase
         $wpdb->update($wpdb->users, ['display_name' => self::NAME], ['ID' => $user_id]);
         clean_user_cache($user_id);
 
+        // Usermeta is network-wide, so on a network undoing a profile edit
+        // takes a network admin (edit_user on another user).
+        wpmcp_test_grant_network_admin(get_current_user_id());
         $out = (new Update_User())->handle(['id' => $user_id, 'display_name' => 'Plain']);
         $this->assertTrue(Rollback_Service::restore_operation($out['operation_id']));
         clean_user_cache($user_id);
@@ -375,6 +378,13 @@ class RestoreFilterBypassTest extends \WP_UnitTestCase
         return [$spec_id, $operation_id];
     }
 
+    /** Record $user_id as the one who made the operation: only one's own are undone below manage_options. */
+    private function made_by(string $operation_id, int $user_id): void
+    {
+        global $wpdb;
+        $wpdb->update(Snapshot_Store::table_name(), ['user_id' => $user_id], ['operation_id' => $operation_id]);
+    }
+
     private function assert_columns_are_raw(int $post_id): void
     {
         clean_post_cache($post_id);
@@ -403,6 +413,7 @@ class RestoreFilterBypassTest extends \WP_UnitTestCase
         // delete_post for it (issue #448).
         $author = $this->author();
         $this->own($spec_id, $author);
+        $this->made_by($operation_id, $author);
         wp_set_current_user($author);
         $this->assert_post_filters_hooked();
         $this->assertTrue(Rollback_Service::restore_operation($operation_id));
@@ -420,6 +431,7 @@ class RestoreFilterBypassTest extends \WP_UnitTestCase
         [$spec_id, $operation_id] = $this->raw_spec('widget');
         $author = $this->author();
         $this->own($spec_id, $author);
+        $this->made_by($operation_id, $author);
         wp_set_current_user($author);
 
         add_filter('wp_insert_post_data', [self::class, 'explode_on_update']);
@@ -440,8 +452,8 @@ class RestoreFilterBypassTest extends \WP_UnitTestCase
     {
         $author       = $this->author();
         $post_id      = $this->raw_post($author);
-        $operation_id = Post_Creation_Snapshot::record('create-post', [$post_id], [], 'default');
         wp_set_current_user($author);
+        $operation_id = Post_Creation_Snapshot::record('create-post', [$post_id], [], 'default');
 
         $this->assertTrue(Rollback_Service::restore_operation($operation_id));
 
@@ -455,8 +467,8 @@ class RestoreFilterBypassTest extends \WP_UnitTestCase
     {
         $author       = $this->author();
         $post_id      = $this->raw_post($author);
-        $operation_id = Post_Creation_Snapshot::record('create-post', [$post_id], [], 'default');
         wp_set_current_user($author);
+        $operation_id = Post_Creation_Snapshot::record('create-post', [$post_id], [], 'default');
 
         add_filter('wp_insert_post_data', [self::class, 'explode_on_update']);
         try {

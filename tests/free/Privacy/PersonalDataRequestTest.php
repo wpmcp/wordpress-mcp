@@ -262,6 +262,9 @@ class PersonalDataRequestTest extends \WP_Ajax_UnitTestCase
     {
         $this->run_core_erasure(self::EMAIL);
         wp_set_current_user($this->admin);
+        // The session holds a profile edit, which on a network only a
+        // network admin may undo; the erasure is what must refuse here.
+        wpmcp_test_grant_network_admin($this->admin);
 
         $this->assertFalse(Rollback_Service::restore_operation($this->comment_operation));
         $warnings = implode(' ', Rollback_Service::take_warnings());
