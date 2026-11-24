@@ -181,7 +181,7 @@ Yes. The safety core and the MCP server are free and GPL. Pro adds convenience a
 == Changelog ==
 
 = 2.0.0 =
-WPMCP Pro is now separate from the free plugin, the Connection screen connects an AI app in four steps, plugin and theme updates can roll themselves back, and dozens of plugins gain integrations. Undo stays free, and this release includes the 1.2.2 fixes.
+Update recommended for all sites. WPMCP Pro is now separate from the free plugin, the Connection screen connects an AI app in four steps, plugin and theme updates can roll themselves back, and dozens of plugins gain integrations. Undo stays free, and this release includes the 1.2.2 fixes.
 
 Changes you will notice:
 
@@ -1211,7 +1211,7 @@ Admin and tooling:
 == Upgrade Notice ==
 
 = 2.0.0 =
-Licensed sites: WPMCP Pro updates under Dashboard > Updates as before, keeping licence, History and settings; the free wpmcp.zip no longer includes Elementor editing or the page builders. Over HTTP, a single-value tool result is now {"data": ...}, not {"result": ...}.
+Update recommended for all sites. WPMCP Pro updates under Dashboard > Updates as before, keeping licence, History and settings; the free wpmcp.zip no longer has Elementor editing or the page builders. Over HTTP, a single-value tool result is now {"data": ...}.
 
 = 1.2.2 =
 Security hardening for builder writes on multisite; update recommended.
