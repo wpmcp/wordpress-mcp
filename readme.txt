@@ -4,7 +4,7 @@ Tags: mcp, ai, ai agent, automation, undo
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -179,6 +179,12 @@ OAuth is off by default. Clients configured with an application password (Claude
 Yes. The safety core and the MCP server are free and GPL. Pro adds convenience and depth (Elementor deep editing, builders, cloud sync), not safety. Snapshot retention is not part of that: it is the same flat, filterable number on every install.
 
 == Changelog ==
+
+= 2.0.1 =
+Faster, lighter admin and front-end loading; smaller operation listings for AI agents.
+
+* Front-end pages and wp-admin screens load about 30 fewer WPMCP files on every request. The undo helpers of the integrations now load only when an undo runs, and the WP-CLI transport only under WP-CLI. Nothing else changes.
+* list-operations is smaller on most sites. An operation whose plugin is not active on the site (dependency_met: false) is still listed with its name, mode, description, capability and flags, but without its input_schema, and the answer then carries a schema_note saying so. Pass args {"include_schemas": true} to get every schema as before. Operations that can run on the site keep their full schema.
 
 = 2.0.0 =
 Update recommended for all sites. WPMCP Pro is now separate from the free plugin, the Connection screen connects an AI app in four steps, plugin and theme updates can roll themselves back, and dozens of plugins gain integrations. Undo stays free, and this release includes the 1.2.2 and 1.2.3 fixes.
@@ -1218,6 +1224,9 @@ Admin and tooling:
 * Freemius licensing shows its stock, default-off opt-in screen on activation rather than deciding consent for you. Sites that ran a pre-release build under anonymous mode see that connect screen once after upgrading; Skip dismisses it and the plugin keeps working unchanged. The WordPress.org build ships no licensing SDK at all.
 
 == Upgrade Notice ==
+
+= 2.0.1 =
+Faster admin and front-end loading. list-operations leaves out the schemas of operations whose plugin is not active; pass include_schemas: true for all of them.
 
 = 2.0.0 =
 Update recommended for all sites. WPMCP Pro updates under Dashboard > Updates as before, keeping licence, History and settings; the free wpmcp.zip no longer has Elementor editing or the page builders. Over HTTP, a single-value tool result is now {"data": ...}.
