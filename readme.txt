@@ -181,7 +181,7 @@ Yes. The safety core and the MCP server are free and GPL. Pro adds convenience a
 == Changelog ==
 
 = 2.0.0 =
-Update recommended for all sites. WPMCP Pro is now separate from the free plugin, the Connection screen connects an AI app in four steps, plugin and theme updates can roll themselves back, and dozens of plugins gain integrations. Undo stays free, and this release includes the 1.2.2 fixes.
+Update recommended for all sites. WPMCP Pro is now separate from the free plugin, the Connection screen connects an AI app in four steps, plugin and theme updates can roll themselves back, and dozens of plugins gain integrations. Undo stays free, and this release includes the 1.2.2 and 1.2.3 fixes.
 
 Changes you will notice:
 
@@ -240,7 +240,7 @@ With Pro:
 
 Fixes:
 
-* Includes the 1.2.2 fixes: security hardening for builder writes on multisite; builder layouts that WordPress would rewrite on save are refused with a clear error instead of being stored changed, and plain content writes report what WordPress removed; get-option masks one more stored SMTP password field (#1162).
+* Includes the 1.2.2 and 1.2.3 fixes: security hardening for builder writes on multisite and for undo; builder layouts that WordPress would rewrite on save are refused with a clear error instead of being stored changed, and plain content writes report what WordPress removed; get-option masks one more stored SMTP password field (#1162).
 * With Pro, builder writes by a user without unfiltered_html (on a network, anyone but a super admin) are checked further, and nothing is written when one is refused: update-builder-content also refuses a value WordPress would change on BeTheme, Brizy, SiteOrigin, Kirki and Thrive Architect pages and in the Bricks, Breakdance, Oxygen and Avada global design settings; adding or changing code (a script, PHP or a code element) in a Bricks, Breakdance, Oxygen, Beaver Builder, Divi, Thrive Architect, BeTheme, Brizy, SiteOrigin or Kirki layout is refused, while code the page already holds can stay; Divi 5 layout writes are refused instead of filtered; and a Thrive Architect page whose layout holds a script is refused rather than rewritten, since the layout is checked as one value.
 * set-post-meta, the meta argument of create-post and update-post, and find-replace-content write only meta keys made of printable ASCII characters without spaces, and check each key in the form WordPress stores it. For a user without unfiltered_html they also refuse the meta rows a page builder builds the page from (BeTheme, Brizy, SiteOrigin, Kirki, Thrive Architect, Breakdance 1.x, classic Oxygen before 4.8.3 and Visual Composer) and point to update-builder-content (WPMCP Pro), which checks the values.
 * A product import that fails inside a chat's session now undoes only the undo points that call added, not the chat's earlier writes; an import in its own session still rolls back whole (#1255).
@@ -259,6 +259,14 @@ Fixes:
 * The readme says which Elementor, Gutenberg, Bricks, Divi, WooCommerce and Paid Memberships Pro tools are free and which need Pro, and that writes through the REST passthrough cannot be undone (#1256).
 
 Internal: a module kernel and a compiled registry that new integrations register through, a stricter coding standard gate, a recorded baseline of the tool surface for the test gate, and benchmarks (#1207, #1208, #1211, #1215).
+
+= 1.2.3 =
+Security hardening for undo; update recommended.
+
+Fixes:
+* Security hardening for undo.
+* Undo now needs the same permission as the change it reverses, checked for the person undoing it. Below administrator you can undo only your own changes, and a session is undone whole or not at all.
+* Undoing a change to a user keeps their current login sessions and application passwords, so ones revoked since stay revoked. An administrator can change this on the Opt-in operations screen (on a network, only a network administrator).
 
 = 1.2.2 =
 Security hardening for builder writes on multisite; update recommended.
@@ -1213,6 +1221,9 @@ Admin and tooling:
 
 = 2.0.0 =
 Update recommended for all sites. WPMCP Pro updates under Dashboard > Updates as before, keeping licence, History and settings; the free wpmcp.zip no longer has Elementor editing or the page builders. Over HTTP, a single-value tool result is now {"data": ...}.
+
+= 1.2.3 =
+Security hardening for undo; update recommended.
 
 = 1.2.2 =
 Security hardening for builder writes on multisite; update recommended.
