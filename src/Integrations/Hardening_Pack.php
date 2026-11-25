@@ -50,14 +50,14 @@ final class Hardening_Pack
             'get-hardening-status' => [
                 'mode'         => 'read',
                 'capability'   => 'manage_options',
-                'description'  => 'Hardening settings WP MCP can apply (disable XML-RPC, hide the WordPress version, block user enumeration, hide PHP errors, disable the file editor, security headers): each one\'s state, whether wp-config.php, the server or another plugin already handles it, and the scan-security finding it answers',
+                'description'  => 'Hardening settings WPMCP can apply (disable XML-RPC, hide the WordPress version, block user enumeration, hide PHP errors, disable the file editor, security headers): each one\'s state, whether wp-config.php, the server or another plugin already handles it, and the scan-security finding it answers',
                 'input_schema' => [ 'type' => 'object', 'properties' => [] ],
                 'handler'      => static fn (): array => self::status(),
             ],
             'set-hardening'        => [
                 'mode'               => 'write',
                 'capability'         => 'manage_options',
-                'description'        => 'Switch hardening settings on or off: settings is an object of disable_xmlrpc (also pingbacks; breaks Jetpack and the mobile apps), hide_wp_version, block_user_enumeration (visitors only), hide_php_errors, disable_file_editor, security_headers => true or false. Applied by WP MCP\'s hooks, no file edits. Refuses a setting something else already handles. One snapshot; undo: rollback-operation. Disabled by default (wpmcp_enable_hardening_write filter)',
+                'description'        => 'Switch hardening settings on or off: settings is an object of disable_xmlrpc (also pingbacks; breaks Jetpack and the mobile apps), hide_wp_version, block_user_enumeration (visitors only), hide_php_errors, disable_file_editor, security_headers => true or false. Applied by WPMCP\'s hooks, no file edits. Refuses a setting something else already handles. One snapshot; undo: rollback-operation. Disabled by default (wpmcp_enable_hardening_write filter)',
                 'enabled_by_default' => $enabled,
                 'opt_in_filter'      => self::ENABLE_FILTER,
                 'input_schema'       => [
@@ -100,7 +100,7 @@ final class Hardening_Pack
             'security_plugins' => $plugins,
             'writes_enabled'   => (bool) apply_filters('wpmcp_enable_hardening_write', false),
             'notes'            => array_values(array_filter([
-                'Settings are applied by WP MCP on every request; nothing is written to wp-config.php or .htaccess. Run scan-security with checks [hardening] to see the findings again.',
+                'Settings are applied by WPMCP on every request; nothing is written to wp-config.php or .htaccess. Run scan-security with checks [hardening] to see the findings again.',
                 'hide_wp_version does not delete readme.html; security_headers does not add Strict-Transport-Security or Content-Security-Policy, so the audit can still list those.',
                 [] !== $plugins ? 'A security plugin is active: check its own hardening options before switching the same thing on here.' : null,
             ])),
@@ -129,7 +129,7 @@ final class Hardening_Pack
         }
         if ([] !== $conflict) {
             $list = implode(', ', array_map(static fn (string $name, string $by): string => $name . ' (' . $by . ')', array_keys($conflict), $conflict));
-            return self::error('handled_elsewhere', 'Already handled outside WP MCP, so it is not applied twice: ' . $list . '. Leave it out of settings.', [ 'handled_elsewhere' => $conflict ]);
+            return self::error('handled_elsewhere', 'Already handled outside WPMCP, so it is not applied twice: ' . $list . '. Leave it out of settings.', [ 'handled_elsewhere' => $conflict ]);
         }
         return null;
     }
@@ -161,7 +161,7 @@ final class Hardening_Pack
     }
 
     /**
-     * What already handles each setting outside WP MCP, as a short label,
+     * What already handles each setting outside WPMCP, as a short label,
      * filterable through wpmcp_hardening_handled_elsewhere.
      *
      * @return array<string,string>
@@ -229,6 +229,10 @@ final class Hardening_Pack
         return array_keys(array_filter($active));
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return array{code: string, message: string, data: array<string, mixed>}
+     */
     private static function error(string $code, string $message, array $data = []): array
     {
         return [ 'code' => $code, 'message' => $message, 'data' => $data ];

@@ -424,7 +424,7 @@ class Ability_Grid_Page
         <div class="wrap">
             <h1><?php echo esc_html(Plugin::page_title(_x('Abilities', 'admin menu', 'wpmcp'))); ?></h1>
             <p>
-                <?php echo esc_html__('Every tool WP MCP offers to AI clients on this site, grouped by area. Switching a tool off here stops clients from using it; switching it on cannot override a tool that is blocked elsewhere, such as in site code. Every change is recorded in the audit log.', 'wpmcp'); ?>
+                <?php echo esc_html__('Every tool WPMCP offers to AI clients on this site, grouped by area. Switching a tool off here stops clients from using it; switching it on cannot override a tool that is blocked elsewhere, such as in site code. Every change is recorded in the audit log.', 'wpmcp'); ?>
             </p>
 
             <?php if (isset($result['error'])) : ?>
@@ -475,7 +475,7 @@ class Ability_Grid_Page
                 <label for="wpmcp-auto-enable-new"><strong><?php echo esc_html__('Switch on new tools after updates', 'wpmcp'); ?></strong></label>
                 <noscript><button type="submit" class="button"><?php echo esc_html__('Save', 'wpmcp'); ?></button></noscript>
                 <p class="description">
-                    <?php echo esc_html__('When on, tools that a WP MCP update adds arrive switched on. Tools that run code, write files or database rows, or manage users, plugins or themes always arrive off, and a tool you switched off stays off.', 'wpmcp'); ?>
+                    <?php echo esc_html__('When on, tools that a WPMCP update adds arrive switched on. Tools that run code, write files or database rows, or manage users, plugins or themes always arrive off, and a tool you switched off stays off.', 'wpmcp'); ?>
                 </p>
             </form>
 

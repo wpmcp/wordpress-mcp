@@ -865,6 +865,9 @@
         },
         "alt": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       }
     },
@@ -1274,6 +1277,9 @@
       "properties": {
         "settings": {
           "type": "object"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -1850,6 +1856,9 @@
         },
         "network_wide": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -2002,6 +2011,9 @@
         },
         "activate": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -2775,7 +2787,7 @@
     "group": "prologue",
     "method": "register_abilities_into",
     "handler": "WPMCP\\Tools\\Security\\Incident_Response->handle",
-    "description": "list-app-passwords (no secrets); revoke-app-password (uuid or all); list-sessions (one user, masked, no tokens); end-sessions (user_id or all); rotate-salts (wp-config.php, backup kept; refused if unwritable or defined elsewhere); reinstall-core-files (files scan-security flags, from the checksum-verified official package, never wp-content; undo: rollback-operation); quarantine-file (path, reason: moves it to a private folder; not core, wp-config or WP MCP files; undo: rollback-operation); list-quarantine; restore-quarantined-file (id, overwrite); purge-quarantined-file (id). Quarantine needs the wpmcp_enable_fs_writes opt-in. Writes need confirm:true. Cannot be undone: revoke, end-sessions, rotate-salts (logs out everyone, your cookie session too, not app passwords). Your session and app password stay unless include_current. Other users take edit_users",
+    "description": "list-app-passwords (no secrets); revoke-app-password (uuid or all); list-sessions (one user, masked, no tokens); end-sessions (user_id or all); rotate-salts (wp-config.php, backup kept; refused if unwritable or defined elsewhere); reinstall-core-files (files scan-security flags, from the checksum-verified official package, never wp-content; undo: rollback-operation); quarantine-file (path, reason: moves it to a private folder; not core, wp-config or WPMCP files; undo: rollback-operation); list-quarantine; restore-quarantined-file (id, overwrite); purge-quarantined-file (id). Quarantine needs the wpmcp_enable_fs_writes opt-in. Writes need confirm:true. Cannot be undone: revoke, end-sessions, rotate-salts (logs out everyone, your cookie session too, not app passwords). Your session and app password stay unless include_current. Other users take edit_users",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -3108,6 +3120,9 @@
         },
         "stock_quantity": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -3576,6 +3591,9 @@
         },
         "stock_status": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -3838,6 +3856,9 @@
           }
         },
         "status": {
+          "type": "string"
+        },
+        "session_id": {
           "type": "string"
         }
       },
@@ -4144,6 +4165,9 @@
         },
         "class": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -4340,6 +4364,9 @@
         },
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -5303,7 +5330,7 @@
     "group": "redirects",
     "method": "register_redirect_abilities",
     "handler": "WPMCP\\Tools\\Redirects\\List_Redirects->handle",
-    "description": "List this site's redirects (the active redirect plugin's, else WP MCP's own: source path, resolved target, status code, enabled, hit count), plus pending suggestions raised when a published post was deleted or moved. Filter by enabled state or a search string. Read-only",
+    "description": "List this site's redirects (the active redirect plugin's, else WPMCP's own: source path, resolved target, status code, enabled, hit count), plus pending suggestions raised when a published post was deleted or moved. Filter by enabled state or a search string. Read-only",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -5342,7 +5369,7 @@
     "group": "redirects",
     "method": "register_redirect_abilities",
     "handler": "WPMCP\\Tools\\Redirects\\Create_Redirect->handle",
-    "description": "Create a redirect (in the active redirect plugin, else WP MCP's own table) from a source path to a target URL or target_post_id (which survives slug changes). Chains are flattened to one hop and loops refused; the stored target is reported. Snapshotted; rollback-operation removes it",
+    "description": "Create a redirect (in the active redirect plugin, else WPMCP's own table) from a source path to a target URL or target_post_id (which survives slug changes). Chains are flattened to one hop and loops refused; the stored target is reported. Snapshotted; rollback-operation removes it",
     "input_schema": {
       "type": "object",
       "properties": {
@@ -5805,6 +5832,9 @@
         },
         "cursor": {
           "type": "string"
+        },
+        "session_id": {
+          "type": "string"
         }
       }
     },
@@ -6000,7 +6030,7 @@
     "group": "maintenance",
     "method": "register_maintenance_abilities",
     "handler": "WPMCP\\Tools\\Maintenance\\Get_Maintenance_Status->handle",
-    "description": "Whether the site is gated: WP MCP maintenance mode (message, Retry-After), core .maintenance, coming soon and maintenance plugins",
+    "description": "Whether the site is gated: WPMCP maintenance mode (message, Retry-After), core .maintenance, coming soon and maintenance plugins",
     "input_schema": {
       "type": "object",
       "properties": []
@@ -7426,6 +7456,9 @@
         },
         "post_id": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       }
     },
@@ -7920,6 +7953,9 @@
         },
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -8446,6 +8482,9 @@
         },
         "auto_enable_new_tools": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       }
     },
@@ -9964,6 +10003,9 @@
         },
         "priority": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -10177,6 +10219,9 @@
         },
         "priority": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -10213,6 +10258,9 @@
             "publish",
             "draft"
           ]
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -10243,6 +10291,9 @@
       "properties": {
         "template_id": {
           "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -10272,6 +10323,9 @@
       "properties": {
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [
@@ -10323,6 +10377,9 @@
       "properties": {
         "confirm": {
           "type": "boolean"
+        },
+        "session_id": {
+          "type": "string"
         }
       },
       "required": [

@@ -20,7 +20,7 @@ if (! defined('ABSPATH')) {
  * The Requires names the plugin for refusals; the ops themselves stay
  * listed without it, since CMB2 is often bundled in a theme. No Owns_Data:
  * the post meta and options page option arrays it writes belong to the
- * site's CMB2 boxes, and uninstalling WP MCP must never delete them.
+ * site's CMB2 boxes, and uninstalling WPMCP must never delete them.
  */
 #[Module_Declaration(
     id: 'cmb2',

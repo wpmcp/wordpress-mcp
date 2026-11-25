@@ -116,7 +116,7 @@ final class Redirect_Providers
     private static function rank_math(string $tool, array $args)
     {
         if (isset($args['notes']) && in_array($tool, [ 'create-redirect', 'update-redirect' ], true)) {
-            return new \WP_Error('redirect_field_unsupported', 'Rank Math redirections have no notes field; leave notes out (or pass provider:"wpmcp" to use WP MCP\'s own redirect table).', [ 'field' => 'notes' ]);
+            return new \WP_Error('redirect_field_unsupported', 'Rank Math redirections have no notes field; leave notes out (or pass provider:"wpmcp" to use WPMCP\'s own redirect table).', [ 'field' => 'notes' ]);
         }
 
         switch ($tool) {

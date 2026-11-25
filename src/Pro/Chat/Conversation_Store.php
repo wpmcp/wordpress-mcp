@@ -209,14 +209,14 @@ class Conversation_Store
     public static function privacy_exporters($list): array
     {
         $list                       = (array) $list;
-        $list[ self::PRIVACY_KEY ] = [ 'exporter_friendly_name' => __('WP MCP chat', 'wpmcp'), 'callback' => [ self::class, 'export_personal_data' ] ];
+        $list[ self::PRIVACY_KEY ] = [ 'exporter_friendly_name' => __('WPMCP chat', 'wpmcp'), 'callback' => [ self::class, 'export_personal_data' ] ];
         return $list;
     }
 
     public static function privacy_erasers($list): array
     {
         $list                       = (array) $list;
-        $list[ self::PRIVACY_KEY ] = [ 'eraser_friendly_name' => __('WP MCP chat', 'wpmcp'), 'callback' => [ self::class, 'erase_personal_data' ] ];
+        $list[ self::PRIVACY_KEY ] = [ 'eraser_friendly_name' => __('WPMCP chat', 'wpmcp'), 'callback' => [ self::class, 'erase_personal_data' ] ];
         return $list;
     }
 
@@ -276,7 +276,7 @@ class Conversation_Store
             }
             $items[] = Personal_Data::item(
                 self::PRIVACY_KEY,
-                __('WP MCP chat', 'wpmcp'),
+                __('WPMCP chat', 'wpmcp'),
                 __('Conversations with the AI chat in wp-admin.', 'wpmcp'),
                 'wpmcp-chat-' . $id,
                 $fields

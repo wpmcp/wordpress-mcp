@@ -7,7 +7,7 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * Imports a WP MCP SQL dump statement by statement (issue #190).
+ * Imports a WPMCP SQL dump statement by statement (issue #190).
  *
  * Two passes over the same file. scan() parses and classifies every
  * statement without executing anything: a truncated dump, a statement the
@@ -237,7 +237,7 @@ class Sql_Importer
         global $wpdb;
 
         for ($attempt = 0; $attempt <= self::RETRIES; $attempt++) {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Replaying a WP MCP dump: every value in it was escaped by $wpdb->prepare() when it was written, and Sql_Import_Policy (src/Tools/Backup/Sql_Import_Policy.php) has admitted this statement as a SET, DROP/CREATE TABLE or literal-only INSERT on this site's own prefix. The only rewrite is INSERT INTO to REPLACE INTO in self::retry().
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Replaying a WPMCP dump: every value in it was escaped by $wpdb->prepare() when it was written, and Sql_Import_Policy (src/Tools/Backup/Sql_Import_Policy.php) has admitted this statement as a SET, DROP/CREATE TABLE or literal-only INSERT on this site's own prefix. The only rewrite is INSERT INTO to REPLACE INTO in self::retry().
             $result = $wpdb->query($sql);
 
             self::forget_saved_query();

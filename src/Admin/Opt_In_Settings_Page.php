@@ -20,7 +20,7 @@ if (! defined('ABSPATH')) {
  * recorded in the governance audit log with the acting user. Writing a
  * toggle takes manage_options on the site screen and
  * manage_network_options on the network screen (multisite only); viewing
- * either takes the management capability like the other WP MCP screens.
+ * either takes the management capability like the other WPMCP screens.
  *
  * A group whose filter is set in code shows "set in code" and has no
  * working toggle: the code decides (Opt_In_Settings::apply() stands down),
@@ -40,7 +40,7 @@ class Opt_In_Settings_Page
         add_submenu_page(
             'settings.php',
             Plugin::page_title(__('Opt-in operations', 'wpmcp')),
-            __('WP MCP opt-in operations', 'wpmcp'),
+            __('WPMCP opt-in operations', 'wpmcp'),
             'manage_network_options',
             self::SLUG,
             [ new self(), 'render_network' ]
@@ -80,6 +80,9 @@ class Opt_In_Settings_Page
         if (! isset(Opt_In_Settings::groups()[ $filter ])) {
             return [ 'error' => __('Unknown opt-in group.', 'wpmcp') ];
         }
+        if (! $network && Opt_In_Settings::network_only($filter)) {
+            return [ 'error' => __('On a network this is decided for every site at once: a network administrator switches it on the network screen (Network Settings, WPMCP opt-in operations).', 'wpmcp') ];
+        }
         if (Opt_In_Settings::set_in_code($filter)) {
             return [
                 'error' => sprintf(
@@ -106,13 +109,14 @@ class Opt_In_Settings_Page
     /**
      * The screen model: filter => row.
      *
-     * @return array<string, array{filter: string, label: string, destructive: bool, warning: string, set_in_code: bool, on: bool, on_network: bool}>
+     * @return array<string, array{filter: string, label: string, destructive: bool, warning: string, set_in_code: bool, on: bool, on_network: bool, network_only: bool}>
      */
     public function rows(string $scope = 'site'): array
     {
         $labels = Opt_In_Settings::labels();
         $rows   = [];
         foreach (Opt_In_Settings::groups() as $filter => $group) {
+            $network_only    = 'network' !== $scope && Opt_In_Settings::network_only($filter);
             $rows[ $filter ] = [
                 'filter'      => $filter,
                 'label'       => $labels[ $filter ] ?? $filter,
@@ -121,8 +125,10 @@ class Opt_In_Settings_Page
                     ? __('Includes operations that delete data or that undo cannot fully reverse (mail sent, external calls).', 'wpmcp')
                     : '',
                 'set_in_code' => Opt_In_Settings::set_in_code($filter),
-                'on'          => Opt_In_Settings::stored_on($filter, 'network' === $scope ? 'network' : 'site'),
+                'on'          => ! $network_only && Opt_In_Settings::stored_on($filter, 'network' === $scope ? 'network' : 'site'),
                 'on_network'  => is_multisite() && Opt_In_Settings::stored_on($filter, 'network'),
+                // Switched only on the network screen (Opt_In_Settings::NETWORK_ONLY_GROUPS).
+                'network_only' => $network_only,
             ];
         }
         return $rows;
@@ -212,6 +218,11 @@ class Opt_In_Settings_Page
                                     <button type="button" class="button button-small" disabled
                                         title="<?php echo esc_attr__('Set in code: remove the filter to manage it here.', 'wpmcp'); ?>">
                                         <?php echo esc_html__('Set in code', 'wpmcp'); ?>
+                                    </button>
+                                <?php elseif ($row['network_only']) : ?>
+                                    <button type="button" class="button button-small" disabled
+                                        title="<?php echo esc_attr__('Decided for the whole network on the network screen.', 'wpmcp'); ?>">
+                                        <?php echo esc_html__('Network setting', 'wpmcp'); ?>
                                     </button>
                                 <?php elseif ($row['on']) : ?>
                                     <button type="submit" name="enabled" value="0" class="button button-small">

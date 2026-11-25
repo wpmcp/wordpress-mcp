@@ -6,7 +6,7 @@ use WPMCP\Admin\Connection_Page;
 use WPMCP\Data_Registry;
 
 /**
- * The "Delete all WP MCP data when the plugin is deleted" setting on the
+ * The "Delete all WPMCP data when the plugin is deleted" setting on the
  * Connection screen (issue #480). Off by default, saved with the screen's
  * nonce and capability checks, read-only while WPMCP_UNINSTALL_DELETE_DATA
  * is defined, and the help text says plainly which way data goes.
@@ -99,7 +99,7 @@ class UninstallDataSettingTest extends \WP_UnitTestCase
     {
         $html = $this->render();
 
-        $this->assertStringContainsString('Delete all WP MCP data when the plugin is deleted', $html);
+        $this->assertStringContainsString('Delete all WPMCP data when the plugin is deleted', $html);
         $this->assertStringContainsString('is kept when the plugin is deleted', $html);
         $this->assertStringContainsString('name="wpmcp_connection_action" value="uninstall_data"', $html);
     }

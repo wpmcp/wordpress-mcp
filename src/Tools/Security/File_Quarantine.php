@@ -35,7 +35,7 @@ if (! defined('ABSPATH')) {
  * (the same bytes are back) or replaced (other bytes are there now).
  *
  * Refused: wp-config.php and every other protected file (Filesystem_Guard),
- * symlinks, WP MCP's own files, the quarantine and backup folders, and
+ * symlinks, WPMCP's own files, the quarantine and backup folders, and
  * WordPress core files, which reinstall-core-files replaces from the official
  * package instead. A core file is one listed in the official checksums; a
  * path in wp-admin, wp-includes or the install root is checked against them,
@@ -254,13 +254,13 @@ class File_Quarantine
             throw new \RuntimeException('Refusing to quarantine through a symlink.');
         }
         if (Php_Edit_Guard::is_own_file($abs)) {
-            throw new \RuntimeException('WP MCP\'s own files cannot be quarantined.');
+            throw new \RuntimeException('WPMCP\'s own files cannot be quarantined.');
         }
         $uploads = trailingslashit(wp_normalize_path((string) wp_upload_dir(null, false)['basedir']));
         $normal  = wp_normalize_path($abs);
         foreach ([self::DIR, File_Backup::BACKUP_DIR, Filesystem_Guard::BACKUP_DIR] as $own) {
             if (0 === strpos($normal, $uploads . $own . '/')) {
-                throw new \RuntimeException('Files in WP MCP\'s quarantine and backup folders cannot be quarantined.');
+                throw new \RuntimeException('Files in WPMCP\'s quarantine and backup folders cannot be quarantined.');
             }
         }
         return $abs;

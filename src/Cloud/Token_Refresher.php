@@ -395,7 +395,7 @@ class Token_Refresher
         // configuration problem, not a revocation), so the bundle survives
         // for when the URL is fixed.
         if ('https' !== strtolower((string) wp_parse_url($base_url, PHP_URL_SCHEME))) {
-            return new \WP_Error('cloud_token_endpoint_insecure', 'The WP MCP Cloud token endpoint must use https.');
+            return new \WP_Error('cloud_token_endpoint_insecure', 'The WPMCP Cloud token endpoint must use https.');
         }
         $response = wp_remote_post($base_url . Cloud_Client::TOKEN_PATH, [
             'timeout'     => 20,

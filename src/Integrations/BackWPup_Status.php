@@ -299,7 +299,7 @@ final class BackWPup_Status
             return [ 'code' => 'invalid_args', 'message' => sprintf('No BackWPup job with id %d; list-backwpup-backups lists the jobs.', $job_id) ];
         }
         if (false !== get_site_transient(self::RATE_TRANSIENT)) {
-            return [ 'code' => 'backup_rate_limited', 'message' => 'A BackWPup backup was started through WP MCP in the last 10 minutes; wait before starting another.' ];
+            return [ 'code' => 'backup_rate_limited', 'message' => 'A BackWPup backup was started through WPMCP in the last 10 minutes; wait before starting another.' ];
         }
         if (self::running()) {
             return [ 'code' => 'backup_running', 'message' => 'A BackWPup job is already running.' ];

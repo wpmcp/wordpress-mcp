@@ -117,6 +117,9 @@ class UserCreationUndoTest extends \WP_UnitTestCase
         $creator = self::factory()->user->create(['role' => 'editor']);
         get_userdata($creator)->add_cap('create_users');
         wp_set_current_user($creator);
+        // Recorded as the caller's own operation, so the capability (not
+        // operation ownership) is what refuses.
+        $GLOBALS['wpdb']->update(\WPMCP\Safety\Snapshot_Store::table_name(), ['user_id' => get_current_user_id()], ['operation_id' => $out['operation_id']]);
 
         $this->assertFalse(Rollback_Service::restore_operation($out['operation_id']));
 

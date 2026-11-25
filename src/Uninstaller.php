@@ -28,7 +28,7 @@ if (! defined('ABSPATH')) {
  * Data is kept by default. With Data_Registry::delete_on_uninstall() on, the
  * stores Data_Registry lists are removed on every site of a network:
  * tables, options and transients, user meta, network options, the
- * Application Passwords the Connection screen issued, and WP MCP's own
+ * Application Passwords the Connection screen issued, and WPMCP's own
  * directories. Directory removal is confined to the registered names
  * directly under the resolved uploads or wp-content directory and never
  * follows a symlink: a link is removed as a link, its target is left alone.
@@ -42,7 +42,7 @@ class Uninstaller
 
     public static function uninstall(): void
     {
-        // Another WP MCP build installed on this site shares every option,
+        // Another WPMCP build installed on this site shares every option,
         // table and cron hook with this one, so removing this copy must leave
         // them for it. The guard is loaded by every main file and by
         // uninstall.php; without it (a test calling this directly) there is
@@ -62,7 +62,7 @@ class Uninstaller
         }
     }
 
-    /** Everything WP MCP keeps for the current site. */
+    /** Everything WPMCP keeps for the current site. */
     public static function delete_site_data(): void
     {
         global $wpdb;
@@ -70,7 +70,7 @@ class Uninstaller
         self::revoke_application_passwords();
 
         foreach (Data_Registry::tables() as $table) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Uninstall with "delete all data" on: drops WP MCP's own tables, named in Data_Registry and bound with %i.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Uninstall with "delete all data" on: drops WPMCP's own tables, named in Data_Registry and bound with %i.
             $wpdb->query($wpdb->prepare('DROP TABLE IF EXISTS %i', $wpdb->prefix . $table));
         }
 
@@ -126,7 +126,7 @@ class Uninstaller
 
     /**
      * Remove $base/$name and everything in it, when $name is a registered
-     * WP MCP directory sitting directly in $base. A symlink, at the top or
+     * WPMCP directory sitting directly in $base. A symlink, at the top or
      * anywhere inside, is unlinked and never followed. Returns whether the
      * directory was there and is now gone.
      */
@@ -211,11 +211,11 @@ class Uninstaller
         }
 
         if ('' === $extra) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Uninstall: lists WP MCP's own keys by registered prefix; $where is only %i/%s placeholders bound below.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Uninstall: lists WPMCP's own keys by registered prefix; $where is only %i/%s placeholders bound below.
             return array_values(array_unique((array) $wpdb->get_col($wpdb->prepare("SELECT DISTINCT %i FROM %i WHERE $where", $column, $table, ...$args))));
         }
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Uninstall: lists WP MCP's own keys by registered prefix; $where is only %i/%s placeholders bound below.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Uninstall: lists WPMCP's own keys by registered prefix; $where is only %i/%s placeholders bound below.
         return (array) $wpdb->get_results($wpdb->prepare("SELECT DISTINCT %i, %i FROM %i WHERE $where", $extra, $column, $table, ...$args), ARRAY_N);
     }
 

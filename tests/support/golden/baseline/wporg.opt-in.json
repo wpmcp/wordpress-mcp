@@ -339,6 +339,10 @@
     "wpmcp_enable_pmpro_write": {
       "owner": "src/Integrations/Paid_Memberships_Pro_Pack.php",
       "destructive": true
+    },
+    "wpmcp_enable_user_credential_restore": {
+      "owner": "src/Safety/Rollback_Service.php",
+      "destructive": false
     }
   },
   "labels": {
@@ -426,7 +430,8 @@
     "wpmcp_enable_cpt_builder_write": "Custom Post Type UI and MB Custom Post Types: post type and taxonomy writes",
     "wpmcp_enable_hardening_write": "Security hardening settings: writes",
     "wpmcp_enable_checkout_field_editor_write": "Checkout Field Editor: checkout field writes",
-    "wpmcp_enable_pmpro_write": "Paid Memberships Pro: level, member and discount code writes"
+    "wpmcp_enable_pmpro_write": "Paid Memberships Pro: level, member and discount code writes",
+    "wpmcp_enable_user_credential_restore": "Undo of a user change: also restore their login sessions and application passwords, bringing back ones revoked after the change"
   },
   "shipped": [
     "wpmcp_enable_forms_write",
@@ -480,6 +485,7 @@
     "wpmcp_enable_tracking_write",
     "wpmcp_enable_search_replace_write",
     "wpmcp_enable_cpt_builder_write",
-    "wpmcp_enable_hardening_write"
+    "wpmcp_enable_hardening_write",
+    "wpmcp_enable_user_credential_restore"
   ]
 }

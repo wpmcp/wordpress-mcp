@@ -8,8 +8,8 @@
  *   php bin/bench/compare.php before.csv after.csv     before, after and the change
  *   php bin/bench/compare.php baseline.csv             one run on its own
  *
- * When a CSV holds rows measured with WP MCP inactive (run.php --delta), a
- * second table gives the delta of acceptance criteria A1: the p50 with WP MCP
+ * When a CSV holds rows measured with WPMCP inactive (run.php --delta), a
+ * second table gives the delta of acceptance criteria A1: the p50 with WPMCP
  * active minus the p50 with it inactive, per scenario, for the same CSV.
  *
  * REPO-ONLY: plain PHP, no WordPress load.
@@ -171,7 +171,7 @@ final class Compare
         if ([] === $off) {
             return '';
         }
-        $out   = ['### Delta, WP MCP active minus inactive (' . $title . ')', ''];
+        $out   = ['### Delta, WPMCP active minus inactive (' . $title . ')', ''];
         $out[] = '| scenario | server ms p50 active | inactive | delta | wall ms delta p50 | peak memory delta p50 | files delta p50 |';
         $out[] = '|---|---:|---:|---:|---:|---:|---:|';
         foreach ($off as $id => $rows_off) {

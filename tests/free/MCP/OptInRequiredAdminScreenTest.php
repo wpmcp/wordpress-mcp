@@ -6,7 +6,7 @@ use WPMCP\Governance\Opt_In_Settings;
 use WPMCP\MCP\Opt_In_Required;
 
 /**
- * Issue #966: an opt_in_required refusal for a group the WP MCP > Opt-in
+ * Issue #966: an opt_in_required refusal for a group the WPMCP > Opt-in
  * operations screen lists (#823) sends the site owner to that screen, with
  * the group label and URL, and keeps the filter as the code option. A
  * code-only gate keeps the "has no wp-admin setting" wording.
@@ -36,7 +36,7 @@ class OptInRequiredAdminScreenTest extends \WP_UnitTestCase
         $message = Opt_In_Required::message('Operation "x" of the y integration is disabled.', $filter);
 
         $this->assertStringStartsWith('Operation "x" of the y integration is disabled. It is off by default.', $message);
-        $this->assertStringContainsString('WP MCP > Opt-in operations', $message);
+        $this->assertStringContainsString('WPMCP > Opt-in operations', $message);
         $this->assertStringContainsString('"' . $label . '"', $message);
         $this->assertStringContainsString(admin_url('admin.php?page=wpmcp-opt-in'), $message);
         $this->assertStringContainsString(sprintf("add_filter('%s', '__return_true');", $filter), $message);
@@ -51,7 +51,7 @@ class OptInRequiredAdminScreenTest extends \WP_UnitTestCase
 
         $this->assertSame(Opt_In_Required::CODE, $error->get_error_code());
         $this->assertSame($filter, $data['filter']);
-        $this->assertSame('WP MCP > Opt-in operations', $data['admin_screen']);
+        $this->assertSame('WPMCP > Opt-in operations', $data['admin_screen']);
         $this->assertSame(admin_url('admin.php?page=wpmcp-opt-in'), $data['admin_url']);
         $this->assertSame(Opt_In_Settings::labels()[ $filter ], $data['admin_group']);
     }

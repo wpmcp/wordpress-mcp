@@ -13,7 +13,7 @@ use WPMCP\Safety\Snapshot_Store;
 use WPMCP\Tools\Search\Search_Index_Store;
 
 /**
- * Issue #478: WP MCP's own stores take part in WordPress's personal data
+ * Issue #478: WPMCP's own stores take part in WordPress's personal data
  * export and erasure. Every test here goes through core's real admin-ajax
  * handlers, one page at a time, with core's and every integration's own
  * exporters and erasers running alongside, as Tools > Export Personal Data
@@ -184,7 +184,7 @@ class PersonalDataRequestTest extends \WP_Ajax_UnitTestCase
                 $this->assertNotSame('', (string) ($list[ $key ][ $name_field ] ?? ''), "$key needs a friendly name");
                 $this->assertIsCallable($list[ $key ]['callback']);
                 // Runs after an integration's own eraser, so an integration
-                // erasure cannot leave its data behind in WP MCP's copies.
+                // erasure cannot leave its data behind in WPMCP's copies.
                 $this->assertGreaterThan(array_search('an-integration', $keys, true), array_search($key, $keys, true), "$key must run after integrations");
             }
         }
@@ -262,6 +262,9 @@ class PersonalDataRequestTest extends \WP_Ajax_UnitTestCase
     {
         $this->run_core_erasure(self::EMAIL);
         wp_set_current_user($this->admin);
+        // The session holds a profile edit, which on a network only a
+        // network admin may undo; the erasure is what must refuse here.
+        wpmcp_test_grant_network_admin($this->admin);
 
         $this->assertFalse(Rollback_Service::restore_operation($this->comment_operation));
         $warnings = implode(' ', Rollback_Service::take_warnings());

@@ -16,7 +16,7 @@ use WPMCP\Tools\Security\Hardening_Settings;
  * #847): get-hardening-status and set-hardening on the theme dispatcher
  * pair, so no top-level tool is added.
  *
- * Every setting is stored in one WP MCP option and applied by WP MCP's own
+ * Every setting is stored in one WPMCP option and applied by WPMCP's own
  * hooks (no wp-config.php or .htaccess edits). Each test switches a setting
  * on through set-hardening, proves the effect on the request WordPress
  * would serve, then undoes it with rollback-operation and proves the effect

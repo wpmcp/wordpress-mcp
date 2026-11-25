@@ -11,12 +11,12 @@ use WPMCP\Tools\Cron\Schedule_Event;
 
 /**
  * Issue #563: schedule-event (manage_options, on by default) could queue
- * wpmcp_run_backup_job, or any other WP MCP internal hook, with any
+ * wpmcp_run_backup_job, or any other WPMCP internal hook, with any
  * arguments, and Run_Backup_Job::handle() ran whatever job id it was given
  * whatever that job's status. So an admin could trigger internal jobs out of
  * band and re-run finished or canceled backups.
  *
- * Agents may not queue (or fire) WP MCP's own hooks, nor core hooks whose
+ * Agents may not queue (or fire) WPMCP's own hooks, nor core hooks whose
  * schedule WordPress manages, and the backup runner refuses any job that is
  * not queued, recording why without touching the job's outcome.
  */
@@ -65,7 +65,7 @@ class InternalHooksTest extends \WP_UnitTestCase
             $this->assertFalse(wp_next_scheduled($hook), "{$hook} must not be queued");
         }
 
-        $this->assertSame([], $accepted, 'schedule-event must refuse WP MCP internal hooks');
+        $this->assertSame([], $accepted, 'schedule-event must refuse WPMCP internal hooks');
     }
 
     public function test_the_protected_hooks_filter_cannot_reopen_an_internal_hook(): void

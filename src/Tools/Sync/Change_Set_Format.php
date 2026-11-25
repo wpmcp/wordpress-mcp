@@ -129,7 +129,7 @@ class Change_Set_Format
     ];
 
     /**
-     * WP MCP's own stores that never travel in a change set, whatever the
+     * WPMCP's own stores that never travel in a change set, whatever the
      * `wpmcp_sync_non_syncable_post_types` filter returns (issue #506).
      * A chat conversation is one administrator's private exchange with
      * their own model, including parked tool-call state; agent memory only
@@ -143,7 +143,7 @@ class Change_Set_Format
     ];
 
     /**
-     * WP MCP meta families that are per-user, per-site or link site-local
+     * WPMCP meta families that are per-user, per-site or link site-local
      * ids: chat bookkeeping, memory rule fields and staged-edit links. Like
      * VOLATILE_META they are never exported, hashed or written (issue #506).
      */
@@ -179,13 +179,13 @@ class Change_Set_Format
         return false;
     }
 
-    /** Meta that never leaves or enters a site through a change set: volatile or WP MCP internal. */
+    /** Meta that never leaves or enters a site through a change set: volatile or WPMCP internal. */
     public static function is_volatile_meta(string $key): bool
     {
         return in_array($key, self::VOLATILE_META, true) || self::is_internal_meta($key);
     }
 
-    /** Whether a meta key belongs to one of WP MCP's internal families. */
+    /** Whether a meta key belongs to one of WPMCP's internal families. */
     public static function is_internal_meta(string $key): bool
     {
         foreach (self::INTERNAL_META_PREFIXES as $prefix) {

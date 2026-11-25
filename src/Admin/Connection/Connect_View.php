@@ -126,7 +126,7 @@ final class Connect_View
     {
         printf('<p class="wpmcp-lead">%s</p>', wp_kses(sprintf(
             /* translators: 1: app name, 2: the current user's login */
-            __('WP MCP creates a WordPress application password for %1$s. The app signs in with it as %2$s. You can revoke it any time on the Connections tab.', 'wpmcp'),
+            __('WPMCP creates a WordPress application password for %1$s. The app signs in with it as %2$s. You can revoke it any time on the Connections tab.', 'wpmcp'),
             '<strong>' . esc_html($this->labels->label($app)) . '</strong>',
             '<strong>' . esc_html(wp_get_current_user()->user_login) . '</strong>'
         ), [ 'strong' => [] ]));
@@ -182,6 +182,7 @@ final class Connect_View
             Client_App::Other => __('It is already inside the header and the JSON in step 3.', 'wpmcp'),
             default => __('It is already inside the JSON in step 3.', 'wpmcp'),
         };
+        $shown = trim(chunk_split($made->password, 4, ' '));
         ?>
         <div class="wpmcp-key" id="wpmcp-key">
             <div class="wpmcp-key__top">
@@ -199,12 +200,12 @@ final class Connect_View
             </div>
             <div class="wpmcp-key__label" id="wpmcp-password-label"><?php echo esc_html__('Application password', 'wpmcp'); ?> <span class="wpmcp-once"><span class="dashicons dashicons-lock" aria-hidden="true"></span><?php echo esc_html__('Shown once', 'wpmcp'); ?></span></div>
             <div class="wpmcp-key__row">
-                <output class="wpmcp-key__value" id="wpmcp-password" aria-labelledby="wpmcp-password-label"><?php echo esc_html(trim(chunk_split($made->password, 4, ' '))); ?></output>
-                <button type="button" class="button wpmcp-copy" data-copy-target="wpmcp-password" hidden><span class="dashicons dashicons-clipboard" aria-hidden="true"></span><span class="wpmcp-copy__label"><?php echo esc_html__('Copy password', 'wpmcp'); ?></span></button>
+                <output class="wpmcp-key__value" id="wpmcp-password" aria-labelledby="wpmcp-password-label"><?php echo esc_html($shown); ?></output>
+                <button type="button" class="button wpmcp-copy" data-copy-target="wpmcp-password" data-wpmcp-copy-text="<?php echo esc_attr($shown); ?>" data-wpmcp-copied="<?php echo esc_attr__('Copied the application password.', 'wpmcp'); ?>" hidden><span class="dashicons dashicons-clipboard" aria-hidden="true"></span><span class="wpmcp-copy__label"><?php echo esc_html__('Copy password', 'wpmcp'); ?></span></button>
             </div>
             <p class="wpmcp-key__note">
                 <?php
-                echo esc_html(__('WP MCP doesn\'t store this password and can\'t show it again.', 'wpmcp') . ' ' . $where . ' ' . __('Lost it? Revoke this connection on the Connections tab and create a new one.', 'wpmcp'));
+                echo esc_html(__('WPMCP doesn\'t store this password and can\'t show it again.', 'wpmcp') . ' ' . $where . ' ' . __('Lost it? Revoke this connection on the Connections tab and create a new one.', 'wpmcp'));
                 ?>
             </p>
         </div>
@@ -280,7 +281,7 @@ final class Connect_View
                 printf('<p class="wpmcp-public-address-warning">%s</p>', esc_html($screen->public_warning));
                 printf(
                     '<ul><li>%1$s</li><li>%2$s</li></ul>',
-                    esc_html__('Connect from your live site instead: open WP MCP, Connection there.', 'wpmcp'),
+                    esc_html__('Connect from your live site instead: open WPMCP, Connection there.', 'wpmcp'),
                     esc_html__('Or pick an app that runs on your computer: it can reach this site as it is.', 'wpmcp')
                 );
                 $base = admin_url('admin.php?page=' . Connection_Page::SLUG);
@@ -334,10 +335,10 @@ final class Connect_View
 
         $name = $this->labels->in_text($app, $screen->connector);
         $ask  = Client_App::Chatgpt === $app
-            ? __('In a ChatGPT chat with WP MCP turned on, ask: "List the WP MCP tools."', 'wpmcp')
+            ? __('In a ChatGPT chat with WPMCP turned on, ask: "List the WPMCP tools."', 'wpmcp')
             : sprintf(
                 /* translators: %s: app name, or "your app" */
-                __('Ask %s something simple, like "List the WP MCP tools."', 'wpmcp'),
+                __('Ask %s something simple, like "List the WPMCP tools."', 'wpmcp'),
                 $name
             );
         printf('<p class="wpmcp-lead">%s %s</p>', esc_html($ask), esc_html__('This page then looks for the sign-in on your site.', 'wpmcp'));

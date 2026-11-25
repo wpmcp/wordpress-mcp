@@ -8,7 +8,7 @@ use WPMCP\Admin\Connection\Connection_Assets;
 
 /**
  * The Connection screen's stylesheet and script load on that screen only,
- * including while the WP MCP menu carries the Memory pending badge (which
+ * including while the WPMCP menu carries the Memory pending badge (which
  * changes the first part of the screen's hook name), and ship inside src/,
  * the directory every release flavor copies.
  */

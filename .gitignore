@@ -11,3 +11,6 @@ CLAUDE.md
 
 # composer standard toolchain (tools/standard/composer.json); the PHPStan phar is cached outside the repo.
 /tools/standard/vendor/
+
+# JS test dependencies (tests/js/package-lock.json): npm ci --prefix tests/js
+/tests/js/node_modules/

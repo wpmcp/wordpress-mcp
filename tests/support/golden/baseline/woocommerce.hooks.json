@@ -276,7 +276,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -494,7 +494,7 @@
         ],
         [
           10,
-          "closure@pro/src/Pro/Plugin_Slots.php:2749",
+          "closure@pro/src/Pro/Plugin_Slots.php:2791",
           1
         ]
       ],
@@ -524,6 +524,11 @@
         [
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
           3
         ]
       ],
@@ -1524,6 +1529,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1842,7 +1854,7 @@
           1
         ]
       ],
-      "activate_<abspath>/wpmcp-pro": [
+      "activate_<abspath>/wpmcp-premium": [
         [
           10,
           "Freemius->_activate_plugin_event_hook",
@@ -2134,7 +2146,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -2372,7 +2384,7 @@
         ],
         [
           10,
-          "closure@pro/src/Pro/Plugin_Slots.php:2749",
+          "closure@pro/src/Pro/Plugin_Slots.php:2791",
           1
         ]
       ],
@@ -2402,6 +2414,11 @@
         [
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
           3
         ]
       ],
@@ -3402,6 +3419,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -3720,7 +3744,7 @@
           1
         ]
       ],
-      "activate_<abspath>/wpmcp-pro": [
+      "activate_<abspath>/wpmcp-premium": [
         [
           10,
           "Freemius->_activate_plugin_event_hook",
@@ -4002,7 +4026,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -4235,7 +4259,7 @@
         ],
         [
           10,
-          "closure@pro/src/Pro/Plugin_Slots.php:2749",
+          "closure@pro/src/Pro/Plugin_Slots.php:2791",
           1
         ]
       ],
@@ -4265,6 +4289,11 @@
         [
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
           3
         ]
       ],
@@ -5265,6 +5294,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5851,7 +5887,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -6069,7 +6105,7 @@
         ],
         [
           10,
-          "closure@pro/src/Pro/Plugin_Slots.php:2749",
+          "closure@pro/src/Pro/Plugin_Slots.php:2791",
           1
         ]
       ],
@@ -6099,6 +6135,11 @@
         [
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
           3
         ]
       ],
@@ -7099,6 +7140,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -7685,7 +7733,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -7903,7 +7951,7 @@
         ],
         [
           10,
-          "closure@pro/src/Pro/Plugin_Slots.php:2749",
+          "closure@pro/src/Pro/Plugin_Slots.php:2791",
           1
         ]
       ],
@@ -7933,6 +7981,11 @@
         [
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
           3
         ]
       ],
@@ -8933,6 +8986,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -9519,7 +9579,7 @@
       "fs_plugin_icon_wpmcp": [
         [
           10,
-          "closure@src/Freemius/Bootstrap.php:237",
+          "closure@src/Freemius/Bootstrap.php:243",
           1
         ]
       ],
@@ -9737,7 +9797,7 @@
         ],
         [
           10,
-          "closure@pro/src/Pro/Plugin_Slots.php:2749",
+          "closure@pro/src/Pro/Plugin_Slots.php:2791",
           1
         ]
       ],
@@ -9767,6 +9827,11 @@
         [
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
+          3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
           3
         ]
       ],
@@ -10767,6 +10832,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",

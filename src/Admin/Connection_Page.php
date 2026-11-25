@@ -2,6 +2,8 @@
 
 namespace WPMCP\Admin;
 
+use WPMCP\Admin\Connection\Activity_Hook;
+use WPMCP\Admin\Connection\Activity_Store;
 use WPMCP\Admin\Connection\App_Icons;
 use WPMCP\Admin\Connection\App_Labels;
 use WPMCP\Admin\Connection\Check_Result;
@@ -18,6 +20,7 @@ use WPMCP\Admin\Connection\Instructions_View;
 use WPMCP\Admin\Connection\Provisioned;
 use WPMCP\Admin\Connection\Sign_In;
 use WPMCP\Admin\Connection\Snippet_View;
+use WPMCP\Admin\Connection\Wp_Activity_Store;
 use WPMCP\Admin\Connection\Wp_Evidence_Source;
 use WPMCP\Auth\Client_Access;
 use WPMCP\Auth\Client_Metadata_Document;
@@ -277,7 +280,7 @@ class Connection_Page
     }
 
     /**
-     * Save who may manage WP MCP (issue #479). Management_Access::save()
+     * Save who may manage WPMCP (issue #479). Management_Access::save()
      * refuses a self-lockout, a non-administrator, a stale form and any
      * save while the wp-config.php constant is defined.
      */
@@ -318,6 +321,7 @@ class Connection_Page
             static fn (array $record): bool => $record['uuid'] !== $uuid || (int) $record['user_id'] !== $user_id
         ));
         update_option(self::OPTION, $records, false);
+        (new Wp_Activity_Store())->forget($user_id, $uuid);
 
         return ['action' => 'revoke', 'uuid' => $uuid, 'already_gone' => $already_gone];
     }
@@ -361,12 +365,14 @@ class Connection_Page
     }
 
     /**
-     * The screen's handlers, each behind the management guard: the desktop
-     * bundle download, the two AJAX actions of the Connect tab, and the
-     * stylesheet and script, which load on this screen only. Registering
-     * loads no class: the views and the AJAX handler are built when an
-     * action runs, so other admin screens keep their footprint
-     * (FootprintTest).
+     * The screen's handlers: behind the management guard, the desktop
+     * bundle download and the two AJAX actions of the Connect tab; the
+     * stylesheet and script, which load on this screen only; and the record
+     * of what apps do with the passwords, which "Check connection" and the
+     * Connections tab read (Activity_Hook on the MCP route, issue #1258).
+     * Registering loads no class: the views, the AJAX handler and the
+     * recorder are built when they run, so other screens and requests keep
+     * their footprint (FootprintTest).
      */
     public function register_handlers(): void
     {
@@ -374,6 +380,7 @@ class Connection_Page
         Management_Access::add_handler('wp_ajax_' . self::AJAX_CREATE, [$this, 'ajax_create']);
         Management_Access::add_handler('wp_ajax_' . self::AJAX_CHECK, [$this, 'ajax_check']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
+        add_filter('rest_post_dispatch', [Activity_Hook::class, 'on_rest_post_dispatch'], 99, 3);
     }
 
     /** admin-ajax: create a connection (Connection_Ajax::create()). */
@@ -479,7 +486,7 @@ class Connection_Page
      */
     public function check(Client_App $app, bool $connector, string $uuid, bool $self_test): ?array
     {
-        $source = new Wp_Evidence_Source();
+        $source = new Wp_Evidence_Source(new Wp_Activity_Store());
         $mcp_on = Exposure::is_enabled();
         if (Sign_In::Oauth === $app->sign_in($connector)) {
             $result = (new Connection_Check())->for_oauth($source->for_oauth($app), $mcp_on);
@@ -488,7 +495,7 @@ class Connection_Page
             if (null === $record) {
                 return null;
             }
-            $result = (new Connection_Check())->for_password($source->for_password($record['user_id'], $record['uuid'], $record['created']), $record['created'], $mcp_on);
+            $result = (new Connection_Check())->for_password($source->for_password($record['user_id'], $record['uuid'], $record['created']), $mcp_on);
         }
 
         return [
@@ -758,7 +765,7 @@ class Connection_Page
         if (! $exposed) {
             ?>
             <div class="notice notice-warning">
-                <p><strong><?php echo esc_html__('MCP is off on this site.', 'wpmcp'); ?></strong> <?php echo esc_html__('All WP MCP tools refuse, for all apps and passwords, until you turn it back on.', 'wpmcp'); ?></p>
+                <p><strong><?php echo esc_html__('MCP is off on this site.', 'wpmcp'); ?></strong> <?php echo esc_html__('All WPMCP tools refuse, for all apps and passwords, until you turn it back on.', 'wpmcp'); ?></p>
                 <form method="post" action="#wpmcp-tab-connect">
                     <input type="hidden" name="wpmcp_connection_action" value="toggle">
                     <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
@@ -798,8 +805,9 @@ class Connection_Page
     /** The Connections tab: the passwords this screen issued, the OAuth clients and the scoped identities. */
     private function render_connections(string $nonce, App_Icons $icons, App_Labels $labels): void
     {
-        $records = $this->records();
-        $oauth   = OAuth_Config::is_enabled() && [] !== $this->oauth_client_rows();
+        $records  = $this->records();
+        $oauth    = OAuth_Config::is_enabled() && [] !== $this->oauth_client_rows();
+        $activity = new Wp_Activity_Store();
 
         if ([] === $records && ! $oauth) {
             ?>
@@ -815,7 +823,7 @@ class Connection_Page
             ?>
             <div class="wpmcp-card">
                 <h2><?php echo esc_html__('Apps with an application password', 'wpmcp'); ?></h2>
-                <p class="wpmcp-intro"><?php echo esc_html__('Revoke one and that app is disconnected at once. WordPress records when a password is used at most once a day.', 'wpmcp'); ?></p>
+                <p class="wpmcp-intro"><?php echo esc_html__('Revoke one and that app is disconnected at once. Last used is the newest MCP request the app made with its password, with the name the app reports.', 'wpmcp'); ?></p>
                 <table class="widefat striped wpmcp-table">
                     <thead><tr>
                         <th scope="col"><?php echo esc_html__('App', 'wpmcp'); ?></th>
@@ -826,7 +834,7 @@ class Connection_Page
                     </tr></thead>
                     <tbody>
                     <?php foreach ($records as $record) : ?>
-                        <?php $this->render_password_row($nonce, $record, $icons, $labels); ?>
+                        <?php $this->render_password_row($nonce, $record, $icons, $labels, $activity); ?>
                     <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -841,16 +849,25 @@ class Connection_Page
         $this->render_identities();
     }
 
-    /** @param array{user_id: int, uuid: string, name: string, created: int, client?: string} $record */
-    private function render_password_row(string $nonce, array $record, App_Icons $icons, App_Labels $labels): void
+    /**
+     * One password this screen issued. Last used shows the newest MCP request
+     * the route answered for it and the client's name (issue #1258), on
+     * either protocol revision; a password WordPress accepted with no MCP
+     * request says so.
+     *
+     * @param array{user_id: int, uuid: string, name: string, created: int, client?: string} $record
+     */
+    private function render_password_row(string $nonce, array $record, App_Icons $icons, App_Labels $labels, Activity_Store $activities): void
     {
         $user_id   = $record['user_id'];
         $user      = get_userdata($user_id);
         $item      = \WP_Application_Passwords::get_user_application_password($user_id, $record['uuid']);
         $gone      = null === $item;
         $last_used = null === $item ? 0 : (int) $item['last_used'];
+        $activity  = $gone ? null : $activities->find($user_id, $record['uuid']);
         $app       = Client_App::from_request($record['client'] ?? '');
         $date      = self::str(get_option('date_format'));
+        $time      = self::str(get_option('time_format'));
         $app_name  = null === $app ? '' : '<span>' . esc_html($labels->label($app)) . '</span>';
         ?>
         <tr data-uuid="<?php echo esc_attr($record['uuid']); ?>"<?php echo $gone ? ' class="is-gone"' : ''; ?>>
@@ -864,10 +881,16 @@ class Connection_Page
             <td><?php echo esc_html((string) wp_date($date, $record['created'])); ?></td>
             <td>
                 <?php if ($gone) : ?>
-                    <span class="wpmcp-status is-gone"><span class="dashicons dashicons-warning" aria-hidden="true"></span><?php echo esc_html__('Removed outside WP MCP', 'wpmcp'); ?></span>
+                    <span class="wpmcp-status is-gone"><span class="dashicons dashicons-warning" aria-hidden="true"></span><?php echo esc_html__('Removed outside WPMCP', 'wpmcp'); ?></span>
                     <span class="wpmcp-help"><?php echo esc_html__('Its application password was deleted in WordPress, so nothing can sign in with it.', 'wpmcp'); ?></span>
+                <?php elseif (null !== $activity) : ?>
+                    <?php echo esc_html((string) wp_date(trim($date . ' ' . $time), $activity->last_at)); ?>
+                    <span class="wpmcp-help"><?php echo esc_html($activity->client->is_named() ? $activity->client->label() : __('Unnamed MCP client', 'wpmcp')); ?></span>
+                <?php elseif ($last_used > 0) : ?>
+                    <?php echo esc_html((string) wp_date($date, $last_used)); ?>
+                    <span class="wpmcp-help"><?php echo esc_html__('Password accepted, no MCP request yet', 'wpmcp'); ?></span>
                 <?php else : ?>
-                    <?php echo esc_html($last_used > 0 ? (string) wp_date($date, $last_used) : __('Not used yet', 'wpmcp')); ?>
+                    <?php echo esc_html__('Not used yet', 'wpmcp'); ?>
                 <?php endif; ?>
             </td>
             <td class="wpmcp-actions-cell">
@@ -898,7 +921,7 @@ class Connection_Page
     }
 
     /**
-     * The Settings tab: the MCP switch, OAuth sign-in, who may manage WP MCP,
+     * The Settings tab: the MCP switch, OAuth sign-in, who may manage WPMCP,
      * what happens when the plugin is deleted, and Advanced.
      *
      * @param array<string, mixed>|null $result
@@ -909,8 +932,8 @@ class Connection_Page
         <div class="wpmcp-card">
             <h2><?php echo esc_html__('MCP access', 'wpmcp'); ?></h2>
             <p class="wpmcp-intro"><?php echo esc_html($exposed
-                ? __('On: apps you connect can use WP MCP tools on this site. Turning it off is the quickest way to stop all agents at once.', 'wpmcp')
-                : __('Off: all WP MCP tools refuse, for all apps and passwords.', 'wpmcp')); ?></p>
+                ? __('On: apps you connect can use WPMCP tools on this site. Turning it off is the quickest way to stop all agents at once.', 'wpmcp')
+                : __('Off: all WPMCP tools refuse, for all apps and passwords.', 'wpmcp')); ?></p>
             <form method="post" action="#wpmcp-tab-settings">
                 <input type="hidden" name="wpmcp_connection_action" value="toggle">
                 <input type="hidden" name="_wpnonce" value="<?php echo esc_attr($nonce); ?>">
@@ -1007,7 +1030,7 @@ class Connection_Page
         <details class="wpmcp-advanced"<?php echo null === $fresh ? '' : ' open'; ?>>
             <summary><span class="dashicons dashicons-arrow-right-alt2" aria-hidden="true"></span><?php echo esc_html__('Advanced: endpoint, server self-test, OAuth discovery and proxies', 'wpmcp'); ?></summary>
             <h3><?php echo esc_html__('MCP endpoint', 'wpmcp'); ?></h3>
-            <?php (new Snippet_View())->copy_row('wpmcp-endpoint', $endpoint, __('Copy the endpoint address', 'wpmcp')); ?>
+            <?php (new Snippet_View())->copy_row('wpmcp-endpoint', $endpoint, __('Copy the endpoint address', 'wpmcp'), __('Copied the endpoint address.', 'wpmcp')); ?>
 
             <h3><?php echo esc_html__('Server self-test', 'wpmcp'); ?></h3>
             <p class="wpmcp-help"><?php echo esc_html__('Posts an MCP initialize request from this site to its own endpoint, without a password, and checks the answer.', 'wpmcp'); ?></p>
@@ -1060,14 +1083,14 @@ class Connection_Page
         $forced   = Data_Registry::is_forced();
         $editable = ! $forced && (! is_multisite() || current_user_can('manage_network_options'));
         ?>
-        <h2><?php echo esc_html__('Delete all WP MCP data when the plugin is deleted', 'wpmcp'); ?></h2>
+        <h2><?php echo esc_html__('Delete all WPMCP data when the plugin is deleted', 'wpmcp'); ?></h2>
         <p>
             <?php if ($delete) : ?>
                 <strong><?php echo esc_html__('On.', 'wpmcp'); ?></strong>
-                <?php echo esc_html__('Deleting WP MCP from the Plugins screen will also delete its tables (snapshots, redirects, search index), settings, OAuth clients and tokens, scoped identities, the application passwords issued here, and its directories, including site backup archives and file backups, on every site of the network. This cannot be undone.', 'wpmcp'); ?>
+                <?php echo esc_html__('Deleting WPMCP from the Plugins screen will also delete its tables (snapshots, redirects, search index), settings, OAuth clients and tokens, scoped identities, the application passwords issued here, and its directories, including site backup archives and file backups, on every site of the network. This cannot be undone.', 'wpmcp'); ?>
             <?php else : ?>
                 <strong><?php echo esc_html__('Off.', 'wpmcp'); ?></strong>
-                <?php echo esc_html__('WP MCP\'s data (snapshots, settings, credentials and backup archives) is kept when the plugin is deleted, so reinstalling picks up where you left off.', 'wpmcp'); ?>
+                <?php echo esc_html__('WPMCP\'s data (snapshots, settings, credentials and backup archives) is kept when the plugin is deleted, so reinstalling picks up where you left off.', 'wpmcp'); ?>
             <?php endif; ?>
         </p>
         <?php if ($forced) : ?>
@@ -1091,7 +1114,7 @@ class Connection_Page
     }
 
     /**
-     * Who may manage WP MCP (issue #479). Read-only while the
+     * Who may manage WPMCP (issue #479). Read-only while the
      * WPMCP_MANAGEMENT_ADMINS constant is defined, with listed ids that are
      * not administrators flagged; otherwise every administrator or a chosen
      * few. Agent execution is not affected either way.
@@ -1102,7 +1125,7 @@ class Connection_Page
         ?>
         <h2><?php echo esc_html__('Management access', 'wpmcp'); ?></h2>
         <p class="description">
-            <?php echo esc_html__('Who can open these screens and change WP MCP settings. Administrators left out keep the rest of wp-admin, and what agents may do is still decided by identities and governance.', 'wpmcp'); ?>
+            <?php echo esc_html__('Who can open these screens and change WPMCP settings. Administrators left out keep the rest of wp-admin, and what agents may do is still decided by identities and governance.', 'wpmcp'); ?>
         </p>
         <?php if ('constant' === $policy['source']) : ?>
             <p>
@@ -1115,9 +1138,9 @@ class Connection_Page
                 ?>
             </p>
             <?php if ('closed' === $policy['mode']) : ?>
-                <div class="notice notice-error inline"><p><?php echo esc_html__('The constant is not valid, so nobody can manage WP MCP until it is fixed. Use \'all\', a comma-separated list of user ids, or an array of user ids.', 'wpmcp'); ?></p></div>
+                <div class="notice notice-error inline"><p><?php echo esc_html__('The constant is not valid, so nobody can manage WPMCP until it is fixed. Use \'all\', a comma-separated list of user ids, or an array of user ids.', 'wpmcp'); ?></p></div>
             <?php elseif ('all' === $policy['mode']) : ?>
-                <p><?php echo esc_html__('Every administrator can manage WP MCP.', 'wpmcp'); ?></p>
+                <p><?php echo esc_html__('Every administrator can manage WPMCP.', 'wpmcp'); ?></p>
             <?php else : ?>
                 <?php $not_admin = Management_Access::non_admin_ids(); ?>
                 <ul style="margin-left: 1.5em; list-style: disc;">

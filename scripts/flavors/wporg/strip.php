@@ -240,28 +240,44 @@ $edits['src/MCP/Registrar.php'] = [
     /**
      * The refusal for a name that is not registered because it is a Pro
      * tool and this install has no active license (issue #631), or null
-     * when that is not the reason. Lets the meta-tools say "needs WP MCP
+     * when that is not the reason. Lets the meta-tools say "needs WPMCP
      * Pro" instead of "no tool by that name", with the same upgrade offer
-     * the admin banner carries (Pro_Refusal). Grants nothing: the tool is
-     * still unregistered and unreachable.
+     * the admin banner carries (Pro_Refusal). On the free zip, which carries
+     * no Pro code, a Pro tool is not declared at all and is known by name
+     * from the build (Pro_Catalog, issue #628), so it says WPMCP Pro is not
+     * installed. Grants nothing: the tool is still unregistered and
+     * unreachable.
      */
     public function pro_required(string $name): ?\WP_Error
     {
         $declared = $this->declared[ $name ] ?? $this->held_for_plugin[ $name ]['ability'] ?? null;
-        if (null === $declared || isset($this->abilities[ $name ]) || self::tier_permitted($declared->tier)) {
+        $not_here = null === $declared && ! isset($this->abilities[ $name ]) && $this->pro_catalog()->has($name);
+        if (! $not_here && (null === $declared || isset($this->abilities[ $name ]) || self::tier_permitted($declared->tier))) {
             return null;
         }
 
-        return new \WP_Error(
+        $upgrade     = Pro_Refusal::upgrade_url();
+        $unavailable = new Unavailable('pro_required', '', 'The account owner switches this site to an edition of WPMCP that includes it.', [ 'admin_url' => admin_url('admin.php?page=wpmcp') ]);
+        return $unavailable->attach(new \WP_Error(
             'pro_required',
             sprintf(
-                '"%s" is a WP MCP Pro tool, and this site has no active WP MCP Pro license, so the tool is not available here. Activate a WP MCP Pro license on this site to use it.',
+                $not_here
+                    ? '"%s" is a WPMCP Pro tool, and WPMCP Pro is not installed on this site, so the tool is not available here. Install WPMCP Pro on this site to use it.'
+                    : '"%s" is a WPMCP Pro tool, and this site has no active WPMCP Pro license, so the tool is not available here. Activate a WPMCP Pro license on this site to use it.',
                 $name
-            ) . Pro_Refusal::upgrade_sentence()
-        );
+            ) . Pro_Refusal::upgrade_sentence(),
+            null === $upgrade ? [] : [ 'upgrade_url' => $upgrade ]
+        ));
     }
 SRC . "\n\n",
         '',
+        1,
+    ],
+    // Issue #628: the transports' declared-but-hidden lookup has no tier to
+    // name either; governance and the held plugins remain.
+    [
+        '            return $this->pro_required($name) ?? $this->governance_disabled($name) ?? $this->plugin_inactive($name, $arguments);' . "\n",
+        '            return $this->governance_disabled($name) ?? $this->plugin_inactive($name, $arguments);' . "\n",
         1,
     ],
 ];
@@ -290,7 +306,7 @@ $edits['src/Tools/Compose/Build_Page.php'][] = [
     <<<'SRC'
         if ('elementor' === $spec['dialect']) {
             if (! Gate::can_use('build-page-builder')) {
-                throw new \RuntimeException('The builder (Elementor) dialect of build-page needs an active WP MCP Pro license on this site. The Gutenberg dialect is free and always available: pass dialect "gutenberg" to build the page with blocks instead.');
+                throw new \RuntimeException('The builder (Elementor) dialect of build-page needs an active WPMCP Pro license on this site. The Gutenberg dialect is free and always available: pass dialect "gutenberg" to build the page with blocks instead.');
             }
             if (! class_exists('\\Elementor\\Plugin')) {
                 throw new \RuntimeException('The builder dialect requires Elementor to be active on this site.');
@@ -1189,7 +1205,7 @@ $plugin_edits[] = [
 ];
 $plugin_edits[] = [
     "            // In-admin Pro banner: a dismissible pricing-page link for free\n"
-        . "            // installs on the Dashboard, the Plugins list and WP MCP screens\n"
+        . "            // installs on the Dashboard, the Plugins list and WPMCP screens\n"
         . "            // (docs/superpowers/specs/2026-11-01-pro-upgrade-banner.md).\n"
         . "            Pro_Banner::register();\n",
     '',
@@ -2123,52 +2139,6 @@ $edits['src/MCP/Tool_Exposure.php'] = [
     ],
 ];
 
-// The stdio transport answers a declared Pro tool with the Registrar's
-// pro_required refusal, which this build removes above, so the transport
-// goes back to "Unknown tool" for every unregistered name.
-$edits['src/MCP/Stdio_Transport.php'] = [
-    [
-        <<<'SRC'
-            // A declared Pro tool is not registered on an unlicensed install
-            // (Registrar::tier_permitted), so the client would otherwise be
-            // told it does not exist. Answer with call-tool's refusal, which
-            // names the plan and the upgrade (issue #631).
-            $refusal = self::pro_refusal($tool_name);
-            return self::error_response($id, -32602, $refusal ?? sprintf('Unknown tool: %s', $tool_name));
-SRC,
-        <<<'SRC'
-            return self::error_response($id, -32602, sprintf('Unknown tool: %s', $tool_name));
-SRC,
-        1,
-    ],
-    [
-        <<<'SRC'
-    /**
-     * The pro_required refusal for a tool name that maps to a declared Pro
-     * ability this install did not register, or null.
-     */
-    private static function pro_refusal(string $tool_name): ?string
-    {
-        if ('' === $tool_name || ! class_exists('\\WPMCP\\Plugin')) {
-            return null;
-        }
-        $plugin = \WPMCP\Plugin::instance();
-        foreach ($plugin->declared_abilities() as $ability) {
-            if (self::tool_name($ability->name) === $tool_name) {
-                $error = $plugin->registrar()->pro_required($ability->name);
-                return null === $error ? null : $error->get_error_message();
-            }
-        }
-        return null;
-    }
-
-
-SRC,
-        '',
-        1,
-    ],
-];
-
 $edits['src/Tools/Dispatch/Call_Tool.php'] = [
     [
         "            // A Pro tool on an unlicensed install says so (issue #631)\n"
@@ -2214,10 +2184,10 @@ $edits['src/MCP/Tool_Availability.php'] = [
             . "            \$count    = array_sum(\$pro);\n"
             . "            \$groups[] = [\n"
             . "                'reason'  => 'pro_required',\n"
-            . "                'label'   => sprintf('%d Pro tools: needs a WP MCP Pro license', \$count),\n"
+            . "                'label'   => sprintf('%d Pro tools: needs a WPMCP Pro license', \$count),\n"
             . "                'count'   => \$count,\n"
             . "                'domains' => \$pro,\n"
-            . "                'action'  => 'Activate a WP MCP Pro license on this site.' . Pro_Refusal::upgrade_sentence(),\n"
+            . "                'action'  => 'Activate a WPMCP Pro license on this site.' . Pro_Refusal::upgrade_sentence(),\n"
             . "            ];\n"
             . "        }\n",
         '',
@@ -2313,7 +2283,7 @@ $edits['src/Tools/Context/Get_Site_Context.php'][] = [
 // Two orphaned group docblocks and one enumeration of withheld paid tools.
 $edits['src/Plugin.php'][] = [
     "    /**\n"
-        . "     * WP MCP Cloud sync (MVP): connect a site to the cloud and push/pull its\n"
+        . "     * WPMCP Cloud sync (MVP): connect a site to the cloud and push/pull its\n"
         . "     * builder assets (custom widget + block specs) over a versioned,\n"
         . "     * backend-agnostic REST contract. All PRO, manage_options, domain 'cloud'.\n"
         . "     */\n",

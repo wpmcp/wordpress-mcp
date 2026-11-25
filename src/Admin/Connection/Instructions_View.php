@@ -73,7 +73,7 @@ final class Instructions_View
         $this->open(true);
         $this->item(__('Open a terminal in the project folder where you use Claude Code.', 'wpmcp'));
         $this->item(__('Run this command.', 'wpmcp'), false);
-        $this->snippets->code('wpmcp-snippet-claude-code', __('Terminal', 'wpmcp'), $made->configs['claude-code']['command'] ?? '', $this->secret($made), __('Copy the Claude Code command', 'wpmcp'), true);
+        $this->snippets->code('wpmcp-snippet-claude-code', __('Terminal', 'wpmcp'), $made->configs['claude-code']['command'] ?? '', $this->secret($made), __('Copy the Claude Code command', 'wpmcp'), __('Copied the Claude Code command, with the password.', 'wpmcp'), true);
         echo '</li>';
         $this->item(sprintf(
             /* translators: 1: the /mcp command, 2: the server name wpmcp */
@@ -92,7 +92,7 @@ final class Instructions_View
                 '<code>.mcp.json</code>',
                 '<code>mcpServers</code>'
             ));
-            $this->snippets->code('wpmcp-snippet-claude-code-json', '.mcp.json', $made->configs['claude-code']['snippet'] ?? '', $this->secret($made), __('Copy the .mcp.json block', 'wpmcp'));
+            $this->snippets->code('wpmcp-snippet-claude-code-json', '.mcp.json', $made->configs['claude-code']['snippet'] ?? '', $this->secret($made), __('Copy the .mcp.json block', 'wpmcp'), __('Copied the .mcp.json block, with the password.', 'wpmcp'));
         });
     }
 
@@ -100,7 +100,7 @@ final class Instructions_View
     {
         $this->routes($screen);
         $this->open(true);
-        $this->item(__('Download the WP MCP bundle for Claude Desktop.', 'wpmcp'), false);
+        $this->item(__('Download the WPMCP bundle for Claude Desktop.', 'wpmcp'), false);
         ?>
         <div class="wpmcp-actions"><a class="button button-primary" href="<?php echo esc_url($screen->bundle_url); ?>"><span class="dashicons dashicons-download" aria-hidden="true"></span><?php echo esc_html__('Download wpmcp.mcpb', 'wpmcp'); ?></a></div>
         <p class="wpmcp-fine"><?php echo esc_html__('No password inside: only this site\'s address and a small connector program.', 'wpmcp'); ?></p>
@@ -108,7 +108,7 @@ final class Instructions_View
         <?php
         $this->item(sprintf(
             /* translators: %s: the file name wpmcp.mcpb */
-            __('Double-click %s. Claude Desktop opens and offers to install WP MCP.', 'wpmcp'),
+            __('Double-click %s. Claude Desktop opens and offers to install WPMCP.', 'wpmcp'),
             '<strong>wpmcp.mcpb</strong>'
         ));
         $this->item(sprintf(
@@ -127,7 +127,7 @@ final class Instructions_View
                 __('Merge this into claude_desktop_config.json under %s, then quit and reopen Claude Desktop. The file only runs programs on your computer, so this starts the mcp-remote bridge to this site.', 'wpmcp'),
                 '<code>mcpServers</code>'
             ));
-            $this->snippets->code('wpmcp-snippet-claude-desktop', 'claude_desktop_config.json', $made->configs['claude-desktop']['snippet'] ?? '', $this->secret($made), __('Copy the Claude Desktop config', 'wpmcp'));
+            $this->snippets->code('wpmcp-snippet-claude-desktop', 'claude_desktop_config.json', $made->configs['claude-desktop']['snippet'] ?? '', $this->secret($made), __('Copy the Claude Desktop config', 'wpmcp'), __('Copied the Claude Desktop config, with the password.', 'wpmcp'));
         });
     }
 
@@ -136,7 +136,7 @@ final class Instructions_View
         $this->open(false);
         $this->item(sprintf(
             /* translators: 1: the project file .cursor/mcp.json, 2: the global file ~/.cursor/mcp.json */
-            __('Open %1$s in your project, or %2$s to use WP MCP in all your projects. Create the file if it isn\'t there.', 'wpmcp'),
+            __('Open %1$s in your project, or %2$s to use WPMCP in all your projects. Create the file if it isn\'t there.', 'wpmcp'),
             '<code>.cursor/mcp.json</code>',
             '<code>~/.cursor/mcp.json</code>'
         ));
@@ -146,7 +146,7 @@ final class Instructions_View
             '<code>wpmcp</code>',
             '<code>mcpServers</code>'
         ), false);
-        $this->snippets->code('wpmcp-snippet-cursor', '.cursor/mcp.json', $made->configs['cursor']['snippet'] ?? '', $this->secret($made), __('Copy the Cursor config', 'wpmcp'));
+        $this->snippets->code('wpmcp-snippet-cursor', '.cursor/mcp.json', $made->configs['cursor']['snippet'] ?? '', $this->secret($made), __('Copy the Cursor config', 'wpmcp'), __('Copied the Cursor config, with the password.', 'wpmcp'));
         echo '</li>';
         $this->item(sprintf(
             /* translators: %s: the server name wpmcp */
@@ -174,9 +174,9 @@ final class Instructions_View
             __('Open that file (%s), paste this and save.', 'wpmcp'),
             '<code>mcp_config.json</code>'
         ), false);
-        $this->snippets->code('wpmcp-snippet-antigravity', 'mcp_config.json', $made->configs['antigravity']['snippet'] ?? '', $this->secret($made), __('Copy the Antigravity config', 'wpmcp'));
+        $this->snippets->code('wpmcp-snippet-antigravity', 'mcp_config.json', $made->configs['antigravity']['snippet'] ?? '', $this->secret($made), __('Copy the Antigravity config', 'wpmcp'), __('Copied the Antigravity config, with the password.', 'wpmcp'));
         echo '</li>';
-        $this->item(__('Quit and reopen Antigravity, then start a new conversation so the WP MCP tools load.', 'wpmcp'));
+        $this->item(__('Quit and reopen Antigravity, then start a new conversation so the WPMCP tools load.', 'wpmcp'));
         $this->close();
         $this->end_howto();
     }
@@ -202,7 +202,7 @@ final class Instructions_View
             __('Paste this and save. VS Code reads the %s key.', 'wpmcp'),
             '<code>servers</code>'
         ), false);
-        $this->snippets->code('wpmcp-snippet-vscode', '.vscode/mcp.json', $made->configs['vscode']['snippet'] ?? '', $this->secret($made), __('Copy the VS Code config', 'wpmcp'));
+        $this->snippets->code('wpmcp-snippet-vscode', '.vscode/mcp.json', $made->configs['vscode']['snippet'] ?? '', $this->secret($made), __('Copy the VS Code config', 'wpmcp'), __('Copied the VS Code config, with the password.', 'wpmcp'));
         echo '</li>';
         $this->item(sprintf(
             /* translators: %s: the server name wpmcp */
@@ -217,13 +217,13 @@ final class Instructions_View
         <?php
         $this->open(false);
         $this->item(__('Most MCP apps need two things. The address:', 'wpmcp'), false);
-        $this->snippets->copy_row('wpmcp-snippet-endpoint', $screen->endpoint, __('Copy the address', 'wpmcp'));
+        $this->snippets->copy_row('wpmcp-snippet-endpoint', $screen->endpoint, __('Copy the address', 'wpmcp'), __('Copied the address.', 'wpmcp'));
         echo '</li>';
         $this->item(__('And this header (transport: streamable HTTP):', 'wpmcp'), false);
-        $this->snippets->code('wpmcp-snippet-header', __('Header', 'wpmcp'), 'Authorization: ' . $made->auth_header, $this->secret($made), __('Copy the header', 'wpmcp'), true);
+        $this->snippets->code('wpmcp-snippet-header', __('Header', 'wpmcp'), 'Authorization: ' . $made->auth_header, $this->secret($made), __('Copy the header', 'wpmcp'), __('Copied the header, with the password.', 'wpmcp'), true);
         echo '</li>';
         $this->item(__('If your app takes a JSON file, this is the common shape:', 'wpmcp'), false);
-        $this->snippets->code('wpmcp-snippet-generic', 'mcp.json', $made->configs['generic']['snippet'] ?? '', $this->secret($made), __('Copy the JSON block', 'wpmcp'));
+        $this->snippets->code('wpmcp-snippet-generic', 'mcp.json', $made->configs['generic']['snippet'] ?? '', $this->secret($made), __('Copy the JSON block', 'wpmcp'), __('Copied the JSON block, with the password.', 'wpmcp'));
         echo '</li>';
         $this->close();
         $this->end_howto();
@@ -248,7 +248,7 @@ final class Instructions_View
             if (! $names_url) {
                 continue;
             }
-            $this->snippets->copy_row('wpmcp-snippet-url', $screen->endpoint, __('Copy the MCP server address', 'wpmcp'));
+            $this->snippets->copy_row('wpmcp-snippet-url', $screen->endpoint, __('Copy the MCP server address', 'wpmcp'), __('Copied the MCP server address.', 'wpmcp'));
             echo '</li>';
         }
         $this->close();
@@ -337,7 +337,7 @@ final class Instructions_View
             <div class="wpmcp-mock" role="img" aria-label="<?php echo esc_attr__('Claude Desktop install dialog with a username field, an application password field and an Install button.', 'wpmcp'); ?>">
                 <div class="wpmcp-mock__bar"><i></i><i></i><i></i><span>Claude</span></div>
                 <div class="wpmcp-mock__body">
-                    <div class="wpmcp-mock__title">Install WP MCP?</div>
+                    <div class="wpmcp-mock__title">Install WPMCP?</div>
                     <div class="wpmcp-mock__field"><b>Username</b><span><?php echo esc_html($user_login); ?></span></div>
                     <div class="wpmcp-mock__field"><b>Application password</b><span class="is-focus">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;</span></div>
                     <span class="wpmcp-mock__button is-claude">Install</span>
@@ -356,7 +356,7 @@ final class Instructions_View
                 <div class="wpmcp-mock__bar"><i></i><i></i><i></i><span><?php echo esc_html($chatgpt ? 'ChatGPT' : 'Claude'); ?></span></div>
                 <div class="wpmcp-mock__body">
                     <div class="wpmcp-mock__title"><?php echo esc_html($chatgpt ? 'New connector' : 'Add custom connector'); ?></div>
-                    <div class="wpmcp-mock__field"><b>Name</b><span>WP MCP</span></div>
+                    <div class="wpmcp-mock__field"><b>Name</b><span>WPMCP</span></div>
                     <div class="wpmcp-mock__field"><b><?php echo esc_html($chatgpt ? 'MCP server URL' : 'Remote MCP server URL'); ?></b><span class="is-focus"><?php echo esc_html($endpoint); ?></span></div>
                     <?php if ($chatgpt) : ?>
                         <div class="wpmcp-mock__field"><b>Authentication</b><span>OAuth</span></div>

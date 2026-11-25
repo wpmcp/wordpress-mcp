@@ -60,10 +60,14 @@ gate rather than substitute for one:
 ## Verification
 
 - [ ] Full test suite green on every WordPress version and on the latest released MCP Adapter plugin (`bin/test-local.sh --all`; its summary names the adapter version).
-- [ ] All three artifacts built, each from the readme it ships:
-      - `scripts/build-release.sh` (the plugin, root `readme.txt`):
-        `dist/wpmcp-<version>.zip`, the headline GitHub download and the
-        Freemius deploy, with the upgrade banner and `Update URI`
+- [ ] All four artifacts built, each from the readme it ships:
+      - `scripts/build-release.sh` (the free plugin, root `readme.txt`):
+        `dist/wpmcp-<version>.zip`, the headline GitHub download, with the
+        upgrade banner and `Update URI`
+      - `scripts/build-release.sh --premium` (needs the pro/ submodule):
+        `dist/wpmcp-pro-<version>.zip`, the Freemius deploy and nothing else.
+        Licensed sites update to the package Freemius generates from it, so
+        deploying the free zip there would take Pro away from them.
       - `scripts/build-woo-release.sh` (WooCommerce, `scripts/flavors/woocommerce/readme.txt`):
         `dist/safe-mcp-for-woocommerce-<version>.zip`
       - `scripts/build-wporg-release.sh` (wp.org directory, `scripts/flavors/wporg/readme.txt`):

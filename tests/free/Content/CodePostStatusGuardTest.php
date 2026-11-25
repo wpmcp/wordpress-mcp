@@ -73,7 +73,7 @@ class CodePostStatusGuardTest extends \WP_UnitTestCase
         $id = self::factory()->post->create(['post_type' => 'astra-advanced-hook', 'post_status' => 'draft', 'post_title' => 'Snippet', 'post_content' => '']);
         update_post_meta($id, 'ast-advanced-hook-layout', 'hooks');
         update_post_meta($id, 'editor_type', $editor);
-        update_post_meta($id, 'ast-advanced-hook-php-code', "<?php echo 'Astra PHP from WP MCP'; ?>");
+        update_post_meta($id, 'ast-advanced-hook-php-code', "<?php echo 'Astra PHP from WPMCP'; ?>");
         return $id;
     }
 
@@ -82,7 +82,7 @@ class CodePostStatusGuardTest extends \WP_UnitTestCase
         $id = self::factory()->post->create(['post_type' => 'gp_elements', 'post_status' => 'draft', 'post_title' => 'Hook', 'post_content' => '']);
         update_post_meta($id, '_generate_element_type', 'hook');
         update_post_meta($id, '_generate_hook', 'generate_before_footer');
-        update_post_meta($id, '_generate_element_content', "<?php echo 'PHP from WP MCP'; ?>");
+        update_post_meta($id, '_generate_element_content', "<?php echo 'PHP from WPMCP'; ?>");
         if ($php) {
             update_post_meta($id, '_generate_hook_execute_php', 'true');
         }

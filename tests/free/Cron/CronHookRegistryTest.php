@@ -52,7 +52,7 @@ class CronHookRegistryTest extends \WP_UnitTestCase
         'src/Tools/Cron/Schedule_Event.php',
         // Undo of an Action Scheduler cancel re-creates the site's own action under its own hook.
         'src/Safety/Action_Scheduler_Snapshot.php',
-        // backup-now (#694) queues UpdraftPlus's own run hook; deactivating WP MCP must not cancel a backup.
+        // backup-now (#694) queues UpdraftPlus's own run hook; deactivating WPMCP must not cancel a backup.
         'src/Integrations/UpdraftPlus_Status.php',
     ];
 

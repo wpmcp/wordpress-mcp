@@ -6,7 +6,7 @@ use WPMCP\Tests\Support\Edition_Tree;
 use WPMCP\Tools\Content\Content_Guard;
 
 /**
- * Issue #517: every post type WP MCP itself creates is deliberately
+ * Issue #517: every post type WPMCP itself creates is deliberately
  * classified for the generic content tools, so a new store that holds
  * governance or private data cannot be left reachable through create-post,
  * update-post, the meta tools and the rest the way agent memory was.
@@ -103,7 +103,7 @@ class ContentGuardInternalTypesTest extends \WP_UnitTestCase
     }
 
     /**
-     * WP MCP post types, from source. The runtime registry is not used: other
+     * WPMCP post types, from source. The runtime registry is not used: other
      * tests register throwaway wpmcp_* types that are not the plugin's.
      *
      * @param array<string, string>|null $sources src/... path => absolute path; the public sources when null
@@ -124,7 +124,7 @@ class ContentGuardInternalTypesTest extends \WP_UnitTestCase
     {
         $types = self::own_post_types();
         foreach (array_diff(array_merge(self::GENERIC_ON_PURPOSE, self::READ_ONLY, self::GOVERNANCE_OR_PRIVATE), self::PRO_OWNED_TYPES) as $known) {
-            $this->assertContains($known, $types, 'the source scan is not finding WP MCP post types, so the classification below proves nothing');
+            $this->assertContains($known, $types, 'the source scan is not finding WPMCP post types, so the classification below proves nothing');
         }
         $this->assertSame([], array_values(array_intersect(self::PRO_OWNED_TYPES, $types)), 'PRO_OWNED_TYPES lists a type public code declares; drop it from the list');
         $this->assertSame([], array_values(array_diff(self::PRO_OWNED_TYPES, self::GENERIC_ON_PURPOSE, self::READ_ONLY, self::GOVERNANCE_OR_PRIVATE)), 'PRO_OWNED_TYPES lists a type with no classification');
@@ -146,7 +146,7 @@ class ContentGuardInternalTypesTest extends \WP_UnitTestCase
         $test->assertSame(
             1,
             (int) $generic + (int) $read + (int) $closed,
-            "WP MCP post type {$type} is not classified: add it to Content_Guard's internal lists (INTERNAL_TYPES for writes, PRIVATE_TYPES for reads), or to GENERIC_ON_PURPOSE here if the generic content tools are meant to reach it"
+            "WPMCP post type {$type} is not classified: add it to Content_Guard's internal lists (INTERNAL_TYPES for writes, PRIVATE_TYPES for reads), or to GENERIC_ON_PURPOSE here if the generic content tools are meant to reach it"
         );
 
         $test->assertSame($generic, Content_Guard::is_writable_post_type($type), "{$type}: generic writes do not match its classification");

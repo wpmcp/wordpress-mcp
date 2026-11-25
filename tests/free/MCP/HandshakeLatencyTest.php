@@ -16,7 +16,7 @@ use WPMCP\RateLimit\Rate_Limiter;
  * its connector checks past that, and Claude Code's version negotiation
  * probe times out at 5000ms. Measured on a WordPress 7.1 site with 21
  * plugins active (bin/bench-handshake.php), each handshake request costs
- * about 300ms on the server, of which WP MCP is about 25ms; the rest is
+ * about 300ms on the server, of which WPMCP is about 25ms; the rest is
  * WordPress and the other plugins booting. So these tests pin what is
  * ours: the handshake writes nothing to the database, each response says
  * how long the server took (Server-Timing, so a slow connection through a

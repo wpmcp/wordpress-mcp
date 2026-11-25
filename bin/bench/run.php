@@ -2,7 +2,7 @@
 <?php
 
 /**
- * The WP MCP request benchmark (module architecture, section 3.6 and
+ * The WPMCP request benchmark (module architecture, section 3.6 and
  * acceptance criteria A1): ten scenarios over HTTP against a running site,
  * one CSV row per request.
  *
@@ -32,8 +32,8 @@
  *   S5 Store API cart         S10 tools/call plugin-data-read list-operations
  *
  * --delta repeats S1 to S5 on every run with X-WPMCP-Bench-Inactive: 1, so
- * the probe drops WP MCP from active_plugins for that request: the rows with
- * wpmcp_active=0 are the same requests without WP MCP, and compare.php
+ * the probe drops WPMCP from active_plugins for that request: the rows with
+ * wpmcp_active=0 are the same requests without WPMCP, and compare.php
  * reports active minus inactive (the A1 delta). The MCP scenarios have no
  * inactive counterpart.
  *

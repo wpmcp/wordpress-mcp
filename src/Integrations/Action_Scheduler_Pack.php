@@ -39,7 +39,7 @@ if (! defined('ABSPATH')) {
  *    queue runner, whatever its schedule says. NOT undoable (what its hook
  *    does, such as sending mail or calling a service, stays done), so it is
  *    reported recoverable:false and needs confirm:true.
- * Both refuse WP MCP's own hooks (Core_Hooks::is_internal, issue #563), the
+ * Both refuse WPMCP's own hooks (Core_Hooks::is_internal, issue #563), the
  * same ones schedule-event refuses, and both take manage_options, the
  * capability Action Scheduler's admin screen takes.
  *
@@ -165,7 +165,7 @@ final class Action_Scheduler_Pack
             ],
             'actionscheduler-cancel-action' => $write + [
                 'mode'         => 'write',
-                'description'  => 'Cancel one pending Action Scheduler action so it never runs. Refuses an action that is not pending and WP MCP\'s own hooks. Off unless ' . self::OPT_IN_FILTER . '. Undo: rollback-operation queues it again, pending, on its old schedule (the canceled record keeps its id)',
+                'description'  => 'Cancel one pending Action Scheduler action so it never runs. Refuses an action that is not pending and WPMCP\'s own hooks. Off unless ' . self::OPT_IN_FILTER . '. Undo: rollback-operation queues it again, pending, on its old schedule (the canceled record keeps its id)',
                 'input_schema' => $one,
                 'validate'     => static fn (array $args): ?array => self::pending_refusal((int) $args['action_id'], 'cancel'),
                 'snapshot'     => static fn (array $args): array => [
@@ -176,7 +176,7 @@ final class Action_Scheduler_Pack
             ],
             'actionscheduler-run-action'    => $write + [
                 'mode'            => 'destructive',
-                'description'     => 'Run one pending Action Scheduler action now through the queue runner, whatever its schedule. Its hook\'s callbacks execute (mail, API calls, syncs) and that CANNOT be undone: recoverable:false, and it needs confirm:true after a preview. Refuses an action that is not pending and WP MCP\'s own hooks. Off unless ' . self::OPT_IN_FILTER,
+                'description'     => 'Run one pending Action Scheduler action now through the queue runner, whatever its schedule. Its hook\'s callbacks execute (mail, API calls, syncs) and that CANNOT be undone: recoverable:false, and it needs confirm:true after a preview. Refuses an action that is not pending and WPMCP\'s own hooks. Off unless ' . self::OPT_IN_FILTER,
                 'input_schema'    => $one,
                 'validate'        => static fn (array $args): ?array => self::pending_refusal((int) $args['action_id'], 'run'),
                 'confirm_preview' => static fn (array $args): array => self::run_preview((int) $args['action_id']),
@@ -221,7 +221,7 @@ final class Action_Scheduler_Pack
         }
         $hook = (string) \ActionScheduler::store()->fetch_action($id)->get_hook();
         if (Core_Hooks::is_internal($hook)) {
-            return self::refusal('internal_hook', sprintf('Refusing to %s action %d: "%s" is one of WP MCP\'s own hooks and moves on its own schedule.', $verb, $id, $hook), [ 'action_id' => $id, 'hook' => $hook ]);
+            return self::refusal('internal_hook', sprintf('Refusing to %s action %d: "%s" is one of WPMCP\'s own hooks and moves on its own schedule.', $verb, $id, $hook), [ 'action_id' => $id, 'hook' => $hook ]);
         }
         $status = (string) Action_Scheduler_Snapshot::status($id);
         if (Action_Scheduler_Snapshot::PENDING !== $status) {
@@ -458,7 +458,8 @@ final class Action_Scheduler_Pack
     private static function run(int $id): array
     {
         $before = count((array) \ActionScheduler::logger()->get_logs($id));
-        \ActionScheduler::runner()->process_action($id, 'WP MCP');
+        // @phpstan-ignore class.notFound, method.nonObject (Action Scheduler is not in the analysis stubs, as on the line above.)
+        \ActionScheduler::runner()->process_action($id, 'WPMCP');
         $status = (string) Action_Scheduler_Snapshot::status($id);
         $logs   = array_slice((array) \ActionScheduler::logger()->get_logs($id), $before);
         $lines  = [];

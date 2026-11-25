@@ -22,7 +22,7 @@ namespace WPMCP\Registry;
 final class Freshness
 {
     /** What the registry is compiled from, relative to the checkout root. */
-    public const INPUTS = ['src/Modules', 'pro/modules', 'src/Api', 'tools/registry/src', 'bin/build-registry.php'];
+    public const INPUTS = ['src/Modules', 'pro/modules', 'src/Api', 'tools/registry/src', 'bin/build-registry.php', 'tests/support/ability-manifest.php'];
 
     public const OUT = 'build/registry';
 

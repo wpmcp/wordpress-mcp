@@ -11,7 +11,7 @@ use WPMCP\Pro\Gate;
 use WPMCP\Tests\Support\Edition_Tree;
 
 /**
- * Issue #479: every WP MCP management entry point goes through the one
+ * Issue #479: every WPMCP management entry point goes through the one
  * management check. These tests enumerate what is actually registered
  * (menus, admin-post and AJAX handlers, REST routes, options.php groups),
  * so an entry point added later without the check fails the suite instead
@@ -54,7 +54,7 @@ class ManagementAccessEntryPointsTest extends \WP_UnitTestCase
         parent::tearDown();
     }
 
-    /** @return array<int, array{0: string, 1: string}> [menu slug, capability] for every WP MCP menu entry. */
+    /** @return array<int, array{0: string, 1: string}> [menu slug, capability] for every WPMCP menu entry. */
     private function wpmcp_menu_entries(): array
     {
         global $menu, $submenu;
@@ -84,7 +84,7 @@ class ManagementAccessEntryPointsTest extends \WP_UnitTestCase
     {
         $entries = $this->wpmcp_menu_entries();
 
-        $this->assertGreaterThan(5, count($entries), 'Expected the WP MCP menu and its screens.');
+        $this->assertGreaterThan(5, count($entries), 'Expected the WPMCP menu and its screens.');
         foreach ($entries as [$slug, $cap]) {
             $this->assertSame(Management_Access::CAPABILITY, $cap, "Menu entry {$slug} skips the management check.");
         }
@@ -120,7 +120,7 @@ class ManagementAccessEntryPointsTest extends \WP_UnitTestCase
     }
 
     /**
-     * Every admin-post and AJAX handler WP MCP registers, as
+     * Every admin-post and AJAX handler WPMCP registers, as
      * [hook, callback]. Ownership is decided by the callback (a WPMCP class
      * or a closure defined under src/), not the action name, so a handler
      * with an unprefixed action is still found.
@@ -174,7 +174,7 @@ class ManagementAccessEntryPointsTest extends \WP_UnitTestCase
     public function test_every_wpmcp_admin_post_and_ajax_handler_goes_through_the_check(): void
     {
         $handlers = $this->wpmcp_admin_handlers();
-        $this->assertGreaterThan(4, count($handlers), 'Expected the WP MCP admin-post and AJAX handlers.');
+        $this->assertGreaterThan(4, count($handlers), 'Expected the WPMCP admin-post and AJAX handlers.');
 
         $guarded = 0;
         foreach ($handlers as [$hook, $callback]) {
@@ -185,7 +185,7 @@ class ManagementAccessEntryPointsTest extends \WP_UnitTestCase
             $this->assertInstanceOf(
                 Guarded_Handler::class,
                 $callback,
-                "{$hook} is a WP MCP handler registered without the management check. Register it with Management_Access::add_handler()."
+                "{$hook} is a WPMCP handler registered without the management check. Register it with Management_Access::add_handler()."
             );
             $guarded++;
         }
@@ -284,7 +284,7 @@ class ManagementAccessEntryPointsTest extends \WP_UnitTestCase
         // code. The free build may register none; every route it does
         // register was still checked above.
         if (Edition_Tree::has_pro_code()) {
-            $this->assertGreaterThan(0, $checked, 'Expected the WP MCP admin REST routes (chat) to be registered.');
+            $this->assertGreaterThan(0, $checked, 'Expected the WPMCP admin REST routes (chat) to be registered.');
         } else {
             $this->assertArrayNotHasKey('/wpmcp/v1/chat/message', $wp_rest_server->get_routes(), 'The free build registers no chat routes.');
         }
@@ -292,7 +292,7 @@ class ManagementAccessEntryPointsTest extends \WP_UnitTestCase
 
     public function test_every_wpmcp_options_page_group_needs_the_management_capability(): void
     {
-        // Only WP MCP's own admin_init callbacks: the whole action also runs
+        // Only WPMCP's own admin_init callbacks: the whole action also runs
         // core's update checks and header-sending code.
         global $wp_filter;
         $src = (string) realpath(__DIR__ . '/../../../src');

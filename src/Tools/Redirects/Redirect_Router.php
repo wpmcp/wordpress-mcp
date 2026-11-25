@@ -19,9 +19,9 @@ if (! defined('ABSPATH')) {
  * and snapshot rules.
  *
  * The choice, made before anything is read or written:
- *  - provider:'wpmcp' always uses WP MCP's own managed table;
+ *  - provider:'wpmcp' always uses WPMCP's own managed table;
  *  - a named provider must be registered and active, or the call is refused;
- *  - with no provider named, the one active redirect plugin is used, WP MCP's
+ *  - with no provider named, the one active redirect plugin is used, WPMCP's
  *    own table when none is active, and the call is refused when two or more
  *    are active, so a redirect never lands in a plugin the caller did not
  *    mean.
@@ -34,7 +34,7 @@ final class Redirect_Router
     public const PROVIDER_HINT = 'wpmcp, redirection or rankmath; default: the one active redirect plugin, else wpmcp';
 
     /**
-     * The routed answer, or null when WP MCP's own table should handle the
+     * The routed answer, or null when WPMCP's own table should handle the
      * call.
      *
      * @return array<string,mixed>|\WP_Error|null
@@ -50,7 +50,7 @@ final class Redirect_Router
         $out = ($provider['route'])($tool, $args);
         if ($out instanceof \WP_Error) {
             $data = $out->get_error_data();
-            $out->add_data(( is_array($data) ? $data : [] ) + [ 'provider' => $id, 'builtin_option' => 'Pass provider:"wpmcp" to use WP MCP\'s own redirect table instead.' ]);
+            $out->add_data(( is_array($data) ? $data : [] ) + [ 'provider' => $id, 'builtin_option' => 'Pass provider:"wpmcp" to use WPMCP\'s own redirect table instead.' ]);
             return $out;
         }
 
@@ -58,7 +58,7 @@ final class Redirect_Router
     }
 
     /**
-     * The provider this call goes to: [id, definition], null for WP MCP's own
+     * The provider this call goes to: [id, definition], null for WPMCP's own
      * table, or the refusal.
      *
      * @return array{0:string,1:array<string,mixed>}|\WP_Error|null

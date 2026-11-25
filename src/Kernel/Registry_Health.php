@@ -62,12 +62,12 @@ final class Registry_Health
         }
         if (! $this->reported) {
             $this->reported = true;
-            ($this->log)('WP MCP: ' . $problem);
+            ($this->log)('WPMCP: ' . $problem);
             ($this->add_action)('admin_notices', static function () use ($problem): void {
                 if (! current_user_can('manage_options')) {
                     return;
                 }
-                printf('<div class="notice notice-error"><p>%s</p></div>', esc_html('WP MCP: ' . $problem));
+                printf('<div class="notice notice-error"><p>%s</p></div>', esc_html('WPMCP: ' . $problem));
             });
         }
         return true;

@@ -8,7 +8,7 @@ use WPMCP\Site_Tables;
 use WPMCP\Tools\Content\Update_Post;
 
 /**
- * Every per-site table WP MCP owns exists on every site of a network
+ * Every per-site table WPMCP owns exists on every site of a network
  * (issue #527): after a network activation, on a site created later, and
  * lazily on a site that is still missing them.
  *
@@ -110,7 +110,7 @@ class NetworkSiteTablesTest extends \WP_UnitTestCase
         $this->assertSame(Data_Registry::TABLES, array_keys(Site_Tables::installers()));
     }
 
-    /** A new sub-site with none of WP MCP's tables and no recorded version. */
+    /** A new sub-site with none of WPMCP's tables and no recorded version. */
     private function bare_sub_site(): int
     {
         $this->setExpectedDeprecated('wpmu_new_blog');

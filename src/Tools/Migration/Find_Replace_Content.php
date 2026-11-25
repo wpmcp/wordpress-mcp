@@ -4,10 +4,13 @@ namespace WPMCP\Tools\Migration;
 
 use WPMCP\Safety\Kses_Safety;
 use WPMCP\Safety\Mutation_Failed;
+use WPMCP\Safety\Post_Write_Refused;
 use WPMCP\Safety\Safe_Mutation;
 use WPMCP\Safety\Save_Filters;
+use WPMCP\Safety\Session_Id;
 use WPMCP\Safety\Snapshot_Store;
 use WPMCP\Tools\Backup\Url_Rewriter;
+use WPMCP\Tools\Builders\Builder_Meta_Keys;
 use WPMCP\Tools\Content\Code_Posts;
 use WPMCP\Tools\Content\Content_Guard;
 
@@ -22,10 +25,12 @@ if (! defined('ABSPATH')) {
  * The sibling of rewrite-site-urls, scoped to posts so that, unlike that
  * pass, it can be fully snapshot-backed: every changed post is written
  * through Safe_Mutation under ONE session id handed back to the caller, so
- * rollback-session undoes the whole pass. The pass runs with pruning held
- * and snapshot pruning keeps a named session whole (issue #439), so a pass
- * larger than Snapshot_Store::history_limit() is still undone in full; it
- * used to be refused outright (issue #442).
+ * rollback-session undoes the whole pass. That is the caller's session_id
+ * when one is given, so the pass joins that chat's session and is undone with
+ * its other writes, and a new id otherwise (issue #1255). The pass runs with
+ * pruning held and snapshot pruning keeps a named session whole (issue #439),
+ * so a pass larger than Snapshot_Store::history_limit() is still undone in
+ * full; it used to be refused outright (issue #442).
  *
  * Replacement inside meta reuses Url_Rewriter::transform(), the same
  * serialization-aware walk the URL rewrite uses: serialized values are
@@ -77,8 +82,10 @@ class Find_Replace_Content
     private bool $regex     = false;
     private string $replace = '';
 
-    public function __construct(private readonly Kses_Safety $kses = new Kses_Safety())
-    {
+    public function __construct(
+        private readonly Kses_Safety $kses = new Kses_Safety(),
+        private readonly Builder_Meta_Keys $builder_keys = new Builder_Meta_Keys()
+    ) {
     }
 
     public function handle(array $args): array
@@ -142,7 +149,8 @@ class Find_Replace_Content
 
         $this->assert_can_apply($scan, $confirm, $max_matches);
 
-        $session_id = wp_generate_uuid4();
+        $joined     = $this->joins_session($args);
+        $session_id = $joined ?? wp_generate_uuid4();
         $applied    = [];
         $failed     = [];
         // Held so no write of the pass prunes an earlier one; the next write
@@ -165,7 +173,9 @@ class Find_Replace_Content
         $out['applied']     = $applied;
         $out['failed']      = $failed;
         $out['recoverable'] = true;
-        $out['note']        = 'wpmcp/rollback-session with this session_id restores every changed post.';
+        $out['note']        = null === $joined
+            ? 'wpmcp/rollback-session with this session_id restores every changed post.'
+            : 'wpmcp/rollback-session with this session_id restores every changed post, with the other writes recorded under it.';
 
         return $out;
     }
@@ -238,6 +248,7 @@ class Find_Replace_Content
                 throw new \InvalidArgumentException($guard);
             }
             Code_Posts::assert_meta_writable(null, $keys);
+            $this->builder_keys->assert_writable($keys);
         }
         if (in_array('meta', $fields, true) && [] === $keys) {
             throw new \InvalidArgumentException('fields includes meta, so meta_keys must name the keys to search.');
@@ -452,6 +463,13 @@ class Find_Replace_Content
                 $skipped[] = $this->skip($post_id, $label, $plan['skip']);
                 continue;
             }
+            // The row is written raw, and a value that is serialized data is
+            // unserialized when it is read.
+            $refusal = $this->kses->serialized_refusal($m['value'], $plan['to'], 'replacement');
+            if (null !== $refusal) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Post_Write_Refused escapes the message it is given.
+                throw new Post_Write_Refused($refusal);
+            }
             $writes['meta'][ $m['id'] ] = ['from' => $m['value'], 'to' => $plan['to']];
         }
 
@@ -618,6 +636,28 @@ class Find_Replace_Content
     private function skip(int $post_id, string $field, string $reason): array
     {
         return ['post_id' => $post_id, 'field' => $field, 'reason' => $reason];
+    }
+
+    /**
+     * The caller's session_id, when one is given: the pass records under it
+     * and so joins that chat's session. Null asks for a new one. A session
+     * another user started is refused here, before anything is written, since
+     * Snapshot_Store would refuse every write of the pass into it.
+     *
+     * @param array<mixed> $args
+     * @throws Mutation_Failed When the session belongs to another user.
+     */
+    private function joins_session(array $args): ?string
+    {
+        $session = Session_Id::given($args);
+        if (null === $session) {
+            return null;
+        }
+        $denial = Snapshot_Store::session_write_denial($session);
+        if (null !== $denial) {
+            throw new Mutation_Failed($denial); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- session_write_denial() escapes the only variable part.
+        }
+        return $session;
     }
 
     private function assert_can_apply(array $scan, bool $confirm, int $max_matches): void

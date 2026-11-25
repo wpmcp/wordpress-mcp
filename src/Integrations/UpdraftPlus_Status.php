@@ -142,7 +142,7 @@ final class UpdraftPlus_Status
     private static function run_refusal(): ?array
     {
         if (false !== get_transient(self::RATE_TRANSIENT)) {
-            return [ 'code' => 'backup_rate_limited', 'message' => 'An UpdraftPlus backup was started through WP MCP in the last 10 minutes; wait before starting another.' ];
+            return [ 'code' => 'backup_rate_limited', 'message' => 'An UpdraftPlus backup was started through WPMCP in the last 10 minutes; wait before starting another.' ];
         }
         if (self::queued() || (bool) apply_filters('wpmcp_updraftplus_backup_running', false)) {
             return [ 'code' => 'backup_running', 'message' => 'An UpdraftPlus backup is already queued or running.' ];

@@ -65,7 +65,7 @@ final class Cron_Registry
     /** Statuses a job can still be moved out of by its next event. */
     private const ACTIVE = [ 'queued', 'running' ];
 
-    public const CANCELED_ERROR = 'Canceled because WP MCP was deactivated before the job finished. Start it again if you still need it.';
+    public const CANCELED_ERROR = 'Canceled because WPMCP was deactivated before the job finished. Start it again if you still need it.';
 
     /** @return string[] Every hook the plugin schedules. */
     public static function hooks(): array

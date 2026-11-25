@@ -56,7 +56,7 @@ class ProRefusalTest extends \WP_UnitTestCase
             $this->assertInstanceOf(\WP_Error::class, $error);
             $this->assertSame('pro_required', $error->get_error_code());
             $message = $error->get_error_message();
-            $this->assertStringContainsString('Activate a WP MCP Pro license on this site', $message);
+            $this->assertStringContainsString('Activate a WPMCP Pro license on this site', $message);
             $this->assertStringContainsString('utm_medium=tool-refusal', $message);
             $this->assertStringContainsString('code WPMCP20 takes 20% off', $message);
         });
@@ -72,8 +72,15 @@ class ProRefusalTest extends \WP_UnitTestCase
                 'params'  => [ 'name' => 'wpmcp-test-pro-only', 'arguments' => [] ],
             ]);
 
-            $this->assertSame(-32602, $response['error']['code']);
-            $this->assertSame($registrar->pro_required('wpmcp/test-pro-only')->get_error_message(), $response['error']['message']);
+            // A tool error carrying the refusal, not a protocol error (issue #628).
+            $this->assertArrayNotHasKey('error', $response);
+            $this->assertTrue($response['result']['isError']);
+            $message = $registrar->pro_required('wpmcp/test-pro-only')->get_error_message();
+            $this->assertStringStartsWith('Unavailable (pro_required): ' . $message, $response['result']['content'][0]['text']);
+            $envelope = $response['result']['_meta'][ \WPMCP\MCP\Refusal_Result::META_KEY ];
+            $this->assertSame('pro_required', $envelope['code']);
+            $this->assertSame('account_owner', $envelope['action']['who']);
+            $this->assertTrue($envelope['hidden']);
 
             $unknown = (new Stdio_Transport())->handle_request([
                 'jsonrpc' => '2.0',
@@ -89,7 +96,7 @@ class ProRefusalTest extends \WP_UnitTestCase
     {
         $message = Pro_Refusal::message('This tool');
 
-        $this->assertStringStartsWith('This tool is part of WP MCP Pro.', $message);
+        $this->assertStringStartsWith('This tool is part of WPMCP Pro.', $message);
         $this->assertStringContainsString('Upgrade at https://wpmcp-pro.com/pricing.html?coupon=WPMCP20', $message);
         $this->assertStringContainsString('utm_medium=tool-refusal', $message);
         $this->assertStringContainsString('code WPMCP20 takes 20% off', $message);

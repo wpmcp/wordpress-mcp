@@ -1,9 +1,9 @@
 # Claude WordPress prompt: rebuild a homepage hero with undo
 
-Use this when you want a fresh first screen on your homepage but want to see it live before you commit. Works in Claude, Claude Code, ChatGPT or Cursor connected to WP MCP. The homepage must be built with the block editor (Gutenberg) on the free plugin; on a page builder site, Pro adds the builder tools and the same undo.
+Use this when you want a fresh first screen on your homepage but want to see it live before you commit. Works in Claude, Claude Code, ChatGPT or Cursor connected to WPMCP. The homepage must be built with the block editor (Gutenberg) on the free plugin; on a page builder site, Pro adds the builder tools and the same undo.
 
 ```text
-You are editing my WordPress site through the WP MCP server. Use one session_id for every write in this task, for example "hero-refresh", and tell me what it is.
+You are editing my WordPress site through the WPMCP server. Use one session_id for every write in this task, for example "hero-refresh", and tell me what it is.
 
 1. Find the page set as the homepage and read it with get-page-snapshot. Tell me in two lines what the first section (the hero) says now: heading, subheading, button text and link.
 2. Propose a new hero for this audience: <describe your audience and offer>. Keep the existing structure (heading, short paragraph, one button). Show me the new text before writing anything.

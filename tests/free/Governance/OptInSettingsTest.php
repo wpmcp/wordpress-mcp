@@ -11,7 +11,7 @@ use WPMCP\Tools\Meta\Update_Option;
 
 /**
  * Issue #823 part 4: the operations that are off by default behind an
- * opt-in filter can be switched on from the WP MCP admin, a group at a
+ * opt-in filter can be switched on from the WPMCP admin, a group at a
  * time, by a site administrator (and network-wide by a network admin).
  *
  * Every toggle defaults off, a filter set in code wins (the toggle shows
@@ -131,7 +131,8 @@ class OptInSettingsTest extends \WP_UnitTestCase
         $groups = array_diff_key($all, array_flip(self::PRO_OWNED_GROUPS));
 
         $this->assertSame([], array_values(array_diff(array_keys($found), array_keys($groups))), 'opt_in_filter values with no settings toggle');
-        $this->assertSame([], array_values(array_diff(array_keys($groups), array_keys($found))), 'toggles for filters no pack declares');
+        // A behaviour group gates no operation, so no opt_in_filter names it.
+        $this->assertSame([], array_values(array_diff(array_keys($groups), array_keys($found), Opt_In_Settings::BEHAVIOUR_GROUPS)), 'toggles for filters no pack declares');
 
         foreach ($groups as $filter => $group) {
             $owner = $root . '/' . $group['owner'];

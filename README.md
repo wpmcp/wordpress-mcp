@@ -5,15 +5,15 @@
   <img src="assets/readme/wpmcp-logo-horizontal-light-bg.svg" width="420" alt="WPMCP, the WordPress MCP server plugin, logo">
 </picture>
 
-# WordPress MCP Server Plugin (WP MCP)
+# WordPress MCP Server Plugin (WPMCP)
 
-### AI agents can break a live WordPress or WooCommerce site. WP MCP lets you take the change back.
+### AI agents can break a live WordPress or WooCommerce site. WPMCP lets you take the change back.
 
-WP MCP is a free, self-hosted WordPress MCP plugin for Claude, ChatGPT, Cursor and other AI agents. It takes a snapshot before each supported write, rolls the change back on its own when the check after it fails, and lets you undo one change or a whole AI session, free.
+WPMCP is a free, self-hosted WordPress MCP plugin for Claude, ChatGPT, Cursor and other AI agents. It takes a snapshot before each supported write, rolls the change back on its own when the check after it fails, and lets you undo one change or a whole AI session, free.
 
-<img src="assets/readme/undo-demo.gif" width="900" alt="WordPress MCP server demo: an AI agent changes a page heading over MCP, then one click on Restore in the WP MCP History screen puts the original back">
+<img src="assets/readme/undo-demo.gif" width="900" alt="WordPress MCP server demo: an AI agent changes a page heading over MCP, then one click on Restore in the WPMCP History screen puts the original back">
 
-**Did WP MCP save you a rollback? [Star it on GitHub](https://github.com/wpmcp/wordpress-mcp) so other WordPress builders can find it.** It is a small project, and every star helps.
+**Did WPMCP save you a rollback? [Star it on GitHub](https://github.com/wpmcp/wordpress-mcp) so other WordPress builders can find it.** It is a small project, and every star helps.
 
 [Docs](https://wpmcp-pro.com/docs) · [Integrations](https://wpmcp-pro.com/integrations) · [Changelog](https://wpmcp-pro.com/changelog) · [Pricing](https://wpmcp-pro.com/pricing) · [WooCommerce edition](https://github.com/wpmcp/wordpress-mcp-for-woocommerce)
 
@@ -162,7 +162,7 @@ Then refresh the MCP servers list in Windsurf.
 
 ChatGPT, VS Code and other clients: see [Connect your AI client](#connect-your-ai-client-claude-code-claude-desktop-chatgpt-cursor) below.
 
-> **WP MCP Pro, 10% off for GitHub users:** use code `WPMCPGIT` at [wpmcp-pro.com/pricing](https://wpmcp-pro.com/pricing?coupon=WPMCPGIT&utm_source=github&utm_medium=referral&utm_content=readme)
+> **WPMCP Pro, 10% off for GitHub users:** use code `WPMCPGIT` at [wpmcp-pro.com/pricing](https://wpmcp-pro.com/pricing?coupon=WPMCPGIT&utm_source=github&utm_medium=referral&utm_content=readme)
 
 ## What the WordPress MCP server does
 
@@ -177,7 +177,7 @@ ChatGPT, VS Code and other clients: see [Connect your AI client](#connect-your-a
 **Works with your plugins.** Integrations for ACF, Yoast SEO and Rank Math, form, LMS, membership and other plugins register only while that plugin is active, so your AI client sees tools for what your site actually runs. Built on the WordPress Abilities API and the official WordPress MCP Adapter. [All integrations](https://wpmcp-pro.com/integrations).
 
 <p align="center">
-  <img src="assets/readme/history.png" width="900" alt="WP MCP History screen in wp-admin listing WordPress MCP agent operations, each with a one-click Restore button">
+  <img src="assets/readme/history.png" width="900" alt="WPMCP History screen in wp-admin listing WordPress MCP agent operations, each with a one-click Restore button">
 </p>
 
 ## How undo works
@@ -219,7 +219,7 @@ Pro comes from the Freemius checkout on the [pricing page](https://wpmcp-pro.com
 
 ## Developer docs
 
-Building on WP MCP or wiring it into your own agent? The full tool and protocol reference is in [docs/reference/](docs/reference/README.md). Guides for site owners are at [wpmcp-pro.com/docs](https://wpmcp-pro.com/docs).
+Building on WPMCP or wiring it into your own agent? The full tool and protocol reference is in [docs/reference/](docs/reference/README.md). Guides for site owners are at [wpmcp-pro.com/docs](https://wpmcp-pro.com/docs).
 
 ## Contributing
 
@@ -227,7 +227,7 @@ Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md), or
 
 ## Security
 
-WP MCP edits live sites on an agent's instructions, so every admin action is capability-checked and nonce-protected, output is escaped and database access is parameterized. Found a vulnerability? Please open a private security advisory rather than a public issue.
+WPMCP edits live sites on an agent's instructions, so every admin action is capability-checked and nonce-protected, output is escaped and database access is parameterized. Found a vulnerability? Please open a private security advisory rather than a public issue.
 
 ## License
 

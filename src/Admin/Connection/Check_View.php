@@ -33,7 +33,7 @@ final class Check_View
         if (! $result->mcp_on) {
             printf(
                 '<div class="notice notice-warning inline"><p>%s</p></div>',
-                esc_html__('MCP is off on this site, so all WP MCP tools refuse until you turn it back on on the Settings tab.', 'wpmcp')
+                esc_html__('MCP is off on this site, so all WPMCP tools refuse until you turn it back on on the Settings tab.', 'wpmcp')
             );
         }
 
@@ -60,45 +60,48 @@ final class Check_View
         }
     }
 
+    /**
+     * A password app the MCP route answered: the client as it names itself,
+     * on either protocol revision (issue #1258), and when.
+     */
     private function connected(Check_Result $result): void
     {
-        $session = $result->session;
-        $client  = null === $session ? '' : trim($session->client_name . ' ' . $session->client_version);
+        $activity = $result->activity;
+        $client   = null === $activity ? '' : $activity->client->label();
         $this->box('ok', __('Connected', 'wpmcp'), sprintf(
             /* translators: 1: the client's name and version as it reports them, 2: how long ago, such as "2 minutes" */
-            __('%1$s started an MCP session %2$s ago.', 'wpmcp'),
+            __('%1$s signed in %2$s ago.', 'wpmcp'),
             '' === $client ? __('An MCP client', 'wpmcp') : $client,
-            null === $session ? '' : human_time_diff($session->created_at, time())
+            null === $activity ? '' : human_time_diff($activity->first_at, time())
         ));
         echo '<ul class="wpmcp-evidence">';
         $this->password_line($result);
-        if (null !== $session) {
-            $this->line(true, __('MCP session started', 'wpmcp'), sprintf(
-                /* translators: 1: the client's name as it reports it, 2: a date and time */
-                __('By %1$s (the name the app reports). Last active %2$s.', 'wpmcp'),
-                '' === $session->client_name ? __('an MCP client', 'wpmcp') : $session->client_name,
-                $this->when($session->last_activity)
-            ));
+        if (null !== $activity) {
+            $this->line(true, __('MCP requests answered', 'wpmcp'), $activity->client->is_named()
+                ? sprintf(
+                    /* translators: 1: the client's name as it reports it, 2: a date and time */
+                    __('By %1$s (the name the app reports). Last active %2$s.', 'wpmcp'),
+                    $activity->client->name,
+                    $this->when($activity->last_at)
+                )
+                : sprintf(
+                    /* translators: %s: a date and time */
+                    __('By an MCP client that sent no name. Last active %s.', 'wpmcp'),
+                    $this->when($activity->last_at)
+                ));
         }
         $this->tool_line($result);
         echo '</ul>';
-        if ($result->session_count > 1) {
-            printf('<p class="wpmcp-fine">%s</p>', esc_html(sprintf(
-                /* translators: %d: number of MCP sessions */
-                _n('%d MCP session has started since this connection was made; this shows the newest.', '%d MCP sessions have started since this connection was made; this shows the newest.', $result->session_count, 'wpmcp'),
-                $result->session_count
-            )));
-        }
-        printf('<p class="wpmcp-fine">%s</p>', esc_html__('This check reads what WordPress recorded: the password\'s first use, the MCP session the app opened and its tool calls. It can\'t see inside your app.', 'wpmcp'));
+        printf('<p class="wpmcp-fine">%s</p>', esc_html__('This check reads what WordPress recorded: the password\'s first use, the MCP requests the app made with it and its tool calls. It can\'t see inside your app.', 'wpmcp'));
         $this->next_steps();
         echo '</div>';
     }
 
     private function password_only(Check_Result $result, string $name): void
     {
-        $this->box('warn', __('Password accepted, no MCP session yet', 'wpmcp'), sprintf(
+        $this->box('warn', __('Password accepted, no MCP request yet', 'wpmcp'), sprintf(
             /* translators: 1: a date and time, 2: app name */
-            __('WordPress accepted the password %1$s, but %2$s hasn\'t started an MCP session.', 'wpmcp'),
+            __('WordPress accepted the password %1$s, but hasn\'t answered an MCP request from %2$s yet.', 'wpmcp'),
             $this->when((int) $result->password_last_used),
             $name
         ));
@@ -173,7 +176,7 @@ final class Check_View
                 __('WordPress hasn\'t seen %s sign in yet.', 'wpmcp'),
                 $name
             )
-            : __('WordPress hasn\'t seen this password used, and no MCP session has started.', 'wpmcp'));
+            : __('WordPress hasn\'t seen this password used, and no MCP request has arrived.', 'wpmcp'));
         printf('<p class="wpmcp-subhead">%s</p><ol class="wpmcp-tips">', esc_html__('Try this', 'wpmcp'));
         foreach ($this->tips($app, $connector) as $tip) {
             echo '<li>' . wp_kses($tip, [ 'strong' => [], 'code' => [] ]) . '</li>';
@@ -286,7 +289,7 @@ final class Check_View
                 <?php
                 echo wp_kses(sprintf(
                     /* translators: %s: link to the History screen */
-                    __('Before each supported write, WP MCP saves a snapshot, and undo is free. Your changes are on the %s screen.', 'wpmcp'),
+                    __('Before each supported write, WPMCP saves a snapshot, and undo is free. Your changes are on the %s screen.', 'wpmcp'),
                     '<a href="' . esc_url(admin_url('admin.php?page=wpmcp')) . '">' . esc_html__('History', 'wpmcp') . '</a>'
                 ), [ 'a' => [ 'href' => true ] ]);
                 ?>

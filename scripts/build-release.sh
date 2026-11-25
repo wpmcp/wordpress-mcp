@@ -48,6 +48,8 @@ VERSION="$(sed -n "s/^define( 'WPMCP_VERSION', '\([0-9.]*\)' );/\1/p" "$ROOT/wpm
 
 # shellcheck source=scripts/lib/pro-leak-gate.sh
 . "$ROOT/scripts/lib/pro-leak-gate.sh"
+# shellcheck source=scripts/lib/premium-only-tag.sh
+. "$ROOT/scripts/lib/premium-only-tag.sh"
 MANIFEST="$(pro_manifest_file "$ROOT")"
 [ -r "$MANIFEST" ] || { echo "gate: no Pro manifest at $MANIFEST; the leak gate cannot run without it" >&2; exit 1; }
 pro_manifest_paths "$MANIFEST" > /dev/null || { echo "gate: $MANIFEST is malformed" >&2; exit 1; }
@@ -109,6 +111,10 @@ if [ "$PREMIUM" = 1 ]; then
     done
     find "$STAGE/pro" -mindepth 1 -name '.*' -prune -exec rm -rf {} +
     printf '%s\n' "$WPMCP_PREMIUM_MARKER_TEXT" > "$STAGE/$WPMCP_PREMIUM_MARKER"
+    # Freemius builds a free package from this upload too and offers it as a
+    # download; the header tag keeps pro/ and the marker out of it
+    # (scripts/lib/premium-only-tag.sh).
+    add_premium_only_tag "$STAGE/wpmcp.php" || { echo "gate: could not mark pro/ and the marker premium-only in the staged wpmcp.php" >&2; exit 1; }
 fi
 
 composer install --working-dir="$STAGE" --no-dev --optimize-autoloader --quiet --no-interaction
@@ -165,7 +171,7 @@ rm -f "$ZIP"
 
 # Gate: the compiled module registry ships (D11); without it the plugin boots
 # with no modules, their integrations and opt-in switches gone.
-zip_includes "$ZIP" "wpmcp/build/registry/boot.php" || { echo "gate: $ZIP has no build/registry" >&2; exit 1; }
+zip_includes "$ZIP" "$FOLDER/build/registry/boot.php" || { echo "gate: $ZIP has no build/registry" >&2; exit 1; }
 
 # Gate: every assets/ path that src/ resolves against WPMCP_DIR must be in the
 # zip, or the Freemius connect screen renders a 404 icon (#164).
@@ -202,6 +208,15 @@ if [ "$PREMIUM" = 1 ]; then
     assert_premium_zip "$ZIP" "$MANIFEST" || { echo "gate: $ZIP is not a valid premium build" >&2; exit 1; }
 else
     assert_free_zip "$ZIP" "$FOLDER" "$MANIFEST" || { echo "gate: $ZIP leaks Pro code or is not the free build" >&2; exit 1; }
+fi
+
+# Gate: only the premium zip names pro/ and the marker premium-only, and it
+# must, or the free package Freemius builds from the upload would carry them.
+ZIP_MAIN="$(unzip -p "$ZIP" "$FOLDER/wpmcp.php")"
+if [ "$PREMIUM" = 1 ]; then
+    grep -qxF " * @fs_premium_only $WPMCP_PREMIUM_ONLY_PATHS" <<<"$ZIP_MAIN" || { echo "gate: $ZIP does not list $WPMCP_PREMIUM_ONLY_PATHS under @fs_premium_only" >&2; exit 1; }
+elif grep -q '@fs_premium_only' <<<"$ZIP_MAIN"; then
+    echo "gate: the free zip carries an @fs_premium_only tag" >&2; exit 1
 fi
 
 echo "built $ZIP"

@@ -223,7 +223,7 @@ class RefusalMessagesTest extends \WP_UnitTestCase
                 $result = $tool->handle(['name' => 'wpmcp/test-pro-only']);
                 $this->assertInstanceOf(\WP_Error::class, $result);
                 $this->assertSame('pro_required', $result->get_error_code());
-                $this->assertStringContainsString('WP MCP Pro', $result->get_error_message());
+                $this->assertStringContainsString('WPMCP Pro', $result->get_error_message());
             }
 
             // A name nobody declared is still "no such tool".

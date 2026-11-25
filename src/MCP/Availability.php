@@ -102,8 +102,8 @@ final class Availability
         }
         return new Unavailable(
             'pro_required',
-            sprintf('"%s" is not included in the edition of WP MCP this site runs.', $a->name),
-            'The account owner switches this site to an edition of WP MCP that includes it.',
+            sprintf('"%s" is not included in the edition of WPMCP this site runs.', $a->name),
+            'The account owner switches this site to an edition of WPMCP that includes it.',
             [ 'admin_url' => admin_url('admin.php?page=wpmcp') ]
         );
     }
@@ -196,7 +196,7 @@ final class Availability
             return new Unavailable(
                 'disabled_by_admin',
                 sprintf('"%s" is disabled by governance: the %s toggle for "%s" is off.', $a->name, $dimension, $key),
-                'A site administrator switches it back on under WP MCP > Abilities in wp-admin.',
+                'A site administrator switches it back on under WPMCP > Abilities in wp-admin.',
                 [ 'admin_url' => admin_url('admin.php?page=wpmcp-abilities') ]
             );
         }
@@ -221,7 +221,7 @@ final class Availability
             return new Unavailable(
                 'opt_in_required',
                 sprintf('%s is off by default, and this site has not opted in (%s).', $a->name, $filter),
-                sprintf('A site administrator switches it on under WP MCP > Opt-in operations, or a developer adds add_filter(\'%s\', \'__return_true\');.', $filter),
+                sprintf('A site administrator switches it on under WPMCP > Opt-in operations, or a developer adds add_filter(\'%s\', \'__return_true\');.', $filter),
                 [ 'admin_url' => admin_url('admin.php?page=wpmcp-opt-in') ]
             );
         }
@@ -266,8 +266,8 @@ final class Availability
         if (null === $identity) {
             return new Unavailable(
                 'identity_scope',
-                'This connection acts as a WP MCP identity that does not exist on this site (it was deleted or renamed), so no tool can run.',
-                'A site administrator connects the client again with an existing identity under WP MCP > Connection.',
+                'This connection acts as a WPMCP identity that does not exist on this site (it was deleted or renamed), so no tool can run.',
+                'A site administrator connects the client again with an existing identity under WPMCP > Connection.',
                 [ 'admin_url' => $connection ]
             );
         }
@@ -277,8 +277,8 @@ final class Availability
         if (! Governance::is_within_identity_scope($a)) {
             return new Unavailable(
                 'identity_scope',
-                sprintf('"%s" is outside the scope of the WP MCP identity this connection acts as.', $a->name),
-                'A site administrator widens that identity or connects with another one under WP MCP > Connection.',
+                sprintf('"%s" is outside the scope of the WPMCP identity this connection acts as.', $a->name),
+                'A site administrator widens that identity or connects with another one under WPMCP > Connection.',
                 [ 'admin_url' => $connection ]
             );
         }
@@ -297,8 +297,8 @@ final class Availability
     {
         return new Unavailable(
             'identity_scope',
-            'The WP MCP identity this connection acts as refused this request.',
-            'A site administrator can see which rule refused it in the WP MCP governance audit log, and change the identity under WP MCP > Connection.',
+            'The WPMCP identity this connection acts as refused this request.',
+            'A site administrator can see which rule refused it in the WPMCP governance audit log, and change the identity under WPMCP > Connection.',
             [ 'admin_url' => admin_url('admin.php?page=wpmcp-audit-log'), 'hidden' => true ]
         );
     }

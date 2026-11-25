@@ -14,8 +14,10 @@
 <phpunit bootstrap="tests/bootstrap-fast.php" colors="true" cacheResult="false">
   <testsuites>
     <testsuite name="fast">
+      <file>tests/free/Admin/Connection/ActivityRecorderTest.php</file>
       <file>tests/free/Admin/Connection/ConnectFlowTest.php</file>
       <file>tests/free/Admin/Connection/ConnectionCheckTest.php</file>
+      <file>tests/free/Admin/Connection/McpClientTest.php</file>
       <file>tests/free/Auth/PkceTest.php</file>
       <file>tests/free/Auth/ProtectedResourceMetadataTest.php</file>
       <file>tests/free/Code/PhpSnippetValidatorTest.php</file>
@@ -39,6 +41,7 @@
       <file>tests/free/Cron/CronHookRegistryTest.php</file>
       <file>tests/free/Diagnostics/GetDebugConfigTest.php</file>
       <file>tests/free/I18n/ListLanguagesTest.php</file>
+      <file>tests/free/Lint/BrandNameGuardTest.php</file>
       <file>tests/free/Lint/OverclaimWordingGuardTest.php</file>
       <file>tests/free/Lint/PhpcsBaselineTest.php</file>
       <file>tests/free/MCP/AbilityAnnotationsTest.php</file>
@@ -51,6 +54,7 @@
       <file>tests/free/Proxy/ProxyGatewayRoutingTest.php</file>
       <file>tests/free/Proxy/ProxyProtocolTest.php</file>
       <file>tests/free/Proxy/ProxySiteResolutionTest.php</file>
+      <file>tests/free/Release/StandardGateTest.php</file>
       <file>tests/free/Release/TestGateTest.php</file>
       <file>tests/free/Safety/AnyStatusQueryGuardTest.php</file>
       <file>tests/free/Safety/DirectPostWriteGuardTest.php</file>

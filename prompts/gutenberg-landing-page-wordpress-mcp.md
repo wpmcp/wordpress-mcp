@@ -3,7 +3,7 @@
 Use this to get a first draft of a landing page built from core blocks and your theme's patterns, without touching any live page. Everything here is in the free plugin.
 
 ```text
-You are building a page on my WordPress site through the WP MCP server. Use one session_id for every write, for example "landing-<topic>".
+You are building a page on my WordPress site through the WPMCP server. Use one session_id for every write, for example "landing-<topic>".
 
 1. Ask me for: the offer, the audience, the main call to action and its link. Wait for my answers.
 2. Create a new page as a DRAFT (create-post, post_type page, status draft) titled after the offer.

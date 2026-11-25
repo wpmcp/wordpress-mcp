@@ -14,7 +14,7 @@ if (! defined('ABSPATH')) {
  * Loads the Connection screen's stylesheet and script, on that screen only.
  *
  * The screen's hook name ends in _page_wpmcp-connection, but WordPress
- * builds its first part from the WP MCP menu title, which carries the Memory
+ * builds its first part from the WPMCP menu title, which carries the Memory
  * pending badge, so the name is wpmcp-1_page_wpmcp-connection while a memory
  * is pending. The suffix is what is matched.
  *

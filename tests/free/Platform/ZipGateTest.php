@@ -64,6 +64,34 @@ final class ZipGateTest extends \WP_UnitTestCase
         $this->assertSame(0, $status);
     }
 
+    /**
+     * Each release build checks for the registry under the root folder of
+     * the zip it just built, never under a literal folder name: the premium
+     * zip is rooted at wpmcp-pro/, so a literal wpmcp/ path failed every
+     * `scripts/build-release.sh --premium` run.
+     *
+     * @return array<string, array{0: string}>
+     */
+    public static function release_builds(): array
+    {
+        return [
+            'self-hosted (free and premium)' => ['scripts/build-release.sh'],
+            'WooCommerce'                    => ['scripts/build-woo-release.sh'],
+            'wordpress.org'                  => ['scripts/build-wporg-release.sh'],
+        ];
+    }
+
+    /**
+     * @dataProvider release_builds
+     */
+    public function test_each_release_build_checks_the_registry_under_its_own_zip_root(string $script): void
+    {
+        $source = (string) file_get_contents(dirname(__DIR__, 3) . '/' . $script);
+
+        $this->assertSame(1, preg_match_all('/^zip_includes "\$ZIP" "([^"]+)"/m', $source, $calls), $script . ' should check the registry exactly once');
+        $this->assertMatchesRegularExpression('#^\$(FOLDER|SLUG)/build/registry/boot\.php$#', $calls[1][0], $script . ' must name the zip root through its variable, not a literal folder');
+    }
+
     public function test_an_unreadable_zip_is_not_reported_clean(): void
     {
         $out = [];

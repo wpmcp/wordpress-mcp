@@ -39,6 +39,12 @@ class Registrar
      */
     private array $held_for_plugin = [];
 
+    /**
+     * The Pro tools this copy knows by name only (issue #628), read from the
+     * compiled registry on first use when none was given. See pro_catalog().
+     */
+    private ?Pro_Catalog $pro_catalog;
+
     /** @var array<string, true> abilities whose execute() has begun but not yet checked permission. */
     private static array $invoked = [];
 
@@ -70,6 +76,25 @@ class Registrar
     public static function current_call(): int
     {
         return self::$depth > 0 ? self::$call_id : 0;
+    }
+
+    /** @param Pro_Catalog|null $pro_catalog the Pro tool names this copy knows; null reads the build's list when first needed */
+    public function __construct(?Pro_Catalog $pro_catalog = null)
+    {
+        $this->pro_catalog = $pro_catalog;
+    }
+
+    /**
+     * The Pro tools this copy knows by name only: the build's list on a copy
+     * without the Pro code (the free zip), none where the Pro code is
+     * loaded, whose own abilities answer. Read once, when a refusal needs it.
+     */
+    private function pro_catalog(): Pro_Catalog
+    {
+        return $this->pro_catalog ??= Pro_Catalog::for_build(
+            defined('WPMCP_PRO_BUILD'),
+            \WPMCP\Plugin::instance()->kernel()->registry()->data_file(Pro_Catalog::DATA_FILE)
+        );
     }
 
     /**
@@ -660,25 +685,34 @@ class Registrar
     /**
      * The refusal for a name that is not registered because it is a Pro
      * tool and this install has no active license (issue #631), or null
-     * when that is not the reason. Lets the meta-tools say "needs WP MCP
+     * when that is not the reason. Lets the meta-tools say "needs WPMCP
      * Pro" instead of "no tool by that name", with the same upgrade offer
-     * the admin banner carries (Pro_Refusal). Grants nothing: the tool is
-     * still unregistered and unreachable.
+     * the admin banner carries (Pro_Refusal). On the free zip, which carries
+     * no Pro code, a Pro tool is not declared at all and is known by name
+     * from the build (Pro_Catalog, issue #628), so it says WPMCP Pro is not
+     * installed. Grants nothing: the tool is still unregistered and
+     * unreachable.
      */
     public function pro_required(string $name): ?\WP_Error
     {
         $declared = $this->declared[ $name ] ?? $this->held_for_plugin[ $name ]['ability'] ?? null;
-        if (null === $declared || isset($this->abilities[ $name ]) || self::tier_permitted($declared->tier)) {
+        $not_here = null === $declared && ! isset($this->abilities[ $name ]) && $this->pro_catalog()->has($name);
+        if (! $not_here && (null === $declared || isset($this->abilities[ $name ]) || self::tier_permitted($declared->tier))) {
             return null;
         }
 
-        return new \WP_Error(
+        $upgrade     = Pro_Refusal::upgrade_url();
+        $unavailable = new Unavailable('pro_required', '', 'The account owner switches this site to an edition of WPMCP that includes it.', [ 'admin_url' => admin_url('admin.php?page=wpmcp') ]);
+        return $unavailable->attach(new \WP_Error(
             'pro_required',
             sprintf(
-                '"%s" is a WP MCP Pro tool, and this site has no active WP MCP Pro license, so the tool is not available here. Activate a WP MCP Pro license on this site to use it.',
+                $not_here
+                    ? '"%s" is a WPMCP Pro tool, and WPMCP Pro is not installed on this site, so the tool is not available here. Install WPMCP Pro on this site to use it.'
+                    : '"%s" is a WPMCP Pro tool, and this site has no active WPMCP Pro license, so the tool is not available here. Activate a WPMCP Pro license on this site to use it.',
                 $name
-            ) . Pro_Refusal::upgrade_sentence()
-        );
+            ) . Pro_Refusal::upgrade_sentence(),
+            null === $upgrade ? [] : [ 'upgrade_url' => $upgrade ]
+        ));
     }
 
     /**
@@ -807,6 +841,30 @@ class Registrar
     }
 
     /**
+     * The refusal for an advertised MCP tool name that this site declares
+     * but does not register for this connection (issue #628): a tool outside
+     * the edition this site runs (declared, or known by name from the build
+     * on a copy that carries none of its code), one governance switched off,
+     * or one held back because its plugin is not active. Null when nothing
+     * declares the name, or it is registered. The transports answer a direct
+     * call with it as a tool error, so only a name nothing declares is
+     * unknown. Grants nothing.
+     *
+     * @param array<mixed> $arguments the call's arguments, if any
+     */
+    public function hidden_for_tool(string $tool_name, array $arguments = []): ?\WP_Error
+    {
+        $arguments = array_filter($arguments, 'is_string', ARRAY_FILTER_USE_KEY);
+        foreach (array_merge(array_keys($this->declared + $this->held_for_plugin), $this->pro_catalog()->names()) as $name) {
+            if (isset($this->abilities[ $name ]) || Stdio_Transport::tool_name($name) !== $tool_name) {
+                continue;
+            }
+            return $this->pro_required($name) ?? $this->governance_disabled($name) ?? $this->plugin_inactive($name, $arguments);
+        }
+        return null;
+    }
+
+    /**
      * The refusal for a name that is declared but not registered because
      * governance switched it off (issue #772), or null when that is not
      * the reason. Names the layer that decided (an ability, domain or
@@ -829,14 +887,14 @@ class Registrar
         $key                  = 'ability' === $dimension ? $name : $declared->{$dimension};
         if ('toggle' === $kind) {
             $cause = sprintf('the %s toggle for "%s" is off', $dimension, $key);
-            $fix   = 'An administrator can switch it back on under WP MCP > Abilities in wp-admin, or with wpmcp/update-governance-settings.';
+            $fix   = 'An administrator can switch it back on under WPMCP > Abilities in wp-admin, or with wpmcp/update-governance-settings.';
         } else {
             $cause = sprintf('the wpmcp_%s_enabled filter on this site switches off "%s"', $dimension, $key);
             $fix   = 'An administrator or developer has to change that filter in the site code before it can be used.';
         }
 
         $unavailable = 'toggle' === $kind
-            ? new Unavailable('disabled_by_admin', '', 'A site administrator switches it back on under WP MCP > Abilities.', [ 'admin_url' => admin_url('admin.php?page=wpmcp-abilities') ])
+            ? new Unavailable('disabled_by_admin', '', 'A site administrator switches it back on under WPMCP > Abilities.', [ 'admin_url' => admin_url('admin.php?page=wpmcp-abilities') ])
             : new Unavailable('disabled_by_code', '', 'A site developer changes the governance filter in the site code.');
 
         return $unavailable->attach(new \WP_Error(
@@ -993,7 +1051,9 @@ class Registrar
      * "callback threw an exception" prefix made a clear refusal read like a
      * crash. A PHP engine error (\Error, such as a TypeError) is a real
      * crash, so it keeps the prefix. An Opt_In_Required refusal gets the
-     * opt_in_required code; everything else keeps ability_callback_exception.
+     * opt_in_required code, with its filter in the data and the
+     * unavailability contract (issue #628); everything else keeps
+     * ability_callback_exception.
      */
     private static function exception_error(Ability $a, \Throwable $e): \WP_Error
     {
@@ -1011,10 +1071,11 @@ class Registrar
             );
         }
 
-        return new \WP_Error(
-            $e instanceof Opt_In_Required ? 'opt_in_required' : 'ability_callback_exception',
-            $message
-        );
+        if ($e instanceof Opt_In_Required) {
+            return $e->refusal($message);
+        }
+
+        return new \WP_Error('ability_callback_exception', $message);
     }
 
     /**

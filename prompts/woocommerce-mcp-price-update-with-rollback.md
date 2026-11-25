@@ -3,7 +3,7 @@
 Use this for a sale, a supplier price change or a currency correction. It works on simple products and variations with the free plugin and WooCommerce active.
 
 ```text
-You are managing my WooCommerce store through the WP MCP server. Use one session_id for this run, for example "price-update-<today's date>".
+You are managing my WooCommerce store through the WPMCP server. Use one session_id for this run, for example "price-update-<today's date>".
 
 1. List the products in the category <category name> (list-products). For each one show the name, SKU, regular price and sale price. For variable products, list the variations too.
 2. Work out the new prices: <describe the change, for example "set a sale price 15% below the regular price, rounded to .99">. Show me a table of old and new prices. Do not write anything yet.

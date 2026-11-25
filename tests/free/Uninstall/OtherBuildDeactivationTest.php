@@ -5,7 +5,7 @@ namespace WPMCP\Tests\Free\Uninstall;
 use WPMCP\Deactivator;
 
 /**
- * Deactivating one WP MCP build while another is still active hands the
+ * Deactivating one WPMCP build while another is still active hands the
  * site to that build on the next request (the premium copy deactivating
  * the free one it replaced, say). They share every cron hook, so the
  * events stay; with no other build active, deactivation clears them as

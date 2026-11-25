@@ -7,7 +7,7 @@ use WPMCP\Data_Registry;
 use WPMCP\Uninstaller;
 
 /**
- * Opt-in removal of every WP MCP store when the plugin is deleted (issue
+ * Opt-in removal of every WPMCP store when the plugin is deleted (issue
  * #480).
  *
  * Off by default, so deleting the plugin keeps its data as #468 decided.
@@ -170,7 +170,7 @@ class UninstallDataTest extends \WP_UnitTestCase
 
     /**
      * Write a plugin main file in a fresh directory under WP_PLUGIN_DIR and
-     * return that directory. With a flavor it is another WP MCP build.
+     * return that directory. With a flavor it is another WPMCP build.
      */
     private function install_plugin(string $main, ?string $flavor): string
     {
@@ -193,7 +193,7 @@ class UninstallDataTest extends \WP_UnitTestCase
     }
 
     /**
-     * Deleting one WP MCP build while another is installed (the free copy
+     * Deleting one WPMCP build while another is installed (the free copy
      * next to the premium one, say) must leave the stores and the cron
      * events the build that stays depends on, even with the delete-all-data
      * setting on: they share every one of them.
@@ -291,7 +291,7 @@ class UninstallDataTest extends \WP_UnitTestCase
             'user_id'                 => $this->user_id,
             'name'                    => 'Agent',
         ]);
-        [ , $own ] = \WP_Application_Passwords::create_new_application_password($this->user_id, [ 'name' => 'Not from WP MCP' ]);
+        [ , $own ] = \WP_Application_Passwords::create_new_application_password($this->user_id, [ 'name' => 'Not from WPMCP' ]);
         remove_filter('wp_is_application_passwords_available', '__return_true');
         $this->assertArrayHasKey('uuid', $issued);
 

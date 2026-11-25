@@ -21,7 +21,7 @@
 #      --optimize-autoloader, the inlined Freemius config), so the site
 #      loads what a release zip loads and none of the dev autoloads.
 #   3. Starts a private MariaDB (its own datadir and socket, no TCP), installs
-#      WordPress with WP-CLI, activates the canonical plugins and WP MCP,
+#      WordPress with WP-CLI, activates the canonical plugins and WPMCP,
 #      creates a throwaway admin with a random password and an application
 #      password (kept in a mode 600 file in the run directory, never
 #      printed), and copies bin/bench/probe.php in as a must-use plugin.
@@ -216,7 +216,7 @@ cmd_run() {
 	for spec in "${plugins[@]}"; do
 		label=${spec%%:*}
 		dir=${spec#*:}
-		[ -f "$dir/wpmcp.php" ] || die "$dir is not a WP MCP checkout"
+		[ -f "$dir/wpmcp.php" ] || die "$dir is not a WPMCP checkout"
 		say "staging $label from $dir"
 		stage_plugin "$dir" "$RUN_DIR/stage/$label/wpmcp"
 		i=$((i + 1))
@@ -245,7 +245,7 @@ cmd_run() {
 	local admin_pass
 	admin_pass=$("$php_bin" -r 'echo bin2hex(random_bytes(16));')
 
-	# WP-CLI on the serving PHP, with room: activating WP MCP with the
+	# WP-CLI on the serving PHP, with room: activating WPMCP with the
 	# canonical plugins registers every ability inside one CLI process.
 	local wp_phar
 	wp_phar=$(realpath "$(command -v wp)")
@@ -260,7 +260,7 @@ define( 'AUTOMATIC_UPDATER_DISABLED', true );
 define( 'WPMCP_BENCH', true );
 define( 'WPMCP_BENCH_LOG', '$RUN_DIR/probe.jsonl' );
 PHP
-	"${wp[@]}" core install --url="$url" --title="WP MCP bench" --admin_user=benchadmin \
+	"${wp[@]}" core install --url="$url" --title="WPMCP bench" --admin_user=benchadmin \
 		--admin_password="$admin_pass" --admin_email=bench@example.invalid --skip-email
 	"${wp[@]}" rewrite structure '/%postname%/'
 	"${wp[@]}" plugin activate woocommerce elementor advanced-custom-fields wordpress-seo polylang

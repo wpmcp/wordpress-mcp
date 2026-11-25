@@ -280,7 +280,7 @@ class ConnectionPageTest extends \WP_UnitTestCase
         $this->assertSame(1, preg_match('#<strong>OAuth is off\.</strong>(.*?)</p>#s', $html, $m), 'The OAuth-off note must render.');
         $note = $m[1];
 
-        $this->assertStringNotContainsString('WP MCP, Connection', $note);
+        $this->assertStringNotContainsString('WPMCP, Connection', $note);
         $this->assertStringNotContainsString('that screen', $note);
         $this->assertStringContainsString(esc_html("define('WPMCP_OAUTH_ENABLED', true);"), $note);
         $this->assertStringContainsString('wp-config.php', $note);

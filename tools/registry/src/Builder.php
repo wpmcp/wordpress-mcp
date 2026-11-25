@@ -7,6 +7,7 @@ namespace WPMCP\Registry;
 use WPMCP\Api\V1\Value\Op;
 use WPMCP\Api\V1\Version;
 use WPMCP\Kernel\Flavor;
+use WPMCP\Kernel\Ships;
 
 /**
  * One registry:build or registry:check run: scan, compile, validate, then
@@ -254,7 +255,39 @@ final class Builder
         foreach ($by_dispatcher as $slug => $rows) {
             $files[ 'ops/' . $slug . '.php' ] = $rows;
         }
+        $pro_tools = $this->pro_tools($flavor);
+        if ([] !== $pro_tools) {
+            $files['pro-tools.php'] = $pro_tools;
+        }
         return $files;
+    }
+
+    /**
+     * The abilities only the Pro code declares, by name, for the flavor that
+     * ships every tier: its free zip carries none of their code, and a call
+     * for one answers with the Pro refusal instead of "Tool not found"
+     * (Pro_Catalog, issue #628). Read from the ability manifest, which pins
+     * the whole surface (AbilityManifestTest). The directory flavors and an
+     * add-on build get no list.
+     *
+     * @return list<string>
+     */
+    private function pro_tools(Flavor $flavor): array
+    {
+        $file = $this->options->manifest ?? $this->options->repo_root . '/tests/support/ability-manifest.php';
+        if (Ships::All !== $flavor->ships || $this->options->addon || ! is_file($file)) {
+            return [];
+        }
+        $manifest = require $file;
+        $abilities = is_array($manifest) && is_array($manifest['abilities'] ?? null) ? $manifest['abilities'] : [];
+        $names = [];
+        foreach ($abilities as $name => $tier) {
+            if ('pro' === $tier && is_string($name)) {
+                $names[] = $name;
+            }
+        }
+        sort($names);
+        return $names;
     }
 
     /**

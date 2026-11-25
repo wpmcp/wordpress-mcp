@@ -213,7 +213,7 @@ final class GitHub_Releases
         );
 
         $info = [
-            'name'          => 'WP MCP',
+            'name'          => 'WPMCP',
             'slug'          => self::SLUG,
             'version'       => $release['version'],
             'author'        => '<a href="https://wpmcp-pro.com/">Fahad Murtaza</a>',
@@ -263,7 +263,7 @@ final class GitHub_Releases
         if (! $wp_filesystem->exists($source . basename(WPMCP_FILE))) {
             return new \WP_Error(
                 'wpmcp_update_package',
-                __('The update package does not contain WP MCP: wpmcp.php is not at the top of its folder.', 'wpmcp')
+                __('The update package does not contain WPMCP: wpmcp.php is not at the top of its folder.', 'wpmcp')
             );
         }
 

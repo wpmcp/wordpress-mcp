@@ -1,6 +1,6 @@
 # Static HTML export
 
-WP MCP Pro can turn the site's public pages into plain HTML files with their CSS, JS, images and fonts, links rewritten to relative paths, as one ZIP. Uses: an archive of a finished campaign site, a static mirror on a CDN, a handoff copy, or a fallback while the live site is repaired.
+WPMCP Pro can turn the site's public pages into plain HTML files with their CSS, JS, images and fonts, links rewritten to relative paths, as one ZIP. Uses: an archive of a finished campaign site, a static mirror on a CDN, a handoff copy, or a fallback while the live site is repaired.
 
 It is off by default and needs an administrator (manage_options; manage_network_options on multisite). Switch it on in wp-config.php or an mu-plugin:
 
@@ -23,7 +23,7 @@ There is no separate tool. The export is a kind of backup job:
 
 ## How it works
 
-Each page is fetched through a loopback request with no cookies, so it is exactly what an anonymous visitor sees. Assets on this site are copied from disk when they are a plain file type under the WordPress folder (never from a dot folder or one of WP MCP's own data folders) and fetched over HTTP otherwise. Off-site assets keep pointing at their origin. Admin, login, REST, feed and comment links, and any page URL with a query string such as search, keep pointing at the live site.
+Each page is fetched through a loopback request with no cookies, so it is exactly what an anonymous visitor sees. Assets on this site are copied from disk when they are a plain file type under the WordPress folder (never from a dot folder or one of WPMCP's own data folders) and fetched over HTTP otherwise. Off-site assets keep pointing at their origin. Admin, login, REST, feed and comment links, and any page URL with a query string such as search, keep pointing at the live site.
 
 The ZIP mirrors the site's URL space: `/about/` is `about/index.html`, the home page is `index.html`, and links point at the explicit `index.html` so the copy opens from disk. A redirect becomes a small refresh page; a redirect loop, an error page and a non-HTML response are skipped and reported. `wpmcp-static-report.json` in the ZIP lists every page, every skip and every page whose forms, search or comments will not work statically.
 

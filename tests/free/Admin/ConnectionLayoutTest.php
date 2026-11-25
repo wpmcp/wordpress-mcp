@@ -3,6 +3,9 @@
 namespace WPMCP\Tests\Free\Admin;
 
 use WPMCP\Admin\Connection\Client_App;
+use WPMCP\Admin\Connection\Mcp_Activity;
+use WPMCP\Admin\Connection\Mcp_Client;
+use WPMCP\Admin\Connection\Wp_Activity_Store;
 use WPMCP\Admin\Connection_Page;
 use WPMCP\Auth\Client_Metadata_Document;
 use WPMCP\Auth\OAuth_Config;
@@ -105,7 +108,7 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
     {
         $html = $this->render();
 
-        $this->assertStringContainsString('<h1>WP MCP: Connection</h1>', $html);
+        $this->assertStringContainsString('<h1>WPMCP: Connection</h1>', $html);
         $this->assertStringContainsString('class="wpmcp-mark"', $html);
         $this->assertStringContainsString('MCP is on', $html);
         $this->assertStringNotContainsString('MCP is off on this site', $html);
@@ -314,7 +317,7 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
         $connections = $this->panel($html, 'connections');
 
         $this->assertSame(1, preg_match('#<tr[^>]*data-uuid="' . preg_quote($gone, '#') . '"[^>]*>(.*?)</tr>#s', $connections, $row));
-        $this->assertStringContainsString('Removed outside WP MCP', $row[1]);
+        $this->assertStringContainsString('Removed outside WPMCP', $row[1]);
         $this->assertStringContainsString('value="revoke"', $row[1], 'Remove from list posts the idempotent revoke');
         $this->assertMatchesRegularExpression('#<input type="submit"[^>]*value="Remove from list"#', $row[1]);
         $this->assertStringNotContainsString('value="Revoke"', $row[1]);
@@ -325,6 +328,45 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
         $this->assertStringContainsString('Removed from the list', $after);
         $this->assertStringNotContainsString('Deleted on the profile screen', $this->panel($after, 'connections'));
         $this->assertStringContainsString('Still here', $this->panel($after, 'connections'));
+    }
+
+    /**
+     * Issue #1258: Last used is the newest MCP request the route answered for
+     * the password, with the name the client gave, whichever revision it
+     * speaks; a client that gave no name gets a neutral label, and a password
+     * WordPress accepted without an MCP request says so.
+     */
+    public function test_the_connections_panel_shows_each_client_and_its_last_activity(): void
+    {
+        $modern  = $this->issued('Claude Code (today)');
+        $legacy  = $this->issued('Cursor (today)', 'cursor');
+        $unnamed = $this->issued('Other (today)', 'other');
+        $only    = $this->issued('Antigravity (today)', 'antigravity');
+        $unused  = $this->issued('Claude Desktop (today)', 'claude-desktop');
+        $store   = new Wp_Activity_Store();
+        $at      = (int) strtotime('2026-11-24 09:31:00 UTC');
+        $store->save($this->admin, $modern, new Mcp_Activity(Mcp_Client::of('claude-code', '2.1.330'), $at - 60, $at));
+        $store->save($this->admin, $legacy, new Mcp_Activity(Mcp_Client::from_initialize_params([ 'clientInfo' => [ 'name' => 'cursor', 'version' => '1.7.2' ] ]), $at, $at));
+        $store->save($this->admin, $unnamed, new Mcp_Activity(Mcp_Client::unnamed(), $at, $at));
+        $_SERVER['REMOTE_ADDR'] = '203.0.113.24';
+        \WP_Application_Passwords::record_application_password_usage($this->admin, $only);
+        unset($_SERVER['REMOTE_ADDR']);
+
+        $connections = $this->panel($this->render(), 'connections');
+        $row         = function (string $uuid) use ($connections): string {
+            $this->assertSame(1, preg_match('#<tr[^>]*data-uuid="' . preg_quote($uuid, '#') . '"[^>]*>(.*?)</tr>#s', $connections, $m));
+            return $m[1];
+        };
+        $when = esc_html((string) wp_date(get_option('date_format') . ' ' . get_option('time_format'), $at));
+
+        $this->assertStringContainsString($when, $row($modern));
+        $this->assertStringContainsString('claude-code 2.1.330', $row($modern));
+        $this->assertStringContainsString('cursor 1.7.2', $row($legacy));
+        $this->assertStringContainsString('Unnamed MCP client', $row($unnamed));
+        $this->assertStringContainsString($when, $row($unnamed));
+        $this->assertStringContainsString('Password accepted, no MCP request yet', $row($only));
+        $this->assertStringContainsString('Not used yet', $row($unused));
+        $this->assertStringNotContainsString('at most once a day', $connections);
     }
 
     public function test_the_connections_panel_has_an_empty_state(): void
@@ -343,7 +385,7 @@ class ConnectionLayoutTest extends \WP_UnitTestCase
         $this->assertStringContainsString('value="toggle"', $settings);
         $this->assertStringContainsString('name="management_mode"', $settings);
         // The switch itself needs a network admin on multisite; the section is there either way.
-        $this->assertStringContainsString('Delete all WP MCP data when the plugin is deleted', $settings);
+        $this->assertStringContainsString('Delete all WPMCP data when the plugin is deleted', $settings);
         $this->assertMatchesRegularExpression('#<details class="wpmcp-advanced"#', $settings, 'Advanced starts closed');
         $this->assertStringContainsString('<code id="wpmcp-endpoint">' . esc_html(home_url('/wp-json/mcp/wpmcp-server')) . '</code>', $settings);
         $this->assertStringContainsString('value="self_test"', $settings);

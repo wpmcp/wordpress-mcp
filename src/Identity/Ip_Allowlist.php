@@ -237,7 +237,7 @@ final class Ip_Allowlist
         return \WPMCP\MCP\Availability::identity_refused()->attach(
             new \WP_Error(
                 'rest_forbidden',
-                __('Sorry, you are not allowed to do that. The WP MCP identity this connection acts as refused the request; a site administrator can see which rule refused it in the WP MCP governance audit log.', 'wpmcp'),
+                __('Sorry, you are not allowed to do that. The WPMCP identity this connection acts as refused the request; a site administrator can see which rule refused it in the WPMCP governance audit log.', 'wpmcp'),
                 ['status' => 403]
             )
         );

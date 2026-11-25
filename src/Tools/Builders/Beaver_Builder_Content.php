@@ -127,7 +127,8 @@ class Beaver_Builder_Content
 
     /**
      * The refusal for nodes or layout settings holding a new value
-     * wp_kses_post would change, or null. Post meta skips kses, so a user
+     * wp_kses_post would change, or new code (see Beaver_Builder_Code_Fields),
+     * or null. Post meta skips kses, so a user
      * without unfiltered_html could otherwise store a script on the page.
      * Values in the page's published and draft rows, or in $known (the
      * stored source a copy, a template insert or a restore takes them from),
@@ -144,7 +145,7 @@ class Beaver_Builder_Content
             $stored[] = self::get_settings($post_id, $key);
         }
 
-        return (new Kses_Safety())->values_refusal($stored, $value, self::KSES_SUBJECT);
+        return (new Kses_Safety())->values_refusal($stored, $value, self::KSES_SUBJECT, new Beaver_Builder_Code_Fields());
     }
 
     /**

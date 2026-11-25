@@ -78,7 +78,7 @@ class GetConnectionInfoTest extends \WP_UnitTestCase
      * Issue #581: the Claude Desktop (and claude.ai) custom connector signs
      * in with OAuth, which is off by default. The tool says so, and says
      * exactly how to switch it on, instead of leaving the operator with
-     * "Couldn't register with WP MCP's sign-in service".
+     * "Couldn't register with WPMCP's sign-in service".
      */
     public function test_custom_connector_entry_says_oauth_is_off_and_how_to_switch_it_on(): void
     {
@@ -107,7 +107,7 @@ class GetConnectionInfoTest extends \WP_UnitTestCase
 
     /**
      * Issue #751: away from the Connection screen (the tool and the
-     * authorization address), the OAuth-off text still names WP MCP,
+     * authorization address), the OAuth-off text still names WPMCP,
      * Connection as the place with the steps, with the wp-config.php line.
      */
     public function test_oauth_off_text_off_screen_still_names_the_connection_screen(): void
@@ -118,7 +118,7 @@ class GetConnectionInfoTest extends \WP_UnitTestCase
         $auth = \WPMCP\Auth\Endpoints::oauth_off_message();
 
         foreach ([$note, $auth] as $text) {
-            $this->assertStringContainsString('WP MCP, Connection', $text);
+            $this->assertStringContainsString('WPMCP, Connection', $text);
             $this->assertStringContainsString("define('WPMCP_OAUTH_ENABLED', true);", $text);
             $this->assertStringContainsString('wp-config.php', $text);
             $this->assertStringContainsString("That's all, stop editing!", $text);

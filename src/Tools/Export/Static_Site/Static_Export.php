@@ -62,7 +62,7 @@ class Static_Export
         add_filter('wpmcp_trigger_backup_kind', [self::class, 'trigger'], 10, 3);
         add_filter('wpmcp_backup_job_view', [self::class, 'view']);
         add_action(Run_Static_Export::HOOK, [new Run_Static_Export(), 'handle']);
-        // Behind the management check like every WP MCP admin handler; the
+        // Behind the management check like every WPMCP admin handler; the
         // signed link is checked on top of it.
         Management_Access::add_handler('admin_post_' . self::DOWNLOAD_ACTION, [self::class, 'serve_download']);
     }
@@ -149,7 +149,7 @@ class Static_Export
             return sprintf('Canceled because static HTML export was switched off (%s).', self::FILTER);
         }
         if (! Gate::can_use('static-export')) {
-            return 'Canceled because static HTML export needs an active WP MCP Pro license on this site.';
+            return 'Canceled because static HTML export needs an active WPMCP Pro license on this site.';
         }
 
         return null;

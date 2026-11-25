@@ -317,7 +317,7 @@ class ListingRulesTest extends Compliance_Test_Case
 
         $this->assertSame([], $offenders, 'brand baked into a msgid');
         $this->assertStringContainsString(
-            "public const BRAND = 'wpmcp';",
+            "public const BRAND = 'WPMCP';",
             (string) file_get_contents($root . '/src/Plugin.php')
         );
     }

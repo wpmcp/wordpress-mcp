@@ -1,4 +1,4 @@
-# WP MCP roadmap and known limitations
+# WPMCP roadmap and known limitations
 
 Moved from the repository README; the short overview is in [README.md](../../README.md) and the index of these pages in [docs/reference/README.md](README.md).
 

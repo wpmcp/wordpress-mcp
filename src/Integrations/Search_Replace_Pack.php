@@ -25,7 +25,7 @@ if (! defined('ABSPATH')) {
  *
  * The free Better Search Replace has no saved profiles, no history and no
  * protection for salts or keys, and its replace runs over a whole table in
- * one pass, so the write here is WP MCP's own: a serialization-safe walk
+ * one pass, so the write here is WPMCP's own: a serialization-safe walk
  * (Url_Rewriter::transform(), the walk the URL rewrite and
  * find-replace-content share) over the text columns of the tables the
  * caller names, row by row, each row snapshotted first.
@@ -40,7 +40,7 @@ if (! defined('ABSPATH')) {
  *    them masked), the rows a run would skip and why, and a dry_run_token.
  *    The token is stateless (an HMAC over the user, the arguments, the row
  *    count and an expiry), so a dry run writes nothing.
- *  - searchreplace-get-last-run: the last run WP MCP made (with its
+ *  - searchreplace-get-last-run: the last run WPMCP made (with its
  *    session_id, for undo) and Better Search Replace's own last result
  *    (its bsr_results transient), when either exists.
  *
@@ -54,11 +54,11 @@ if (! defined('ABSPATH')) {
  *    left alone and reported.
  *
  * What a run never touches: the users and usermeta tables (and sitemeta on
- * a network) and any table a site adds to wpmcp_db_protected_tables, WP MCP's
+ * a network) and any table a site adds to wpmcp_db_protected_tables, WPMCP's
  * own tables, tables without a primary key (a row could not be restored),
  * other sites' tables, primary key columns, the posts guid column, the salt
- * and key options, active_plugins, WP MCP's own options, and the rows of WP
- * MCP's private stores (agent memory, chats). A serialized value holding an
+ * and key options, active_plugins, WPMCP's own options, and the rows of WPMCP's
+ * private stores (agent memory, chats). A serialized value holding an
  * object, and JSON that would no longer decode, are skipped and reported.
  * Search is literal (no regex), never empty and never equal to replace.
  *
@@ -76,7 +76,7 @@ final class Search_Replace_Pack
 
     public const MAX_ROWS_FILTER = 'wpmcp_search_replace_max_rows';
 
-    /** WP MCP's record of its last run. */
+    /** WPMCP's record of its last run. */
     public const LAST_RUN_OPTION = 'wpmcp_search_replace_last_run';
 
     /** Better Search Replace's own last result (a transient it keeps for a day). */
@@ -108,7 +108,7 @@ final class Search_Replace_Pack
     /** Options a run never rewrites: the salts and keys, and the active plugin list. */
     private const PROTECTED_OPTION_PATTERN = '/^(?:(?:auth|secure_auth|logged_in|nonce)_(?:key|salt)|secret_key|active_plugins|active_sitewide_plugins)$/';
 
-    /** WP MCP's own options and transients, which a run leaves alone. */
+    /** WPMCP's own options and transients, which a run leaves alone. */
     private const OWN_OPTION_PATTERN = '/^(?:_site)?(?:_transient(?:_timeout)?_)?wpmcp_/';
 
     private const TEXT_TYPE_PATTERN = '/^(?:var)?char\b|^(?:tiny|medium|long)?text\b|^json\b/i';
@@ -188,7 +188,7 @@ final class Search_Replace_Pack
             ],
             'searchreplace-get-last-run' => $base + [
                 'mode'         => 'read',
-                'description'  => 'The last search and replace WP MCP ran (tables, rows changed, session_id for rollback-session) and Better Search Replace\'s own last result, when either exists',
+                'description'  => 'The last search and replace WPMCP ran (tables, rows changed, session_id for rollback-session) and Better Search Replace\'s own last result, when either exists',
                 'input_schema' => [ 'type' => 'object', 'properties' => [] ],
                 'handler'      => static fn (): array => self::last_run(),
             ],
@@ -198,7 +198,7 @@ final class Search_Replace_Pack
                 'opt_in_filter'        => self::OPT_IN_FILTER,
                 'self_snapshotting'    => true,
                 'confirm_in_arguments' => true,
-                'description'          => 'Run a serialization-safe search and replace over the named tables. Needs the dry_run_token of a searchreplace-dry-run with the same arguments and confirm:true; refuses when the data now has more matching rows than the dry run. Never touches users, usermeta, WP MCP tables, salts, keys or active_plugins. Each row is snapshotted: rollback-session with the returned session_id undoes the run. Off unless ' . self::OPT_IN_FILTER,
+                'description'          => 'Run a serialization-safe search and replace over the named tables. Needs the dry_run_token of a searchreplace-dry-run with the same arguments and confirm:true; refuses when the data now has more matching rows than the dry run. Never touches users, usermeta, WPMCP tables, salts, keys or active_plugins. Each row is snapshotted: rollback-session with the returned session_id undoes the run. Off unless ' . self::OPT_IN_FILTER,
                 'input_schema'         => [ 'type' => 'object', 'properties' => $run_args, 'required' => [ 'search', 'replace', 'tables', 'dry_run_token' ] ],
                 'validate'             => static fn (array $a): ?array => self::args_refusal($a) ?? self::token_refusal($a),
                 'confirm_preview'      => static fn (array $a): array => self::run_preview($a),
@@ -238,7 +238,7 @@ final class Search_Replace_Pack
 
     /**
      * Refusal for one table, or null: it must be one of this site's tables,
-     * not protected, not WP MCP's own, and have a primary key.
+     * not protected, not WPMCP's own, and have a primary key.
      */
     private static function table_refusal(string $name): ?array
     {
@@ -267,7 +267,7 @@ final class Search_Replace_Pack
             return 'it belongs to another site of the network';
         }
         if (0 === stripos($rest, 'wpmcp_') || Database_Guard::is_internal_store_table($table)) {
-            return 'it is one of WP MCP\'s own tables';
+            return 'it is one of WPMCP\'s own tables';
         }
         if (Database_Guard::is_protected($table)) {
             return 'it is protected (users, user meta and network options are never rewritten)';
@@ -610,7 +610,7 @@ final class Search_Replace_Pack
         return is_array($rows) ? array_values($rows) : [];
     }
 
-    /** Whether a row is one a run never rewrites (salts, keys, WP MCP's own data). */
+    /** Whether a row is one a run never rewrites (salts, keys, WPMCP's own data). */
     private static function excluded_row(string $table, array $row): bool
     {
         global $wpdb;

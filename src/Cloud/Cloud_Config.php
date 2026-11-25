@@ -7,7 +7,7 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * Where WP MCP Cloud lives and how this site authenticates to it. Since
+ * Where WPMCP Cloud lives and how this site authenticates to it. Since
  * issue #141 this is a thin facade over the encrypted Cloud_Credentials
  * vault, so cloud-connect and the other phase A tools keep their existing
  * call sites while no secret is stored unencrypted. Everything else about

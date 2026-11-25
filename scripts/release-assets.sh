@@ -26,10 +26,10 @@
 # The asset set is release_asset_table in scripts/lib/release-flavors.sh
 # (first row is the headline download). Today:
 #
-#   wpmcp-<v>.zip                      the plugin: free until a licence is
-#                                      active, with the upgrade banner
-#                                      (scripts/build-release.sh); also the
-#                                      zip deployed to Freemius
+#   wpmcp-<v>.zip                      the free plugin with the upgrade
+#                                      banner (scripts/build-release.sh); no
+#                                      Pro code. Never the Freemius upload:
+#                                      that is the premium zip below
 #   wpmcp.zip                          same bytes, stable name
 #   safe-mcp-for-woocommerce-<v>.zip   the wp.org WooCommerce flavor
 #   safe-mcp-for-woocommerce.zip       same bytes, stable name

@@ -313,17 +313,17 @@ final class Plugin
      * inside a msgid is one more literal for a flavor build to chase. This
      * constant is the single place such a build would rewrite; today neither
      * scripts/build-woo-release.sh nor build-wporg-release.sh does, so every
-     * flavor still renders "wpmcp" here. Menu and page titles compose it with
+     * flavor renders "WPMCP" here. Menu and page titles compose it with
      * a translated tail through page_title() instead of baking it into a
      * msgid.
      */
-    public const BRAND = 'wpmcp';
+    public const BRAND = 'WPMCP';
 
     /**
      * The product name in page titles and H1s (issues #1127, #1128):
-     * "WP MCP: Abilities". The admin menu keeps BRAND.
+     * "WPMCP: Abilities". The admin menu keeps BRAND.
      */
-    public const PRODUCT_NAME = 'WP MCP';
+    public const PRODUCT_NAME = 'WPMCP';
 
     /**
      * "<brand>: <screen>" for a page title or an H1. One translatable
@@ -732,7 +732,7 @@ final class Plugin
                 add_action('wp_abilities_api_categories_init', [$this, 'register_ability_category']);
             }
             $this->register_builder_runtime_hooks();
-            // Who may manage WP MCP (issue #479): every screen, admin-post and
+            // Who may manage WPMCP (issue #479): every screen, admin-post and
             // AJAX handler, admin REST route and options.php group checks
             // Management_Access::CAPABILITY. Handlers are registered through
             // Management_Access::add_handler(), which refuses before they run.
@@ -856,7 +856,7 @@ final class Plugin
             // flavor, so this is unconditional.
             \WPMCP\Gateway\Gateway_Guard::register();
             // The hardening settings set-hardening switches on (issue #847):
-            // WP MCP's own hooks, each a no-op until its setting is on.
+            // WPMCP's own hooks, each a no-op until its setting is on.
             // src/Tools/Security ships on every flavor.
             \WPMCP\Tools\Security\Hardening_Settings::register();
             // OAuth access levels (issue #454): a connection approved as
@@ -926,7 +926,7 @@ final class Plugin
             // #853), on the Dashboard until an administrator dismisses it.
             New_Tools_Notice::register();
             // In-admin Pro banner: a dismissible pricing-page link for free
-            // installs on the Dashboard, the Plugins list and WP MCP screens
+            // installs on the Dashboard, the Plugins list and WPMCP screens
             // (docs/superpowers/specs/2026-11-01-pro-upgrade-banner.md).
             Pro_Banner::register();
             // GitHub star prompt: once, on the History and Connection screens,
@@ -1688,6 +1688,7 @@ final class Plugin
                     'post_id'     => [ 'type' => 'integer' ],
                     'description' => [ 'type' => 'string' ],
                     'alt'         => [ 'type' => 'string' ],
+                    'session_id'  => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
             ],
             [$sideload_image, 'handle'],
@@ -1897,6 +1898,7 @@ final class Plugin
                 'type'       => 'object',
                 'properties' => [
                     'settings' => [ 'type' => 'object' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'settings' ],
             ],
@@ -2210,6 +2212,7 @@ final class Plugin
                     'slug'         => [ 'type' => 'string' ],
                     'activate'     => [ 'type' => 'boolean' ],
                     'network_wide' => [ 'type' => 'boolean' ],
+                    'session_id'   => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'slug' ],
             ],
@@ -2295,6 +2298,7 @@ final class Plugin
                 'properties' => [
                     'slug'     => [ 'type' => 'string' ],
                     'activate' => [ 'type' => 'boolean' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'slug' ],
             ],
@@ -2718,7 +2722,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/incident-response',
             'free',
-            'list-app-passwords (no secrets); revoke-app-password (uuid or all); list-sessions (one user, masked, no tokens); end-sessions (user_id or all); rotate-salts (wp-config.php, backup kept; refused if unwritable or defined elsewhere); reinstall-core-files (files scan-security flags, from the checksum-verified official package, never wp-content; undo: rollback-operation); quarantine-file (path, reason: moves it to a private folder; not core, wp-config or WP MCP files; undo: rollback-operation); list-quarantine; restore-quarantined-file (id, overwrite); purge-quarantined-file (id). Quarantine needs the wpmcp_enable_fs_writes opt-in. Writes need confirm:true. Cannot be undone: revoke, end-sessions, rotate-salts (logs out everyone, your cookie session too, not app passwords). Your session and app password stay unless include_current. Other users take edit_users',
+            'list-app-passwords (no secrets); revoke-app-password (uuid or all); list-sessions (one user, masked, no tokens); end-sessions (user_id or all); rotate-salts (wp-config.php, backup kept; refused if unwritable or defined elsewhere); reinstall-core-files (files scan-security flags, from the checksum-verified official package, never wp-content; undo: rollback-operation); quarantine-file (path, reason: moves it to a private folder; not core, wp-config or WPMCP files; undo: rollback-operation); list-quarantine; restore-quarantined-file (id, overwrite); purge-quarantined-file (id). Quarantine needs the wpmcp_enable_fs_writes opt-in. Writes need confirm:true. Cannot be undone: revoke, end-sessions, rotate-salts (logs out everyone, your cookie session too, not app passwords). Your session and app password stay unless include_current. Other users take edit_users',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -2831,7 +2835,7 @@ final class Plugin
     }
 
     /**
-     * WP MCP Cloud sync (MVP): connect a site to the cloud and push/pull its
+     * WPMCP Cloud sync (MVP): connect a site to the cloud and push/pull its
      * builder assets (custom widget + block specs) over a versioned,
      * backend-agnostic REST contract. All PRO, manage_options, domain 'cloud'.
      */
@@ -2915,7 +2919,7 @@ final class Plugin
     {
         $confirm_schema = [
             'type'       => 'object',
-            'properties' => ['confirm' => ['type' => 'boolean']],
+            'properties' => ['confirm' => ['type' => 'boolean'], 'session_id' => ['type' => 'string']],
             'required'   => ['confirm'],
         ];
 
@@ -3130,6 +3134,7 @@ final class Plugin
                     'conditions' => $conditions_schema,
                     // Tie-break between equally specific matches; higher wins.
                     'priority'   => ['type' => 'integer'],
+                    'session_id' => ['type' => 'string'], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => ['part_type', 'title', 'conditions'],
             ],
@@ -3177,6 +3182,7 @@ final class Plugin
                     'content'     => ['type' => 'string'],
                     'conditions'  => $conditions_schema,
                     'priority'    => ['type' => 'integer'],
+                    'session_id'  => ['type' => 'string'], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => ['template_id'],
             ],
@@ -3194,6 +3200,7 @@ final class Plugin
                 'properties' => [
                     'template_id' => $template_id,
                     'status'      => ['type' => 'string', 'enum' => ['publish', 'draft']],
+                    'session_id'  => ['type' => 'string'], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => ['template_id', 'status'],
             ],
@@ -3208,7 +3215,7 @@ final class Plugin
             'Trash a site part, freeing its per-part-type slot. Snapshot-first: operation_id rolls it back',
             [
                 'type'       => 'object',
-                'properties' => ['template_id' => $template_id],
+                'properties' => ['template_id' => $template_id, 'session_id' => ['type' => 'string']],
                 'required'   => ['template_id'],
             ],
             [$delete, 'handle'],
@@ -3634,7 +3641,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/get-maintenance-status',
             'free',
-            'Whether the site is gated: WP MCP maintenance mode (message, Retry-After), core .maintenance, coming soon and maintenance plugins',
+            'Whether the site is gated: WPMCP maintenance mode (message, Retry-After), core .maintenance, coming soon and maintenance plugins',
             [
                 'type'       => 'object',
                 'properties' => [],
@@ -4540,6 +4547,7 @@ final class Plugin
                     'confirm' => [ 'type' => 'boolean' ],
                     'mirror'  => [ 'type' => 'boolean' ],
                     'post_id' => [ 'type' => 'integer' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
             ],
             [$import_content, 'handle'],
@@ -4881,6 +4889,7 @@ final class Plugin
                     'max_matches'    => [ 'type' => 'integer' ],
                     'dry_run'        => [ 'type' => 'boolean' ],
                     'confirm'        => [ 'type' => 'boolean' ],
+                    'session_id'     => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'search', 'replace' ],
             ],
@@ -5022,6 +5031,7 @@ final class Plugin
                     'operation' => [ 'type' => 'object' ],
                     'site_wide' => [ 'type' => 'string', 'enum' => [ 'off', 'audit', 'enforce' ] ],
                     'auto_enable_new_tools' => [ 'type' => 'boolean' ],
+                    'session_id'            => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
             ],
             [$update_governance_settings, 'handle'],
@@ -5455,6 +5465,7 @@ final class Plugin
                     'dry_run' => [ 'type' => 'boolean' ],
                     'confirm' => [ 'type' => 'boolean' ],
                     'cursor'  => [ 'type' => 'string' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
             ],
             [$delete_transient, 'handle'],
@@ -5776,6 +5787,7 @@ final class Plugin
                     'status'            => [ 'type' => 'string' ],
                     'manage_stock'      => [ 'type' => 'boolean' ],
                     'stock_quantity'    => [ 'type' => 'integer' ],
+                    'session_id'        => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'name' ],
             ],
@@ -6007,6 +6019,7 @@ final class Plugin
                     'manage_stock' => [ 'type' => 'boolean' ],
                     'stock_quantity' => [ 'type' => 'integer' ],
                     'stock_status' => [ 'type' => 'string' ],
+                    'session_id'   => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'product_id' ],
             ],
@@ -6118,6 +6131,7 @@ final class Plugin
                     'excluded_product_categories' => [ 'type' => 'array', 'items' => [ 'type' => 'integer' ] ],
                     'email_restrictions' => [ 'type' => 'array', 'items' => [ 'type' => 'string' ] ],
                     'status' => [ 'type' => 'string' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'code' ],
             ],
@@ -6235,6 +6249,7 @@ final class Plugin
                     'shipping' => [ 'type' => 'boolean' ],
                     'order' => [ 'type' => 'integer' ],
                     'class' => [ 'type' => 'string' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'rate' ],
             ],
@@ -6317,6 +6332,7 @@ final class Plugin
                     'mode' => [ 'type' => 'string', 'enum' => [ 'upsert', 'create', 'update' ] ],
                     'plan_hash' => [ 'type' => 'string' ],
                     'confirm' => [ 'type' => 'boolean' ],
+                    'session_id' => [ 'type' => 'string' ], // central-list-ok: #1255 the handler records it
                 ],
                 'required'   => [ 'rows', 'plan_hash' ],
             ],
@@ -6983,7 +6999,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/list-redirects',
             'free',
-            'List this site\'s redirects (the active redirect plugin\'s, else WP MCP\'s own: source path, resolved target, status code, enabled, hit count), plus pending suggestions raised when a published post was deleted or moved. Filter by enabled state or a search string. Read-only',
+            'List this site\'s redirects (the active redirect plugin\'s, else WPMCP\'s own: source path, resolved target, status code, enabled, hit count), plus pending suggestions raised when a published post was deleted or moved. Filter by enabled state or a search string. Read-only',
             [
                 'type'       => 'object',
                 'properties' => [
@@ -7003,7 +7019,7 @@ final class Plugin
         $registrar->register(new Ability(
             'wpmcp/create-redirect',
             'free',
-            'Create a redirect (in the active redirect plugin, else WP MCP\'s own table) from a source path to a target URL or target_post_id (which survives slug changes). Chains are flattened to one hop and loops refused; the stored target is reported. Snapshotted; rollback-operation removes it',
+            'Create a redirect (in the active redirect plugin, else WPMCP\'s own table) from a source path to a target URL or target_post_id (which survives slug changes). Chains are flattened to one hop and loops refused; the stored target is reported. Snapshotted; rollback-operation removes it',
             [
                 'type'       => 'object',
                 'properties' => [

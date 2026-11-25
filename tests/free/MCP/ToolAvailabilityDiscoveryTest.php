@@ -95,7 +95,7 @@ class ToolAvailabilityDiscoveryTest extends \WP_UnitTestCase
         $this->assertSame(2, $pro['count']);
         $this->assertSame([ 'builder' => 1, 'forms' => 1 ], $pro['domains']);
         $this->assertArrayNotHasKey('tools', $pro, 'Pro tools are a count and group names, not stubs.');
-        $this->assertStringContainsString('WP MCP Pro license', $pro['label']);
+        $this->assertStringContainsString('WPMCP Pro license', $pro['label']);
 
         $woo = self::group($report, 'plugin_missing', 'WooCommerce');
         $this->assertSame([ 'wpmcp/test-woo' ], $woo['tools']);

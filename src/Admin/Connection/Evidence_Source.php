@@ -14,7 +14,7 @@ if (! defined('ABSPATH')) {
  */
 interface Evidence_Source
 {
-    /** Evidence for an application password WP MCP issued, made at $since. */
+    /** Evidence for an application password WPMCP issued, made at $since. */
     public function for_password(int $user_id, string $uuid, int $since): Connection_Evidence;
 
     /** Evidence for an app that signs in with OAuth. */

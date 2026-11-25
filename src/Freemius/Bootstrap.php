@@ -54,7 +54,13 @@ class Bootstrap
             'public_key'          => WPMCP_FS_PUBLIC_KEY,
             'is_premium'          => self::is_premium_build(),
             'has_premium_version' => true,
-            'premium_slug'        => 'wpmcp-pro',
+            // The folder the licensing service installs and updates Pro in:
+            // its product's premium slug, which every Freemius download of
+            // the premium package unpacks to. The SDK uses it to find an
+            // installed Pro copy from the free code and as the folder of its
+            // one-click Pro install. The premium zip we build is rooted at
+            // wpmcp-pro/, but Freemius renames that root on delivery.
+            'premium_slug'        => 'wpmcp-premium',
             'premium_suffix'      => 'Pro',
             'has_addons'          => false,
             'has_paid_plans'      => true,

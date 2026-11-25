@@ -46,6 +46,20 @@ final class Opt_In_Settings
     /** Network-wide toggles on multisite (sitemeta): filter name => 1. */
     public const NETWORK_OPTION = 'wpmcp_opt_in_groups_network';
 
+    /**
+     * Groups that are a behaviour, not operations an agent runs, so no
+     * opt_in_filter declares them. Each is named by its owner file.
+     */
+    public const BEHAVIOUR_GROUPS = [ 'wpmcp_enable_user_credential_restore' ];
+
+    /**
+     * Groups a network decides as a whole: on multisite only the network
+     * toggle counts, so only a network administrator can switch them on.
+     * Restoring login sessions and application passwords with a user is
+     * one, since usermeta is shared by every site of the network.
+     */
+    public const NETWORK_ONLY_GROUPS = [ 'wpmcp_enable_user_credential_restore' ];
+
     /** @var array<string, array{owner: string, destructive: bool}>|null */
     private static ?array $shipped = null;
 
@@ -145,6 +159,7 @@ final class Opt_In_Settings
             'wpmcp_enable_hardening_write'         => [ 'owner' => $i . 'Hardening_Pack.php', 'destructive' => false ],
             'wpmcp_enable_checkout_field_editor_write' => [ 'owner' => $i . 'Checkout_Field_Editor_Pack.php', 'destructive' => false ],
             'wpmcp_enable_pmpro_write'             => [ 'owner' => $i . 'Paid_Memberships_Pro_Pack.php', 'destructive' => true ],
+            'wpmcp_enable_user_credential_restore' => [ 'owner' => 'src/Safety/Rollback_Service.php', 'destructive' => false ], // central-list-ok: a safety-core undo behaviour, not an integration's opt-in
         ], self::module_groups(), 'Opt-in group');
     }
 
@@ -293,6 +308,7 @@ final class Opt_In_Settings
             'wpmcp_enable_hardening_write'         => __('Security hardening settings: writes', 'wpmcp'),
             'wpmcp_enable_checkout_field_editor_write' => __('Checkout Field Editor: checkout field writes', 'wpmcp'),
             'wpmcp_enable_pmpro_write'             => __('Paid Memberships Pro: level, member and discount code writes', 'wpmcp'),
+            'wpmcp_enable_user_credential_restore' => __('Undo of a user change: also restore their login sessions and application passwords, bringing back ones revoked after the change', 'wpmcp'), // central-list-ok: a safety-core undo behaviour, not an integration's opt-in
         ], self::module_labels(), 'Opt-in label');
     }
 
@@ -356,13 +372,22 @@ final class Opt_In_Settings
         return false;
     }
 
-    /** Whether the stored toggle for $filter is on (site or network). */
+    /** Whether the stored toggle for $filter is on (site or network; network only for a network-only group on multisite). */
     public static function is_on(string $filter): bool
     {
         if (! isset(self::groups()[ $filter ])) {
             return false;
         }
+        if (self::network_only($filter)) {
+            return self::stored_on($filter, 'network');
+        }
         return self::stored_on($filter, 'site') || (is_multisite() && self::stored_on($filter, 'network'));
+    }
+
+    /** Whether $filter is decided network-wide only: a network-only group, on multisite. */
+    public static function network_only(string $filter): bool
+    {
+        return is_multisite() && in_array($filter, self::NETWORK_ONLY_GROUPS, true);
     }
 
     /** Whether $filter is on in one scope's store ('site' or 'network'). */
@@ -380,6 +405,9 @@ final class Opt_In_Settings
     public static function set(string $filter, bool $enabled, string $scope): bool
     {
         if (! isset(self::groups()[ $filter ]) || ('network' === $scope && ! is_multisite())) {
+            return false;
+        }
+        if ('network' !== $scope && self::network_only($filter)) {
             return false;
         }
 

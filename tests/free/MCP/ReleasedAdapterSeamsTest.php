@@ -7,14 +7,14 @@ use WPMCP\MCP\Output_Schemas;
 
 /**
  * Issue #501: the seams where the released MCP Adapter plugin (0.7.0)
- * differs from the 0.6.x copy WP MCP bundles, pinned here so the default
+ * differs from the 0.6.x copy WPMCP bundles, pinned here so the default
  * suite guards them too, not only the adapter leg that loads the plugin.
  *
  *  - 0.7.0 speaks 2026-07-28 itself, so Modern_Http_Bridge leaves most of
  *    that revision to it. Its tools/call knows nothing of the confirm gates
  *    answered as elicitation or of the Tasks extension, and rejects
  *    continuation parameters for ability-backed tools, so a 2026-07-28
- *    tools/call on the WP MCP route must still be answered by the bridge.
+ *    tools/call on the WPMCP route must still be answered by the bridge.
  *  - 0.7.0 hands mcp_adapter_tools_list immutable schema records plus the
  *    selected schema, not 0.6.x DTOs with toArray()/fromArray(); the
  *    outputSchema must still reach the listing.

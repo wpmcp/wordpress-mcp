@@ -2,6 +2,8 @@
 
 Reference for the Elementor 4.0+ atomic element tools: what they accept, when
 they exist, and what they refuse. This describes shipped behaviour, not a plan.
+These tools, and `detect-elementor-version`, are part of WPMCP Pro; the free
+plugin's Elementor tools are listed in [Page builders](reference/page-builders.md).
 
 ## Which tools exist, and when
 

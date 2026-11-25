@@ -342,6 +342,11 @@
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
           3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
+          3
         ]
       ],
       "rest_pre_dispatch": [
@@ -1064,6 +1069,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -1575,6 +1587,11 @@
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
           3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
+          3
         ]
       ],
       "rest_pre_dispatch": [
@@ -2297,6 +2314,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -2808,6 +2832,11 @@
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
           3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
+          3
         ]
       ],
       "rest_pre_dispatch": [
@@ -3530,6 +3559,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -4041,6 +4077,11 @@
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
           3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
+          3
         ]
       ],
       "rest_pre_dispatch": [
@@ -4763,6 +4804,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -5274,6 +5322,11 @@
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
           3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
+          3
         ]
       ],
       "rest_pre_dispatch": [
@@ -5996,6 +6049,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",
@@ -6507,6 +6567,11 @@
           20,
           "WPMCP\\MCP\\Hidden_Tool_Refusal->filter_response",
           3
+        ],
+        [
+          99,
+          "WPMCP\\Admin\\Connection\\Activity_Hook::on_rest_post_dispatch",
+          3
         ]
       ],
       "rest_pre_dispatch": [
@@ -7229,6 +7294,13 @@
         ]
       ],
       "wpmcp_enable_ultimate_member_write": [
+        [
+          -9223372036854775808,
+          "WPMCP\\Governance\\Opt_In_Settings::apply",
+          1
+        ]
+      ],
+      "wpmcp_enable_user_credential_restore": [
         [
           -9223372036854775808,
           "WPMCP\\Governance\\Opt_In_Settings::apply",

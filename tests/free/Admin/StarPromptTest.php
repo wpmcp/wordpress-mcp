@@ -96,7 +96,7 @@ class StarPromptTest extends \WP_UnitTestCase
 
         $html = $this->rendered();
         $this->assertStringContainsString('wpmcp-star-prompt', $html);
-        $this->assertStringContainsString('WP MCP just kept a snapshot of your site', $html);
+        $this->assertStringContainsString('WPMCP just kept a snapshot of your site', $html);
         $this->assertStringContainsString('href="' . Star_Prompt::REPO_URL . '"', $html);
         $this->assertStringContainsString('rel="noopener noreferrer"', $html);
         $this->assertStringContainsString('action=' . Star_Prompt::DISMISS_ACTION, $html);

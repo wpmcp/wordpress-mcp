@@ -9,7 +9,7 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * Every store WP MCP owns, in one place (issue #480), and the opt-in that
+ * Every store WPMCP owns, in one place (issue #480), and the opt-in that
  * deletes them all when the plugin is deleted.
  *
  * Uninstaller removes exactly what is listed here, so a new table, option,
@@ -23,7 +23,7 @@ if (! defined('ABSPATH')) {
  * the directory builds prune some of the owning classes. The guard test
  * pins each string to its owner's constant.
  *
- * Not listed, on purpose: posts of WP MCP's own post types (blocks,
+ * Not listed, on purpose: posts of WPMCP's own post types (blocks,
  * templates, widgets, memory entries, chat conversations) and their post
  * meta. They are site content the owner made, and pages may still use them.
  */

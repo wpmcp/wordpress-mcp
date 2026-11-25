@@ -11,7 +11,7 @@ use WPMCP\Tools\Filesystem\Search_Files;
 use WPMCP\Tools\Meta\Get_Option;
 
 /**
- * Issue #550: WP MCP's own stores that keep raw copies of options, rows or
+ * Issue #550: WPMCP's own stores that keep raw copies of options, rows or
  * tool arguments are not readable through the generic tools. The request
  * log (which, with argument capture on, keeps the first characters of
  * every argument whose key does not look secret) is refused to get-option,

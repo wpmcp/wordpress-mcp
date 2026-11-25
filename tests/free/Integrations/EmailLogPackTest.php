@@ -218,7 +218,7 @@ class EmailLogPackTest extends \WP_UnitTestCase
     /** #953: a word after "password" is only a secret after a label (":", "=", "is") or when it carries a digit. */
     public function test_password_reset_wording_stays_readable_and_labelled_values_are_still_redacted(): void
     {
-        $this->assertSame('[WP MCP Test] Password Reset', Email_Log_Pack::redact_links('[WP MCP Test] Password Reset'));
+        $this->assertSame('[WPMCP Test] Password Reset', Email_Log_Pack::redact_links('[WPMCP Test] Password Reset'));
         $body = "Someone has requested a password reset for the following account:\n\n"
             . "To reset your password, visit the following address:\n\n"
             . "https://x.test/wp-login.php?action=rp&key=SENTINEL-KEY&login=ada\n\n"

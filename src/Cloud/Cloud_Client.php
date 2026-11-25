@@ -7,7 +7,7 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * HTTP client for the WP MCP Cloud REST contract (/wpmcp-cloud/v1), the single
+ * HTTP client for the WPMCP Cloud REST contract (/wpmcp-cloud/v1), the single
  * seam between the plugin and the cloud backend.
  *
  * Cloud_Config::base_url() is the cloud's REST ROOT (for the phase A
@@ -64,7 +64,7 @@ class Cloud_Client
     private function request(string $method, string $path, ?array $body = null, array $extra_args = [])
     {
         if (! Cloud_Config::is_configured()) {
-            return new \WP_Error('cloud_not_configured', 'Connect to WP MCP Cloud first with cloud-connect (URL + API key).');
+            return new \WP_Error('cloud_not_configured', 'Connect to WPMCP Cloud first with cloud-connect (URL + API key).');
         }
 
         // Never "Bearer " with nothing after it (an opaque HTTP 401): when no
@@ -94,7 +94,7 @@ class Cloud_Client
         if (is_wp_error($response)) {
             // Transport and backend text is scrubbed of every stored secret
             // before it reaches an MCP client (issue #141).
-            return new \WP_Error('cloud_unreachable', 'Could not reach WP MCP Cloud: ' . Cloud_Credentials::redact($response->get_error_message()));
+            return new \WP_Error('cloud_unreachable', 'Could not reach WPMCP Cloud: ' . Cloud_Credentials::redact($response->get_error_message()));
         }
 
         $code = (int) wp_remote_retrieve_response_code($response);
@@ -111,7 +111,7 @@ class Cloud_Client
             return new \WP_Error(
                 'cloud_redirect_not_followed',
                 sprintf(
-                    'WP MCP Cloud answered HTTP %d with a redirect%s. Redirects are not followed, so this site\'s credentials are never sent to another address. Re-run cloud-connect with the canonical https URL.',
+                    'WPMCP Cloud answered HTTP %d with a redirect%s. Redirects are not followed, so this site\'s credentials are never sent to another address. Re-run cloud-connect with the canonical https URL.',
                     $code,
                     $hint
                 ),
@@ -121,7 +121,7 @@ class Cloud_Client
 
         if ($code < 200 || $code >= 300) {
             $message = is_array($data) && isset($data['message']) ? Cloud_Credentials::redact((string) $data['message']) : "HTTP {$code}";
-            return new \WP_Error('cloud_error', 'WP MCP Cloud returned an error: ' . $message, ['status' => $code]);
+            return new \WP_Error('cloud_error', 'WPMCP Cloud returned an error: ' . $message, ['status' => $code]);
         }
 
         return is_array($data) ? $data : [];
@@ -241,19 +241,19 @@ class Cloud_Client
             case Token_Refresher::FAILURE_INSECURE_URL:
                 return new \WP_Error(
                     'cloud_insecure_url',
-                    'This site\'s WP MCP Cloud connection uses an OAuth token, which is only ever sent over https, and the stored cloud URL is not https. Re-run cloud-connect with the https URL.'
+                    'This site\'s WPMCP Cloud connection uses an OAuth token, which is only ever sent over https, and the stored cloud URL is not https. Re-run cloud-connect with the https URL.'
                 );
             case Token_Refresher::FAILURE_UNAVAILABLE:
                 $retry = max(1, (int) $failure['retry_after']);
                 return new \WP_Error(
                     'cloud_temporarily_unavailable',
-                    sprintf('WP MCP Cloud could not refresh this site\'s token right now. Try again in %d seconds. The connection is kept, so do not re-run cloud-connect.', $retry),
+                    sprintf('WPMCP Cloud could not refresh this site\'s token right now. Try again in %d seconds. The connection is kept, so do not re-run cloud-connect.', $retry),
                     ['retry_after' => $retry]
                 );
             default:
                 return new \WP_Error(
                     'cloud_not_authenticated',
-                    'WP MCP Cloud rejected this site\'s token. Re-run cloud-connect.'
+                    'WPMCP Cloud rejected this site\'s token. Re-run cloud-connect.'
                 );
         }
     }
