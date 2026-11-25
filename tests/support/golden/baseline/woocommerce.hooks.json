@@ -344,7 +344,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:984",
+          "closure@src/Plugin.php:987",
           1
         ]
       ],
@@ -1638,6 +1638,11 @@
       ],
       "wpmcp_rollback_options_restored": [
         [
+          -9223372036854775808,
+          "closure@src/Kernel/Kernel_Boot.php:129",
+          1
+        ],
+        [
           10,
           "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
           2
@@ -1675,11 +1680,6 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
-          2
-        ],
-        [
-          10,
-          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
@@ -2224,7 +2224,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:984",
+          "closure@src/Plugin.php:987",
           1
         ],
         [
@@ -3528,6 +3528,11 @@
       ],
       "wpmcp_rollback_options_restored": [
         [
+          -9223372036854775808,
+          "closure@src/Kernel/Kernel_Boot.php:129",
+          1
+        ],
+        [
           10,
           "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
           2
@@ -3565,11 +3570,6 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
-          2
-        ],
-        [
-          10,
-          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
@@ -4104,7 +4104,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:984",
+          "closure@src/Plugin.php:987",
           1
         ]
       ],
@@ -5403,6 +5403,11 @@
       ],
       "wpmcp_rollback_options_restored": [
         [
+          -9223372036854775808,
+          "closure@src/Kernel/Kernel_Boot.php:129",
+          1
+        ],
+        [
           10,
           "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
           2
@@ -5440,11 +5445,6 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
-          2
-        ],
-        [
-          10,
-          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
@@ -5955,7 +5955,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:984",
+          "closure@src/Plugin.php:987",
           1
         ]
       ],
@@ -7249,6 +7249,11 @@
       ],
       "wpmcp_rollback_options_restored": [
         [
+          -9223372036854775808,
+          "closure@src/Kernel/Kernel_Boot.php:129",
+          1
+        ],
+        [
           10,
           "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
           2
@@ -7286,11 +7291,6 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
-          2
-        ],
-        [
-          10,
-          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
@@ -7801,7 +7801,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:984",
+          "closure@src/Plugin.php:987",
           1
         ]
       ],
@@ -9095,6 +9095,11 @@
       ],
       "wpmcp_rollback_options_restored": [
         [
+          -9223372036854775808,
+          "closure@src/Kernel/Kernel_Boot.php:129",
+          1
+        ],
+        [
           10,
           "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
           2
@@ -9132,11 +9137,6 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
-          2
-        ],
-        [
-          10,
-          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
@@ -9647,7 +9647,7 @@
         ],
         [
           20,
-          "closure@src/Plugin.php:984",
+          "closure@src/Plugin.php:987",
           1
         ]
       ],
@@ -10941,6 +10941,11 @@
       ],
       "wpmcp_rollback_options_restored": [
         [
+          -9223372036854775808,
+          "closure@src/Kernel/Kernel_Boot.php:129",
+          1
+        ],
+        [
           10,
           "WPMCP\\Integrations\\Theme_Framework_Pack::refresh_after_restore",
           2
@@ -10978,11 +10983,6 @@
         [
           10,
           "WPMCP\\Integrations\\WPCode_Pack::after_options_restored",
-          2
-        ],
-        [
-          10,
-          "closure@src/Kernel/Hook_Loader.php:79",
           2
         ]
       ],
