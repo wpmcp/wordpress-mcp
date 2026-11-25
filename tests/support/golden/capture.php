@@ -789,7 +789,8 @@ final class Capture
             }
             $record['read_operations']  = $dispatcher->operation_names('read');
             $record['write_operations'] = $dispatcher->operation_names('write');
-            $record['list_operations']  = $dispatcher->handle_read([ 'operation' => 'list-operations' ]);
+            // The full catalog (every input_schema), as list-operations answered before 2.0.1.
+            $record['list_operations']  = $dispatcher->handle_read([ 'operation' => 'list-operations', 'args' => [ 'include_schemas' => true ] ]);
             $record['definitions']      = self::definitions($operations, $record['list_operations']);
             $out[]                      = $record;
         }

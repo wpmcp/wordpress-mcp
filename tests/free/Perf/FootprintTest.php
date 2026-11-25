@@ -39,6 +39,14 @@ namespace WPMCP\Tests\Free\Perf;
  * ability on rest_api_init. No single merge regressed: every pack merged
  * that day landed on the legacy path.
  *
+ * 2.0.1 (25 Nov 2026) lowered the front and admin budgets: 2.0.0 loaded
+ * 131 and 126 src files there, 2.0.1 loads 103 and 98 (102 and 98 classes).
+ * The rollback refreshers are hooked after a check that does not load their
+ * classes (Kernel_Boot::ships()), the #[On_Rollback] rows of modules attach
+ * on the first rollback instead of on every request, and the stdio transport
+ * and the route-scoped mount load only where they apply. The same margin
+ * rule gives 115 and 110.
+ *
  * BUDGETS are those numbers plus a margin of 10 percent, at least 5, rounded
  * up to a multiple of 5, so that feature PRs merging alongside the module
  * work do not turn main red. Abilities on the front end and in wp-admin are
@@ -51,8 +59,8 @@ final class FootprintTest extends \WP_UnitTestCase
 {
     /** context => metric => budget (at most). */
     private const BUDGETS = [
-        'front' => ['src' => 140, 'freemius' => 55, 'classes' => 135, 'abilities' => 0],
-        'admin' => ['src' => 135, 'freemius' => 60, 'classes' => 130, 'abilities' => 0],
+        'front' => ['src' => 115, 'freemius' => 55, 'classes' => 115, 'abilities' => 0],
+        'admin' => ['src' => 110, 'freemius' => 60, 'classes' => 110, 'abilities' => 0],
         'rest'  => ['src' => 815, 'freemius' => 55, 'classes' => 810, 'abilities' => 285],
         'mcp'   => ['src' => 820, 'freemius' => 55, 'classes' => 815, 'abilities' => 285],
     ];
