@@ -27,12 +27,21 @@ WPMCP is a free, self-hosted WordPress MCP plugin for Claude, ChatGPT, Cursor an
 
 </div>
 
-**Thrive Theme Builder (Pro).** While Thrive Theme Builder is the active theme, the theme tools list and read its templates (what each renders, layout, header, footer and sections), its headers, footers and shared sections, and the theme settings (logo link, favicon, default featured image). Writes change a template's title, layout, header or footer, give a post or page a template of its own, edit a section's markup (pinned to the hash it was read with) and set those theme settings. Writes are off until the site enables theme writes, and each supported write is snapshotted so rollback undoes it.
+**What you get**
 
-Because snapshots are taken at the WordPress data layer, rollback works the same for every builder in the table. Docs and Pro are at [wpmcp-pro.com](https://wpmcp-pro.com/).
+- **Undo for AI edits:** a snapshot before each supported write, automatic rollback when the check after it fails, and undo of one change or a whole AI session, free.
+- **Your own AI, no usage limits:** works with Claude, ChatGPT, Cursor, Antigravity or any MCP client. WPMCP adds no usage limits; only your AI plan's own limits apply.
+- **Content and page builders:** posts, pages, media, menus and Gutenberg blocks in the free plugin; Elementor, Bricks, Divi and other builders with Pro.
+- **WooCommerce:** products, variations, prices, stock, orders and coupons, each supported write with undo.
+- **Self-hosted and free:** a GPL plugin that runs on your own WordPress site. 274 free abilities, 407 with Pro.
+
+## Quick start
+
 1. Download [wpmcp.zip](https://wpmcp-pro.com/download?utm_source=github&utm_medium=referral&utm_campaign=readme&utm_content=install).
 2. In wp-admin, go to **Plugins > Add New > Upload Plugin**, choose the zip, click **Install Now**, then **Activate**.
 3. Open **wpmcp > Connection** and follow its four steps: pick your app, create the connection, add it to your app (the config is filled in for you, or use one of the blocks below), and check that it signed in.
+
+Then ask your AI something read-only to see it work, for example: "List my five latest posts and their status."
 
 Requires WordPress 6.9+ and PHP 8.1+. Free installs update in one click from **Dashboard > Updates**.
 
