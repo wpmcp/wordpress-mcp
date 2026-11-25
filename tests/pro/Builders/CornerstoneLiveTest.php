@@ -140,7 +140,8 @@ class CornerstoneLiveTest extends \WP_UnitTestCase
 
         $refused = $this->update($post_id, ['operation' => 'add', 'to' => '0', 'element' => ['type' => 'layout-column']]);
         $this->assertInstanceOf(\WP_Error::class, $refused);
-        $this->assertStringContainsString('goes only in a layout-row', $refused->get_error_message());
+        // The refusal names layout-row as the only parent a layout-column may have.
+        $this->assertMatchesRegularExpression('/\blayout-column\b.*\bonly in (?:a |the )?layout-row\b/', $refused->get_error_message());
 
         $out = $this->update($post_id, ['operation' => 'add', 'to' => '0.0.0', 'element' => ['type' => 'button', 'attrs' => ['anchor_text_primary_content' => 'Live button']]]);
         $this->assertIsArray($out, is_wp_error($out) ? $out->get_error_message() : '');
