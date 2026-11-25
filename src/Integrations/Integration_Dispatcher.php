@@ -159,6 +159,9 @@ abstract class Integration_Dispatcher
     /** Reserved read operation exposing the catalog; always answers. */
     private const LIST_OPERATIONS = 'list-operations';
 
+    /** Added to list-operations when it left an input_schema out (listed_catalog()). */
+    public const SCHEMA_NOTE = 'Ops with dependency_met:false list no input_schema: their plugin is not active, so they cannot run here. Pass args {"include_schemas": true} for every schema.';
+
     /** Slug of the integration, e.g. 'acf'. Used in ability and synthetic op names. */
     abstract public function integration(): string;
 
@@ -395,6 +398,40 @@ abstract class Integration_Dispatcher
     }
 
     /**
+     * What list-operations answers: catalog(), minus the input_schema of
+     * each op whose dependency is not met (dependency_met:false). Such an
+     * op cannot run on this site, so its schema only made every answer
+     * longer: on a site with a few of the supported plugins most of the
+     * plugin-data catalog is ops of plugins it does not have. Every op is
+     * still listed with all its other fields, and SCHEMA_NOTE says how to
+     * get every schema: args {"include_schemas": true}, which answers
+     * catalog() unchanged.
+     *
+     * @return array<mixed> catalog()'s shape
+     */
+    private function listed_catalog(bool $include_schemas): array
+    {
+        $catalog = $this->catalog();
+        if ($include_schemas) {
+            return $catalog;
+        }
+        $omitted = false;
+        $ops = is_array($catalog['operations'] ?? null) ? $catalog['operations'] : [];
+        foreach ($ops as $i => $entry) {
+            if (is_array($entry) && false === ($entry['dependency_met'] ?? null)) {
+                unset($entry['input_schema']);
+                $ops[ $i ] = $entry;
+                $omitted = true;
+            }
+        }
+        $catalog['operations'] = $ops;
+        if ($omitted) {
+            $catalog['schema_note'] = self::SCHEMA_NOTE;
+        }
+        return $catalog;
+    }
+
+    /**
      * Whether a destructive op takes confirm:true only from the call's own
      * arguments, never from a client's elicitation answer (issue #886). A
      * client set to skip permission prompts can accept that question by
@@ -529,7 +566,8 @@ abstract class Integration_Dispatcher
         $op = (string) ($args['operation'] ?? '');
 
         if ('read' === $channel && self::LIST_OPERATIONS === $op) {
-            return $this->ok(self::LIST_OPERATIONS, $this->catalog());
+            $list_args = is_array($args['args'] ?? null) ? $args['args'] : [];
+            return $this->ok(self::LIST_OPERATIONS, $this->listed_catalog(in_array($list_args['include_schemas'] ?? false, [ true, 1, '1', 'true' ], true)));
         }
 
         if (! $this->is_available()) {
